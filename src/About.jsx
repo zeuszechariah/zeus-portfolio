@@ -277,23 +277,17 @@ function Resume() {
           </div>
 
           <Reveal delay={0.12} className="flex flex-col items-start md:items-end gap-6">
-            <div className="w-[72px] h-[72px] rounded-full border border-white/[0.1]
-                            flex items-center justify-center"
-              style={{ background:'rgba(255,255,255,0.03)' }}>
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-                <path d="M12 4v12M7 12l5 5 5-5" stroke="rgba(242,237,228,0.5)"
-                  strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                <path d="M4 20h16" stroke="rgba(242,237,228,0.25)"
-                  strokeWidth="1.5" strokeLinecap="round"/>
-              </svg>
-            </div>
             <a href="https://drive.google.com/file/d/13STNlMETpbArR6O8Bz5tatm9hxZgkjbT/view"
                target="_blank" rel="noopener noreferrer"
-               className="inline-flex items-center gap-3 font-sans font-semibold text-bg bg-ink
+               className="relative group/link inline-flex items-center gap-3 font-sans font-semibold text-bg bg-ink
                           rounded-full tracking-[0.01em] transition-[opacity,transform] duration-300
                           hover:opacity-88 hover:-translate-y-[1px]"
                style={{ fontSize:'0.875rem', padding:'0.9375rem 2rem' }}>
-              View / Download Resumè ↗
+              <span className="relative">
+                View / Download Resumè ↗
+                <span className="absolute -bottom-[2px] left-0 h-[1px] w-0 transition-all duration-300 group-hover/link:w-full"
+                  style={{ background:'#ffffff', mixBlendMode:'difference', transitionTimingFunction:'cubic-bezier(0.16,1,0.3,1)' }} />
+              </span>
             </a>
           </Reveal>
         </div>
@@ -400,11 +394,15 @@ function ContactForm() {
               animate={inView ? { opacity:1, y:0 } : {}}
               transition={{ duration:0.7, ease:EASE, delay:0.3 }}>
               <button type="submit"
-                className="inline-flex items-center font-sans font-semibold text-bg bg-ink
+                className="relative group/link inline-flex items-center font-sans font-semibold text-bg bg-ink
                            rounded-full tracking-[0.01em] transition-[opacity,transform]
                            duration-300 hover:opacity-88 hover:-translate-y-[1px]"
                 style={{ fontSize:'0.875rem', padding:'0.9375rem 2.5rem' }}>
-                Submit
+                <span className="relative">
+                  Submit
+                  <span className="absolute -bottom-[2px] left-0 h-[1px] w-0 transition-all duration-300 group-hover/link:w-full"
+                    style={{ background:'#ffffff', mixBlendMode:'difference', transitionTimingFunction:'cubic-bezier(0.16,1,0.3,1)' }} />
+                </span>
               </button>
             </motion.div>
           </form>

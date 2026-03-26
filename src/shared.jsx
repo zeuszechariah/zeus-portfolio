@@ -19,7 +19,7 @@ export function Bolt({ size = 14, nudge = 0 }) {
 export function ProgressBar() {
   const { scrollYProgress } = useScroll()
   const scaleY = useSpring(scrollYProgress, { stiffness:100, damping:30 })
-  return <motion.div className="fixed right-0 top-0 bottom-0 w-[2px] z-[600] origin-top" style={{ scaleY, background:'linear-gradient(180deg,#7C3AED,#FF4B8F)' }} />
+  return <motion.div className="fixed left-0 top-0 bottom-0 w-[2px] z-[600] origin-top" style={{ scaleY, background:'linear-gradient(180deg,#7C3AED,#FF4B8F)' }} />
 }
 
 // ─── MaskReveal — translateY clip reveal for headings ─
@@ -54,7 +54,7 @@ export function Reveal({ children, delay = 0, className = '' }) {
 }
 
 // ─── Nav ──────────────────────────────────────────────
-export function Nav() {
+export function Nav({ light = false }) {
   const [scrolled, setScrolled] = useState(false)
 
   useEffect(() => {
@@ -64,7 +64,11 @@ export function Nav() {
   }, [])
 
   const lt = { duration:1.1, ease:EASE }
-  const bs = { color:'#ffffff', mixBlendMode:'difference' }
+  const bs = light ? { color:'#0f0f0f' } : { color:'#ffffff', mixBlendMode:'difference' }
+
+  const pillStyle = light
+    ? { background:'rgba(255,255,255,0.88)', backdropFilter:'blur(20px)', WebkitBackdropFilter:'blur(20px)', border:'1px solid rgba(0,0,0,0.08)', boxShadow:'0 2px 20px rgba(0,0,0,0.07)' }
+    : { background:'rgba(255,255,255,0.06)', backdropFilter:'blur(48px) saturate(180%) brightness(1.08)', WebkitBackdropFilter:'blur(48px) saturate(180%) brightness(1.08)', border:'1px solid rgba(255,255,255,0.12)', boxShadow:'inset 0 1px 0 rgba(255,255,255,0.18), inset 0 -1px 0 rgba(0,0,0,0.03), 0 8px 40px rgba(0,0,0,0.18)' }
 
   return (
     <AnimatePresence>
@@ -89,10 +93,12 @@ export function Nav() {
         >
           <motion.nav
             className="pointer-events-auto relative flex items-center gap-8 px-6 py-[0.6rem] rounded-full overflow-hidden"
-            style={{ background:'rgba(255,255,255,0.06)', backdropFilter:'blur(48px) saturate(180%) brightness(1.08)', WebkitBackdropFilter:'blur(48px) saturate(180%) brightness(1.08)', border:'1px solid rgba(255,255,255,0.12)', boxShadow:'inset 0 1px 0 rgba(255,255,255,0.18), inset 0 -1px 0 rgba(0,0,0,0.03), 0 8px 40px rgba(0,0,0,0.18)' }}
+            style={pillStyle}
           >
-            <div className="absolute inset-x-0 top-0 h-[50%] rounded-t-full pointer-events-none"
-              style={{ background:'linear-gradient(180deg,rgba(255,255,255,0.1) 0%,transparent 100%)' }} />
+            {!light && (
+              <div className="absolute inset-x-0 top-0 h-[50%] rounded-t-full pointer-events-none"
+                style={{ background:'linear-gradient(180deg,rgba(255,255,255,0.1) 0%,transparent 100%)' }} />
+            )}
             <motion.a layoutId="nav-zeus" href="/" transition={lt}
               className="relative z-10 font-sans font-semibold text-[1rem] tracking-[0.05em]" style={bs}>
               <Bolt size={16} />
@@ -103,7 +109,7 @@ export function Nav() {
                   className="font-mono text-[0.7rem] tracking-[0.1em] uppercase relative group/link" style={bs}>
                   {label}
                   <span className="absolute -bottom-[2px] left-0 h-[1px] w-0 transition-all duration-300 group-hover/link:w-full"
-                    style={{ background:'#ffffff', mixBlendMode:'difference', transitionTimingFunction:'cubic-bezier(0.16,1,0.3,1)' }} />
+                    style={{ background: light ? '#0f0f0f' : '#ffffff', mixBlendMode: light ? undefined : 'difference', transitionTimingFunction:'cubic-bezier(0.16,1,0.3,1)' }} />
                 </motion.a>
               ))}
             </div>
@@ -121,14 +127,9 @@ export function Footer() {
       <div className="max-w-[1200px] mx-auto px-[clamp(1.5rem,5vw,3.5rem)] pt-[clamp(3rem,6vw,5rem)] pb-[clamp(2rem,4vw,3rem)]">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-x-8 gap-y-12">
           <div className="flex flex-col gap-4">
-            <a href="#" className="font-sans text-[0.8125rem] text-ink/38 hover:text-ink/70 transition-colors duration-200">Imprint</a>
-            <a href="#" className="font-sans text-[0.8125rem] text-ink/38 hover:text-ink/70 transition-colors duration-200">Privacy Policy</a>
-            <a href="#" className="font-sans text-[0.8125rem] text-ink/38 hover:text-ink/70 transition-colors duration-200">Press</a>
-            <div className="mt-6">
-              <div className="w-10 h-10 rounded-full border border-ink/14 flex items-center justify-center">
-                <span className="font-mono text-[0.45rem] tracking-[0.08em] text-ink/25">ZZB</span>
-              </div>
-            </div>
+            <a href="/imprint" className="font-sans text-[0.8125rem] text-ink/38 hover:text-ink/70 transition-colors duration-200">Imprint</a>
+            <a href="/privacy-policy" className="font-sans text-[0.8125rem] text-ink/38 hover:text-ink/70 transition-colors duration-200">Privacy Policy</a>
+            <a href="/press" className="font-sans text-[0.8125rem] text-ink/38 hover:text-ink/70 transition-colors duration-200">Press</a>
           </div>
           <div className="flex flex-col gap-4">
             <a href="https://instagram.com" target="_blank" rel="noopener noreferrer"
@@ -140,7 +141,7 @@ export function Footer() {
           </div>
           <div className="flex flex-col gap-1">
             <p className="font-sans font-semibold text-[0.8125rem] text-ink/65 mb-2">National Institute of Design</p>
-            <p className="font-sans text-[0.8125rem] text-ink/35 leading-[1.9]">Peenya,<br />Bangalore,<br />Karnataka IN<br />560022</p>
+            <p className="font-sans text-[0.8125rem] text-ink/35 leading-[1.9]">Peenya, Bangalore<br />Karnataka IN 560022<br />India</p>
           </div>
           <div className="flex flex-col gap-4">
             <a href="mailto:zeusbatkhar.2000@gmail.com"

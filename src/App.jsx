@@ -1,12 +1,16 @@
 import { useRef, useEffect, useState } from 'react'
 import { motion, useMotionValue, useTransform, useSpring, useScroll, useInView } from 'framer-motion'
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, Link } from 'react-router-dom'
 import { EASE, SPRING_STIFF, Bolt, ProgressBar, Nav, Footer, MaskReveal, Reveal } from './shared.jsx'
 import About from './About.jsx'
+import Imprint from './Imprint.jsx'
+import PrivacyPolicy from './PrivacyPolicy.jsx'
+import Press from './Press.jsx'
+import GetSetGlobe from './GetSetGlobe.jsx'
 
 const PROJECTS = [
   { id:1, name:'Study Buddy',     tags:'UX Research · Mobile',   desc:'A peer learning platform designed to reduce cognitive overload for undergraduates through contextual nudges and adaptive scheduling.', color:'from-[#061528] via-[#0f2d52] to-[#1b4a8a]' },
-  { id:2, name:'Get Set Globe',   tags:'EdTech · Product Design', desc:'An end-to-end travel-education experience helping young learners explore world cultures through gamified, story-driven modules.',      color:'from-[#050f08] via-[#0b2e16] to-[#135728]' },
+  { id:2, name:'Get Set Globe',   tags:'EdTech · Product Design', desc:'An end-to-end travel-education experience helping young learners explore world cultures through gamified, story-driven modules.',      color:'from-[#050f08] via-[#0b2e16] to-[#135728]', slug:'/work/get-set-globe' },
   { id:3, name:'Malt & Machines', tags:'Data Viz · Experience',   desc:'A data-driven tasting experience blending whisky flavour profiling with interactive visualisations for connoisseurs and beginners.',   color:'from-[#0d0702] via-[#2e1606] to-[#7a430e]' },
   { id:4, name:'Infinity',        tags:'Space Tech · App Design', desc:'An app interface concept for low-orbit satellite operators — designed around mission-critical clarity and dark-environment legibility.', color:'from-[#040409] via-[#0e0e30] to-[#1a1060]' },
 ]
@@ -216,9 +220,10 @@ function Hero() {
   useDelaunayCanvas(canvasRef, heroRef)
   const headingInView = useInView(h1Ref, { once: false, amount: 0.4 })
   const { scrollYProgress } = useScroll({ target:containerRef, offset:['start start','end end'] })
-  const scale        = useTransform(scrollYProgress, [0, 1],    [1, 0.84])
-  const opacity      = useTransform(scrollYProgress, [0.5, 1.0],[1, 0])
-  const borderRadius = useTransform(scrollYProgress, [0, 0.8],  ['0px','22px'])
+  const scale          = useTransform(scrollYProgress, [0, 1],    [1, 0.84])
+  const opacity        = useTransform(scrollYProgress, [0.5, 1.0],[1, 0])
+  const borderRadius   = useTransform(scrollYProgress, [0, 0.8],  ['0px','22px'])
+  const vignetteOpacity = useTransform(scrollYProgress, [0, 0.08, 0.6], [0, 0.7, 1])
 
   // Hero headline: dim → bright (flipped gradient)
   // Line 1 most muted, line 3 (italic) full white — reads bottom-up
@@ -237,7 +242,9 @@ function Hero() {
         <canvas ref={canvasRef} className="absolute inset-0 w-full h-full pointer-events-none" style={{ zIndex:0 }} />
         <div className="absolute pointer-events-none" style={{ width:'clamp(500px,60vw,820px)',height:'clamp(500px,60vw,820px)',borderRadius:'50%',top:'-25%',left:'-18%',zIndex:0,background:'radial-gradient(circle,rgba(124,58,237,0.085) 0%,transparent 65%)' }} />
         <div className="absolute pointer-events-none" style={{ width:'clamp(350px,42vw,600px)',height:'clamp(350px,42vw,600px)',borderRadius:'50%',bottom:'-12%',right:'-10%',zIndex:0,background:'radial-gradient(circle,rgba(255,75,143,0.055) 0%,transparent 65%)' }} />
-        <div className="relative z-[2] w-full flex items-end justify-between gap-6">
+        {/* Edge fades — single element, multiple bg gradients so corners blend without banding */}
+        <motion.div className="absolute inset-0 pointer-events-none" style={{ zIndex:1, opacity:vignetteOpacity, background:'linear-gradient(to bottom, #060606 0%, transparent 22%), linear-gradient(to top, #060606 0%, transparent 22%), linear-gradient(to right, #060606 0%, transparent 18%), linear-gradient(to left, #060606 0%, transparent 18%)' }} />
+        <div className="relative z-[3] w-full flex items-end justify-between gap-6">
           <h1 ref={h1Ref}>
             {lines.map(({ text, cls, color }, i) => (
               <div key={text} style={{ overflow:'hidden' }}>
@@ -305,48 +312,53 @@ function Services() {
 function ProjectCard({ project, delay = 0 }) {
   const ref=useRef(null), inView=useInView(ref,{ once:true, amount:0.06 })
   const mockupY=useMotionValue(0), sMockupY=useSpring(mockupY, SPRING_STIFF)
+  const inner = (
+    <TiltCard className="h-full flex flex-col rounded-[18px] overflow-hidden cursor-pointer border border-black/[0.07]" style={{ background:'#EAEAEA' }}>
+      <div className="relative overflow-hidden flex-shrink-0" style={{ aspectRatio:'2/3' }}>
+        <div className={`absolute inset-0 bg-gradient-to-br ${project.color} transition-transform duration-700 group-hover:scale-[1.03]`} />
+        <motion.div className="absolute bottom-[-4%] left-0 right-0 flex justify-center pointer-events-none" style={{ y:sMockupY, zIndex:2 }}
+          onMouseEnter={()=>mockupY.set(-12)} onMouseLeave={()=>mockupY.set(0)}>
+          <div className="w-[72%] max-w-[300px]" style={{ filter:'drop-shadow(0 18px 48px rgba(0,0,0,0.75))' }}>
+            <div className="rounded-t-[7px] rounded-b-[2px] border border-b-0 border-white/[0.1] px-[3.5%] pt-[5%] pb-[2%] relative" style={{ background:'linear-gradient(175deg,#252525 0%,#1c1c1c 100%)' }}>
+              <div className="absolute top-[1.5%] left-1/2 -translate-x-1/2 w-[7%] h-[4px] rounded-b bg-black/80" />
+              <div className="aspect-[16/10] rounded overflow-hidden relative" style={{ boxShadow:'inset 0 0 0 1px rgba(0,0,0,0.6)' }}>
+                <div className={`absolute inset-0 bg-gradient-to-br ${project.color} brightness-[1.3]`} />
+                <div className="absolute inset-0 p-[10%] z-10 flex flex-col gap-[5%]">
+                  <div className="h-[2px] w-3/5 rounded" style={{ background:'rgba(255,255,255,0.22)' }} />
+                  <div className="h-[2px] w-2/5 rounded" style={{ background:'rgba(255,255,255,0.12)' }} />
+                  <div className="flex gap-[4%] mt-[5%]">{[1,2,3].map(i=><div key={i} className="flex-1 rounded border" style={{ aspectRatio:'1/0.65',background:'rgba(255,255,255,0.07)',borderColor:'rgba(255,255,255,0.08)' }} />)}</div>
+                </div>
+                <div className="absolute inset-0 z-20" style={{ background:'linear-gradient(135deg,rgba(255,255,255,0.06) 0%,transparent 42%)' }} />
+              </div>
+            </div>
+            <div className="h-[2px] border-x border-white/[0.07]" style={{ background:'linear-gradient(90deg,#181818,#2e2e2e 50%,#181818)' }} />
+            <div className="rounded-b-[5px] px-[6%] pt-[3%] pb-[4%] border border-t-0 border-white/[0.1]" style={{ background:'linear-gradient(180deg,#202020 0%,#191919 100%)' }}>
+              <div className="h-[5px] rounded mb-[4px]" style={{ background:'repeating-linear-gradient(90deg,rgba(255,255,255,0.03) 0px,rgba(255,255,255,0.03) 2px,transparent 2px,transparent 5px)' }} />
+              <div className="w-[28%] h-[4px] rounded mx-auto border" style={{ background:'rgba(255,255,255,0.04)',borderColor:'rgba(255,255,255,0.05)' }} />
+            </div>
+          </div>
+        </motion.div>
+      </div>
+      <div className="flex-1 p-[clamp(1rem,2vw,1.375rem)]">
+        <div className="flex items-start justify-between gap-3 mb-2.5">
+          <div>
+            <p className="font-mono text-[0.6rem] tracking-[0.12em] uppercase text-black/38 mb-[0.35rem]">{project.tags}</p>
+            <h3 className="font-sans font-semibold text-black tracking-[-0.022em]" style={{ fontSize:'clamp(1rem,1.6vw,1.2rem)', lineHeight:1.2 }}>
+              <MaskReveal>{project.name}</MaskReveal>
+            </h3>
+          </div>
+          <span className="w-[28px] h-[28px] rounded-full border border-black/15 flex items-center justify-center text-[0.65rem] text-black/40 opacity-0 scale-75 transition-all duration-300 group-hover:opacity-100 group-hover:scale-100 group-hover:border-black/30 flex-shrink-0">↗</span>
+        </div>
+        <p className="font-sans text-black/42 leading-[1.7]" style={{ fontSize:'clamp(0.72rem,0.9vw,0.8rem)' }}>{project.desc}</p>
+      </div>
+    </TiltCard>
+  )
   return (
     <motion.div ref={ref} className="group relative h-full"
       initial={{ opacity:0, y:36 }} animate={inView?{ opacity:1, y:0 }:{}} transition={{ duration:0.85, ease:EASE, delay }}>
-      <TiltCard className="h-full flex flex-col rounded-[18px] overflow-hidden cursor-pointer border border-black/[0.07]" style={{ background:'#EAEAEA' }}>
-        <div className="relative overflow-hidden flex-shrink-0" style={{ aspectRatio:'2/3' }}>
-          <div className={`absolute inset-0 bg-gradient-to-br ${project.color} transition-transform duration-700 group-hover:scale-[1.03]`} />
-          <motion.div className="absolute bottom-[-4%] left-0 right-0 flex justify-center pointer-events-none" style={{ y:sMockupY, zIndex:2 }}
-            onMouseEnter={()=>mockupY.set(-12)} onMouseLeave={()=>mockupY.set(0)}>
-            <div className="w-[72%] max-w-[300px]" style={{ filter:'drop-shadow(0 18px 48px rgba(0,0,0,0.75))' }}>
-              <div className="rounded-t-[7px] rounded-b-[2px] border border-b-0 border-white/[0.1] px-[3.5%] pt-[5%] pb-[2%] relative" style={{ background:'linear-gradient(175deg,#252525 0%,#1c1c1c 100%)' }}>
-                <div className="absolute top-[1.5%] left-1/2 -translate-x-1/2 w-[7%] h-[4px] rounded-b bg-black/80" />
-                <div className="aspect-[16/10] rounded overflow-hidden relative" style={{ boxShadow:'inset 0 0 0 1px rgba(0,0,0,0.6)' }}>
-                  <div className={`absolute inset-0 bg-gradient-to-br ${project.color} brightness-[1.3]`} />
-                  <div className="absolute inset-0 p-[10%] z-10 flex flex-col gap-[5%]">
-                    <div className="h-[2px] w-3/5 rounded" style={{ background:'rgba(255,255,255,0.22)' }} />
-                    <div className="h-[2px] w-2/5 rounded" style={{ background:'rgba(255,255,255,0.12)' }} />
-                    <div className="flex gap-[4%] mt-[5%]">{[1,2,3].map(i=><div key={i} className="flex-1 rounded border" style={{ aspectRatio:'1/0.65',background:'rgba(255,255,255,0.07)',borderColor:'rgba(255,255,255,0.08)' }} />)}</div>
-                  </div>
-                  <div className="absolute inset-0 z-20" style={{ background:'linear-gradient(135deg,rgba(255,255,255,0.06) 0%,transparent 42%)' }} />
-                </div>
-              </div>
-              <div className="h-[2px] border-x border-white/[0.07]" style={{ background:'linear-gradient(90deg,#181818,#2e2e2e 50%,#181818)' }} />
-              <div className="rounded-b-[5px] px-[6%] pt-[3%] pb-[4%] border border-t-0 border-white/[0.1]" style={{ background:'linear-gradient(180deg,#202020 0%,#191919 100%)' }}>
-                <div className="h-[5px] rounded mb-[4px]" style={{ background:'repeating-linear-gradient(90deg,rgba(255,255,255,0.03) 0px,rgba(255,255,255,0.03) 2px,transparent 2px,transparent 5px)' }} />
-                <div className="w-[28%] h-[4px] rounded mx-auto border" style={{ background:'rgba(255,255,255,0.04)',borderColor:'rgba(255,255,255,0.05)' }} />
-              </div>
-            </div>
-          </motion.div>
-        </div>
-        <div className="flex-1 p-[clamp(1rem,2vw,1.375rem)]">
-          <div className="flex items-start justify-between gap-3 mb-2.5">
-            <div>
-              <p className="font-mono text-[0.6rem] tracking-[0.12em] uppercase text-black/38 mb-[0.35rem]">{project.tags}</p>
-              <h3 className="font-sans font-semibold text-black tracking-[-0.022em]" style={{ fontSize:'clamp(1rem,1.6vw,1.2rem)', lineHeight:1.2 }}>
-                <MaskReveal>{project.name}</MaskReveal>
-              </h3>
-            </div>
-            <span className="w-[28px] h-[28px] rounded-full border border-black/15 flex items-center justify-center text-[0.65rem] text-black/40 opacity-0 scale-75 transition-all duration-300 group-hover:opacity-100 group-hover:scale-100 group-hover:border-black/30 flex-shrink-0">↗</span>
-          </div>
-          <p className="font-sans text-black/42 leading-[1.7]" style={{ fontSize:'clamp(0.72rem,0.9vw,0.8rem)' }}>{project.desc}</p>
-        </div>
-      </TiltCard>
+      {project.slug
+        ? <Link to={project.slug} className="block h-full">{inner}</Link>
+        : inner}
     </motion.div>
   )
 }
@@ -486,8 +498,14 @@ function CTA() {
         </h2>
         <Reveal delay={0.12} className="flex items-center justify-center gap-3 flex-wrap">
           <a href="mailto:zeusbatkhar.2000@gmail.com"
-             className="inline-flex items-center font-sans font-semibold text-bg bg-ink rounded-full tracking-[0.01em] transition-[opacity,transform] duration-300 hover:opacity-88 hover:-translate-y-[1px]"
-             style={{ fontSize:'0.8125rem',padding:'0.8125rem 1.625rem' }}>zeusbatkhar.2000@gmail.com</a>
+             className="relative group/link inline-flex items-center font-sans font-semibold text-bg bg-ink rounded-full tracking-[0.01em] transition-[opacity,transform] duration-300 hover:opacity-88 hover:-translate-y-[1px]"
+             style={{ fontSize:'0.8125rem',padding:'0.8125rem 1.625rem' }}>
+            <span className="relative">
+              zeusbatkhar.2000@gmail.com
+              <span className="absolute -bottom-[2px] left-0 h-[1px] w-0 transition-all duration-300 group-hover/link:w-full"
+                style={{ background:'#ffffff', mixBlendMode:'difference', transitionTimingFunction:'cubic-bezier(0.16,1,0.3,1)' }} />
+            </span>
+          </a>
           <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer"
              className="inline-flex items-center font-sans font-medium text-ink rounded-full tracking-[0.01em] border border-white/[0.14] transition-[background,border-color,transform] duration-300 hover:bg-white/[0.05] hover:border-white/[0.22] hover:-translate-y-[1px]"
              style={{ fontSize:'0.8125rem',padding:'0.8125rem 1.625rem' }}>LinkedIn ↗</a>
@@ -522,6 +540,10 @@ export default function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/about" element={<About />} />
+        <Route path="/imprint" element={<Imprint />} />
+        <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+        <Route path="/press" element={<Press />} />
+        <Route path="/work/get-set-globe" element={<GetSetGlobe />} />
       </Routes>
     </BrowserRouter>
   )
