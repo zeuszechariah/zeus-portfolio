@@ -1,5 +1,5 @@
 import { useRef, useEffect, useState } from 'react'
-import { motion, useMotionValue, useTransform, useSpring, useScroll, useInView } from 'framer-motion'
+import { motion, useMotionValue, useTransform, useSpring, useInView } from 'framer-motion'
 import { BrowserRouter, Routes, Route, Link } from 'react-router-dom'
 import { EASE, SPRING_STIFF, Bolt, ProgressBar, Nav, Footer, MaskReveal, Reveal } from './shared.jsx'
 import About from './About.jsx'
@@ -16,31 +16,26 @@ const PROJECTS = [
 ]
 
 const SERVICES = [
-  { n:'01', title:'UX Research & Strategy', desc:'Contextual inquiry, user interviews, journey mapping — synthesised into clear, actionable design direction.' },
-  { n:'02', title:'Product Design',         desc:'End-to-end product thinking, from early concepts and flows through to polished, shippable interfaces.' },
-  { n:'03', title:'Interaction Design',     desc:'Purposeful motion and micro-interactions that make products feel responsive and alive.' },
-  { n:'04', title:'Design Systems',         desc:'Scalable component libraries and token-based systems built for teams that need to move fast without breaking things.' },
-  { n:'05', title:'Prototyping & Testing',  desc:'High-fidelity prototypes for stakeholder alignment and validated usability testing with real users.' },
-  { n:'06', title:'Visual / UI Design',     desc:'Crafted visual language — typography, colour, layout — that is both distinctive and functional.' },
+  'UX Design',
+  'Visual Design & Branding',
+  'Systems & Service Design',
+  'Creative Direction & Strategy',
 ]
 
 const VITALS = [
-  { stat:'06+',  label:'Years in Design',         desc:'Academic + Professional' },
+  { stat:'06+',  label:'Years in Design',         desc:'Academic + Professional\njourney' },
   { stat:'80%',  label:'Time in Design Thinking', desc:'Discussions, sticky notes, mind-maps and more' },
-  { stat:'20%',  label:'Time in Making',          desc:'Headphones and shifting pixels' },
-  { stat:'100%', label:'Zeal',                    desc:'Trying my best (guaranteed)' },
+  { stat:'20%',  label:'Time in Making',          desc:'Headphones and shifting\npixels' },
+  { stat:'100%', label:'Zeal',                    desc:'Trying my best (guaranteed)\n:)' },
 ]
 
-// Placeholder until real logo files are provided
-const LOGO_SLOTS = [
-  { id:1, name:'Placeholder Co.', type:'Tech · Product' },
-  { id:2, name:'Placeholder Co.', type:'EdTech · Startup' },
-  { id:3, name:'Placeholder Co.', type:'FMCG · Brand' },
-  { id:4, name:'Placeholder Co.', type:'Healthcare' },
-  { id:5, name:'Placeholder Co.', type:'Finance · SaaS' },
-  { id:6, name:'Placeholder Co.', type:'Retail · E-comm' },
-  { id:7, name:'Placeholder Co.', type:'Media · Content' },
-  { id:8, name:'Placeholder Co.', type:'Mobility · Travel' },
+// Brand logos — whitened via CSS filter brightness(0) invert(1)
+// hasBg: true = PNG with white/light bg, needs mix-blend-mode:screen to kill it
+const BRANDS = [
+  { id:1, name:'Fosite',     src: '/logos/fosite.png',                                                     label:'Fosite Co., Bengaluru',                       year:'2023–24', hasBg: false, maxH: 80 },
+  { id:2, name:'GIZ',        src: 'https://www.giz.de/themes/custom/dreist/build/giz-logo-with-claim.svg', label:'German International Co-Operation, New Delhi', year:'2023',    hasBg: false, maxH: 38 },
+  { id:3, name:'ADI',        src: '/logos/adi.svg',                                                        label:'Association of Designers BLR Chapter',         year:'2022',    hasBg: false, maxH: 38 },
+  { id:4, name:'Tata Elxsi', src: '/logos/tata-elxsi.svg',                                                 label:'Tata Elxsi Ltd., Bengaluru',                   year:'2022',    hasBg: false, maxH: 38 },
 ]
 
 // ─── Stagger List ─────────────────────────────────────
@@ -214,70 +209,176 @@ function useDelaunayCanvas(canvasRef, heroRef) {
   }, [canvasRef, heroRef])
 }
 
-// ─── Hero ─────────────────────────────────────────────
-function Hero() {
-  const containerRef=useRef(null), heroRef=useRef(null), canvasRef=useRef(null), h1Ref=useRef(null)
-  useDelaunayCanvas(canvasRef, heroRef)
-  const headingInView = useInView(h1Ref, { once: false, amount: 0.4 })
-  const { scrollYProgress } = useScroll({ target:containerRef, offset:['start start','end end'] })
-  const scale          = useTransform(scrollYProgress, [0, 1],    [1, 0.84])
-  const opacity        = useTransform(scrollYProgress, [0.5, 1.0],[1, 0])
-  const borderRadius   = useTransform(scrollYProgress, [0, 0.8],  ['0px','22px'])
-  const vignetteOpacity = useTransform(scrollYProgress, [0, 0.08, 0.6], [0, 0.7, 1])
+// ─── Video Intro ──────────────────────────────────────
+// Autoplays fullscreen, shows "loading" label bottom-right,
+// then fades out — no scroll interaction.
+function VideoIntro({ onComplete }) {
+  const videoRef = useRef(null)
+  const [fading, setFading] = useState(false)
 
-  // Hero headline: dim → bright (flipped gradient)
-  // Line 1 most muted, line 3 (italic) full white — reads bottom-up
+  useEffect(() => {
+    const vid = videoRef.current
+    if (!vid) return
+    const trigger = () => setFading(true)
+    // Start fade ~0.6s before end so it exits cleanly
+    const check = () => {
+      if (vid.duration && vid.currentTime >= vid.duration - 0.6) trigger()
+    }
+    vid.addEventListener('ended', trigger)
+    vid.addEventListener('timeupdate', check)
+    return () => {
+      vid.removeEventListener('ended', trigger)
+      vid.removeEventListener('timeupdate', check)
+    }
+  }, [])
+
+  return (
+    <div className="pointer-events-none"
+      style={{
+        position: 'fixed', inset: 0, zIndex: 200,
+        background: '#060606',
+        opacity: fading ? 0 : 1,
+        transition: 'opacity 1.4s cubic-bezier(0.16,1,0.3,1)',
+      }}
+      onTransitionEnd={() => { if (fading) onComplete?.() }}
+    >
+      {/* Video at 75% size, centred — black bg fills the rest */}
+      <div style={{
+        position: 'absolute', top: '50%', left: '50%',
+        transform: 'translate(-50%, -50%)',
+        width: '75%', height: '75%', overflow: 'hidden',
+      }}>
+        <video ref={videoRef} autoPlay muted playsInline preload="auto"
+          style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+          src="/headervideo.mp4" />
+        <div className="absolute inset-0" style={{
+          background: [
+            'linear-gradient(to bottom, #060606 0%, transparent 18%)',
+            'linear-gradient(to top,    #060606 0%, transparent 18%)',
+            'linear-gradient(to right,  #060606 0%, transparent 14%)',
+            'linear-gradient(to left,   #060606 0%, transparent 14%)',
+          ].join(', ')
+        }} />
+      </div>
+      {/* Loading label */}
+      <span style={{
+        position: 'absolute',
+        bottom: 'clamp(1.5rem,3vw,2rem)',
+        right: 'clamp(1.5rem,3vw,2rem)',
+        fontFamily: '"Space Mono", monospace',
+        fontSize: '0.6rem',
+        letterSpacing: '0.18em',
+        textTransform: 'uppercase',
+        color: 'rgba(242,237,228,0.32)',
+      }}>loading</span>
+    </div>
+  )
+}
+
+// ─── Hero ─────────────────────────────────────────────
+// Delaunay canvas + time-based text reveal on mount.
+function Hero() {
+  const heroRef = useRef(null), canvasRef = useRef(null)
+  useDelaunayCanvas(canvasRef, heroRef)
+
   const lines = [
-    { text:"I'm an Indian designer,",         cls:'font-sans font-semibold tracking-[-0.04em]', color:'rgba(242,237,228,1)' },
-    { text:'global in practice, focused',     cls:'font-sans font-semibold tracking-[-0.04em]', color:'rgba(242,237,228,1)' },
-    { text:'on structure, sensation, & more.',cls:'font-sans font-semibold tracking-[-0.04em]', color:'rgba(242,237,228,1)' },
+    { text: "I'm an Indian designer,",          cls: 'font-sans font-semibold tracking-[-0.04em]', italic: false },
+    { text: 'global in practice, focused',      cls: 'font-sans font-semibold tracking-[-0.04em]', italic: false },
+    { text: 'on structure, sensation, & more.', cls: 'font-display',                                italic: true  },
   ]
 
   return (
-    <div ref={containerRef} style={{ height:'160svh' }}>
-      <motion.section ref={heroRef} id="hero"
-        className="sticky top-0 flex flex-col justify-end overflow-hidden"
-        style={{ height:'100svh', padding:'0 clamp(1.5rem,5vw,3.5rem) clamp(4rem,8vw,6rem)', scale, opacity, borderRadius, transformOrigin:'center center' }}
-      >
-        <canvas ref={canvasRef} className="absolute inset-0 w-full h-full pointer-events-none" style={{ zIndex:0 }} />
-        <div className="absolute pointer-events-none" style={{ width:'clamp(500px,60vw,820px)',height:'clamp(500px,60vw,820px)',borderRadius:'50%',top:'-25%',left:'-18%',zIndex:0,background:'radial-gradient(circle,rgba(124,58,237,0.085) 0%,transparent 65%)' }} />
-        <div className="absolute pointer-events-none" style={{ width:'clamp(350px,42vw,600px)',height:'clamp(350px,42vw,600px)',borderRadius:'50%',bottom:'-12%',right:'-10%',zIndex:0,background:'radial-gradient(circle,rgba(255,75,143,0.055) 0%,transparent 65%)' }} />
-        {/* Edge fades — single element, multiple bg gradients so corners blend without banding */}
-        <motion.div className="absolute inset-0 pointer-events-none" style={{ zIndex:1, opacity:vignetteOpacity, background:'linear-gradient(to bottom, #060606 0%, transparent 22%), linear-gradient(to top, #060606 0%, transparent 22%), linear-gradient(to right, #060606 0%, transparent 18%), linear-gradient(to left, #060606 0%, transparent 18%)' }} />
-        <div className="relative z-[3] w-full flex items-end justify-between gap-6">
-          <h1 ref={h1Ref}>
-            {lines.map(({ text, cls, color }, i) => (
-              <div key={text} style={{ overflow:'hidden' }}>
-                <motion.span
-                  className={`block ${cls} hero-glow`}
-                  style={{ fontSize:'clamp(1.575rem,3.85vw,3.675rem)', lineHeight:1.05, color, willChange:'clip-path', animationDelay: `${i * 0.4}s` }}
-                  initial={{ clipPath:'inset(0 100% 0 0)' }}
-                  animate={headingInView
-                    ? { clipPath:'inset(0 0% 0 0)', transition:{ duration:1.5, ease:[0.4,0,0.8,1], delay: i * 0.2 } }
-                    : { clipPath:'inset(0 100% 0 0)', transition:{ duration:0 } }
-                  }
-                >
-                  {text}
-                </motion.span>
-              </div>
-            ))}
-          </h1>
-          <motion.span className="flex items-center gap-2 font-mono text-[0.625rem] tracking-[0.16em] uppercase text-ink/40 flex-shrink-0 pb-[0.18em]"
-            initial={{ opacity:0 }} animate={{ opacity:1 }} transition={{ duration:0.8, delay:1.4 }}>
+    <section ref={heroRef} id="main-content"
+      className="relative flex flex-col justify-end overflow-hidden"
+      style={{
+        minHeight: '100svh',
+        padding: '0 clamp(1.5rem,5vw,3.5rem) clamp(4rem,8vw,6rem)',
+      }}
+    >
+      <canvas ref={canvasRef} className="absolute inset-0 w-full h-full pointer-events-none" style={{ zIndex: 0 }} />
+      <div className="absolute pointer-events-none" style={{ width:'clamp(500px,60vw,820px)',height:'clamp(500px,60vw,820px)',borderRadius:'50%',top:'-25%',left:'-18%',zIndex:0,background:'radial-gradient(circle,rgba(124,58,237,0.085) 0%,transparent 65%)' }} />
+      <div className="absolute pointer-events-none" style={{ width:'clamp(350px,42vw,600px)',height:'clamp(350px,42vw,600px)',borderRadius:'50%',bottom:'-12%',right:'-10%',zIndex:0,background:'radial-gradient(circle,rgba(255,75,143,0.055) 0%,transparent 65%)' }} />
+      <div className="absolute inset-0 pointer-events-none" style={{ zIndex:1, background:'linear-gradient(to bottom,#060606 0%,transparent 22%),linear-gradient(to top,#060606 0%,transparent 22%),linear-gradient(to right,#060606 0%,transparent 18%),linear-gradient(to left,#060606 0%,transparent 18%)' }} />
+
+      <div className="relative z-[3] w-full flex items-end justify-between gap-6">
+        <h1>
+          {lines.map(({ text, cls, italic }, i) => (
+            <MaskReveal key={text} delay={i * 0.13}>
+              <span
+                className={`block hero-glow ${cls}`}
+                style={{
+                  fontSize: 'clamp(1.575rem,3.85vw,3.675rem)',
+                  lineHeight: italic ? 1.22 : 1.1,
+                  color: 'rgba(242,237,228,1)',
+                  fontStyle: italic ? 'italic' : 'normal',
+                }}
+              >
+                {text}
+              </span>
+            </MaskReveal>
+          ))}
+        </h1>
+        <Reveal delay={0.45} className="flex-shrink-0 pb-[0.18em]">
+          <span className="flex items-center gap-2 font-mono text-[0.625rem] tracking-[0.16em] uppercase text-ink/40">
             <span className="w-[7px] h-[7px] rounded-full bg-[#00FF87] availability-dot flex-shrink-0" />BLR, India
-          </motion.span>
+          </span>
+        </Reveal>
+      </div>
+
+      <div className="absolute flex items-center gap-3 pointer-events-none select-none"
+        style={{ zIndex: 3, bottom: 'clamp(1.5rem,4vw,2.5rem)', left: 'clamp(1.5rem,5vw,3.5rem)', opacity: 0.55 }}
+      >
+        <div className="w-[1px] h-7 relative overflow-hidden" style={{ background: 'rgba(242,237,228,0.08)' }}>
+          <div className="scroll-line-inner absolute inset-x-0 h-1/2" style={{ background: 'rgba(242,237,228,0.35)' }} />
         </div>
-      </motion.section>
-    </div>
+        <span className="font-mono text-[0.5rem] tracking-[0.22em] uppercase" style={{ color: 'rgba(242,237,228,0.22)' }}>Scroll</span>
+      </div>
+    </section>
   )
 }
 
 // ─── Services ─────────────────────────────────────────
 function Services() {
+  const wrapRef = useRef(null)
+  const dotRefs = useRef([])
+  const [svgPath, setSvgPath] = useState('')
+  const inView  = useInView(wrapRef, { once: true, amount: 0.25 })
+
+  useEffect(() => {
+    const compute = () => {
+      const wrap = wrapRef.current
+      if (!wrap) return
+      const wr  = wrap.getBoundingClientRect()
+      const els = dotRefs.current
+      if (els.length < 4 || els.some(el => !el)) return
+      // Grid order: 0=TL 1=TR 2=BL 3=BR
+      const circles = els.map(el => {
+        const r = el.getBoundingClientRect()
+        return { x: r.left - wr.left + r.width / 2, y: r.top - wr.top + r.height / 2, r: r.width / 2 }
+      })
+      const [tl, tr, bl, br] = circles
+      const R = tl.r
+      // Four separate segments connecting circle EDGES, drawn clockwise:
+      // top (→), right (↓), bottom (←), left (↑)
+      setSvgPath([
+        `M ${tl.x + R} ${tl.y} L ${tr.x - R} ${tr.y}`,
+        `M ${tr.x} ${tr.y + R} L ${br.x} ${br.y - R}`,
+        `M ${br.x - R} ${br.y} L ${bl.x + R} ${bl.y}`,
+        `M ${bl.x} ${bl.y - R} L ${tl.x} ${tl.y + R}`,
+      ].join(' '))
+    }
+    compute()
+    window.addEventListener('resize', compute, { passive: true })
+    return () => window.removeEventListener('resize', compute)
+  }, [])
+
   return (
-    <section style={{ background:'#060606' }} className="py-[clamp(7rem,13vw,11rem)] border-t border-white/[0.04]">
+    <section style={{ background:'#060606' }} className="pt-[clamp(3.5rem,6vw,5rem)] pb-[clamp(7rem,13vw,11rem)] border-t border-white/[0.04] relative overflow-hidden">
+      <div className="absolute pointer-events-none" style={{ width:'clamp(400px,50vw,680px)',height:'clamp(400px,50vw,680px)',borderRadius:'50%',top:'-20%',right:'-8%',background:'radial-gradient(circle,rgba(124,58,237,0.055) 0%,transparent 65%)' }} />
+      <div className="absolute pointer-events-none" style={{ width:'clamp(280px,36vw,480px)',height:'clamp(280px,36vw,480px)',borderRadius:'50%',bottom:'-15%',left:'-5%',background:'radial-gradient(circle,rgba(255,75,143,0.038) 0%,transparent 65%)' }} />
       <div className="max-w-[1200px] mx-auto px-[clamp(1.5rem,5vw,3.5rem)]">
-        <div className="mb-[clamp(3.5rem,6vw,5rem)]">
+
+        <div className="mb-[clamp(3rem,5vw,4rem)]">
           <Reveal>
             <span className="flex items-center gap-2.5 font-mono text-[0.625rem] tracking-[0.16em] uppercase text-ink/32 mb-5">
               <span className="inline-block w-4 h-[1px] bg-ink/18" />What I do
@@ -290,19 +391,81 @@ function Services() {
           </h2>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 border-t border-white/[0.06]">
-          {SERVICES.map((s, i) => (
-            <Reveal key={s.n} delay={i * 0.04}
-              className={['flex items-baseline gap-5 py-[clamp(1.5rem,2.8vw,2.25rem)] border-b border-white/[0.06] group cursor-default',
-                i % 2 === 0 ? 'md:pr-12 md:border-r' : 'md:pl-12'].join(' ')}>
-              <span className="font-mono text-[0.55rem] tracking-[0.12em] text-ink/22 tabular-nums flex-shrink-0 pt-[0.2em]">{s.n}</span>
-              <h3 className="font-sans font-semibold text-ink/60 tracking-[-0.022em] group-hover:text-ink transition-colors duration-500"
-                  style={{ fontSize:'clamp(1.125rem,2vw,1.5rem)' }}>
-                <MaskReveal>{s.title}</MaskReveal>
-              </h3>
-            </Reveal>
+        {/* 2×2 grid */}
+        <div ref={wrapRef} className="relative grid grid-cols-2">
+
+          {/* Clockwise traveling runner */}
+          <svg className="absolute inset-0 w-full h-full pointer-events-none" style={{ zIndex: 0, overflow: 'visible' }}>
+            {svgPath && (
+              <motion.path
+                d={svgPath}
+                fill="none"
+                stroke="rgba(242,237,228,0.88)"
+                strokeWidth="2"
+                strokeLinecap="round"
+                initial={{ pathOffset: 0, pathLength: 0 }}
+                animate={inView ? {
+                  pathOffset: [0,    0,    0.82, 1  ],
+                  pathLength: [0,    0.20, 0.20, 0  ],
+                } : {}}
+                transition={{
+                  duration: 2.4,
+                  times:    [0,    0.10, 0.88, 1  ],
+                  ease: ['easeOut', 'linear', 'easeIn'],
+                  repeat: Infinity,
+                  repeatDelay: 0.25,
+                }}
+              />
+            )}
+          </svg>
+
+          {SERVICES.map((title, i) => (
+            <motion.div
+              key={title}
+              className="flex items-center justify-center"
+              style={{ padding: 'clamp(1.75rem,4vw,4rem)', position: 'relative', zIndex: 1 }}
+              initial={{ opacity: 0 }}
+              animate={inView ? { opacity: 1 } : {}}
+              transition={{ duration: 0.9, ease: EASE, delay: 0.15 + i * 0.12 }}
+            >
+              <div
+                ref={el => { dotRefs.current[i] = el }}
+                className="flex items-center justify-center rounded-full border border-white/[0.10]"
+                style={{
+                  width:  'clamp(150px,17vw,230px)',
+                  height: 'clamp(150px,17vw,230px)',
+                  background: '#060606', // opaque — hides SVG line inside the circle
+                }}
+              >
+                <span
+                  className="font-sans font-semibold text-center leading-[1.45] select-none"
+                  style={{
+                    fontSize: 'clamp(0.9rem,1.2vw,1.1rem)',
+                    padding: '0 16%',
+                    color: 'rgba(242,237,228,0.82)',
+                    textShadow: '0 0 16px rgba(242,237,228,0.45), 0 0 40px rgba(242,237,228,0.18)',
+                  }}
+                >
+                  {title}
+                </span>
+              </div>
+            </motion.div>
           ))}
         </div>
+
+        {/* See Work hint */}
+        <motion.div
+          className="flex justify-end mt-5"
+          initial={{ opacity: 0 }}
+          animate={inView ? { opacity: 1 } : {}}
+          transition={{ duration: 0.8, ease: EASE, delay: 1.5 }}
+        >
+          <a href="/#work"
+             className="flex items-center gap-2 font-mono text-[0.58rem] tracking-[0.14em] uppercase text-ink/28 hover:text-ink/55 transition-colors duration-300">
+            See Work <span style={{ fontSize: '0.65rem' }}>↘</span>
+          </a>
+        </motion.div>
+
       </div>
     </section>
   )
@@ -347,7 +510,7 @@ function ProjectCard({ project, delay = 0 }) {
               <MaskReveal>{project.name}</MaskReveal>
             </h3>
           </div>
-          <span className="w-[28px] h-[28px] rounded-full border border-black/15 flex items-center justify-center text-[0.65rem] text-black/40 opacity-0 scale-75 transition-all duration-300 group-hover:opacity-100 group-hover:scale-100 group-hover:border-black/30 flex-shrink-0">↗</span>
+          <span className="w-[28px] h-[28px] rounded-full border border-black/15 flex items-center justify-center text-[0.65rem] text-black/40 opacity-0 scale-75 transition-all duration-300 group-hover:opacity-100 group-hover:scale-100 group-hover:border-black/35 group-hover:bg-black/[0.04] flex-shrink-0" aria-hidden="true">↗</span>
         </div>
         <p className="font-sans text-black/42 leading-[1.7]" style={{ fontSize:'clamp(0.72rem,0.9vw,0.8rem)' }}>{project.desc}</p>
       </div>
@@ -379,12 +542,12 @@ function Work() {
               <MaskReveal>Work</MaskReveal>
             </h2>
           </div>
-          <a href="#" className="font-mono text-[0.7rem] tracking-[0.08em] uppercase text-black/35 relative group/link pb-[2px] hover:text-black transition-colors">
+          <a href="#" className="font-mono text-[0.7rem] tracking-[0.08em] uppercase text-black/55 relative group/link pb-[2px] hover:text-black transition-colors">
             All projects ↗
             <span className="absolute bottom-0 left-0 h-[1px] w-0 bg-black/35 transition-all duration-300 group-hover/link:w-full" style={{ transitionTimingFunction:'cubic-bezier(0.16,1,0.3,1)' }} />
           </a>
         </div>
-        <div className="grid grid-cols-4 gap-[clamp(0.625rem,1vw,0.875rem)] items-stretch">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-[clamp(0.625rem,1vw,0.875rem)] items-stretch">
           {PROJECTS.map((p,i) => <ProjectCard key={p.id} project={p} delay={i*0.07} />)}
         </div>
       </div>
@@ -408,12 +571,12 @@ function VitalStatCell({ v, index }) {
     return ()=>cancelAnimationFrame(rafId)
   }, [inView, v.stat, index])
   return (
-    <div ref={ref} className={['flex flex-col p-[clamp(1.75rem,3vw,2.5rem)]',index<3?'lg:border-r border-white/[0.06]':'',index<2?'border-b lg:border-b-0 border-white/[0.06]':'',index===1?'border-r border-white/[0.06] lg:border-r':''].join(' ')}>
+    <div ref={ref} className="flex flex-col p-[clamp(1.75rem,3vw,2.5rem)]">
       <div style={{ minHeight:'5.5rem',display:'flex',alignItems:'flex-end',paddingBottom:'0.625rem' }}>
         <p className="font-sans font-semibold text-ink leading-none tracking-[-0.03em]" style={{ fontSize:'clamp(2.75rem,5vw,4.5rem)' }}>{display}</p>
       </div>
-      <p className="font-display italic text-ink leading-snug mb-2" style={{ fontSize:'clamp(1rem,1.4vw,1.1875rem)' }}>{v.label}</p>
-      <p className="font-sans text-ink/38 leading-[1.65]" style={{ fontSize:'clamp(0.75rem,1vw,0.875rem)' }}>{v.desc}</p>
+      <p className="font-display italic text-ink mb-2" style={{ fontSize:'clamp(1rem,1.4vw,1.1875rem)', lineHeight: 1.35 }}>{v.label}</p>
+      <p className="font-sans text-ink/38 leading-[1.65]" style={{ fontSize:'clamp(0.75rem,1vw,0.875rem)', whiteSpace:'pre-line' }}>{v.desc}</p>
     </div>
   )
 }
@@ -421,15 +584,24 @@ function VitalStatCell({ v, index }) {
 // ─── Vital Signs ──────────────────────────────────────
 function VitalSigns() {
   return (
-    <section style={{ background:'#060606' }} className="py-[clamp(5rem,10vw,8.5rem)] border-t border-white/[0.04]">
+    <section style={{ background:'#060606' }} className="py-[clamp(5rem,10vw,8.5rem)] border-t border-white/[0.04] relative overflow-hidden">
+      <div className="absolute pointer-events-none" style={{ width:'clamp(350px,44vw,600px)',height:'clamp(350px,44vw,600px)',borderRadius:'50%',bottom:'-25%',right:'-6%',background:'radial-gradient(circle,rgba(124,58,237,0.05) 0%,transparent 65%)' }} />
+      <div className="absolute pointer-events-none" style={{ width:'clamp(260px,32vw,440px)',height:'clamp(260px,32vw,440px)',borderRadius:'50%',top:'-18%',left:'30%',background:'radial-gradient(circle,rgba(255,75,143,0.032) 0%,transparent 65%)' }} />
       <div className="max-w-[1200px] mx-auto px-[clamp(1.5rem,5vw,3.5rem)]">
-        <Reveal className="mb-10">
-          <span className="flex items-center gap-2.5 font-mono text-[0.625rem] tracking-[0.16em] uppercase text-ink/32">
-            <span className="inline-block w-4 h-[1px] bg-ink/18" />(Not so) Vital Signs
-          </span>
-        </Reveal>
-        <div className="grid grid-cols-2 lg:grid-cols-4 rounded-[18px] overflow-hidden border border-white/[0.06]"
-             style={{ background:'#0d0d0d',boxShadow:'inset 0 1px 0 rgba(255,255,255,0.04)' }}>
+        <div className="mb-[clamp(3rem,5vw,4rem)]">
+          <Reveal>
+            <span className="flex items-center gap-2.5 font-mono text-[0.625rem] tracking-[0.16em] uppercase text-ink/32 mb-5">
+              <span className="inline-block w-4 h-[1px] bg-ink/18" />(Not so) Vital Signs
+            </span>
+          </Reveal>
+          <h2 className="font-sans font-semibold text-ink tracking-[-0.04em] leading-[0.92]"
+              style={{ fontSize:'clamp(2.5rem,6vw,5rem)' }}>
+            <MaskReveal>Distilled</MaskReveal>
+            <MaskReveal delay={0.08}><em className="font-display" style={{ fontStyle:'italic', fontSize:'1.08em' }}>to digits.</em></MaskReveal>
+          </h2>
+        </div>
+        <div className="grid grid-cols-2 lg:grid-cols-4 rounded-[18px] overflow-hidden"
+             style={{ background:'#0d0d0d', boxShadow:'inset 0 1px 0 rgba(255,255,255,0.04), inset 0 0 0 1px rgba(255,255,255,0.05)' }}>
           {VITALS.map((v,i) => <VitalStatCell key={v.label} v={v} index={i} />)}
         </div>
       </div>
@@ -440,7 +612,9 @@ function VitalSigns() {
 // ─── Professional Exposure ────────────────────────────
 function ProfessionalExposure() {
   return (
-    <section id="about" style={{ background:'#060606' }} className="py-[clamp(7rem,13vw,11rem)] border-t border-white/[0.04]">
+    <section id="about" style={{ background:'#060606' }} className="py-[clamp(7rem,13vw,11rem)] border-t border-white/[0.04] relative overflow-hidden">
+      <div className="absolute pointer-events-none" style={{ width:'clamp(460px,55vw,740px)',height:'clamp(460px,55vw,740px)',borderRadius:'50%',top:'-22%',left:'-12%',background:'radial-gradient(circle,rgba(124,58,237,0.05) 0%,transparent 65%)' }} />
+      <div className="absolute pointer-events-none" style={{ width:'clamp(300px,38vw,520px)',height:'clamp(300px,38vw,520px)',borderRadius:'50%',bottom:'-18%',right:'-4%',background:'radial-gradient(circle,rgba(255,75,143,0.035) 0%,transparent 65%)' }} />
       <div className="max-w-[1200px] mx-auto px-[clamp(1.5rem,5vw,3.5rem)]">
         <div className="mb-[clamp(3.5rem,6vw,5rem)]">
           <Reveal>
@@ -454,24 +628,28 @@ function ProfessionalExposure() {
           </h2>
           <Reveal delay={0.15}>
             <p className="font-sans text-ink/40 leading-[1.8] mt-5 max-w-[44ch]" style={{ fontSize:'clamp(0.875rem,1.1vw,0.9375rem)' }}>
-              Brands, studios, and organisations I've had the privilege of designing for.
+              Exposure to outstanding professionals at
             </p>
           </Reveal>
         </div>
 
-        {/* Logo grid — placeholders until real assets are provided */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-[1px] rounded-[18px] overflow-hidden border border-white/[0.06]"
              style={{ background:'rgba(255,255,255,0.04)' }}>
-          {LOGO_SLOTS.map((slot, i) => (
-            <Reveal key={slot.id} delay={i * 0.06}
-              className="flex flex-col items-center justify-center gap-3 bg-[#060606] p-[clamp(2rem,4vw,3.5rem)] cursor-default group transition-colors duration-300 hover:bg-white/[0.02]"
+          {BRANDS.map(({ id, name, src, label, year, hasBg, maxH }, i) => (
+            <Reveal key={id} delay={i * 0.09}
+              className="flex flex-col items-center justify-center gap-4 bg-[#060606] p-[clamp(2rem,4vw,3rem)] cursor-default"
             >
-              {/* Placeholder logo box — swap with <img> when assets arrive */}
-              <div className="w-full max-w-[140px] rounded-lg border border-dashed border-white/[0.12] flex items-center justify-center group-hover:border-white/20 transition-colors duration-300"
-                   style={{ aspectRatio:'3/1.4', background:'rgba(255,255,255,0.025)' }}>
-                <span className="font-mono text-[0.55rem] tracking-[0.12em] uppercase text-ink/22">Logo {slot.id}</span>
+              <div className="w-full flex items-center justify-center" style={{ minHeight: 56 }}>
+                <img src={src} alt={name}
+                  style={{ maxWidth:'85%', height:'auto', maxHeight: maxH,
+                    filter:'brightness(0) invert(1)', opacity: 0.72,
+                    mixBlendMode: hasBg ? 'screen' : 'normal',
+                    display: 'block' }} />
               </div>
-              <span className="font-mono text-[0.58rem] tracking-[0.1em] uppercase text-ink/20">{slot.type}</span>
+              <div className="flex flex-col items-center gap-[2px]">
+                <span className="font-mono text-[0.52rem] tracking-[0.08em] uppercase text-ink/28 text-center leading-[1.5]">{label}</span>
+                <span className="font-mono text-[0.52rem] tracking-[0.06em] text-ink/18">{year}</span>
+              </div>
             </Reveal>
           ))}
         </div>
@@ -485,7 +663,9 @@ function CTA() {
   const ref=useRef(null), inView=useInView(ref,{ once:true, amount:0.3 })
   return (
     <section id="contact" style={{ background:'#060606' }} className="py-[clamp(7rem,14vw,12rem)] border-t border-white/[0.04] text-center relative overflow-hidden">
-      <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none" style={{ width:700,height:450,background:'radial-gradient(ellipse,rgba(124,58,237,0.07) 0%,transparent 65%)' }} />
+      {/* Multi-layer glow for more depth */}
+      <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none" style={{ width:800,height:500,background:'radial-gradient(ellipse,rgba(124,58,237,0.09) 0%,transparent 62%)' }} />
+      <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none" style={{ width:400,height:250,background:'radial-gradient(ellipse,rgba(255,75,143,0.05) 0%,transparent 65%)' }} />
       <div className="relative max-w-[1200px] mx-auto px-[clamp(1.5rem,5vw,3.5rem)]">
         <Reveal>
           <span className="flex items-center justify-center gap-2.5 font-mono text-[0.625rem] tracking-[0.16em] uppercase text-ink/32 mb-8">
@@ -494,41 +674,53 @@ function CTA() {
         </Reveal>
         <h2 ref={ref} className="font-sans font-semibold text-ink tracking-[-0.04em] leading-[0.95] mb-14" style={{ fontSize:'clamp(2.75rem,7vw,6.5rem)' }}>
           <MaskReveal>Got a project?</MaskReveal>
-          <MaskReveal delay={0.1}><em className="font-display" style={{ fontStyle:'italic' }}>Let's talk.</em></MaskReveal>
+          <MaskReveal delay={0.1}><em className="font-display not-italic" style={{ fontStyle:'italic', fontFamily:'"Cormorant Garamond", Georgia, serif', fontSize:'1.08em' }}>Let's talk.</em></MaskReveal>
         </h2>
         <Reveal delay={0.12} className="flex items-center justify-center gap-3 flex-wrap">
           <a href="mailto:zeusbatkhar.2000@gmail.com"
-             className="relative group/link inline-flex items-center font-sans font-semibold text-bg bg-ink rounded-full tracking-[0.01em] transition-[opacity,transform] duration-300 hover:opacity-88 hover:-translate-y-[1px]"
-             style={{ fontSize:'0.8125rem',padding:'0.8125rem 1.625rem' }}>
-            <span className="relative">
-              zeusbatkhar.2000@gmail.com
-              <span className="absolute -bottom-[2px] left-0 h-[1px] w-0 transition-all duration-300 group-hover/link:w-full"
-                style={{ background:'#ffffff', mixBlendMode:'difference', transitionTimingFunction:'cubic-bezier(0.16,1,0.3,1)' }} />
-            </span>
+             className="relative overflow-hidden group/cta inline-flex items-center font-sans font-semibold text-bg bg-ink rounded-full tracking-[0.01em] transition-[transform,box-shadow] duration-300 hover:-translate-y-[2px] hover:shadow-[0_8px_32px_rgba(242,237,228,0.15)]"
+             style={{ fontSize:'0.8125rem', padding:'0.8125rem 1.75rem' }}>
+            <span className="relative z-10">Get in touch ↗</span>
+            <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/[0.12] to-transparent -translate-x-full group-hover/cta:translate-x-full transition-transform duration-700 ease-in-out" />
           </a>
-          <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer"
-             className="inline-flex items-center font-sans font-medium text-ink rounded-full tracking-[0.01em] border border-white/[0.14] transition-[background,border-color,transform] duration-300 hover:bg-white/[0.05] hover:border-white/[0.22] hover:-translate-y-[1px]"
-             style={{ fontSize:'0.8125rem',padding:'0.8125rem 1.625rem' }}>LinkedIn ↗</a>
+          <a href="https://www.linkedin.com/in/zeusbatkhar" target="_blank" rel="noopener noreferrer"
+             className="inline-flex items-center font-sans font-medium text-ink rounded-full tracking-[0.01em] border border-white/[0.14] transition-[background,border-color,transform,box-shadow] duration-300 hover:bg-white/[0.06] hover:border-white/[0.26] hover:-translate-y-[2px] hover:shadow-[0_8px_24px_rgba(0,0,0,0.3)]"
+             style={{ fontSize:'0.8125rem', padding:'0.8125rem 1.75rem' }}>LinkedIn ↗</a>
         </Reveal>
       </div>
     </section>
   )
 }
 
+// Module-level flag: resets on every page refresh, survives SPA navigation
+let introPlayedThisLoad = false
+
 // ─── Home ─────────────────────────────────────────────
-// Flow: Hero → Services → Work → VitalSigns → Professional Exposure → CTA → Footer
+// Flow: VideoIntro (once per page load) → Hero → Services → Work → VitalSigns → Professional Exposure → CTA → Footer
 function Home() {
+  const [introComplete, setIntroComplete] = useState(introPlayedThisLoad)
+
+  const handleIntroComplete = () => {
+    introPlayedThisLoad = true
+    setIntroComplete(true)
+  }
+
   return (
     <div style={{ background:'#060606' }} className="text-ink overflow-x-hidden">
-      <ProgressBar />
-      <Nav />
-      <Hero />
-      <Services />
-      <Work />
-      <VitalSigns />
-      <ProfessionalExposure />
-      <CTA />
-      <Footer />
+      {!introComplete && <VideoIntro onComplete={handleIntroComplete} />}
+      {introComplete && (
+        <>
+          <ProgressBar />
+          <Nav />
+          <Hero />
+          <Services />
+          <Work />
+          <VitalSigns />
+          <ProfessionalExposure />
+          <CTA />
+          <Footer />
+        </>
+      )}
     </div>
   )
 }

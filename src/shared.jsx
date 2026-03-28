@@ -1,5 +1,6 @@
 import { useRef, useState, useEffect } from 'react'
-import { motion, useSpring, useScroll, useInView, AnimatePresence } from 'framer-motion'
+import { Link } from 'react-router-dom'
+import { motion, useSpring, useScroll, useInView, AnimatePresence, useReducedMotion } from 'framer-motion'
 
 // ─── Constants ────────────────────────────────────────
 export const EASE = [0.16, 1, 0.3, 1]
@@ -24,15 +25,16 @@ export function ProgressBar() {
 
 // ─── MaskReveal — translateY clip reveal for headings ─
 export function MaskReveal({ children, delay = 0, className = '' }) {
-  const ref    = useRef(null)
-  const inView = useInView(ref, { once: true, amount: 0.15 })
+  const ref          = useRef(null)
+  const inView       = useInView(ref, { once: true, amount: 0.15 })
+  const reducedMotion = useReducedMotion()
   return (
-    <div ref={ref} style={{ overflow:'hidden', display:'block' }} className={className}>
+    <div ref={ref} style={{ overflow:'hidden', display:'block', paddingBottom:'0.18em', marginBottom:'-0.18em' }} className={className}>
       <motion.span
         style={{ display:'inline-block', willChange:'transform' }}
-        initial={{ y:'110%' }}
+        initial={{ y: reducedMotion ? '0%' : '110%' }}
         animate={inView ? { y:'0%' } : {}}
-        transition={{ duration:0.9, ease:EASE, delay }}
+        transition={{ duration: reducedMotion ? 0 : 0.9, ease:EASE, delay: reducedMotion ? 0 : delay }}
       >
         {children}
       </motion.span>
@@ -42,75 +44,81 @@ export function MaskReveal({ children, delay = 0, className = '' }) {
 
 // ─── Reveal (opacity + y, for non-heading elements) ───
 export function Reveal({ children, delay = 0, className = '' }) {
-  const ref    = useRef(null)
-  const inView = useInView(ref, { once:true, amount:0.1 })
+  const ref          = useRef(null)
+  const inView       = useInView(ref, { once:true, amount:0.1 })
+  const reducedMotion = useReducedMotion()
   return (
     <motion.div ref={ref} className={className}
-      initial={{ opacity:0, y:28 }}
+      initial={{ opacity: reducedMotion ? 1 : 0, y: reducedMotion ? 0 : 28 }}
       animate={inView ? { opacity:1, y:0 } : {}}
-      transition={{ duration:0.85, ease:EASE, delay }}
+      transition={{ duration: reducedMotion ? 0 : 0.85, ease:EASE, delay: reducedMotion ? 0 : delay }}
     >{children}</motion.div>
   )
 }
 
+const MotionLink = motion(Link)
+
 // ─── Nav ──────────────────────────────────────────────
-export function Nav({ light = false }) {
+// Both light and default share the same white-pill style.
+// light=true  → dark text (#0f0f0f)  for light-bg pages (e.g. GetSetGlobe)
+// light=false → cream text (#F2EDE4) for dark-bg pages (e.g. Home)
+export function Nav({ light = false, scrollThreshold = 60 }) {
   const [scrolled, setScrolled] = useState(false)
 
   useEffect(() => {
-    const h = () => setScrolled(window.scrollY > 60)
+    const h = () => setScrolled(window.scrollY > scrollThreshold)
     window.addEventListener('scroll', h, { passive:true })
     return () => window.removeEventListener('scroll', h)
-  }, [])
+  }, [scrollThreshold])
 
   const lt = { duration:1.1, ease:EASE }
-  const bs = light ? { color:'#0f0f0f' } : { color:'#ffffff', mixBlendMode:'difference' }
 
+  // Spread (pre-scroll) text colour
+  const spreadCol = light ? '#0f0f0f' : '#F2EDE4'
+
+  // Pill style + text colour — dark frosted on dark pages, white frosted on light pages
+  const pillCol   = light ? '#0f0f0f' : '#F2EDE4'
   const pillStyle = light
     ? { background:'rgba(255,255,255,0.88)', backdropFilter:'blur(20px)', WebkitBackdropFilter:'blur(20px)', border:'1px solid rgba(0,0,0,0.08)', boxShadow:'0 2px 20px rgba(0,0,0,0.07)' }
-    : { background:'rgba(255,255,255,0.06)', backdropFilter:'blur(48px) saturate(180%) brightness(1.08)', WebkitBackdropFilter:'blur(48px) saturate(180%) brightness(1.08)', border:'1px solid rgba(255,255,255,0.12)', boxShadow:'inset 0 1px 0 rgba(255,255,255,0.18), inset 0 -1px 0 rgba(0,0,0,0.03), 0 8px 40px rgba(0,0,0,0.18)' }
+    : { background:'rgba(10,10,10,0.72)', backdropFilter:'blur(28px) saturate(160%)', WebkitBackdropFilter:'blur(28px) saturate(160%)', border:'1px solid rgba(255,255,255,0.10)', boxShadow:'0 8px 32px rgba(0,0,0,0.35)' }
 
   return (
     <AnimatePresence>
       {!scrolled ? (
-        <motion.div key="spread"
+        <motion.div key="spread" role="banner"
           className="fixed top-0 left-0 right-0 z-[502] flex items-center justify-between pointer-events-none"
           style={{ padding:'1.5rem clamp(1.5rem,5vw,3.5rem)' }}
         >
-          <motion.a layoutId="nav-zeus" href="/" transition={lt}
-            className="pointer-events-auto font-sans font-semibold text-[0.8125rem] tracking-[0.1em] uppercase" style={bs}>
+          <MotionLink layoutId="nav-zeus" to="/" aria-label="Zeus — Home" transition={lt}
+            className="pointer-events-auto font-sans font-semibold text-[0.8125rem] tracking-[0.1em] uppercase" style={{ color: spreadCol }}>
             <Bolt size={13} nudge={-2} />EUS
-          </motion.a>
-          <motion.a layoutId="nav-work" href="/#work" transition={lt}
-            className="pointer-events-auto font-mono text-[0.7rem] tracking-[0.1em] uppercase" style={bs}>Work</motion.a>
-          <motion.a layoutId="nav-about" href="/about" transition={lt}
-            className="pointer-events-auto font-mono text-[0.7rem] tracking-[0.1em] uppercase" style={bs}>About</motion.a>
+          </MotionLink>
+          <MotionLink layoutId="nav-work" to="/#work" transition={lt}
+            className="pointer-events-auto font-mono text-[0.7rem] tracking-[0.1em] uppercase" style={{ color: spreadCol }}>Work</MotionLink>
+          <MotionLink layoutId="nav-about" to="/about" transition={lt}
+            className="pointer-events-auto font-mono text-[0.7rem] tracking-[0.1em] uppercase" style={{ color: spreadCol }}>About</MotionLink>
         </motion.div>
       ) : (
         <motion.div key="pill"
           className="fixed top-[1.125rem] left-0 right-0 z-[500] flex justify-center pointer-events-none"
           exit={{ opacity:0, transition:{ duration:0.18, ease:'easeIn' } }}
         >
-          <motion.nav
-            className="pointer-events-auto relative flex items-center gap-8 px-6 py-[0.6rem] rounded-full overflow-hidden"
+          <motion.nav aria-label="Main navigation"
+            className="pointer-events-auto flex items-center gap-8 px-6 py-[0.6rem] rounded-full"
             style={pillStyle}
           >
-            {!light && (
-              <div className="absolute inset-x-0 top-0 h-[50%] rounded-t-full pointer-events-none"
-                style={{ background:'linear-gradient(180deg,rgba(255,255,255,0.1) 0%,transparent 100%)' }} />
-            )}
-            <motion.a layoutId="nav-zeus" href="/" transition={lt}
-              className="relative z-10 font-sans font-semibold text-[1rem] tracking-[0.05em]" style={bs}>
+            <MotionLink layoutId="nav-zeus" to="/" aria-label="Zeus — Home" transition={lt}
+              className="font-sans font-semibold text-[1rem] tracking-[0.05em]" style={{ color: pillCol }}>
               <Bolt size={16} />
-            </motion.a>
-            <div className="relative z-10 flex items-center gap-7">
-              {[['Work','/#work'],['About','/about']].map(([label, href]) => (
-                <motion.a key={label} layoutId={`nav-${label.toLowerCase()}`} href={href} transition={lt}
-                  className="font-mono text-[0.7rem] tracking-[0.1em] uppercase relative group/link" style={bs}>
+            </MotionLink>
+            <div className="flex items-center gap-7">
+              {[['Work','/#work'],['About','/about']].map(([label, to]) => (
+                <MotionLink key={label} layoutId={`nav-${label.toLowerCase()}`} to={to} transition={lt}
+                  className="font-mono text-[0.7rem] tracking-[0.1em] uppercase relative group/link" style={{ color: pillCol }}>
                   {label}
                   <span className="absolute -bottom-[2px] left-0 h-[1px] w-0 transition-all duration-300 group-hover/link:w-full"
-                    style={{ background: light ? '#0f0f0f' : '#ffffff', mixBlendMode: light ? undefined : 'difference', transitionTimingFunction:'cubic-bezier(0.16,1,0.3,1)' }} />
-                </motion.a>
+                    style={{ background: pillCol, transitionTimingFunction:'cubic-bezier(0.16,1,0.3,1)' }} />
+                </MotionLink>
               ))}
             </div>
           </motion.nav>
@@ -123,7 +131,9 @@ export function Nav({ light = false }) {
 // ─── Footer ───────────────────────────────────────────
 export function Footer() {
   return (
-    <footer style={{ background:'#060606' }} className="border-t border-white/[0.04]">
+    <footer style={{ background:'#060606' }} className="border-t border-white/[0.04] relative overflow-hidden">
+      <div className="absolute pointer-events-none" style={{ width:'clamp(300px,38vw,520px)',height:'clamp(300px,38vw,520px)',borderRadius:'50%',top:'-30%',right:'10%',background:'radial-gradient(circle,rgba(124,58,237,0.042) 0%,transparent 65%)' }} />
+      <div className="absolute pointer-events-none" style={{ width:'clamp(220px,28vw,380px)',height:'clamp(220px,28vw,380px)',borderRadius:'50%',bottom:'-20%',left:'-5%',background:'radial-gradient(circle,rgba(255,75,143,0.028) 0%,transparent 65%)' }} />
       <div className="max-w-[1200px] mx-auto px-[clamp(1.5rem,5vw,3.5rem)] pt-[clamp(3rem,6vw,5rem)] pb-[clamp(2rem,4vw,3rem)]">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-x-8 gap-y-12">
           <div className="flex flex-col gap-4">
@@ -141,7 +151,7 @@ export function Footer() {
           </div>
           <div className="flex flex-col gap-1">
             <p className="font-sans font-semibold text-[0.8125rem] text-ink/65 mb-2">National Institute of Design</p>
-            <p className="font-sans text-[0.8125rem] text-ink/35 leading-[1.9]">Peenya, Bangalore<br />Karnataka IN 560022<br />India</p>
+            <p className="font-sans text-[0.8125rem] text-ink/35 leading-[1.65]">Peenya, Bangalore<br />Karnataka IN 560022<br />India</p>
           </div>
           <div className="flex flex-col gap-4">
             <a href="mailto:zeusbatkhar.2000@gmail.com"
@@ -154,7 +164,8 @@ export function Footer() {
             </a>
           </div>
         </div>
-        <div className="flex justify-end mt-10 pt-6 border-t border-white/[0.04]">
+        <div className="flex items-center justify-between mt-10 pt-6 border-t border-white/[0.04]">
+          <span className="text-ink/14 select-none"><Bolt size={11} /></span>
           <p className="font-mono text-[0.68rem] text-ink/22 tracking-[0.02em]">©2026 Zeus Z B. All Rights Reserved.</p>
         </div>
       </div>

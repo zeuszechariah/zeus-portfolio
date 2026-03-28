@@ -1,4 +1,5 @@
-import { ProgressBar, Nav, Footer, MaskReveal, Reveal } from './shared.jsx'
+import { motion } from 'framer-motion'
+import { EASE, ProgressBar, Nav, Footer, MaskReveal, Reveal } from './shared.jsx'
 
 const ITEMS = [
   {
@@ -28,40 +29,38 @@ const ITEMS = [
 function PressCard({ href, image, overlayImage, source, date, title }) {
   return (
     <a href={href} target="_blank" rel="noopener noreferrer"
-       className="group/card flex flex-col gap-5">
+       className="group/card flex flex-col gap-4">
 
       {/* Image */}
-      <div className="w-full overflow-hidden rounded-xl border border-white/[0.07] relative"
+      <div className="w-full overflow-hidden rounded-2xl border border-white/[0.07] relative"
            style={{ aspectRatio:'16/10', background:'#0f0f0f' }}>
         {image && overlayImage ? (
           <>
-            <img src={image} alt={title}
-                 className="absolute inset-0 w-full h-full object-cover scale-[1.05] blur-[2px] brightness-50 transition-transform duration-700 ease-out group-hover/card:scale-[1.08]" />
+            <img src={image} alt=""
+                 className="absolute inset-0 w-full h-full object-cover scale-[1.05] blur-[2px] brightness-50 transition-transform duration-700 ease-out group-hover/card:scale-[1.1]" />
             <img src={overlayImage} alt={title}
-                 className="absolute inset-0 h-full object-contain object-center mx-auto transition-transform duration-700 ease-out group-hover/card:scale-[1.03]" />
+                 className="absolute inset-0 h-full object-contain object-center mx-auto transition-transform duration-700 ease-out group-hover/card:scale-[1.04]" />
           </>
         ) : image ? (
           <img src={image} alt={title}
-               className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover/card:scale-[1.03]" />
+               className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover/card:scale-[1.04]" />
         ) : null}
+        {/* Inset border shine */}
+        <div className="absolute inset-0 rounded-2xl ring-1 ring-inset ring-white/[0.04] pointer-events-none" />
       </div>
 
       {/* Title */}
-      <h2 className="font-sans font-semibold text-ink leading-[1.25] relative"
-          style={{ fontSize:'clamp(1rem,1.4vw,1.2rem)' }}>
-        <span className="relative inline">
-          {title}
-          <span className="absolute -bottom-[2px] left-0 h-[1px] w-0 transition-all duration-300 group-hover/card:w-full"
-            style={{ background:'rgba(242,237,228,0.5)', transitionTimingFunction:'cubic-bezier(0.16,1,0.3,1)' }} />
-        </span>
+      <h2 className="font-sans font-semibold text-ink/80 group-hover/card:text-ink leading-[1.3] transition-colors duration-300"
+          style={{ fontSize:'clamp(0.9375rem,1.3vw,1.125rem)' }}>
+        {title}
       </h2>
 
       {/* Source + date */}
-      <div className="flex items-center justify-between mt-auto pt-2 border-t border-white/[0.06]">
-        <span className="font-mono text-[0.6rem] tracking-[0.12em] uppercase text-ink/45 font-semibold">
+      <div className="flex items-center justify-between mt-auto pt-3 border-t border-white/[0.06]">
+        <span className="font-mono text-[0.58rem] tracking-[0.14em] uppercase text-ink/50 font-semibold">
           {source}
         </span>
-        <span className="font-mono text-[0.6rem] tracking-[0.08em] text-ink/28">
+        <span className="font-mono text-[0.58rem] tracking-[0.06em] text-ink/38">
           {date}
         </span>
       </div>
@@ -79,20 +78,30 @@ export default function Press() {
 
         {/* Page title */}
         <div className="pt-[clamp(10rem,18vw,14rem)] pb-[clamp(4rem,8vw,7rem)]">
-          <h1 className="font-sans font-semibold text-ink tracking-[0.22em] uppercase leading-[0.92]"
-              style={{ fontSize:'clamp(2.25rem,5vw,4rem)' }}>
-            <MaskReveal>Press</MaskReveal>
+          <Reveal>
+            <span className="flex items-center gap-2.5 font-mono text-[0.625rem] tracking-[0.16em] uppercase text-ink/32 mb-5">
+              <span className="inline-block w-4 h-[1px] bg-ink/18" />{ITEMS.length} features
+            </span>
+          </Reveal>
+          <h1 className="font-sans font-semibold text-ink tracking-[-0.04em] leading-[0.92]"
+              style={{ fontSize:'clamp(2.5rem,6vw,5rem)' }}>
+            <MaskReveal>Press &</MaskReveal>
+            <MaskReveal delay={0.08}>Recognition.</MaskReveal>
           </h1>
         </div>
 
         {/* Cards grid */}
-        <Reveal>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-16 pb-[clamp(6rem,10vw,9rem)]">
-            {ITEMS.map(item => (
-              <PressCard key={item.href} {...item} />
-            ))}
-          </div>
-        </Reveal>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-16 pb-[clamp(6rem,10vw,9rem)]">
+          {ITEMS.map((item, i) => (
+            <motion.div key={item.href}
+              initial={{ opacity:0, y:28 }}
+              whileInView={{ opacity:1, y:0 }}
+              viewport={{ once:true, amount:0.08 }}
+              transition={{ duration:0.85, ease:EASE, delay: i * 0.1 }}>
+              <PressCard {...item} />
+            </motion.div>
+          ))}
+        </div>
 
       </main>
 
