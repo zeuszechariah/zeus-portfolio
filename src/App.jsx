@@ -598,7 +598,7 @@ function ProjectCard({ project, delay = 0 }) {
 // ─── Work ─────────────────────────────────────────────
 function Work() {
   return (
-    <section id="work" style={{ background:'#F2EDE4' }} className="relative overflow-hidden py-[clamp(7rem,13vw,11rem)]">
+    <section id="work" style={{ background:'#F2EDE4', boxShadow:'inset 0 0 160px rgba(6,6,6,0.22), inset 0 60px 80px -20px rgba(6,6,6,0.14), inset 0 -60px 80px -20px rgba(6,6,6,0.14)' }} className="relative overflow-hidden py-[clamp(7rem,13vw,11rem)]">
       <div className="relative z-[1] max-w-[1200px] mx-auto px-[clamp(1.5rem,5vw,3.5rem)]">
         <div className="flex items-end justify-between mb-[clamp(3rem,5.5vw,4.5rem)] gap-6 flex-wrap">
           <div>
