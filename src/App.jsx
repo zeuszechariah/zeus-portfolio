@@ -53,8 +53,8 @@ function StaggerItem({ children, className = '' }) {
   return (
     <motion.li className={className}
       variants={{
-        hidden:  { opacity:0, y:20 },
-        visible: { opacity:1, y:0, transition:{ duration:0.8, ease:EASE } },
+        hidden:  { opacity:0, y:16 },
+        visible: { opacity:1, y:0, transition:{ duration:0.55, ease:EASE } },
       }}
     >{children}</motion.li>
   )
@@ -77,6 +77,7 @@ function TiltCard({ children, className = '', style = {} }) {
       onMouseMove={e=>{ const r=ref.current.getBoundingClientRect(); x.set((e.clientX-r.left)/r.width); y.set((e.clientY-r.top)/r.height) }}
       onMouseEnter={()=>scale.set(1.01)}
       onMouseLeave={()=>{ x.set(0.5); y.set(0.5); scale.set(1) }}
+      whileTap={{ scale: 0.98 }}
     >{children}</motion.div>
   )
 }
@@ -584,7 +585,7 @@ function ProjectCard({ project, delay = 0 }) {
   )
   return (
     <motion.div ref={ref} className="group relative h-full"
-      initial={{ opacity:0, y:36 }} animate={inView?{ opacity:1, y:0 }:{}} transition={{ duration:0.85, ease:EASE, delay }}>
+      initial={{ opacity:0, y:28 }} animate={inView?{ opacity:1, y:0 }:{}} transition={{ duration:0.65, ease:EASE, delay }}>
       {project.slug
         ? <Link to={project.slug} className="block h-full">{inner}</Link>
         : project.pitch

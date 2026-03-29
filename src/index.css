@@ -100,8 +100,10 @@ body::before {
   pointer-events: none; z-index: 4;
   opacity: 0; transition: opacity 0.45s cubic-bezier(0.16,1,0.3,1);
 }
-.group:hover .grad-border-hover::before { opacity: 0; }
-.group:hover .grad-border-hover::after  { opacity: 1; }
+@media (hover: hover) and (pointer: fine) {
+  .group:hover .grad-border-hover::before { opacity: 0; }
+  .group:hover .grad-border-hover::after  { opacity: 1; }
+}
 
 /* Screen glare */
 .screen-glare::after {
@@ -118,7 +120,7 @@ body::before {
   100% { top: 100%; }
 }
 .scroll-line-inner {
-  animation: lineRun 2s ease-in-out infinite;
+  animation: lineRun 2s linear infinite;
 }
 
 /* BLR dot pulse */

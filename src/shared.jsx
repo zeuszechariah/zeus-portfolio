@@ -34,7 +34,7 @@ export function MaskReveal({ children, delay = 0, className = '' }) {
         style={{ display:'inline-block', willChange:'transform' }}
         initial={{ y: reducedMotion ? '0%' : '110%' }}
         animate={inView ? { y:'0%' } : {}}
-        transition={{ duration: reducedMotion ? 0 : 0.9, ease:EASE, delay: reducedMotion ? 0 : delay }}
+        transition={{ duration: reducedMotion ? 0 : 0.75, ease:EASE, delay: reducedMotion ? 0 : delay }}
       >
         {children}
       </motion.span>
@@ -51,7 +51,7 @@ export function Reveal({ children, delay = 0, className = '' }) {
     <motion.div ref={ref} className={className}
       initial={{ opacity: reducedMotion ? 1 : 0, y: reducedMotion ? 0 : 28 }}
       animate={inView ? { opacity:1, y:0 } : {}}
-      transition={{ duration: reducedMotion ? 0 : 0.85, ease:EASE, delay: reducedMotion ? 0 : delay }}
+      transition={{ duration: reducedMotion ? 0 : 0.65, ease:EASE, delay: reducedMotion ? 0 : delay }}
     >{children}</motion.div>
   )
 }
@@ -71,7 +71,7 @@ export function Nav({ light = false, scrollThreshold = 60 }) {
     return () => window.removeEventListener('scroll', h)
   }, [scrollThreshold])
 
-  const lt = { duration:1.1, ease:EASE }
+  const lt = { duration:0.6, ease:EASE }
 
   // Spread (pre-scroll) text colour
   const spreadCol = light ? '#0f0f0f' : '#F2EDE4'
@@ -102,7 +102,7 @@ export function Nav({ light = false, scrollThreshold = 60 }) {
       ) : (
         <motion.div key="pill"
           className="fixed top-[1.125rem] left-0 right-0 z-[500] flex justify-center pointer-events-none"
-          exit={{ opacity:0, transition:{ duration:0.18, ease:'easeIn' } }}
+          exit={{ opacity:0, transition:{ duration:0.15, ease:'easeOut' } }}
         >
           <motion.nav aria-label="Main navigation"
             className="pointer-events-auto flex items-center gap-8 px-6 py-[0.6rem] rounded-full"
@@ -118,7 +118,7 @@ export function Nav({ light = false, scrollThreshold = 60 }) {
                   className="font-mono text-[0.7rem] tracking-[0.1em] uppercase relative group/link" style={{ color: pillCol }}
                   onClick={label === 'Work' ? (e => { const el = document.getElementById('work'); if (el) { e.preventDefault(); el.scrollIntoView({ behavior:'smooth' }) } }) : undefined}>
                   {label}
-                  <span className="absolute -bottom-[2px] left-0 h-[1px] w-0 transition-all duration-300 group-hover/link:w-full"
+                  <span className="absolute -bottom-[2px] left-0 h-[1px] w-0 transition-[width] duration-300 group-hover/link:w-full"
                     style={{ background: pillCol, transitionTimingFunction:'cubic-bezier(0.16,1,0.3,1)' }} />
                 </MotionLink>
               ))}
@@ -229,43 +229,42 @@ export function CookieBanner() {
       {visible && (
         <motion.div
           className="fixed bottom-6 left-1/2 z-[9999] pointer-events-auto"
-          style={{ x: '-50%', willChange: 'transform, opacity' }}
+          style={{ x: '-50%', willChange: 'transform, opacity', width: 'clamp(340px, 56vw, 680px)' }}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: 16, transition: { duration: 0.22, ease: 'easeIn' } }}
-          transition={{ duration: 0.55, ease: EASE }}
+          exit={{ opacity: 0, y: 12, transition: { duration: 0.18, ease: EASE } }}
+          transition={{ duration: 0.45, ease: EASE }}
         >
           <div
-            className="flex items-center gap-6 px-6 py-[0.7rem] rounded-full whitespace-nowrap"
+            className="flex items-center justify-between gap-8 px-7 py-4 rounded-2xl"
             style={{
-              background: 'rgba(8,8,8,0.88)',
-              backdropFilter: 'blur(28px) saturate(160%)',
-              WebkitBackdropFilter: 'blur(28px) saturate(160%)',
-              border: '1px solid rgba(255,255,255,0.09)',
-              boxShadow: '0 8px 36px rgba(0,0,0,0.45)',
+              background: 'rgba(4,4,4,0.97)',
+              backdropFilter: 'blur(32px) saturate(180%)',
+              WebkitBackdropFilter: 'blur(32px) saturate(180%)',
+              border: '1px solid rgba(255,255,255,0.13)',
+              boxShadow: '0 12px 48px rgba(0,0,0,0.65), 0 2px 0 rgba(255,255,255,0.04) inset',
             }}
           >
-            <p className="font-mono text-[0.6rem] tracking-[0.04em] text-ink/50 leading-[1.7] max-w-[32ch] whitespace-normal">
-              This site uses cookies to understand how you engage with the work.{' '}
+            <p className="font-sans text-[0.8rem] text-ink/75 leading-[1.7]">
+              This site uses cookies to understand how visitors engage with the work.{' '}
               <a href="/privacy-policy"
-                className="text-ink/32 underline underline-offset-[3px] hover:text-ink/58 transition-colors duration-200">
+                className="text-ink/45 underline underline-offset-[3px] hover:text-ink/70 transition-colors duration-200">
                 Privacy policy
               </a>
             </p>
 
-            <div className="flex items-center gap-3 flex-shrink-0">
+            <div className="flex items-center gap-4 flex-shrink-0">
               <button
                 onClick={() => respond(false)}
-                className="font-mono text-[0.58rem] tracking-[0.1em] uppercase text-ink/30 hover:text-ink/55 transition-colors duration-200 cursor-pointer"
+                className="font-mono text-[0.65rem] tracking-[0.1em] uppercase text-ink/40 hover:text-ink/65 transition-colors duration-200 cursor-pointer active:scale-[0.97] transition-transform"
               >
                 Decline
               </button>
               <button
                 onClick={() => respond(true)}
-                className="font-mono text-[0.58rem] tracking-[0.1em] uppercase text-ink px-4 py-[0.45rem] rounded-full cursor-pointer transition-all duration-200 hover:-translate-y-[1px] active:scale-[0.97]"
+                className="font-mono text-[0.65rem] tracking-[0.1em] uppercase text-[#060606] px-5 py-2 rounded-lg cursor-pointer transition-all duration-200 hover:-translate-y-[1px] active:scale-[0.97]"
                 style={{
-                  background: 'rgba(242,237,228,0.12)',
-                  border: '1px solid rgba(242,237,228,0.18)',
+                  background: '#F2EDE4',
                 }}
               >
                 Accept
