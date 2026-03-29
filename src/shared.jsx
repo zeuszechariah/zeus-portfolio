@@ -174,3 +174,106 @@ export function Footer() {
     </footer>
   )
 }
+
+// ─── Cookie consent helpers ───────────────────────────
+const CONSENT_KEY = 'zb_cookie_consent'
+
+function setConsentCookie(value) {
+  // 1 year, SameSite=Lax works on http + https; add Secure for production HTTPS
+  document.cookie = `${CONSENT_KEY}=${value}; max-age=31536000; path=/; SameSite=Lax`
+}
+
+function loadAnalytics() {
+  // ── Paste your analytics snippet here ──────────────
+  // Example (Google Analytics 4):
+  //
+  // if (document.getElementById('ga-script')) return   // already loaded
+  // const s = document.createElement('script')
+  // s.id = 'ga-script'
+  // s.src = 'https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX'
+  // s.async = true
+  // document.head.appendChild(s)
+  // window.dataLayer = window.dataLayer || []
+  // function gtag(){ window.dataLayer.push(arguments) }
+  // gtag('js', new Date())
+  // gtag('config', 'G-XXXXXXXXXX')
+  // ───────────────────────────────────────────────────
+}
+
+// ─── Cookie Banner ────────────────────────────────────
+export function CookieBanner() {
+  const [visible, setVisible] = useState(false)
+
+  useEffect(() => {
+    const stored = localStorage.getItem(CONSENT_KEY)
+    if (stored) {
+      // Re-fire analytics on every load if already granted
+      if (stored === 'granted') loadAnalytics()
+      return
+    }
+    // Show after 3 s — lets the video intro finish first
+    const t = setTimeout(() => setVisible(true), 3000)
+    return () => clearTimeout(t)
+  }, [])
+
+  const respond = (granted) => {
+    const val = granted ? 'granted' : 'denied'
+    localStorage.setItem(CONSENT_KEY, val)
+    setConsentCookie(val)
+    if (granted) loadAnalytics()
+    setVisible(false)
+  }
+
+  return (
+    <AnimatePresence>
+      {visible && (
+        <motion.div
+          className="fixed bottom-6 left-1/2 z-[9999] pointer-events-auto"
+          style={{ x: '-50%', willChange: 'transform, opacity' }}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: 16, transition: { duration: 0.22, ease: 'easeIn' } }}
+          transition={{ duration: 0.55, ease: EASE }}
+        >
+          <div
+            className="flex items-center gap-6 px-6 py-[0.7rem] rounded-full whitespace-nowrap"
+            style={{
+              background: 'rgba(8,8,8,0.88)',
+              backdropFilter: 'blur(28px) saturate(160%)',
+              WebkitBackdropFilter: 'blur(28px) saturate(160%)',
+              border: '1px solid rgba(255,255,255,0.09)',
+              boxShadow: '0 8px 36px rgba(0,0,0,0.45)',
+            }}
+          >
+            <p className="font-mono text-[0.6rem] tracking-[0.04em] text-ink/50 leading-[1.7] max-w-[32ch] whitespace-normal">
+              This site uses cookies to understand how you engage with the work.{' '}
+              <a href="/privacy-policy"
+                className="text-ink/32 underline underline-offset-[3px] hover:text-ink/58 transition-colors duration-200">
+                Privacy policy
+              </a>
+            </p>
+
+            <div className="flex items-center gap-3 flex-shrink-0">
+              <button
+                onClick={() => respond(false)}
+                className="font-mono text-[0.58rem] tracking-[0.1em] uppercase text-ink/30 hover:text-ink/55 transition-colors duration-200 cursor-pointer"
+              >
+                Decline
+              </button>
+              <button
+                onClick={() => respond(true)}
+                className="font-mono text-[0.58rem] tracking-[0.1em] uppercase text-ink px-4 py-[0.45rem] rounded-full cursor-pointer transition-all duration-200 hover:-translate-y-[1px] active:scale-[0.97]"
+                style={{
+                  background: 'rgba(242,237,228,0.12)',
+                  border: '1px solid rgba(242,237,228,0.18)',
+                }}
+              >
+                Accept
+              </button>
+            </div>
+          </div>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  )
+}

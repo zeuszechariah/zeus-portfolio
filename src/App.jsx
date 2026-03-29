@@ -1,7 +1,7 @@
 import { useRef, useEffect, useState } from 'react'
 import { motion, useMotionValue, useTransform, useSpring, useInView } from 'framer-motion'
 import { BrowserRouter, Routes, Route, Link } from 'react-router-dom'
-import { EASE, SPRING_STIFF, Bolt, ProgressBar, Nav, Footer, MaskReveal, Reveal } from './shared.jsx'
+import { EASE, SPRING_STIFF, Bolt, ProgressBar, Nav, Footer, MaskReveal, Reveal, CookieBanner } from './shared.jsx'
 import About from './About.jsx'
 import Imprint from './Imprint.jsx'
 import PrivacyPolicy from './PrivacyPolicy.jsx'
@@ -615,12 +615,12 @@ function WorkCanvas() {
           const dx=mouse.x-p.x, dy=mouse.y-p.y, d=Math.hypot(dx,dy)
           if (d<HOVER_RADIUS*2&&d>1) { const f=1-d/(HOVER_RADIUS*2); p.vx+=dx/d*f*4; p.vy+=dy/d*f*4 }
         }
-        p.vx+=(rx-p.x)*0.18; p.vy+=(ry-p.y)*0.18; p.vx*=0.68; p.vy*=0.68
+        p.vx+=(rx-p.x)*0.30; p.vy+=(ry-p.y)*0.30; p.vx*=0.52; p.vy*=0.52
         p.x+=p.vx; p.y+=p.vy
         totalMov+=Math.abs(p.vx)+Math.abs(p.vy)
         const pd=mouse.active?Math.hypot(p.x-mouse.x,p.y-mouse.y):9999
         const tgt=Math.max(0,1-pd/HOVER_RADIUS)
-        smoothGlow[i]+=(tgt-smoothGlow[i])*(tgt>smoothGlow[i]?0.35:0.10)
+        smoothGlow[i]+=(tgt-smoothGlow[i])*(tgt>smoothGlow[i]?0.5:0.15)
       }
 
       // Retri only every 20 frames with higher movement threshold
@@ -929,6 +929,7 @@ function Home() {
 export default function App() {
   return (
     <BrowserRouter>
+      <CookieBanner />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/about" element={<About />} />
