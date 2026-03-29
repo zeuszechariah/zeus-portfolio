@@ -24,7 +24,7 @@ export function ProgressBar() {
 }
 
 // ─── MaskReveal — translateY clip reveal for headings ─
-export function MaskReveal({ children, delay = 0, className = '' }) {
+export function MaskReveal({ children, delay = 0, duration = 0.75, className = '' }) {
   const ref          = useRef(null)
   const inView       = useInView(ref, { once: true, amount: 0.15 })
   const reducedMotion = useReducedMotion()
@@ -34,7 +34,7 @@ export function MaskReveal({ children, delay = 0, className = '' }) {
         style={{ display:'inline-block', willChange:'transform' }}
         initial={{ y: reducedMotion ? '0%' : '110%' }}
         animate={inView ? { y:'0%' } : {}}
-        transition={{ duration: reducedMotion ? 0 : 0.75, ease:EASE, delay: reducedMotion ? 0 : delay }}
+        transition={{ duration: reducedMotion ? 0 : duration, ease:EASE, delay: reducedMotion ? 0 : delay }}
       >
         {children}
       </motion.span>
@@ -43,7 +43,7 @@ export function MaskReveal({ children, delay = 0, className = '' }) {
 }
 
 // ─── Reveal (opacity + y, for non-heading elements) ───
-export function Reveal({ children, delay = 0, className = '' }) {
+export function Reveal({ children, delay = 0, duration = 0.65, className = '' }) {
   const ref          = useRef(null)
   const inView       = useInView(ref, { once:true, amount:0.1 })
   const reducedMotion = useReducedMotion()
@@ -51,7 +51,7 @@ export function Reveal({ children, delay = 0, className = '' }) {
     <motion.div ref={ref} className={className}
       initial={{ opacity: reducedMotion ? 1 : 0, y: reducedMotion ? 0 : 28 }}
       animate={inView ? { opacity:1, y:0 } : {}}
-      transition={{ duration: reducedMotion ? 0 : 0.65, ease:EASE, delay: reducedMotion ? 0 : delay }}
+      transition={{ duration: reducedMotion ? 0 : duration, ease:EASE, delay: reducedMotion ? 0 : delay }}
     >{children}</motion.div>
   )
 }

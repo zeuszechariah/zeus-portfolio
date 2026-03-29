@@ -161,13 +161,13 @@ function AboutIntro() {
                           pt-[clamp(5rem,9vw,7rem)] pb-[clamp(2rem,3.5vw,3rem)]">
 
             <div>
-              <Reveal>
+              <Reveal duration={0.85}>
                 <span className="font-mono text-[0.58rem] tracking-[0.16em]
                                  uppercase text-ink/28 mb-8 block">
                   Synopsis
                 </span>
               </Reveal>
-              <Reveal delay={0.06}>
+              <Reveal duration={0.85} delay={0.06}>
                 <blockquote className="font-display italic text-ink leading-[1.4]"
                   style={{ fontSize:'clamp(1.1rem,1.6vw,1.45rem)' }}>
                   "The world is full of creative challenges, both big &amp; small, and
@@ -177,7 +177,7 @@ function AboutIntro() {
             </div>
 
             <div className="flex flex-col gap-4">
-              <Reveal delay={0.12}>
+              <Reveal duration={0.85} delay={0.12}>
                 <p className="font-sans text-ink/48 leading-[1.85]"
                   style={{ fontSize:'clamp(0.75rem,0.88vw,0.825rem)' }}>
                   For me, vision, craft, systems, instinct and art are the forces behind
@@ -187,7 +187,7 @@ function AboutIntro() {
               </Reveal>
 
               {/* Awards & Accolades */}
-              <Reveal delay={0.24}>
+              <Reveal duration={0.85} delay={0.24}>
                 <div className="flex flex-col gap-[1.1rem] items-start text-left mt-10">
                   {[
                     ["India's Best Design Student Awards", 'Winner · 2025'],
@@ -252,7 +252,7 @@ function AboutIntro() {
         <div className="flex justify-end pt-[clamp(0.5rem,1.5vw,1rem)] pb-[clamp(1rem,2vw,1.75rem)]">
           <h1 className="font-sans font-semibold text-ink tracking-[-0.04em] leading-[0.92]"
               style={{ fontSize:'clamp(2.25rem,5vw,4rem)' }}>
-            <MaskReveal>About</MaskReveal>
+            <MaskReveal duration={0.9}>About</MaskReveal>
           </h1>
         </div>
 
@@ -270,16 +270,16 @@ function Resume() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-[clamp(3rem,6vw,6rem)] items-center">
 
           <div>
-            <Reveal>
+            <Reveal duration={0.85}>
               <span className="font-mono text-[0.625rem] tracking-[0.16em] uppercase text-ink/32 mb-5 block">
                 Experience
               </span>
             </Reveal>
             <h2 className="font-sans font-semibold text-ink tracking-[-0.04em] leading-[0.92] mb-6"
                 style={{ fontSize:'clamp(2.25rem,5vw,4rem)' }}>
-              <MaskReveal>My Resumè.</MaskReveal>
+              <MaskReveal duration={0.9}>My Resumè.</MaskReveal>
             </h2>
-            <Reveal delay={0.1}>
+            <Reveal duration={0.85} delay={0.1}>
               <p className="font-sans text-ink/45 leading-[1.8] max-w-[36ch]"
                 style={{ fontSize:'clamp(0.875rem,1.1vw,0.9375rem)' }}>
                 Click to view or download my Resumè below. It covers my experience,
@@ -288,7 +288,7 @@ function Resume() {
             </Reveal>
           </div>
 
-          <Reveal delay={0.12} className="flex flex-col items-start md:items-end gap-6">
+          <Reveal duration={0.85} delay={0.12} className="flex flex-col items-start md:items-end gap-6">
             <a href="https://drive.google.com/file/d/13STNlMETpbArR6O8Bz5tatm9hxZgkjbT/view"
                target="_blank" rel="noopener noreferrer"
                className="relative group/link inline-flex items-center gap-3 font-sans font-semibold text-bg bg-ink
@@ -330,15 +330,15 @@ function ContactForm() {
 
       <div className="relative max-w-[1200px] mx-auto px-[clamp(1.5rem,5vw,3.5rem)]">
         <div className="mb-[clamp(3rem,6vw,5rem)]" ref={ref}>
-          <Reveal>
+          <Reveal duration={0.85}>
             <span className="font-mono text-[0.625rem] tracking-[0.16em] uppercase text-ink/32 mb-5 block">
               Get in touch
             </span>
           </Reveal>
           <h2 className="font-sans font-semibold text-ink tracking-[-0.04em] leading-[0.92]"
               style={{ fontSize:'clamp(2.25rem,5vw,4rem)' }}>
-            <MaskReveal>Got an idea?</MaskReveal>
-            <MaskReveal delay={0.1}>Let's connect.</MaskReveal>
+            <MaskReveal duration={0.9}>Got an idea?</MaskReveal>
+            <MaskReveal duration={0.9} delay={0.1}>Let's connect.</MaskReveal>
           </h2>
         </div>
 
