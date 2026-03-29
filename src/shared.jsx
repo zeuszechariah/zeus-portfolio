@@ -65,8 +65,8 @@ export function SectionExit({ children }) {
     target: ref,
     offset: ['start start', 'end start'],
   })
-  const opacity = useTransform(scrollYProgress, [0.62, 0.97], [1, 0])
-  const scale   = useTransform(scrollYProgress, [0.62, 0.97], [1, 0.88])
+  const opacity = useTransform(scrollYProgress, [0.35, 0.78], [1, 0])
+  const scale   = useTransform(scrollYProgress, [0.35, 0.78], [1, 0.88])
 
   return (
     <motion.div ref={ref} style={{ opacity, scale, transformOrigin: 'center center', willChange: 'transform, opacity' }}>
