@@ -1,6 +1,6 @@
 import { useRef, useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { motion, useSpring, useScroll, useInView, AnimatePresence, useReducedMotion } from 'framer-motion'
+import { motion, useSpring, useScroll, useTransform, useInView, AnimatePresence, useReducedMotion } from 'framer-motion'
 
 // ─── Constants ────────────────────────────────────────
 export const EASE = [0.16, 1, 0.3, 1]
@@ -57,6 +57,23 @@ export function Reveal({ children, delay = 0, duration = 0.65, className = '' })
 }
 
 const MotionLink = motion(Link)
+
+// ─── SectionExit — converge + fade as section scrolls off top ─
+export function SectionExit({ children }) {
+  const ref = useRef(null)
+  const { scrollYProgress } = useScroll({
+    target: ref,
+    offset: ['start start', 'end start'],
+  })
+  const opacity = useTransform(scrollYProgress, [0.62, 0.97], [1, 0])
+  const scale   = useTransform(scrollYProgress, [0.62, 0.97], [1, 0.88])
+
+  return (
+    <motion.div ref={ref} style={{ opacity, scale, transformOrigin: 'center center', willChange: 'transform, opacity' }}>
+      {children}
+    </motion.div>
+  )
+}
 
 // ─── Nav ──────────────────────────────────────────────
 // Both light and default share the same white-pill style.

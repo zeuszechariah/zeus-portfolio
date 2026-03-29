@@ -1,7 +1,7 @@
 import { useRef, useEffect, useState } from 'react'
 import { motion, useMotionValue, useTransform, useSpring, useInView } from 'framer-motion'
 import { BrowserRouter, Routes, Route, Link } from 'react-router-dom'
-import { EASE, SPRING_STIFF, Bolt, ProgressBar, Nav, Footer, MaskReveal, Reveal, CookieBanner } from './shared.jsx'
+import { EASE, SPRING_STIFF, Bolt, ProgressBar, Nav, Footer, MaskReveal, Reveal, CookieBanner, SectionExit } from './shared.jsx'
 import About from './About.jsx'
 import Imprint from './Imprint.jsx'
 import PrivacyPolicy from './PrivacyPolicy.jsx'
@@ -780,12 +780,12 @@ function Home() {
         <>
           <ProgressBar />
           <Nav />
-          <Hero />
-          <Services />
-          <Work />
-          <VitalSigns />
-          <ProfessionalExposure />
-          <CTA />
+          <SectionExit><Hero /></SectionExit>
+          <SectionExit><Services /></SectionExit>
+          <SectionExit><Work /></SectionExit>
+          <SectionExit><VitalSigns /></SectionExit>
+          <SectionExit><ProfessionalExposure /></SectionExit>
+          <SectionExit><CTA /></SectionExit>
           <Footer />
         </>
       )}
