@@ -430,12 +430,13 @@ function Services() {
         return { x: r.left - wr.left + r.width / 2, y: r.top - wr.top + r.height / 2, r: r.width / 2 }
       })
       const [tl, tr, bl, br] = circles
-      const R = tl.r
+      // Draw center-to-center; circles (z-index:1) sit above the SVG (z-index:0)
+      // so their opaque backgrounds naturally clip the line endpoints — no gap possible.
       setSvgPath([
-        `M ${tl.x + R} ${tl.y} L ${tr.x - R} ${tr.y}`,
-        `M ${tr.x} ${tr.y + R} L ${br.x} ${br.y - R}`,
-        `M ${br.x - R} ${br.y} L ${bl.x + R} ${bl.y}`,
-        `M ${bl.x} ${bl.y - R} L ${tl.x} ${tl.y + R}`,
+        `M ${tl.x} ${tl.y} L ${tr.x} ${tr.y}`,
+        `M ${tr.x} ${tr.y} L ${br.x} ${br.y}`,
+        `M ${br.x} ${br.y} L ${bl.x} ${bl.y}`,
+        `M ${bl.x} ${bl.y} L ${tl.x} ${tl.y}`,
       ].join(' '))
     }
     compute()
