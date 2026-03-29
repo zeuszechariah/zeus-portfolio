@@ -9,10 +9,10 @@ import Press from './Press.jsx'
 import GetSetGlobe from './GetSetGlobe.jsx'
 
 const PROJECTS = [
-  { id:1, name:'Study Buddy',     tags:'UX Research · Mobile',   desc:'A peer learning platform designed to reduce cognitive overload for undergraduates through contextual nudges and adaptive scheduling.', color:'from-[#061528] via-[#0f2d52] to-[#1b4a8a]' },
-  { id:2, name:'Get Set Globe',   tags:'EdTech · Product Design', desc:'An end-to-end travel-education experience helping young learners explore world cultures through gamified, story-driven modules.',      color:'from-[#050f08] via-[#0b2e16] to-[#135728]', slug:'/work/get-set-globe' },
-  { id:3, name:'Malt & Machines', tags:'Data Viz · Experience',   desc:'A data-driven tasting experience blending whisky flavour profiling with interactive visualisations for connoisseurs and beginners.',   color:'from-[#0d0702] via-[#2e1606] to-[#7a430e]' },
-  { id:4, name:'Infinity',        tags:'Space Tech · App Design', desc:'An app interface concept for low-orbit satellite operators — designed around mission-critical clarity and dark-environment legibility.', color:'from-[#040409] via-[#0e0e30] to-[#1a1060]' },
+  { id:1, name:'Study Buddy',     tags:'UX Research · Mobile',   desc:'Rethinking how Indian students study & building habits that actually stick.', color:'from-[#061528] via-[#0f2d52] to-[#1b4a8a]', pitch:'https://app.pitch.com/app/player/e4cb8edc-572e-494d-8e32-567e4807ffe5/7013aa0a-88ad-4b8f-9cb7-86e857f28e62' },
+  { id:2, name:'Get Set Globe',   tags:'EdTech · Product Design', desc:'Making Earth science something children feel, not just memorise.', color:'from-[#050f08] via-[#0b2e16] to-[#135728]', pitch:'https://app.pitch.com/app/player/e4cb8edc-572e-494d-8e32-567e4807ffe5/5811808d-1999-42c4-88c3-587610a87bfe' },
+  { id:3, name:'Spectra',         tags:'Data Viz · Experience',   desc:'Two invisible threats, one shared sky. Mapping the overlap of air and light pollution across urban India.', color:'from-[#0d0702] via-[#2e1606] to-[#7a430e]', pitch:'https://app.pitch.com/app/presentation/e4cb8edc-572e-494d-8e32-567e4807ffe5/ed036113-9746-40ed-932d-5259726c2f60' },
+  { id:4, name:'Finance for semi/less literate', tags:'Research · Social Design', desc:'Researching financial literacy through scam resilience and financial literacy.', color:'from-[#040409] via-[#0e0e30] to-[#1a1060]', pitch:'https://canva.link/ftos6no4hro4473' },
 ]
 
 const SERVICES = [
@@ -296,8 +296,8 @@ function Hero() {
       }}
     >
       <canvas ref={canvasRef} className="absolute inset-0 w-full h-full pointer-events-none" style={{ zIndex: 0 }} />
-      <div className="absolute pointer-events-none" style={{ width:'clamp(500px,60vw,820px)',height:'clamp(500px,60vw,820px)',borderRadius:'50%',top:'-25%',left:'-18%',zIndex:0,background:'radial-gradient(circle,rgba(124,58,237,0.085) 0%,transparent 65%)' }} />
-      <div className="absolute pointer-events-none" style={{ width:'clamp(350px,42vw,600px)',height:'clamp(350px,42vw,600px)',borderRadius:'50%',bottom:'-12%',right:'-10%',zIndex:0,background:'radial-gradient(circle,rgba(255,75,143,0.055) 0%,transparent 65%)' }} />
+      <div className="absolute pointer-events-none" style={{ width:'clamp(500px,60vw,820px)',height:'clamp(500px,60vw,820px)',borderRadius:'50%',top:'-25%',left:'-18%',zIndex:0,background:'radial-gradient(circle,rgba(124,58,237,0.14) 0%,transparent 65%)' }} />
+      <div className="absolute pointer-events-none" style={{ width:'clamp(350px,42vw,600px)',height:'clamp(350px,42vw,600px)',borderRadius:'50%',bottom:'-12%',right:'-10%',zIndex:0,background:'radial-gradient(circle,rgba(255,75,143,0.09) 0%,transparent 65%)' }} />
       <div className="absolute inset-0 pointer-events-none" style={{ zIndex:1, background:'linear-gradient(to bottom,#060606 0%,transparent 22%),linear-gradient(to top,#060606 0%,transparent 22%),linear-gradient(to right,#060606 0%,transparent 18%),linear-gradient(to left,#060606 0%,transparent 18%)' }} />
 
       <div className="relative z-[3] w-full flex items-end justify-between gap-6">
@@ -374,8 +374,8 @@ function Services() {
 
   return (
     <section style={{ background:'#060606' }} className="pt-[clamp(3.5rem,6vw,5rem)] pb-[clamp(7rem,13vw,11rem)] border-t border-white/[0.04] relative overflow-hidden">
-      <div className="absolute pointer-events-none" style={{ width:'clamp(400px,50vw,680px)',height:'clamp(400px,50vw,680px)',borderRadius:'50%',top:'-20%',right:'-8%',background:'radial-gradient(circle,rgba(124,58,237,0.055) 0%,transparent 65%)' }} />
-      <div className="absolute pointer-events-none" style={{ width:'clamp(280px,36vw,480px)',height:'clamp(280px,36vw,480px)',borderRadius:'50%',bottom:'-15%',left:'-5%',background:'radial-gradient(circle,rgba(255,75,143,0.038) 0%,transparent 65%)' }} />
+      <div className="absolute pointer-events-none" style={{ width:'clamp(400px,50vw,680px)',height:'clamp(400px,50vw,680px)',borderRadius:'50%',top:'-20%',right:'-8%',background:'radial-gradient(circle,rgba(124,58,237,0.077) 0%,transparent 65%)' }} />
+      <div className="absolute pointer-events-none" style={{ width:'clamp(280px,36vw,480px)',height:'clamp(280px,36vw,480px)',borderRadius:'50%',bottom:'-15%',left:'-5%',background:'radial-gradient(circle,rgba(255,75,143,0.055) 0%,transparent 65%)' }} />
       <div className="max-w-[1200px] mx-auto px-[clamp(1.5rem,5vw,3.5rem)]">
 
         <div className="mb-[clamp(3rem,5vw,4rem)]">
@@ -393,6 +393,9 @@ function Services() {
 
         {/* 2×2 grid */}
         <div ref={wrapRef} className="relative grid grid-cols-2">
+
+          {/* Centre glow — sits at the intersection of all four circles */}
+          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none" style={{ width:'clamp(380px,42vw,580px)',height:'clamp(380px,42vw,580px)',borderRadius:'50%',background:'radial-gradient(circle,rgba(149,80,255,0.22) 0%,rgba(140,60,240,0.16) 20%,rgba(120,48,200,0.09) 45%,rgba(100,40,160,0.03) 65%,transparent 80%)',filter:'blur(72px)',opacity:0.65,zIndex:0 }} />
 
           {/* Clockwise traveling runner */}
           <svg className="absolute inset-0 w-full h-full pointer-events-none" style={{ zIndex: 0, overflow: 'visible' }}>
@@ -502,17 +505,17 @@ function ProjectCard({ project, delay = 0 }) {
           </div>
         </motion.div>
       </div>
-      <div className="flex-1 p-[clamp(1rem,2vw,1.375rem)]">
+      <div className="flex-1 p-[clamp(1rem,2vw,1.375rem)] flex flex-col">
         <div className="flex items-start justify-between gap-3 mb-2.5">
           <div>
-            <p className="font-mono text-[0.6rem] tracking-[0.12em] uppercase text-black/38 mb-[0.35rem]">{project.tags}</p>
+            <p className="font-mono text-[0.6rem] tracking-[0.12em] uppercase mb-[0.35rem]" style={{ color:'#9a9a9a' }}>{project.tags}</p>
             <h3 className="font-sans font-semibold text-black tracking-[-0.022em]" style={{ fontSize:'clamp(1rem,1.6vw,1.2rem)', lineHeight:1.2 }}>
               <MaskReveal>{project.name}</MaskReveal>
             </h3>
           </div>
           <span className="w-[28px] h-[28px] rounded-full border border-black/15 flex items-center justify-center text-[0.65rem] text-black/40 opacity-0 scale-75 transition-all duration-300 group-hover:opacity-100 group-hover:scale-100 group-hover:border-black/35 group-hover:bg-black/[0.04] flex-shrink-0" aria-hidden="true">↗</span>
         </div>
-        <p className="font-sans text-black/42 leading-[1.7]" style={{ fontSize:'clamp(0.72rem,0.9vw,0.8rem)' }}>{project.desc}</p>
+        <p className="font-sans leading-[1.7] mt-auto" style={{ fontSize:'clamp(0.72rem,0.9vw,0.8rem)', color:'#7a7a7a' }}>{project.desc}</p>
       </div>
     </TiltCard>
   )
@@ -521,31 +524,225 @@ function ProjectCard({ project, delay = 0 }) {
       initial={{ opacity:0, y:36 }} animate={inView?{ opacity:1, y:0 }:{}} transition={{ duration:0.85, ease:EASE, delay }}>
       {project.slug
         ? <Link to={project.slug} className="block h-full">{inner}</Link>
-        : inner}
+        : project.pitch
+          ? <a href={project.pitch} target="_blank" rel="noopener noreferrer" className="block h-full">{inner}</a>
+          : inner}
     </motion.div>
   )
+}
+
+// ─── Work Section Canvas (Delaunay triangulation) ─────
+function WorkCanvas() {
+  const canvasRef = useRef(null)
+
+  useEffect(() => {
+    const canvas = canvasRef.current
+    if (!canvas) return
+    const ctx = canvas.getContext('2d')
+
+    const N = 130
+    const HOVER_RADIUS = 90
+    const BASE_OPACITY = 0.045
+    let W, H, points, restPoints, triangles, retriFrame
+    const smoothGlow = new Float32Array(N)
+    // pre-allocated glow scratch array to avoid per-frame allocation
+    const triGlow = new Float32Array(2000)
+    const mouse = { x: -9999, y: -9999, active: false }
+    let mouseTimer
+
+    // ── Colour ──
+    function getPositionalColor(x, y) {
+      const nx = x / W, ny = y / H
+      return [
+        Math.round(255*(1-nx)*(1-ny) + 255*nx*(1-ny) + 255*(1-nx)*ny + 255*nx*ny),
+        Math.round(110*(1-nx)*(1-ny) + 185*nx*(1-ny) +  85*(1-nx)*ny + 160*nx*ny),
+        Math.round(  0*(1-nx)*(1-ny) +  35*nx*(1-ny) +   0*(1-nx)*ny +  10*nx*ny),
+      ]
+    }
+
+    // ── Delaunay ──
+    function circumcircle(a,b,c) {
+      const D=2*(a.x*(b.y-c.y)+b.x*(c.y-a.y)+c.x*(a.y-b.y))
+      if (Math.abs(D)<1e-10) return null
+      const ax2=a.x*a.x+a.y*a.y, bx2=b.x*b.x+b.y*b.y, cx2=c.x*c.x+c.y*c.y
+      const ux=(ax2*(b.y-c.y)+bx2*(c.y-a.y)+cx2*(a.y-b.y))/D
+      const uy=(ax2*(c.x-b.x)+bx2*(a.x-c.x)+cx2*(b.x-a.x))/D
+      return { x:ux, y:uy, r:Math.hypot(a.x-ux,a.y-uy) }
+    }
+    function triangulate() {
+      const n=points.length, s1=n-3, s2=n-2, s3=n-1
+      let tris=[{a:s1,b:s2,c:s3}]
+      for (let i=0;i<N;i++) {
+        const p=points[i]; const edges=[]
+        tris=tris.filter(t=>{
+          const cc=circumcircle(points[t.a],points[t.b],points[t.c])
+          if(cc&&Math.hypot(p.x-cc.x,p.y-cc.y)<cc.r){edges.push([t.a,t.b],[t.b,t.c],[t.c,t.a]);return false}
+          return true
+        })
+        edges.filter((e,i)=>!edges.some((f,j)=>j!==i&&((f[0]===e[0]&&f[1]===e[1])||(f[0]===e[1]&&f[1]===e[0]))))
+          .forEach(e=>tris.push({a:e[0],b:e[1],c:i}))
+      }
+      triangles=tris.filter(t=>t.a<N&&t.b<N&&t.c<N)
+    }
+    function init() {
+      W=canvas.width=canvas.offsetWidth; H=canvas.height=canvas.offsetHeight
+      points=[]; restPoints=[]; retriFrame=0
+      const cols=Math.ceil(Math.sqrt(N*W/H)), rows=Math.ceil(N/cols)
+      let idx=0
+      for (let r=0;r<rows&&idx<N;r++)
+        for (let c=0;c<cols&&idx<N;c++) {
+          const x=(c+0.5+(Math.random()-0.5)*0.8)/cols*W
+          const y=(r+0.5+(Math.random()-0.5)*0.8)/rows*H
+          points.push({x,y,vx:0,vy:0}); restPoints.push({x,y}); idx++
+        }
+      points.push({x:-W*2,y:-H},{x:W*3,y:-H},{x:W/2,y:H*3})
+      triangulate()
+    }
+
+    // ── Render loop with batched draw calls ──
+    let rafId=null
+    ctx.lineJoin='miter'; ctx.miterLimit=6; ctx.lineCap='butt'
+
+    function loop() {
+      ctx.clearRect(0,0,W,H)
+      retriFrame++
+
+      // ── Physics + glow update ──
+      let totalMov=0
+      for (let i=0;i<N;i++) {
+        const p=points[i], rx=restPoints[i].x, ry=restPoints[i].y
+        if (mouse.active) {
+          const dx=mouse.x-p.x, dy=mouse.y-p.y, d=Math.hypot(dx,dy)
+          if (d<HOVER_RADIUS*2&&d>1) { const f=1-d/(HOVER_RADIUS*2); p.vx+=dx/d*f*4; p.vy+=dy/d*f*4 }
+        }
+        p.vx+=(rx-p.x)*0.18; p.vy+=(ry-p.y)*0.18; p.vx*=0.68; p.vy*=0.68
+        p.x+=p.vx; p.y+=p.vy
+        totalMov+=Math.abs(p.vx)+Math.abs(p.vy)
+        const pd=mouse.active?Math.hypot(p.x-mouse.x,p.y-mouse.y):9999
+        const tgt=Math.max(0,1-pd/HOVER_RADIUS)
+        smoothGlow[i]+=(tgt-smoothGlow[i])*(tgt>smoothGlow[i]?0.35:0.10)
+      }
+
+      // Retri only every 20 frames with higher movement threshold
+      if (totalMov>2.5&&retriFrame%20===0) triangulate()
+
+      // ── Pre-compute glow per triangle ──
+      const len=triangles.length
+      for (let k=0;k<len;k++) {
+        const t=triangles[k]
+        const a=points[t.a],b=points[t.b],c=points[t.c]
+        const mx=(a.x+b.x+c.x)/3, my=(a.y+b.y+c.y)/3
+        const d=Math.hypot(mx-mouse.x,my-mouse.y)
+        const hotspot=mouse.active?Math.max(0,1-d/HOVER_RADIUS):0
+        const soft=mouse.active?Math.max(0,1-d/(HOVER_RADIUS*3.5))*0.28:0
+        const va=(smoothGlow[t.a]+smoothGlow[t.b]+smoothGlow[t.c])/3
+        triGlow[k]=Math.max(hotspot,soft,va*0.55)
+      }
+
+      // ── Pass 1: batch all dark triangles in ONE stroke call ──
+      ctx.globalAlpha=BASE_OPACITY
+      ctx.strokeStyle='rgba(0,0,0,0.75)'
+      ctx.lineWidth=0.5
+      ctx.beginPath()
+      for (let k=0;k<len;k++) {
+        if (triGlow[k]<0.04) {
+          const t=triangles[k], a=points[t.a],b=points[t.b],c=points[t.c]
+          ctx.moveTo(a.x,a.y); ctx.lineTo(b.x,b.y); ctx.lineTo(c.x,c.y); ctx.closePath()
+        }
+      }
+      ctx.stroke()
+
+      // ── Pass 2: glowing triangles individually ──
+      for (let k=0;k<len;k++) {
+        const g=triGlow[k]
+        if (g<0.04) continue
+        const t=triangles[k], a=points[t.a],b=points[t.b],c=points[t.c]
+        const mx=(a.x+b.x+c.x)/3, my=(a.y+b.y+c.y)/3
+        const [cr,cg,cb]=getPositionalColor(mx,my)
+        const inv=1-g
+        ctx.globalAlpha=Math.min(1, BASE_OPACITY+g*1.3)
+        ctx.lineWidth=0.5+g*3.5
+        ctx.strokeStyle=`rgb(${Math.round(242*inv+cr*g)},${Math.round(237*inv+cg*g)},${Math.round(228*inv+cb*g)})`
+        ctx.beginPath(); ctx.moveTo(a.x,a.y); ctx.lineTo(b.x,b.y); ctx.lineTo(c.x,c.y); ctx.closePath(); ctx.stroke()
+        // coloured fill for intense core glow
+        if (g>0.25) {
+          ctx.globalAlpha=g*0.18
+          ctx.fillStyle=`rgb(${cr},${cg},${cb})`
+          ctx.fill()
+        }
+      }
+
+      // ── Vertices ──
+      ctx.fillStyle='#1a1008'
+      ctx.beginPath()
+      for (let i=0;i<N;i++) {
+        const p=points[i], g=smoothGlow[i]
+        ctx.globalAlpha=0.14+g*0.7
+        ctx.arc(p.x,p.y,1.0+g*2,0,Math.PI*2); ctx.closePath()
+      }
+      ctx.fill()
+
+      ctx.globalAlpha=1
+      rafId=requestAnimationFrame(loop)
+    }
+
+    // ── Mouse ──
+    const onMouse = e => {
+      const rect=canvas.getBoundingClientRect()
+      mouse.x=e.clientX-rect.left; mouse.y=e.clientY-rect.top
+      mouse.active=true; clearTimeout(mouseTimer)
+      mouseTimer=setTimeout(()=>{ mouse.active=false },160)
+    }
+    window.addEventListener('mousemove', onMouse, { passive:true })
+    const onResize = () => init()
+    window.addEventListener('resize', onResize, { passive:true })
+
+    // ── IntersectionObserver — pause when off-screen ──
+    let visible=false
+    const observer=new IntersectionObserver(([e])=>{
+      visible=e.isIntersecting
+      if (visible&&!rafId) rafId=requestAnimationFrame(loop)
+      else if (!visible&&rafId) { cancelAnimationFrame(rafId); rafId=null }
+    },{ threshold:0.01 })
+    observer.observe(canvas)
+
+    // ── Visibility API ──
+    const onVis=()=>{
+      if (document.hidden) { if (rafId) { cancelAnimationFrame(rafId); rafId=null } }
+      else if (visible&&!rafId) rafId=requestAnimationFrame(loop)
+    }
+    document.addEventListener('visibilitychange', onVis)
+
+    init()
+
+    return () => {
+      cancelAnimationFrame(rafId); observer.disconnect(); clearTimeout(mouseTimer)
+      window.removeEventListener('mousemove', onMouse)
+      window.removeEventListener('resize', onResize)
+      document.removeEventListener('visibilitychange', onVis)
+    }
+  }, [])
+
+  return <canvas ref={canvasRef} className="absolute inset-0 w-full h-full pointer-events-none" style={{ zIndex:0 }} />
 }
 
 // ─── Work ─────────────────────────────────────────────
 function Work() {
   return (
-    <section id="work" style={{ background:'#ffffff' }} className="py-[clamp(7rem,13vw,11rem)]">
-      <div className="max-w-[1200px] mx-auto px-[clamp(1.5rem,5vw,3.5rem)]">
+    <section id="work" style={{ background:'#F2EDE4' }} className="relative overflow-hidden py-[clamp(7rem,13vw,11rem)]">
+      <WorkCanvas />
+      <div className="relative z-[1] max-w-[1200px] mx-auto px-[clamp(1.5rem,5vw,3.5rem)]">
         <div className="flex items-end justify-between mb-[clamp(3rem,5.5vw,4.5rem)] gap-6 flex-wrap">
           <div>
             <Reveal>
               <span className="flex items-center gap-2.5 font-mono text-[0.625rem] tracking-[0.16em] uppercase text-black/30 mb-5">
-                <span className="inline-block w-4 h-[1px] bg-black/18" />Selected Work — 2021–2025
+                <span className="inline-block w-4 h-[1px] bg-black/18" />Work
               </span>
             </Reveal>
             <h2 className="font-sans font-semibold text-black tracking-[-0.04em] leading-[0.93]" style={{ fontSize:'clamp(2.5rem,6vw,5rem)' }}>
-              <MaskReveal>Work</MaskReveal>
+              <MaskReveal>Select Projects</MaskReveal>
             </h2>
           </div>
-          <a href="#" className="font-mono text-[0.7rem] tracking-[0.08em] uppercase text-black/55 relative group/link pb-[2px] hover:text-black transition-colors">
-            All projects ↗
-            <span className="absolute bottom-0 left-0 h-[1px] w-0 bg-black/35 transition-all duration-300 group-hover/link:w-full" style={{ transitionTimingFunction:'cubic-bezier(0.16,1,0.3,1)' }} />
-          </a>
         </div>
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-[clamp(0.625rem,1vw,0.875rem)] items-stretch">
           {PROJECTS.map((p,i) => <ProjectCard key={p.id} project={p} delay={i*0.07} />)}
@@ -585,8 +782,8 @@ function VitalStatCell({ v, index }) {
 function VitalSigns() {
   return (
     <section style={{ background:'#060606' }} className="py-[clamp(5rem,10vw,8.5rem)] border-t border-white/[0.04] relative overflow-hidden">
-      <div className="absolute pointer-events-none" style={{ width:'clamp(350px,44vw,600px)',height:'clamp(350px,44vw,600px)',borderRadius:'50%',bottom:'-25%',right:'-6%',background:'radial-gradient(circle,rgba(124,58,237,0.05) 0%,transparent 65%)' }} />
-      <div className="absolute pointer-events-none" style={{ width:'clamp(260px,32vw,440px)',height:'clamp(260px,32vw,440px)',borderRadius:'50%',top:'-18%',left:'30%',background:'radial-gradient(circle,rgba(255,75,143,0.032) 0%,transparent 65%)' }} />
+      <div className="absolute pointer-events-none" style={{ width:'clamp(350px,44vw,600px)',height:'clamp(350px,44vw,600px)',borderRadius:'50%',bottom:'-25%',right:'-6%',background:'radial-gradient(circle,rgba(124,58,237,0.085) 0%,transparent 65%)' }} />
+      <div className="absolute pointer-events-none" style={{ width:'clamp(260px,32vw,440px)',height:'clamp(260px,32vw,440px)',borderRadius:'50%',top:'-18%',left:'30%',background:'radial-gradient(circle,rgba(255,75,143,0.058) 0%,transparent 65%)' }} />
       <div className="max-w-[1200px] mx-auto px-[clamp(1.5rem,5vw,3.5rem)]">
         <div className="mb-[clamp(3rem,5vw,4rem)]">
           <Reveal>
@@ -613,8 +810,8 @@ function VitalSigns() {
 function ProfessionalExposure() {
   return (
     <section id="about" style={{ background:'#060606' }} className="py-[clamp(7rem,13vw,11rem)] border-t border-white/[0.04] relative overflow-hidden">
-      <div className="absolute pointer-events-none" style={{ width:'clamp(460px,55vw,740px)',height:'clamp(460px,55vw,740px)',borderRadius:'50%',top:'-22%',left:'-12%',background:'radial-gradient(circle,rgba(124,58,237,0.05) 0%,transparent 65%)' }} />
-      <div className="absolute pointer-events-none" style={{ width:'clamp(300px,38vw,520px)',height:'clamp(300px,38vw,520px)',borderRadius:'50%',bottom:'-18%',right:'-4%',background:'radial-gradient(circle,rgba(255,75,143,0.035) 0%,transparent 65%)' }} />
+      <div className="absolute pointer-events-none" style={{ width:'clamp(460px,55vw,740px)',height:'clamp(460px,55vw,740px)',borderRadius:'50%',top:'-22%',left:'-12%',background:'radial-gradient(circle,rgba(124,58,237,0.085) 0%,transparent 65%)' }} />
+      <div className="absolute pointer-events-none" style={{ width:'clamp(300px,38vw,520px)',height:'clamp(300px,38vw,520px)',borderRadius:'50%',bottom:'-18%',right:'-4%',background:'radial-gradient(circle,rgba(255,75,143,0.062) 0%,transparent 65%)' }} />
       <div className="max-w-[1200px] mx-auto px-[clamp(1.5rem,5vw,3.5rem)]">
         <div className="mb-[clamp(3.5rem,6vw,5rem)]">
           <Reveal>
@@ -624,7 +821,7 @@ function ProfessionalExposure() {
           </Reveal>
           <h2 className="font-sans font-semibold text-ink tracking-[-0.04em] leading-[0.92]" style={{ fontSize:'clamp(2.5rem,6vw,5rem)' }}>
             <MaskReveal>Professional</MaskReveal>
-            <MaskReveal delay={0.1}>Exposure.</MaskReveal>
+            <MaskReveal delay={0.1}>Exposure</MaskReveal>
           </h2>
           <Reveal delay={0.15}>
             <p className="font-sans text-ink/40 leading-[1.8] mt-5 max-w-[44ch]" style={{ fontSize:'clamp(0.875rem,1.1vw,0.9375rem)' }}>
@@ -646,9 +843,12 @@ function ProfessionalExposure() {
                     mixBlendMode: hasBg ? 'screen' : 'normal',
                     display: 'block' }} />
               </div>
-              <div className="flex flex-col items-center gap-[2px]">
-                <span className="font-mono text-[0.52rem] tracking-[0.08em] uppercase text-ink/28 text-center leading-[1.5]">{label}</span>
-                <span className="font-mono text-[0.52rem] tracking-[0.06em] text-ink/18">{year}</span>
+              <div className="flex flex-col items-center gap-[6px]">
+                <span className="font-mono text-[0.52rem] tracking-[0.08em] uppercase text-ink/14 text-center leading-[1.5]"
+                  style={{ minHeight:'4.5em', display:'flex', alignItems:'flex-start', justifyContent:'center', flexDirection:'column' }}>
+                  {label.includes(', ') ? <>{label.slice(0, label.lastIndexOf(',') + 1)}<br />{label.slice(label.lastIndexOf(', ') + 2)}</> : label}
+                </span>
+                <span className="font-mono text-[0.52rem] tracking-[0.06em] text-ink/38">{year}</span>
               </div>
             </Reveal>
           ))}
@@ -664,8 +864,8 @@ function CTA() {
   return (
     <section id="contact" style={{ background:'#060606' }} className="py-[clamp(7rem,14vw,12rem)] border-t border-white/[0.04] text-center relative overflow-hidden">
       {/* Multi-layer glow for more depth */}
-      <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none" style={{ width:800,height:500,background:'radial-gradient(ellipse,rgba(124,58,237,0.09) 0%,transparent 62%)' }} />
-      <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none" style={{ width:400,height:250,background:'radial-gradient(ellipse,rgba(255,75,143,0.05) 0%,transparent 65%)' }} />
+      <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none" style={{ width:800,height:500,background:'radial-gradient(ellipse,rgba(124,58,237,0.14) 0%,transparent 62%)' }} />
+      <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none" style={{ width:400,height:250,background:'radial-gradient(ellipse,rgba(255,75,143,0.085) 0%,transparent 65%)' }} />
       <div className="relative max-w-[1200px] mx-auto px-[clamp(1.5rem,5vw,3.5rem)]">
         <Reveal>
           <span className="flex items-center justify-center gap-2.5 font-mono text-[0.625rem] tracking-[0.16em] uppercase text-ink/32 mb-8">

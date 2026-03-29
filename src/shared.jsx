@@ -94,7 +94,8 @@ export function Nav({ light = false, scrollThreshold = 60 }) {
             <Bolt size={13} nudge={-2} />EUS
           </MotionLink>
           <MotionLink layoutId="nav-work" to="/#work" transition={lt}
-            className="pointer-events-auto font-mono text-[0.7rem] tracking-[0.1em] uppercase" style={{ color: spreadCol }}>Work</MotionLink>
+            className="pointer-events-auto font-mono text-[0.7rem] tracking-[0.1em] uppercase" style={{ color: spreadCol }}
+            onClick={e => { const el = document.getElementById('work'); if (el) { e.preventDefault(); el.scrollIntoView({ behavior:'smooth' }) } }}>Work</MotionLink>
           <MotionLink layoutId="nav-about" to="/about" transition={lt}
             className="pointer-events-auto font-mono text-[0.7rem] tracking-[0.1em] uppercase" style={{ color: spreadCol }}>About</MotionLink>
         </motion.div>
@@ -114,7 +115,8 @@ export function Nav({ light = false, scrollThreshold = 60 }) {
             <div className="flex items-center gap-7">
               {[['Work','/#work'],['About','/about']].map(([label, to]) => (
                 <MotionLink key={label} layoutId={`nav-${label.toLowerCase()}`} to={to} transition={lt}
-                  className="font-mono text-[0.7rem] tracking-[0.1em] uppercase relative group/link" style={{ color: pillCol }}>
+                  className="font-mono text-[0.7rem] tracking-[0.1em] uppercase relative group/link" style={{ color: pillCol }}
+                  onClick={label === 'Work' ? (e => { const el = document.getElementById('work'); if (el) { e.preventDefault(); el.scrollIntoView({ behavior:'smooth' }) } }) : undefined}>
                   {label}
                   <span className="absolute -bottom-[2px] left-0 h-[1px] w-0 transition-all duration-300 group-hover/link:w-full"
                     style={{ background: pillCol, transitionTimingFunction:'cubic-bezier(0.16,1,0.3,1)' }} />
@@ -132,8 +134,8 @@ export function Nav({ light = false, scrollThreshold = 60 }) {
 export function Footer() {
   return (
     <footer style={{ background:'#060606' }} className="border-t border-white/[0.04] relative overflow-hidden">
-      <div className="absolute pointer-events-none" style={{ width:'clamp(300px,38vw,520px)',height:'clamp(300px,38vw,520px)',borderRadius:'50%',top:'-30%',right:'10%',background:'radial-gradient(circle,rgba(124,58,237,0.042) 0%,transparent 65%)' }} />
-      <div className="absolute pointer-events-none" style={{ width:'clamp(220px,28vw,380px)',height:'clamp(220px,28vw,380px)',borderRadius:'50%',bottom:'-20%',left:'-5%',background:'radial-gradient(circle,rgba(255,75,143,0.028) 0%,transparent 65%)' }} />
+      <div className="absolute pointer-events-none" style={{ width:'clamp(300px,38vw,520px)',height:'clamp(300px,38vw,520px)',borderRadius:'50%',top:'-30%',right:'10%',background:'radial-gradient(circle,rgba(124,58,237,0.075) 0%,transparent 65%)' }} />
+      <div className="absolute pointer-events-none" style={{ width:'clamp(220px,28vw,380px)',height:'clamp(220px,28vw,380px)',borderRadius:'50%',bottom:'-20%',left:'-5%',background:'radial-gradient(circle,rgba(255,75,143,0.052) 0%,transparent 65%)' }} />
       <div className="max-w-[1200px] mx-auto px-[clamp(1.5rem,5vw,3.5rem)] pt-[clamp(3rem,6vw,5rem)] pb-[clamp(2rem,4vw,3rem)]">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-x-8 gap-y-12">
           <div className="flex flex-col gap-4">

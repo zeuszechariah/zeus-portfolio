@@ -144,6 +144,11 @@ function AboutIntro() {
         <DNACanvas />
       </div>
 
+      {/* Ambient glow — bottom-right, below nav About label */}
+      <div className="absolute pointer-events-none" style={{ width:'clamp(320px,38vw,520px)', height:'clamp(320px,38vw,520px)', borderRadius:'50%', bottom:'-8%', right:'-4%', background:'radial-gradient(circle,rgba(124,58,237,0.11) 0%,rgba(255,75,143,0.06) 45%,transparent 70%)', filter:'blur(48px)', zIndex:0 }} />
+      {/* Ambient glow — top-left, beside synopsis quote */}
+      <div className="absolute pointer-events-none" style={{ width:'clamp(260px,30vw,420px)', height:'clamp(260px,30vw,420px)', borderRadius:'50%', top:'6%', left:'-6%', background:'radial-gradient(circle,rgba(255,75,143,0.085) 0%,rgba(124,58,237,0.07) 50%,transparent 70%)', filter:'blur(48px)', zIndex:0 }} />
+
       {/* Content — same max-width container as Resume / Contact */}
       <div className="relative z-[1] flex-1 flex flex-col w-full max-w-[1200px] mx-auto
                       px-[clamp(1.5rem,5vw,3.5rem)]">
@@ -153,7 +158,7 @@ function AboutIntro() {
 
           {/* Left — label + quote at top, body at bottom */}
           <div className="col-span-12 md:col-span-3 flex flex-col justify-between pr-6
-                          pt-[clamp(8rem,14vw,11rem)] pb-[clamp(3rem,5vw,4.5rem)]">
+                          pt-[clamp(5rem,9vw,7rem)] pb-[clamp(2rem,3.5vw,3rem)]">
 
             <div>
               <Reveal>
@@ -176,15 +181,31 @@ function AboutIntro() {
                 <p className="font-sans text-ink/48 leading-[1.85]"
                   style={{ fontSize:'clamp(0.75rem,0.88vw,0.825rem)' }}>
                   For me, vision, craft, systems, instinct and art are the forces behind
-                  everything I make.
+                  everything I make. My focus, hunger and desire for wisdom are what drive
+                  me forward and keep me fulfilled.
                 </p>
               </Reveal>
-              <Reveal delay={0.18}>
-                <p className="font-sans text-ink/48 leading-[1.85]"
-                  style={{ fontSize:'clamp(0.75rem,0.88vw,0.825rem)' }}>
-                  My focus, hunger and desire for wisdom are what drive me forward and
-                  keep me fulfilled.
-                </p>
+
+              {/* Awards & Accolades */}
+              <Reveal delay={0.24}>
+                <div className="flex flex-col gap-[1.1rem] items-start text-left mt-10">
+                  {[
+                    ["India's Best Design Student Awards", 'Winner · 2025'],
+                    ['Taiwan Intl. Student Design Competition', 'Finalist · 2022'],
+                    ['Red Bull Doodle Art', 'Finalist · 2022'],
+                  ].map(([award, result]) => (
+                    <div key={award} className="flex flex-col gap-[0.2rem]">
+                      <p className="font-mono uppercase text-ink/32 tracking-[0.08em] leading-none"
+                        style={{ fontSize:'clamp(0.5rem,0.62vw,0.6rem)' }}>
+                        {award}
+                      </p>
+                      <p className="font-mono uppercase tracking-[0.08em] leading-none font-bold text-ink/55"
+                        style={{ fontSize:'clamp(0.5rem,0.62vw,0.6rem)' }}>
+                        {result}
+                      </p>
+                    </div>
+                  ))}
+                </div>
               </Reveal>
             </div>
           </div>
@@ -194,22 +215,13 @@ function AboutIntro() {
 
           {/* Right — photo at top, education at bottom */}
           <div className="col-span-12 md:col-span-4 flex flex-col justify-between items-end
-                          pt-[clamp(8rem,14vw,11rem)] pb-[clamp(3rem,5vw,4.5rem)]">
+                          pt-[clamp(5rem,9vw,7rem)] pb-[clamp(2rem,3.5vw,3rem)]">
 
             {/* Pill photo */}
             <div className="relative overflow-hidden border border-white/[0.06] flex-shrink-0"
               style={{ width:'160px', height:'272px', borderRadius:'9999px', background:'#0d0d0d' }}>
-              <div className="absolute inset-0 flex flex-col items-center justify-center gap-3">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                  <circle cx="12" cy="8" r="4" stroke="rgba(242,237,228,0.18)" strokeWidth="1.5"/>
-                  <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" stroke="rgba(242,237,228,0.18)"
-                    strokeWidth="1.5" strokeLinecap="round"/>
-                </svg>
-                <span className="font-mono text-[0.42rem] tracking-[0.16em] uppercase text-ink/15
-                                 text-center leading-[1.9]">
-                  Photo<br />coming<br />soon
-                </span>
-              </div>
+              <img src="/zeus-portrait.jpg" alt="Zeus Batkhar"
+                style={{ width:'100%', height:'100%', objectFit:'cover', objectPosition:'center top', display:'block' }} />
               <div className="absolute bottom-0 left-0 right-0 h-1/3 pointer-events-none"
                 style={{ background:'linear-gradient(to top,rgba(6,6,6,0.4),transparent)' }} />
             </div>
@@ -237,7 +249,7 @@ function AboutIntro() {
         </div>
 
         {/* ── bottom bar: About Zeus. flush right ── */}
-        <div className="flex justify-end pt-[clamp(1.5rem,3vw,2.5rem)] pb-[clamp(2rem,4vw,3.5rem)]">
+        <div className="flex justify-end pt-[clamp(0.5rem,1.5vw,1rem)] pb-[clamp(1rem,2vw,1.75rem)]">
           <h1 className="font-sans font-semibold text-ink tracking-[-0.04em] leading-[0.92]"
               style={{ fontSize:'clamp(2.25rem,5vw,4rem)' }}>
             <MaskReveal>About</MaskReveal>
