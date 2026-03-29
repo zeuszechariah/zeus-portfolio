@@ -82,131 +82,196 @@ function TiltCard({ children, className = '', style = {} }) {
 }
 
 
-// ─── Hero Canvas (Delaunay, lightweight) ─────────────
-function useDelaunayCanvas(canvasRef, heroRef) {
+// ─── Hero Canvas (Delaunay triangulation) ────────────
+function HeroCanvas() {
+  const canvasRef = useRef(null)
+
   useEffect(() => {
-    const canvas = canvasRef.current, hero = heroRef.current
-    if (!canvas || !hero) return
+    const canvas = canvasRef.current
+    if (!canvas) return
     const ctx = canvas.getContext('2d')
-    let W = canvas.width = hero.offsetWidth, H = canvas.height = hero.offsetHeight
-    const N = 40, HR = 90, BO = 0.035
-    const col = (x, y) => {
-      const nx=x/W, ny=y/H
-      const TL=[255,128,8], TR=[255,200,55], BL=[255,100,8], BR=[255,180,20]
+
+    const N = 130
+    const HOVER_RADIUS = 90
+    const BASE_OPACITY = 0.055
+    let W, H, points, restPoints, triangles, retriFrame
+    const smoothGlow = new Float32Array(N)
+    const triGlow = new Float32Array(2000)
+    const mouse = { x: -9999, y: -9999, active: false }
+    let mouseTimer
+
+    // ── Colour (warm amber glow on dark bg) ──
+    function getPositionalColor(x, y) {
+      const nx = x / W, ny = y / H
       return [
-        TL[0]*(1-nx)*(1-ny)+TR[0]*nx*(1-ny)+BL[0]*(1-nx)*ny+BR[0]*nx*ny,
-        TL[1]*(1-nx)*(1-ny)+TR[1]*nx*(1-ny)+BL[1]*(1-nx)*ny+BR[1]*nx*ny,
-        TL[2]*(1-nx)*(1-ny)+TR[2]*nx*(1-ny)+BL[2]*(1-nx)*ny+BR[2]*nx*ny,
-      ].map(Math.round)
-    }
-    const sg = new Float32Array(N)
-    const m = { x: -9999, y: -9999, a: false }
-    let pts = [], rest = [], tris = [], raf, mt
-
-    const cc = (a,b,c) => {
-      const D = 2*(a.x*(b.y-c.y)+b.x*(c.y-a.y)+c.x*(a.y-b.y))
-      if (Math.abs(D) < 1e-10) return null
-      const ux = ((a.x*a.x+a.y*a.y)*(b.y-c.y)+(b.x*b.x+b.y*b.y)*(c.y-a.y)+(c.x*c.x+c.y*c.y)*(a.y-b.y))/D
-      const uy = ((a.x*a.x+a.y*a.y)*(c.x-b.x)+(b.x*b.x+b.y*b.y)*(a.x-c.x)+(c.x*c.x+c.y*c.y)*(b.x-a.x))/D
-      return { x:ux, y:uy, r:Math.hypot(a.x-ux, a.y-uy) }
+        Math.round(255*(1-nx)*(1-ny) + 255*nx*(1-ny) + 255*(1-nx)*ny + 255*nx*ny),
+        Math.round(110*(1-nx)*(1-ny) + 185*nx*(1-ny) +  85*(1-nx)*ny + 160*nx*ny),
+        Math.round(  0*(1-nx)*(1-ny) +  35*nx*(1-ny) +   0*(1-nx)*ny +  10*nx*ny),
+      ]
     }
 
-    const triangulate = () => {
-      const n = pts.length, s1=n-3, s2=n-2, s3=n-1
-      let ts = [{ a:s1, b:s2, c:s3 }]
-      for (let i = 0; i < N; i++) {
-        const p = pts[i]; let edges = []
-        ts = ts.filter(t => {
-          const c = cc(pts[t.a], pts[t.b], pts[t.c])
-          if (c && Math.hypot(p.x-c.x, p.y-c.y) < c.r) {
-            edges.push([t.a,t.b],[t.b,t.c],[t.c,t.a]); return false
-          }
+    // ── Delaunay ──
+    function circumcircle(a,b,c) {
+      const D=2*(a.x*(b.y-c.y)+b.x*(c.y-a.y)+c.x*(a.y-b.y))
+      if (Math.abs(D)<1e-10) return null
+      const ax2=a.x*a.x+a.y*a.y, bx2=b.x*b.x+b.y*b.y, cx2=c.x*c.x+c.y*c.y
+      const ux=(ax2*(b.y-c.y)+bx2*(c.y-a.y)+cx2*(a.y-b.y))/D
+      const uy=(ax2*(c.x-b.x)+bx2*(a.x-c.x)+cx2*(b.x-a.x))/D
+      return { x:ux, y:uy, r:Math.hypot(a.x-ux,a.y-uy) }
+    }
+    function triangulate() {
+      const n=points.length, s1=n-3, s2=n-2, s3=n-1
+      let tris=[{a:s1,b:s2,c:s3}]
+      for (let i=0;i<N;i++) {
+        const p=points[i]; const edges=[]
+        tris=tris.filter(t=>{
+          const cc=circumcircle(points[t.a],points[t.b],points[t.c])
+          if(cc&&Math.hypot(p.x-cc.x,p.y-cc.y)<cc.r){edges.push([t.a,t.b],[t.b,t.c],[t.c,t.a]);return false}
           return true
         })
-        edges.filter((e,i) => !edges.some((f,j) => j!==i && ((f[0]===e[0]&&f[1]===e[1])||(f[0]===e[1]&&f[1]===e[0]))))
-              .forEach(e => ts.push({ a:e[0], b:e[1], c:i }))
+        edges.filter((e,i)=>!edges.some((f,j)=>j!==i&&((f[0]===e[0]&&f[1]===e[1])||(f[0]===e[1]&&f[1]===e[0]))))
+          .forEach(e=>tris.push({a:e[0],b:e[1],c:i}))
       }
-      tris = ts.filter(t => t.a < N && t.b < N && t.c < N)
+      triangles=tris.filter(t=>t.a<N&&t.b<N&&t.c<N)
     }
-
-    const init = () => {
-      pts = []; rest = []
-      const cols = Math.ceil(Math.sqrt(N*W/H)), rows = Math.ceil(N/cols)
-      let idx = 0
-      for (let r = 0; r < rows && idx < N; r++)
-        for (let c = 0; c < cols && idx < N; c++, idx++) {
-          const x = (c+.5+(Math.random()-.5)*.8)/cols*W
-          const y = (r+.5+(Math.random()-.5)*.8)/rows*H
-          pts.push({ x, y, vx:0, vy:0 }); rest.push({ x, y })
+    function init() {
+      W=canvas.width=canvas.offsetWidth; H=canvas.height=canvas.offsetHeight
+      points=[]; restPoints=[]; retriFrame=0
+      const cols=Math.ceil(Math.sqrt(N*W/H)), rows=Math.ceil(N/cols)
+      let idx=0
+      for (let r=0;r<rows&&idx<N;r++)
+        for (let c=0;c<cols&&idx<N;c++) {
+          const x=(c+0.5+(Math.random()-0.5)*0.8)/cols*W
+          const y=(r+0.5+(Math.random()-0.5)*0.8)/rows*H
+          points.push({x,y,vx:0,vy:0}); restPoints.push({x,y}); idx++
         }
-      pts.push({ x:-W*2, y:-H }, { x:W*3, y:-H }, { x:W/2, y:H*3 })
+      points.push({x:-W*2,y:-H},{x:W*3,y:-H},{x:W/2,y:H*3})
       triangulate()
     }
 
-    hero.addEventListener('mousemove', e => {
-      const r = canvas.getBoundingClientRect()
-      m.x = e.clientX - r.left; m.y = e.clientY - r.top; m.a = true
-      clearTimeout(mt); mt = setTimeout(() => { m.a = false }, 200)
-    })
-    window.addEventListener('resize', () => {
-      W = canvas.width = hero.offsetWidth; H = canvas.height = hero.offsetHeight; init()
-    }, { passive: true })
+    // ── Render loop with batched draw calls ──
+    let rafId=null
+    ctx.lineJoin='miter'; ctx.miterLimit=6; ctx.lineCap='butt'
 
-    let lastT = 0, frameCount = 0
-    const INTERVAL = 1000 / 24  // 24fps cap
+    function loop() {
+      ctx.clearRect(0,0,W,H)
+      retriFrame++
 
-    const loop = (ts) => {
-      raf = requestAnimationFrame(loop)
-      if (document.hidden || ts - lastT < INTERVAL) return
-      lastT = ts; frameCount++
-      ctx.clearRect(0, 0, W, H)
-
-      // Update point physics
-      let moved = 0
-      for (let i = 0; i < N; i++) {
-        const p = pts[i], rx = rest[i].x, ry = rest[i].y
-        if (m.a) {
-          const dx = m.x-p.x, dy = m.y-p.y, d = Math.hypot(dx, dy)
-          if (d < HR*2 && d > 1) { const f = 1-d/(HR*2); p.vx += (dx/d)*f*3; p.vy += (dy/d)*f*3 }
+      // ── Physics + glow update ──
+      let totalMov=0
+      for (let i=0;i<N;i++) {
+        const p=points[i], rx=restPoints[i].x, ry=restPoints[i].y
+        if (mouse.active) {
+          const dx=mouse.x-p.x, dy=mouse.y-p.y, d=Math.hypot(dx,dy)
+          if (d<HOVER_RADIUS*2&&d>1) { const f=1-d/(HOVER_RADIUS*2); p.vx+=dx/d*f*4; p.vy+=dy/d*f*4 }
         }
-        p.vx += (rx-p.x)*.1; p.vy += (ry-p.y)*.1; p.vx *= .8; p.vy *= .8
-        p.x += p.vx; p.y += p.vy
-        moved += Math.abs(p.vx) + Math.abs(p.vy)
-        const pd = m.a ? Math.hypot(p.x-m.x, p.y-m.y) : 9999
-        const tg = Math.max(0, 1-pd/HR)
-        sg[i] += (tg - sg[i]) * (tg > sg[i] ? .22 : .05)
+        p.vx+=(rx-p.x)*0.30; p.vy+=(ry-p.y)*0.30; p.vx*=0.52; p.vy*=0.52
+        p.x+=p.vx; p.y+=p.vy
+        totalMov+=Math.abs(p.vx)+Math.abs(p.vy)
+        const pd=mouse.active?Math.hypot(p.x-mouse.x,p.y-mouse.y):9999
+        const tgt=Math.max(0,1-pd/HOVER_RADIUS)
+        smoothGlow[i]+=(tgt-smoothGlow[i])*(tgt>smoothGlow[i]?0.5:0.15)
       }
 
-      // Re-triangulate only when moving significantly, max every 20 frames
-      if (moved > 2 && frameCount % 20 === 0) triangulate()
+      if (totalMov>2.5&&retriFrame%20===0) triangulate()
 
-      // Draw triangles
-      for (const t of tris) {
-        const a=pts[t.a], b=pts[t.b], c=pts[t.c]
-        const cx=(a.x+b.x+c.x)/3, cy=(a.y+b.y+c.y)/3
-        const d = Math.hypot(cx-m.x, cy-m.y)
-        const hs = m.a ? Math.max(0, 1-d/HR) : 0
-        const sf = m.a ? Math.max(0, 1-d/(HR*3.5))*.2 : 0
-        const g = Math.max(hs, sf, (sg[t.a]+sg[t.b]+sg[t.c])/3*.5)
-        const [cr,cg,cb] = col(cx, cy)
-        ctx.globalAlpha = BO + g*.7
-        ctx.lineWidth = .5 + g*1.5
-        ctx.strokeStyle = `rgb(${Math.round(255*(1-g)+cr*g)},${Math.round(255*(1-g)+cg*g)},${Math.round(255*(1-g)+cb*g)})`
+      // ── Pre-compute glow per triangle ──
+      const len=triangles.length
+      for (let k=0;k<len;k++) {
+        const t=triangles[k]
+        const a=points[t.a],b=points[t.b],c=points[t.c]
+        const mx=(a.x+b.x+c.x)/3, my=(a.y+b.y+c.y)/3
+        const d=Math.hypot(mx-mouse.x,my-mouse.y)
+        const hotspot=mouse.active?Math.max(0,1-d/HOVER_RADIUS):0
+        const soft=mouse.active?Math.max(0,1-d/(HOVER_RADIUS*3.5))*0.28:0
+        const va=(smoothGlow[t.a]+smoothGlow[t.b]+smoothGlow[t.c])/3
+        triGlow[k]=Math.max(hotspot,soft,va*0.55)
+      }
+
+      // ── Pass 1: batch all dark triangles (subtle cream on dark bg) ──
+      ctx.globalAlpha=BASE_OPACITY
+      ctx.strokeStyle='rgba(242,237,228,0.55)'
+      ctx.lineWidth=0.5
+      ctx.beginPath()
+      for (let k=0;k<len;k++) {
+        if (triGlow[k]<0.04) {
+          const t=triangles[k], a=points[t.a],b=points[t.b],c=points[t.c]
+          ctx.moveTo(a.x,a.y); ctx.lineTo(b.x,b.y); ctx.lineTo(c.x,c.y); ctx.closePath()
+        }
+      }
+      ctx.stroke()
+
+      // ── Pass 2: glowing triangles individually ──
+      for (let k=0;k<len;k++) {
+        const g=triGlow[k]
+        if (g<0.04) continue
+        const t=triangles[k], a=points[t.a],b=points[t.b],c=points[t.c]
+        const mx=(a.x+b.x+c.x)/3, my=(a.y+b.y+c.y)/3
+        const [cr,cg,cb]=getPositionalColor(mx,my)
+        const inv=1-g
+        ctx.globalAlpha=Math.min(1, BASE_OPACITY+g*1.3)
+        ctx.lineWidth=0.5+g*3.5
+        ctx.strokeStyle=`rgb(${Math.round(242*inv+cr*g)},${Math.round(237*inv+cg*g)},${Math.round(228*inv+cb*g)})`
         ctx.beginPath(); ctx.moveTo(a.x,a.y); ctx.lineTo(b.x,b.y); ctx.lineTo(c.x,c.y); ctx.closePath(); ctx.stroke()
+        if (g>0.25) {
+          ctx.globalAlpha=g*0.18
+          ctx.fillStyle=`rgb(${cr},${cg},${cb})`
+          ctx.fill()
+        }
       }
 
-      // Draw dots
-      for (let i = 0; i < N; i++) {
-        ctx.globalAlpha = .25 + sg[i]*.5
-        ctx.fillStyle = '#fff'
-        ctx.beginPath(); ctx.arc(pts[i].x, pts[i].y, 1, 0, Math.PI*2); ctx.fill()
+      // ── Vertices (cream dots on dark bg) ──
+      ctx.beginPath()
+      for (let i=0;i<N;i++) {
+        const p=points[i], g=smoothGlow[i]
+        ctx.globalAlpha=0.18+g*0.7
+        ctx.fillStyle=`rgba(242,237,228,${0.5+g*0.5})`
+        ctx.arc(p.x,p.y,1.0+g*2,0,Math.PI*2); ctx.closePath()
       }
-      ctx.globalAlpha = 1
+      ctx.fill()
+
+      ctx.globalAlpha=1
+      rafId=requestAnimationFrame(loop)
     }
 
-    init(); raf = requestAnimationFrame(loop)
-    return () => cancelAnimationFrame(raf)
-  }, [canvasRef, heroRef])
+    // ── Mouse ──
+    const onMouse = e => {
+      const rect=canvas.getBoundingClientRect()
+      mouse.x=e.clientX-rect.left; mouse.y=e.clientY-rect.top
+      mouse.active=true; clearTimeout(mouseTimer)
+      mouseTimer=setTimeout(()=>{ mouse.active=false },160)
+    }
+    window.addEventListener('mousemove', onMouse, { passive:true })
+    const onResize = () => init()
+    window.addEventListener('resize', onResize, { passive:true })
+
+    // ── IntersectionObserver — pause when off-screen ──
+    let visible=false
+    const observer=new IntersectionObserver(([e])=>{
+      visible=e.isIntersecting
+      if (visible&&!rafId) rafId=requestAnimationFrame(loop)
+      else if (!visible&&rafId) { cancelAnimationFrame(rafId); rafId=null }
+    },{ threshold:0.01 })
+    observer.observe(canvas)
+
+    // ── Visibility API ──
+    const onVis=()=>{
+      if (document.hidden) { if (rafId) { cancelAnimationFrame(rafId); rafId=null } }
+      else if (visible&&!rafId) rafId=requestAnimationFrame(loop)
+    }
+    document.addEventListener('visibilitychange', onVis)
+
+    init()
+
+    return () => {
+      cancelAnimationFrame(rafId); observer.disconnect(); clearTimeout(mouseTimer)
+      window.removeEventListener('mousemove', onMouse)
+      window.removeEventListener('resize', onResize)
+      document.removeEventListener('visibilitychange', onVis)
+    }
+  }, [])
+
+  return <canvas ref={canvasRef} className="absolute inset-0 w-full h-full pointer-events-none" style={{ zIndex:0 }} />
 }
 
 // ─── Video Intro ──────────────────────────────────────
@@ -276,10 +341,8 @@ function VideoIntro({ onComplete }) {
 }
 
 // ─── Hero ─────────────────────────────────────────────
-// Delaunay canvas + time-based text reveal on mount.
 function Hero() {
-  const heroRef = useRef(null), canvasRef = useRef(null)
-  useDelaunayCanvas(canvasRef, heroRef)
+  const heroRef = useRef(null)
 
   const lines = [
     { text: "I'm an Indian designer,",          cls: 'font-sans font-semibold tracking-[-0.04em]', italic: false },
@@ -295,7 +358,7 @@ function Hero() {
         padding: '0 clamp(1.5rem,5vw,3.5rem) clamp(4rem,8vw,6rem)',
       }}
     >
-      <canvas ref={canvasRef} className="absolute inset-0 w-full h-full pointer-events-none" style={{ zIndex: 0 }} />
+      <HeroCanvas />
       <div className="absolute pointer-events-none" style={{ width:'clamp(500px,60vw,820px)',height:'clamp(500px,60vw,820px)',borderRadius:'50%',top:'-25%',left:'-18%',zIndex:0,background:'radial-gradient(circle,rgba(124,58,237,0.14) 0%,transparent 65%)' }} />
       <div className="absolute pointer-events-none" style={{ width:'clamp(350px,42vw,600px)',height:'clamp(350px,42vw,600px)',borderRadius:'50%',bottom:'-12%',right:'-10%',zIndex:0,background:'radial-gradient(circle,rgba(255,75,143,0.09) 0%,transparent 65%)' }} />
       <div className="absolute inset-0 pointer-events-none" style={{ zIndex:1, background:'linear-gradient(to bottom,#060606 0%,transparent 22%),linear-gradient(to top,#060606 0%,transparent 22%),linear-gradient(to right,#060606 0%,transparent 18%),linear-gradient(to left,#060606 0%,transparent 18%)' }} />
@@ -531,206 +594,10 @@ function ProjectCard({ project, delay = 0 }) {
   )
 }
 
-// ─── Work Section Canvas (Delaunay triangulation) ─────
-function WorkCanvas() {
-  const canvasRef = useRef(null)
-
-  useEffect(() => {
-    const canvas = canvasRef.current
-    if (!canvas) return
-    const ctx = canvas.getContext('2d')
-
-    const N = 130
-    const HOVER_RADIUS = 90
-    const BASE_OPACITY = 0.045
-    let W, H, points, restPoints, triangles, retriFrame
-    const smoothGlow = new Float32Array(N)
-    // pre-allocated glow scratch array to avoid per-frame allocation
-    const triGlow = new Float32Array(2000)
-    const mouse = { x: -9999, y: -9999, active: false }
-    let mouseTimer
-
-    // ── Colour ──
-    function getPositionalColor(x, y) {
-      const nx = x / W, ny = y / H
-      return [
-        Math.round(255*(1-nx)*(1-ny) + 255*nx*(1-ny) + 255*(1-nx)*ny + 255*nx*ny),
-        Math.round(110*(1-nx)*(1-ny) + 185*nx*(1-ny) +  85*(1-nx)*ny + 160*nx*ny),
-        Math.round(  0*(1-nx)*(1-ny) +  35*nx*(1-ny) +   0*(1-nx)*ny +  10*nx*ny),
-      ]
-    }
-
-    // ── Delaunay ──
-    function circumcircle(a,b,c) {
-      const D=2*(a.x*(b.y-c.y)+b.x*(c.y-a.y)+c.x*(a.y-b.y))
-      if (Math.abs(D)<1e-10) return null
-      const ax2=a.x*a.x+a.y*a.y, bx2=b.x*b.x+b.y*b.y, cx2=c.x*c.x+c.y*c.y
-      const ux=(ax2*(b.y-c.y)+bx2*(c.y-a.y)+cx2*(a.y-b.y))/D
-      const uy=(ax2*(c.x-b.x)+bx2*(a.x-c.x)+cx2*(b.x-a.x))/D
-      return { x:ux, y:uy, r:Math.hypot(a.x-ux,a.y-uy) }
-    }
-    function triangulate() {
-      const n=points.length, s1=n-3, s2=n-2, s3=n-1
-      let tris=[{a:s1,b:s2,c:s3}]
-      for (let i=0;i<N;i++) {
-        const p=points[i]; const edges=[]
-        tris=tris.filter(t=>{
-          const cc=circumcircle(points[t.a],points[t.b],points[t.c])
-          if(cc&&Math.hypot(p.x-cc.x,p.y-cc.y)<cc.r){edges.push([t.a,t.b],[t.b,t.c],[t.c,t.a]);return false}
-          return true
-        })
-        edges.filter((e,i)=>!edges.some((f,j)=>j!==i&&((f[0]===e[0]&&f[1]===e[1])||(f[0]===e[1]&&f[1]===e[0]))))
-          .forEach(e=>tris.push({a:e[0],b:e[1],c:i}))
-      }
-      triangles=tris.filter(t=>t.a<N&&t.b<N&&t.c<N)
-    }
-    function init() {
-      W=canvas.width=canvas.offsetWidth; H=canvas.height=canvas.offsetHeight
-      points=[]; restPoints=[]; retriFrame=0
-      const cols=Math.ceil(Math.sqrt(N*W/H)), rows=Math.ceil(N/cols)
-      let idx=0
-      for (let r=0;r<rows&&idx<N;r++)
-        for (let c=0;c<cols&&idx<N;c++) {
-          const x=(c+0.5+(Math.random()-0.5)*0.8)/cols*W
-          const y=(r+0.5+(Math.random()-0.5)*0.8)/rows*H
-          points.push({x,y,vx:0,vy:0}); restPoints.push({x,y}); idx++
-        }
-      points.push({x:-W*2,y:-H},{x:W*3,y:-H},{x:W/2,y:H*3})
-      triangulate()
-    }
-
-    // ── Render loop with batched draw calls ──
-    let rafId=null
-    ctx.lineJoin='miter'; ctx.miterLimit=6; ctx.lineCap='butt'
-
-    function loop() {
-      ctx.clearRect(0,0,W,H)
-      retriFrame++
-
-      // ── Physics + glow update ──
-      let totalMov=0
-      for (let i=0;i<N;i++) {
-        const p=points[i], rx=restPoints[i].x, ry=restPoints[i].y
-        if (mouse.active) {
-          const dx=mouse.x-p.x, dy=mouse.y-p.y, d=Math.hypot(dx,dy)
-          if (d<HOVER_RADIUS*2&&d>1) { const f=1-d/(HOVER_RADIUS*2); p.vx+=dx/d*f*4; p.vy+=dy/d*f*4 }
-        }
-        p.vx+=(rx-p.x)*0.30; p.vy+=(ry-p.y)*0.30; p.vx*=0.52; p.vy*=0.52
-        p.x+=p.vx; p.y+=p.vy
-        totalMov+=Math.abs(p.vx)+Math.abs(p.vy)
-        const pd=mouse.active?Math.hypot(p.x-mouse.x,p.y-mouse.y):9999
-        const tgt=Math.max(0,1-pd/HOVER_RADIUS)
-        smoothGlow[i]+=(tgt-smoothGlow[i])*(tgt>smoothGlow[i]?0.5:0.15)
-      }
-
-      // Retri only every 20 frames with higher movement threshold
-      if (totalMov>2.5&&retriFrame%20===0) triangulate()
-
-      // ── Pre-compute glow per triangle ──
-      const len=triangles.length
-      for (let k=0;k<len;k++) {
-        const t=triangles[k]
-        const a=points[t.a],b=points[t.b],c=points[t.c]
-        const mx=(a.x+b.x+c.x)/3, my=(a.y+b.y+c.y)/3
-        const d=Math.hypot(mx-mouse.x,my-mouse.y)
-        const hotspot=mouse.active?Math.max(0,1-d/HOVER_RADIUS):0
-        const soft=mouse.active?Math.max(0,1-d/(HOVER_RADIUS*3.5))*0.28:0
-        const va=(smoothGlow[t.a]+smoothGlow[t.b]+smoothGlow[t.c])/3
-        triGlow[k]=Math.max(hotspot,soft,va*0.55)
-      }
-
-      // ── Pass 1: batch all dark triangles in ONE stroke call ──
-      ctx.globalAlpha=BASE_OPACITY
-      ctx.strokeStyle='rgba(0,0,0,0.75)'
-      ctx.lineWidth=0.5
-      ctx.beginPath()
-      for (let k=0;k<len;k++) {
-        if (triGlow[k]<0.04) {
-          const t=triangles[k], a=points[t.a],b=points[t.b],c=points[t.c]
-          ctx.moveTo(a.x,a.y); ctx.lineTo(b.x,b.y); ctx.lineTo(c.x,c.y); ctx.closePath()
-        }
-      }
-      ctx.stroke()
-
-      // ── Pass 2: glowing triangles individually ──
-      for (let k=0;k<len;k++) {
-        const g=triGlow[k]
-        if (g<0.04) continue
-        const t=triangles[k], a=points[t.a],b=points[t.b],c=points[t.c]
-        const mx=(a.x+b.x+c.x)/3, my=(a.y+b.y+c.y)/3
-        const [cr,cg,cb]=getPositionalColor(mx,my)
-        const inv=1-g
-        ctx.globalAlpha=Math.min(1, BASE_OPACITY+g*1.3)
-        ctx.lineWidth=0.5+g*3.5
-        ctx.strokeStyle=`rgb(${Math.round(242*inv+cr*g)},${Math.round(237*inv+cg*g)},${Math.round(228*inv+cb*g)})`
-        ctx.beginPath(); ctx.moveTo(a.x,a.y); ctx.lineTo(b.x,b.y); ctx.lineTo(c.x,c.y); ctx.closePath(); ctx.stroke()
-        // coloured fill for intense core glow
-        if (g>0.25) {
-          ctx.globalAlpha=g*0.18
-          ctx.fillStyle=`rgb(${cr},${cg},${cb})`
-          ctx.fill()
-        }
-      }
-
-      // ── Vertices ──
-      ctx.fillStyle='#1a1008'
-      ctx.beginPath()
-      for (let i=0;i<N;i++) {
-        const p=points[i], g=smoothGlow[i]
-        ctx.globalAlpha=0.14+g*0.7
-        ctx.arc(p.x,p.y,1.0+g*2,0,Math.PI*2); ctx.closePath()
-      }
-      ctx.fill()
-
-      ctx.globalAlpha=1
-      rafId=requestAnimationFrame(loop)
-    }
-
-    // ── Mouse ──
-    const onMouse = e => {
-      const rect=canvas.getBoundingClientRect()
-      mouse.x=e.clientX-rect.left; mouse.y=e.clientY-rect.top
-      mouse.active=true; clearTimeout(mouseTimer)
-      mouseTimer=setTimeout(()=>{ mouse.active=false },160)
-    }
-    window.addEventListener('mousemove', onMouse, { passive:true })
-    const onResize = () => init()
-    window.addEventListener('resize', onResize, { passive:true })
-
-    // ── IntersectionObserver — pause when off-screen ──
-    let visible=false
-    const observer=new IntersectionObserver(([e])=>{
-      visible=e.isIntersecting
-      if (visible&&!rafId) rafId=requestAnimationFrame(loop)
-      else if (!visible&&rafId) { cancelAnimationFrame(rafId); rafId=null }
-    },{ threshold:0.01 })
-    observer.observe(canvas)
-
-    // ── Visibility API ──
-    const onVis=()=>{
-      if (document.hidden) { if (rafId) { cancelAnimationFrame(rafId); rafId=null } }
-      else if (visible&&!rafId) rafId=requestAnimationFrame(loop)
-    }
-    document.addEventListener('visibilitychange', onVis)
-
-    init()
-
-    return () => {
-      cancelAnimationFrame(rafId); observer.disconnect(); clearTimeout(mouseTimer)
-      window.removeEventListener('mousemove', onMouse)
-      window.removeEventListener('resize', onResize)
-      document.removeEventListener('visibilitychange', onVis)
-    }
-  }, [])
-
-  return <canvas ref={canvasRef} className="absolute inset-0 w-full h-full pointer-events-none" style={{ zIndex:0 }} />
-}
-
 // ─── Work ─────────────────────────────────────────────
 function Work() {
   return (
     <section id="work" style={{ background:'#F2EDE4' }} className="relative overflow-hidden py-[clamp(7rem,13vw,11rem)]">
-      <WorkCanvas />
       <div className="relative z-[1] max-w-[1200px] mx-auto px-[clamp(1.5rem,5vw,3.5rem)]">
         <div className="flex items-end justify-between mb-[clamp(3rem,5.5vw,4.5rem)] gap-6 flex-wrap">
           <div>
