@@ -448,7 +448,7 @@ function Services() {
     if (!inView) return
     let intervalId
     const timeoutId = setTimeout(() => {
-      intervalId = setInterval(() => setOffset(o => (o + 1) % 4), 500)
+      intervalId = setInterval(() => setOffset(o => (o - 1 + 4) % 4), 3000)
     }, 1200)
     return () => { clearTimeout(timeoutId); clearInterval(intervalId) }
   }, [inView])
