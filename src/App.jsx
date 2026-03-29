@@ -401,13 +401,23 @@ function Hero() {
   )
 }
 
+// Clockwise grid positions: TL(grid 0) → TR(grid 1) → BR(grid 3) → BL(grid 2)
+const CW_TO_GRID = [0, 1, 3, 2]
+function getRotatedServices(offset) {
+  const result = new Array(4)
+  for (let cw = 0; cw < 4; cw++) result[CW_TO_GRID[cw]] = SERVICES[(cw + offset) % 4]
+  return result
+}
+
 // ─── Services ─────────────────────────────────────────
 function Services() {
   const wrapRef = useRef(null)
   const dotRefs = useRef([])
   const [svgPath, setSvgPath] = useState('')
+  const [offset, setOffset]   = useState(0)
   const inView  = useInView(wrapRef, { once: true, amount: 0.25 })
 
+  // SVG path — always connects the 4 fixed grid positions
   useEffect(() => {
     const compute = () => {
       const wrap = wrapRef.current
@@ -415,15 +425,12 @@ function Services() {
       const wr  = wrap.getBoundingClientRect()
       const els = dotRefs.current
       if (els.length < 4 || els.some(el => !el)) return
-      // Grid order: 0=TL 1=TR 2=BL 3=BR
       const circles = els.map(el => {
         const r = el.getBoundingClientRect()
         return { x: r.left - wr.left + r.width / 2, y: r.top - wr.top + r.height / 2, r: r.width / 2 }
       })
       const [tl, tr, bl, br] = circles
       const R = tl.r
-      // Four separate segments connecting circle EDGES, drawn clockwise:
-      // top (→), right (↓), bottom (←), left (↑)
       setSvgPath([
         `M ${tl.x + R} ${tl.y} L ${tr.x - R} ${tr.y}`,
         `M ${tr.x} ${tr.y + R} L ${br.x} ${br.y - R}`,
@@ -435,6 +442,18 @@ function Services() {
     window.addEventListener('resize', compute, { passive: true })
     return () => window.removeEventListener('resize', compute)
   }, [])
+
+  // Start rotating 1.2s after entrance (after entrance animation finishes)
+  useEffect(() => {
+    if (!inView) return
+    let intervalId
+    const timeoutId = setTimeout(() => {
+      intervalId = setInterval(() => setOffset(o => (o + 1) % 4), 500)
+    }, 1200)
+    return () => { clearTimeout(timeoutId); clearInterval(intervalId) }
+  }, [inView])
+
+  const displayed = getRotatedServices(offset)
 
   return (
     <section style={{ background:'#060606' }} className="pt-[clamp(3.5rem,6vw,5rem)] pb-[clamp(7rem,13vw,11rem)] border-t border-white/[0.04] relative overflow-hidden">
@@ -458,7 +477,7 @@ function Services() {
         {/* 2×2 grid */}
         <div ref={wrapRef} className="relative grid grid-cols-2">
 
-          {/* Centre glow — sits at the intersection of all four circles */}
+          {/* Centre glow */}
           <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none" style={{ width:'clamp(380px,42vw,580px)',height:'clamp(380px,42vw,580px)',borderRadius:'50%',background:'radial-gradient(circle,rgba(149,80,255,0.22) 0%,rgba(140,60,240,0.16) 20%,rgba(120,48,200,0.09) 45%,rgba(100,40,160,0.03) 65%,transparent 80%)',filter:'blur(72px)',opacity:0.65,zIndex:0 }} />
 
           {/* Clockwise traveling runner */}
@@ -472,28 +491,32 @@ function Services() {
                 strokeLinecap="round"
                 initial={{ pathOffset: 0, pathLength: 0 }}
                 animate={inView ? {
-                  pathOffset: [0,    0,    0.82, 1  ],
-                  pathLength: [0,    0.20, 0.20, 0  ],
+                  pathOffset: [0, 0, 0.82, 1],
+                  pathLength: [0, 0.20, 0.20, 0],
                 } : {}}
                 transition={{
-                  duration: 2.4,
-                  times:    [0,    0.10, 0.88, 1  ],
-                  ease: ['easeOut', 'linear', 'easeIn'],
+                  duration: 2.0,
+                  times: [0, 0.08, 0.88, 1],
+                  ease: ['easeOut', 'linear', 'easeOut'],
                   repeat: Infinity,
-                  repeatDelay: 0.25,
+                  repeatDelay: 0.1,
                 }}
               />
             )}
           </svg>
 
-          {SERVICES.map((title, i) => (
+          {displayed.map((title, i) => (
             <motion.div
               key={title}
+              layout
               className="flex items-center justify-center"
               style={{ padding: 'clamp(1.75rem,4vw,4rem)', position: 'relative', zIndex: 1 }}
               initial={{ opacity: 0 }}
               animate={inView ? { opacity: 1 } : {}}
-              transition={{ duration: 0.9, ease: EASE, delay: 0.15 + i * 0.12 }}
+              transition={{
+                layout: { type: 'spring', duration: 0.45, bounce: 0.18 },
+                opacity: { duration: 0.55, ease: EASE, delay: 0.1 + i * 0.09 },
+              }}
             >
               <div
                 ref={el => { dotRefs.current[i] = el }}
@@ -501,7 +524,7 @@ function Services() {
                 style={{
                   width:  'clamp(150px,17vw,230px)',
                   height: 'clamp(150px,17vw,230px)',
-                  background: '#060606', // opaque — hides SVG line inside the circle
+                  background: '#060606',
                 }}
               >
                 <span
@@ -525,7 +548,7 @@ function Services() {
           className="flex justify-end mt-5"
           initial={{ opacity: 0 }}
           animate={inView ? { opacity: 1 } : {}}
-          transition={{ duration: 0.8, ease: EASE, delay: 1.5 }}
+          transition={{ duration: 0.5, ease: EASE, delay: 0.9 }}
         >
           <a href="/#work"
              className="flex items-center gap-2 font-mono text-[0.58rem] tracking-[0.14em] uppercase text-ink/28 hover:text-ink/55 transition-colors duration-300">
