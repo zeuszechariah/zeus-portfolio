@@ -27,7 +27,7 @@ function DNACanvas() {
     let scrollOffs     = 0
     let highlightTimer = 0
 
-    const HIGHLIGHT_FRAMES = 14  // ~0.23 s per letter at 60 fps
+    const HIGHLIGHT_FRAMES = 45  // ~0.75 s per letter at 60 fps
 
     const draw = () => {
       raf = requestAnimationFrame(draw)
@@ -35,8 +35,8 @@ function DNACanvas() {
 
       ctx.clearRect(0, 0, W, H)
 
-      rotAngle       += 0.007
-      scrollOffs     += 0.75
+      rotAngle       += 0.003
+      scrollOffs     += 0.35
       highlightTimer += 1
 
       const CX     = W / 2
@@ -264,7 +264,7 @@ function AboutIntro() {
 // ─── Resume ───────────────────────────────────────────
 function Resume() {
   return (
-    <section className="py-[clamp(6rem,11vw,9rem)]"
+    <section className="py-[clamp(4rem,7vw,6rem)]"
       style={{ background:'#060606' }}>
       <div className="max-w-[1200px] mx-auto px-[clamp(1.5rem,5vw,3.5rem)]">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-[clamp(3rem,6vw,6rem)] items-center">
@@ -289,7 +289,7 @@ function Resume() {
           </div>
 
           <Reveal delay={0.12} className="flex flex-col items-start md:items-end gap-6">
-            <a href="https://drive.google.com/file/d/13STNlMETpbArR6O8Bz5tatm9hxZgkjbT/view"
+            <a href="https://drive.google.com/file/d/1KhxDpLdW_BUqVGeiBflXHNzng0GcKWKd/view?usp=sharing"
                target="_blank" rel="noopener noreferrer"
                className="relative group/link inline-flex items-center gap-3 font-sans font-semibold text-bg bg-ink
                           rounded-full tracking-[0.01em] transition-[opacity,transform] duration-300
@@ -322,7 +322,7 @@ function ContactForm() {
   const handleSubmit = e => { e.preventDefault(); setSent(true) }
 
   return (
-    <section className="py-[clamp(6rem,11vw,9rem)] border-t border-white/[0.04] relative overflow-hidden"
+    <section className="py-[clamp(4rem,7vw,6rem)] border-t border-white/[0.04] relative overflow-hidden"
       style={{ background:'#060606' }}>
       <div className="absolute left-1/2 top-1/3 -translate-x-1/2 -translate-y-1/2 pointer-events-none"
         style={{ width:600, height:400,

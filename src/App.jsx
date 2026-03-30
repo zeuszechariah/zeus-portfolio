@@ -1,18 +1,18 @@
-import { useRef, useEffect, useState } from 'react'
+import { useRef, useEffect, useState, lazy, Suspense } from 'react'
 import { motion, useMotionValue, useTransform, useSpring, useInView } from 'framer-motion'
 import { BrowserRouter, Routes, Route, Link } from 'react-router-dom'
 import { EASE, SPRING_STIFF, Bolt, ProgressBar, Nav, Footer, MaskReveal, Reveal, CookieBanner, SectionExit } from './shared.jsx'
-import About from './About.jsx'
-import Imprint from './Imprint.jsx'
-import PrivacyPolicy from './PrivacyPolicy.jsx'
-import Press from './Press.jsx'
-import GetSetGlobe from './GetSetGlobe.jsx'
+const About        = lazy(() => import('./About.jsx'))
+const Imprint      = lazy(() => import('./Imprint.jsx'))
+const PrivacyPolicy = lazy(() => import('./PrivacyPolicy.jsx'))
+const Press        = lazy(() => import('./Press.jsx'))
+const GetSetGlobe  = lazy(() => import('./GetSetGlobe.jsx'))
 
 const PROJECTS = [
-  { id:1, name:'Study Buddy',     tags:'UX Research · Mobile',   desc:'Rethinking how Indian students study & building habits that actually stick.', color:'from-[#061528] via-[#0f2d52] to-[#1b4a8a]', pitch:'https://app.pitch.com/app/player/e4cb8edc-572e-494d-8e32-567e4807ffe5/7013aa0a-88ad-4b8f-9cb7-86e857f28e62' },
-  { id:2, name:'Get Set Globe',   tags:'EdTech · Product Design', desc:'Making Earth science something children feel, not just memorise.', color:'from-[#050f08] via-[#0b2e16] to-[#135728]', pitch:'https://app.pitch.com/app/player/e4cb8edc-572e-494d-8e32-567e4807ffe5/5811808d-1999-42c4-88c3-587610a87bfe' },
-  { id:3, name:'Spectra',         tags:'Data Viz · Experience',   desc:'Two invisible threats, one shared sky. Mapping the overlap of air and light pollution across urban India.', color:'from-[#0d0702] via-[#2e1606] to-[#7a430e]', pitch:'https://app.pitch.com/app/presentation/e4cb8edc-572e-494d-8e32-567e4807ffe5/ed036113-9746-40ed-932d-5259726c2f60' },
-  { id:4, name:'Finance for semi/less literate', tags:'Research · Social Design', desc:'Researching financial literacy through scam resilience and financial literacy.', color:'from-[#040409] via-[#0e0e30] to-[#1a1060]', pitch:'https://canva.link/ftos6no4hro4473' },
+  { id:1, name:'Study Buddy',     tags:'UX Research · Mobile',   desc:'Rethinking how Indian students study & building habits that actually stick.', color:'from-[#061528] via-[#0f2d52] to-[#1b4a8a]', pitch:'https://app.pitch.com/app/player/e4cb8edc-572e-494d-8e32-567e4807ffe5/7013aa0a-88ad-4b8f-9cb7-86e857f28e62', thumb:'/thumnail-1-opt.gif' },
+  { id:2, name:'Get Set Globe',   tags:'EdTech · Product Design', desc:'Making Earth science something children feel, not just memorise.', color:'from-[#050f08] via-[#0b2e16] to-[#135728]', pitch:'https://app.pitch.com/app/player/e4cb8edc-572e-494d-8e32-567e4807ffe5/5811808d-1999-42c4-88c3-587610a87bfe', thumb:'/thumb-getsetglobe.jpg', thumbPos:'50% 0%' },
+  { id:3, name:'Spectra',         tags:'Data Viz · Experience',   desc:'Two invisible threats, one shared sky. Mapping the overlap of air and light pollution across urban India.', color:'from-[#0d0702] via-[#2e1606] to-[#7a430e]', pitch:'https://app.pitch.com/app/presentation/e4cb8edc-572e-494d-8e32-567e4807ffe5/ed036113-9746-40ed-932d-5259726c2f60', thumb:'/thumb-spectra-opt.jpg', thumbPos:'50% 15%', thumbFilter:'saturate(0.75)' },
+  { id:4, name:'Finance for semi/less literate', tags:'Research · Social Design', desc:'Researching financial literacy through scam resilience and financial literacy.', color:'from-[#040409] via-[#0e0e30] to-[#1a1060]', pitch:'https://canva.link/ftos6no4hro4473', thumb:'/thumb-finance.jpg', thumbBg:'#EEF3DF' },
 ]
 
 const SERVICES = [
@@ -211,14 +211,9 @@ function HeroCanvas() {
         const [cr,cg,cb]=getPositionalColor(mx,my)
         const inv=1-g
         ctx.globalAlpha=Math.min(1, BASE_OPACITY+g*1.3)
-        ctx.lineWidth=0.5+g*3.5
+        ctx.lineWidth=0.5+g*0.9
         ctx.strokeStyle=`rgb(${Math.round(242*inv+cr*g)},${Math.round(237*inv+cg*g)},${Math.round(228*inv+cb*g)})`
         ctx.beginPath(); ctx.moveTo(a.x,a.y); ctx.lineTo(b.x,b.y); ctx.lineTo(c.x,c.y); ctx.closePath(); ctx.stroke()
-        if (g>0.25) {
-          ctx.globalAlpha=g*0.18
-          ctx.fillStyle=`rgb(${cr},${cg},${cb})`
-          ctx.fill()
-        }
       }
 
       // ── Vertices (cream dots on dark bg) ──
@@ -314,7 +309,7 @@ function VideoIntro({ onComplete }) {
         transform: 'translate(-50%, -50%)',
         width: '75%', height: '75%', overflow: 'hidden',
       }}>
-        <video ref={videoRef} autoPlay muted playsInline preload="auto"
+        <video ref={videoRef} autoPlay muted playsInline preload="none"
           style={{ width: '100%', height: '100%', objectFit: 'cover' }}
           src="/headervideo.mp4" />
         <div className="absolute inset-0" style={{
@@ -412,31 +407,28 @@ function getRotatedServices(offset) {
 // ─── Services ─────────────────────────────────────────
 function Services() {
   const wrapRef = useRef(null)
-  const dotRefs = useRef([])
   const [svgPath, setSvgPath] = useState('')
   const [offset, setOffset]   = useState(0)
   const inView  = useInView(wrapRef, { once: true, amount: 0.25 })
 
-  // SVG path — always connects the 4 fixed grid positions
+  // SVG path — computed from wrapper geometry, never depends on dotRefs
   useEffect(() => {
     const compute = () => {
       const wrap = wrapRef.current
       if (!wrap) return
-      const wr  = wrap.getBoundingClientRect()
-      const els = dotRefs.current
-      if (els.length < 4 || els.some(el => !el)) return
-      const circles = els.map(el => {
-        const r = el.getBoundingClientRect()
-        return { x: r.left - wr.left + r.width / 2, y: r.top - wr.top + r.height / 2, r: r.width / 2 }
-      })
-      const [tl, tr, bl, br] = circles
-      // Draw center-to-center; circles (z-index:1) sit above the SVG (z-index:0)
-      // so their opaque backgrounds naturally clip the line endpoints — no gap possible.
+      const wr = wrap.getBoundingClientRect()
+      // Circle radius mirrors the CSS clamp(150px, 17vw, 230px)
+      const r = Math.min(Math.max(150, window.innerWidth * 0.17), 230) / 2
+      // 2×2 grid: cell centres at 25%/75% of wrapper width & height
+      const tl = { x: wr.width * 0.25, y: wr.height * 0.25 }
+      const tr = { x: wr.width * 0.75, y: wr.height * 0.25 }
+      const bl = { x: wr.width * 0.25, y: wr.height * 0.75 }
+      const br = { x: wr.width * 0.75, y: wr.height * 0.75 }
       setSvgPath([
-        `M ${tl.x} ${tl.y} L ${tr.x} ${tr.y}`,
-        `M ${tr.x} ${tr.y} L ${br.x} ${br.y}`,
-        `M ${br.x} ${br.y} L ${bl.x} ${bl.y}`,
-        `M ${bl.x} ${bl.y} L ${tl.x} ${tl.y}`,
+        `M ${tl.x + r} ${tl.y} L ${tr.x - r} ${tr.y}`,
+        `M ${tr.x} ${tr.y + r} L ${br.x} ${br.y - r}`,
+        `M ${br.x - r} ${br.y} L ${bl.x + r} ${bl.y}`,
+        `M ${bl.x} ${bl.y - r} L ${tl.x} ${tl.y + r}`,
       ].join(' '))
     }
     compute()
@@ -457,7 +449,7 @@ function Services() {
   const displayed = getRotatedServices(offset)
 
   return (
-    <section style={{ background:'#060606' }} className="pt-[clamp(3.5rem,6vw,5rem)] pb-[clamp(7rem,13vw,11rem)] border-t border-white/[0.04] relative overflow-hidden">
+    <section style={{ background:'#060606' }} className="pt-[clamp(3.5rem,6vw,5rem)] pb-[clamp(3.5rem,5.5vw,5.5rem)] border-t border-white/[0.04] relative overflow-hidden">
       <div className="absolute pointer-events-none" style={{ width:'clamp(400px,50vw,680px)',height:'clamp(400px,50vw,680px)',borderRadius:'50%',top:'-20%',right:'-8%',background:'radial-gradient(circle,rgba(124,58,237,0.077) 0%,transparent 65%)' }} />
       <div className="absolute pointer-events-none" style={{ width:'clamp(280px,36vw,480px)',height:'clamp(280px,36vw,480px)',borderRadius:'50%',bottom:'-15%',left:'-5%',background:'radial-gradient(circle,rgba(255,75,143,0.055) 0%,transparent 65%)' }} />
       <div className="max-w-[1200px] mx-auto px-[clamp(1.5rem,5vw,3.5rem)]">
@@ -506,6 +498,13 @@ function Services() {
             )}
           </svg>
 
+          {/* Central bolt — fixed at the intersection of the four circles */}
+          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none" style={{ zIndex: 2 }}>
+            <span style={{ color: 'rgba(242,237,228,0.55)', filter: 'drop-shadow(0 0 12px rgba(242,237,228,0.3))' }}>
+              <Bolt size={38} />
+            </span>
+          </div>
+
           {displayed.map((title, i) => (
             <motion.div
               key={title}
@@ -520,8 +519,7 @@ function Services() {
               }}
             >
               <div
-                ref={el => { dotRefs.current[i] = el }}
-                className="flex items-center justify-center rounded-full border border-white/[0.10]"
+                className="relative flex items-center justify-center rounded-full border border-white/[0.10]"
                 style={{
                   width:  'clamp(150px,17vw,230px)',
                   height: 'clamp(150px,17vw,230px)',
@@ -529,7 +527,7 @@ function Services() {
                 }}
               >
                 <span
-                  className="font-sans font-semibold text-center leading-[1.45] select-none"
+                  className="relative font-sans font-semibold text-center leading-[1.45] select-none"
                   style={{
                     fontSize: 'clamp(0.9rem,1.2vw,1.1rem)',
                     padding: '0 16%',
@@ -568,30 +566,38 @@ function ProjectCard({ project, delay = 0 }) {
   const mockupY=useMotionValue(0), sMockupY=useSpring(mockupY, SPRING_STIFF)
   const inner = (
     <TiltCard className="h-full flex flex-col rounded-[18px] overflow-hidden cursor-pointer border border-black/[0.07]" style={{ background:'#EAEAEA' }}>
-      <div className="relative overflow-hidden flex-shrink-0" style={{ aspectRatio:'2/3' }}>
-        <div className={`absolute inset-0 bg-gradient-to-br ${project.color} transition-transform duration-700 group-hover:scale-[1.03]`} />
-        <motion.div className="absolute bottom-[-4%] left-0 right-0 flex justify-center pointer-events-none" style={{ y:sMockupY, zIndex:2 }}
-          onMouseEnter={()=>mockupY.set(-12)} onMouseLeave={()=>mockupY.set(0)}>
-          <div className="w-[72%] max-w-[300px]" style={{ filter:'drop-shadow(0 18px 48px rgba(0,0,0,0.75))' }}>
-            <div className="rounded-t-[7px] rounded-b-[2px] border border-b-0 border-white/[0.1] px-[3.5%] pt-[5%] pb-[2%] relative" style={{ background:'linear-gradient(175deg,#252525 0%,#1c1c1c 100%)' }}>
-              <div className="absolute top-[1.5%] left-1/2 -translate-x-1/2 w-[7%] h-[4px] rounded-b bg-black/80" />
-              <div className="aspect-[16/10] rounded overflow-hidden relative" style={{ boxShadow:'inset 0 0 0 1px rgba(0,0,0,0.6)' }}>
-                <div className={`absolute inset-0 bg-gradient-to-br ${project.color} brightness-[1.3]`} />
-                <div className="absolute inset-0 p-[10%] z-10 flex flex-col gap-[5%]">
-                  <div className="h-[2px] w-3/5 rounded" style={{ background:'rgba(255,255,255,0.22)' }} />
-                  <div className="h-[2px] w-2/5 rounded" style={{ background:'rgba(255,255,255,0.12)' }} />
-                  <div className="flex gap-[4%] mt-[5%]">{[1,2,3].map(i=><div key={i} className="flex-1 rounded border" style={{ aspectRatio:'1/0.65',background:'rgba(255,255,255,0.07)',borderColor:'rgba(255,255,255,0.08)' }} />)}</div>
+      <div className="relative overflow-hidden flex-shrink-0" style={{ aspectRatio:'2/3', background: project.thumbBg || undefined }}>
+        {project.thumb ? (
+          <img src={project.thumb} alt={project.name} loading="lazy" decoding="async"
+            className="absolute inset-0 w-full h-full transition-transform duration-700 group-hover:scale-[1.03]"
+            style={{ objectFit: project.thumbBg ? 'contain' : 'cover', objectPosition: project.thumbPos || '50% 50%', filter: project.thumbFilter || undefined }} />
+        ) : (
+          <>
+            <div className={`absolute inset-0 bg-gradient-to-br ${project.color} transition-transform duration-700 group-hover:scale-[1.03]`} />
+            <motion.div className="absolute bottom-[-4%] left-0 right-0 flex justify-center pointer-events-none" style={{ y:sMockupY, zIndex:2 }}
+              onMouseEnter={()=>mockupY.set(-12)} onMouseLeave={()=>mockupY.set(0)}>
+              <div className="w-[72%] max-w-[300px]" style={{ filter:'drop-shadow(0 18px 48px rgba(0,0,0,0.75))' }}>
+                <div className="rounded-t-[7px] rounded-b-[2px] border border-b-0 border-white/[0.1] px-[3.5%] pt-[5%] pb-[2%] relative" style={{ background:'linear-gradient(175deg,#252525 0%,#1c1c1c 100%)' }}>
+                  <div className="absolute top-[1.5%] left-1/2 -translate-x-1/2 w-[7%] h-[4px] rounded-b bg-black/80" />
+                  <div className="aspect-[16/10] rounded overflow-hidden relative" style={{ boxShadow:'inset 0 0 0 1px rgba(0,0,0,0.6)' }}>
+                    <div className={`absolute inset-0 bg-gradient-to-br ${project.color} brightness-[1.3]`} />
+                    <div className="absolute inset-0 p-[10%] z-10 flex flex-col gap-[5%]">
+                      <div className="h-[2px] w-3/5 rounded" style={{ background:'rgba(255,255,255,0.22)' }} />
+                      <div className="h-[2px] w-2/5 rounded" style={{ background:'rgba(255,255,255,0.12)' }} />
+                      <div className="flex gap-[4%] mt-[5%]">{[1,2,3].map(i=><div key={i} className="flex-1 rounded border" style={{ aspectRatio:'1/0.65',background:'rgba(255,255,255,0.07)',borderColor:'rgba(255,255,255,0.08)' }} />)}</div>
+                    </div>
+                    <div className="absolute inset-0 z-20" style={{ background:'linear-gradient(135deg,rgba(255,255,255,0.06) 0%,transparent 42%)' }} />
+                  </div>
                 </div>
-                <div className="absolute inset-0 z-20" style={{ background:'linear-gradient(135deg,rgba(255,255,255,0.06) 0%,transparent 42%)' }} />
+                <div className="h-[2px] border-x border-white/[0.07]" style={{ background:'linear-gradient(90deg,#181818,#2e2e2e 50%,#181818)' }} />
+                <div className="rounded-b-[5px] px-[6%] pt-[3%] pb-[4%] border border-t-0 border-white/[0.1]" style={{ background:'linear-gradient(180deg,#202020 0%,#191919 100%)' }}>
+                  <div className="h-[5px] rounded mb-[4px]" style={{ background:'repeating-linear-gradient(90deg,rgba(255,255,255,0.03) 0px,rgba(255,255,255,0.03) 2px,transparent 2px,transparent 5px)' }} />
+                  <div className="w-[28%] h-[4px] rounded mx-auto border" style={{ background:'rgba(255,255,255,0.04)',borderColor:'rgba(255,255,255,0.05)' }} />
+                </div>
               </div>
-            </div>
-            <div className="h-[2px] border-x border-white/[0.07]" style={{ background:'linear-gradient(90deg,#181818,#2e2e2e 50%,#181818)' }} />
-            <div className="rounded-b-[5px] px-[6%] pt-[3%] pb-[4%] border border-t-0 border-white/[0.1]" style={{ background:'linear-gradient(180deg,#202020 0%,#191919 100%)' }}>
-              <div className="h-[5px] rounded mb-[4px]" style={{ background:'repeating-linear-gradient(90deg,rgba(255,255,255,0.03) 0px,rgba(255,255,255,0.03) 2px,transparent 2px,transparent 5px)' }} />
-              <div className="w-[28%] h-[4px] rounded mx-auto border" style={{ background:'rgba(255,255,255,0.04)',borderColor:'rgba(255,255,255,0.05)' }} />
-            </div>
-          </div>
-        </motion.div>
+            </motion.div>
+          </>
+        )}
       </div>
       <div className="flex-1 p-[clamp(1rem,2vw,1.375rem)] flex flex-col">
         <div className="flex items-start justify-between gap-3 mb-2.5">
@@ -622,7 +628,7 @@ function ProjectCard({ project, delay = 0 }) {
 // ─── Work ─────────────────────────────────────────────
 function Work() {
   return (
-    <section id="work" style={{ background:'#F2EDE4', boxShadow:'inset 0 0 160px rgba(6,6,6,0.22), inset 0 60px 80px -20px rgba(6,6,6,0.14), inset 0 -60px 80px -20px rgba(6,6,6,0.14)' }} className="relative overflow-hidden py-[clamp(7rem,13vw,11rem)]">
+    <section id="work" style={{ background:'#F2EDE4', boxShadow:'inset 0 0 160px rgba(6,6,6,0.22), inset 0 60px 80px -20px rgba(6,6,6,0.14), inset 0 -60px 80px -20px rgba(6,6,6,0.14)' }} className="relative overflow-hidden py-[clamp(4rem,6.5vw,6rem)]">
       <div className="relative z-[1] max-w-[1200px] mx-auto px-[clamp(1.5rem,5vw,3.5rem)]">
         <div className="flex items-end justify-between mb-[clamp(3rem,5.5vw,4.5rem)] gap-6 flex-wrap">
           <div>
@@ -673,7 +679,7 @@ function VitalStatCell({ v, index }) {
 // ─── Vital Signs ──────────────────────────────────────
 function VitalSigns() {
   return (
-    <section style={{ background:'#060606' }} className="py-[clamp(5rem,10vw,8.5rem)] border-t border-white/[0.04] relative overflow-hidden">
+    <section style={{ background:'#060606' }} className="py-[clamp(3.5rem,5.5vw,5rem)] border-t border-white/[0.04] relative overflow-hidden">
       <div className="absolute pointer-events-none" style={{ width:'clamp(350px,44vw,600px)',height:'clamp(350px,44vw,600px)',borderRadius:'50%',bottom:'-25%',right:'-6%',background:'radial-gradient(circle,rgba(124,58,237,0.085) 0%,transparent 65%)' }} />
       <div className="absolute pointer-events-none" style={{ width:'clamp(260px,32vw,440px)',height:'clamp(260px,32vw,440px)',borderRadius:'50%',top:'-18%',left:'30%',background:'radial-gradient(circle,rgba(255,75,143,0.058) 0%,transparent 65%)' }} />
       <div className="max-w-[1200px] mx-auto px-[clamp(1.5rem,5vw,3.5rem)]">
@@ -701,7 +707,7 @@ function VitalSigns() {
 // ─── Professional Exposure ────────────────────────────
 function ProfessionalExposure() {
   return (
-    <section id="about" style={{ background:'#060606' }} className="py-[clamp(7rem,13vw,11rem)] border-t border-white/[0.04] relative overflow-hidden">
+    <section id="about" style={{ background:'#060606' }} className="py-[clamp(4rem,6.5vw,6rem)] border-t border-white/[0.04] relative overflow-hidden">
       <div className="absolute pointer-events-none" style={{ width:'clamp(460px,55vw,740px)',height:'clamp(460px,55vw,740px)',borderRadius:'50%',top:'-22%',left:'-12%',background:'radial-gradient(circle,rgba(124,58,237,0.085) 0%,transparent 65%)' }} />
       <div className="absolute pointer-events-none" style={{ width:'clamp(300px,38vw,520px)',height:'clamp(300px,38vw,520px)',borderRadius:'50%',bottom:'-18%',right:'-4%',background:'radial-gradient(circle,rgba(255,75,143,0.062) 0%,transparent 65%)' }} />
       <div className="max-w-[1200px] mx-auto px-[clamp(1.5rem,5vw,3.5rem)]">
@@ -750,35 +756,154 @@ function ProfessionalExposure() {
   )
 }
 
-// ─── CTA ──────────────────────────────────────────────
-function CTA() {
-  const ref=useRef(null), inView=useInView(ref,{ once:true, amount:0.3 })
+// ─── Marquee Gallery ──────────────────────────────────
+// Images live in /public/glimpses/ — filenames listed below
+const CARD_SIZE = 252   // square px
+
+const GALLERY_ROWS = [
+  [], // unused (row 0 reserved)
+
+  // Row 1 — scrolls right. Warm/colourful/brand-forward.
+  [
+    { id: 'r1a', img: '/glimpses/brewteaful.png',    pos: '50% 28%'  }, // Brewteaful — earthy editorial, portrait crop hits phone+logo
+    { id: 'r1b', img: '/glimpses/kufri-banner.png',  pos: '50% 38%'  }, // Kufri Zoo banners — portrait, crop to show both banners
+    { id: 'r1c', img: '/glimpses/staple-cans.png',   pos: '50% 50%'  }, // Staple containers — nearly square, full bleed works
+    { id: 'r1d', img: '/glimpses/dokitti-face.png',  pos: '50% 35%'  }, // Dokitti face — horizontal, crop to face
+    { id: 'r1e', img: '/glimpses/service-design.png', pos: '55% 45%'  }, // Service design ecosystem map — crop to dense central cluster
+    { id: 'r1f', img: '/glimpses/blr-dw-mobile.png', pos: '50% 48%'  }, // BLR DW mobile — wide, centre on phones
+    { id: 'r1g', img: '/glimpses/getsetglobe.png',   pos: '50% 45%'  }, // Get Set Globe — devices mockup, centre
+    { id: 'r1h', img: '/glimpses/taylors.png',       pos: '50% 42%'  }, // Taylors tea — portrait boxes, centre crop
+  ],
+
+  // Row 2 — scrolls left. Dark/illustrative/textured.
+  [
+    { id: 'r2a', img: '/glimpses/industrial.png',    pos: '50% 50%', fit: 'contain', bg: '#000000', filter: 'brightness(0.85) contrast(1.8)' }, // crush blacks to pure black
+    { id: 'r2b', img: '/glimpses/kufri-badges.png',  pos: '50% 50%'  }, // Kufri Zoo badges — square, centred teal
+    { id: 'r2c', img: '/glimpses/dokitti-sweater.png', pos: '50% 28%' }, // Dokitti sweater — portrait, crop to face+logo
+    { id: 'r2d', img: '/glimpses/nike-infographic.png', pos: '50% 50%' }, // Nike infographic — landscape, centre spread
+    { id: 'r2e', img: '/glimpses/kufri-tote.png',    pos: '50% 42%'  }, // Kufri Zoo tote — portrait, show bag fully
+    { id: 'r2f', img: '/glimpses/staple-menu.png',   pos: '50% 45%'  }, // Staple menu — wide landscape, centre both pages
+    { id: 'r2g', img: '/glimpses/staple-icons.png',  pos: '50% 40%'  }, // Staple icons — square, crop to icon grid
+  ],
+]
+
+function MarqueeCard({ item }) {
+  const contain = item.fit === 'contain'
   return (
-    <section id="contact" style={{ background:'#060606' }} className="py-[clamp(7rem,14vw,12rem)] border-t border-white/[0.04] text-center relative overflow-hidden">
-      {/* Multi-layer glow for more depth */}
-      <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none" style={{ width:800,height:500,background:'radial-gradient(ellipse,rgba(124,58,237,0.14) 0%,transparent 62%)' }} />
-      <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none" style={{ width:400,height:250,background:'radial-gradient(ellipse,rgba(255,75,143,0.085) 0%,transparent 65%)' }} />
-      <div className="relative max-w-[1200px] mx-auto px-[clamp(1.5rem,5vw,3.5rem)]">
+    <div
+      className="relative flex-shrink-0 rounded-[12px] overflow-hidden select-none"
+      style={{ width: CARD_SIZE, height: CARD_SIZE, background: item.bg || '#111' }}
+    >
+      <img
+        src={item.img} alt="" draggable={false}
+        className="absolute inset-0 w-full h-full"
+        style={{
+          objectFit: contain ? 'contain' : 'cover',
+          objectPosition: item.pos || '50% 50%',
+          padding: contain ? '10%' : 0,
+          filter: item.filter || 'none',
+        }}
+      />
+      <div className="absolute inset-0 rounded-[12px]" style={{ boxShadow:'inset 0 0 0 1px rgba(255,255,255,0.08)' }} />
+    </div>
+  )
+}
+
+function MarqueeRow({ items, reverse = false, speed = 45 }) {
+  const doubled = [...items, ...items]
+  return (
+    <div
+      className="marquee-track flex"
+      style={{
+        gap: '14px',
+        width: 'max-content',
+        animation: `${reverse ? 'marqueeR' : 'marqueeL'} ${speed}s linear infinite`,
+        willChange: 'transform',
+      }}
+    >
+      {doubled.map((item, i) => <MarqueeCard key={`${item.id}-${i}`} item={item} />)}
+    </div>
+  )
+}
+
+function MarqueeGallery() {
+  return (
+    // overflowX:clip clips horizontally without creating a scroll container,
+    // so the perspective-rotated rows can overflow top/bottom naturally
+    // and are covered by the tall top/bottom fades instead of hard-clipped.
+    <section
+      id="contact"
+      style={{ background:'#060606', overflowX:'clip' }}
+      className="relative border-t border-white/[0.04] pt-[clamp(4rem,7vw,6rem)]"
+    >
+      {/* Section header */}
+      <div className="relative z-20 max-w-[1200px] mx-auto px-[clamp(1.5rem,5vw,3.5rem)] mb-[clamp(2.5rem,5vw,4rem)]">
         <Reveal>
-          <span className="flex items-center justify-center gap-2.5 font-mono text-[0.625rem] tracking-[0.16em] uppercase text-ink/32 mb-8">
-            <span className="inline-block w-4 h-[1px] bg-ink/18" />Let's work together
+          <span className="flex items-center gap-2.5 font-mono text-[0.625rem] tracking-[0.16em] uppercase text-ink/32 mb-5">
+            <span className="inline-block w-4 h-[1px] bg-ink/18" />showcase of other projects
           </span>
         </Reveal>
-        <h2 ref={ref} className="font-sans font-semibold text-ink tracking-[-0.04em] leading-[0.95] mb-14" style={{ fontSize:'clamp(2.75rem,7vw,6.5rem)' }}>
-          <MaskReveal>Got a project?</MaskReveal>
-          <MaskReveal delay={0.1}><em className="font-display not-italic" style={{ fontStyle:'italic', fontFamily:'"Cormorant Garamond", Georgia, serif', fontSize:'1.08em' }}>Let's talk.</em></MaskReveal>
-        </h2>
-        <Reveal delay={0.12} className="flex items-center justify-center gap-3 flex-wrap">
-          <a href="mailto:zeusbatkhar.2000@gmail.com"
-             className="relative overflow-hidden group/cta inline-flex items-center font-sans font-semibold text-bg bg-ink rounded-full tracking-[0.01em] transition-[transform,box-shadow] duration-300 hover:-translate-y-[2px] hover:shadow-[0_8px_32px_rgba(242,237,228,0.15)]"
-             style={{ fontSize:'0.8125rem', padding:'0.8125rem 1.75rem' }}>
-            <span className="relative z-10">Get in touch ↗</span>
-            <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/[0.12] to-transparent -translate-x-full group-hover/cta:translate-x-full transition-transform duration-700 ease-in-out" />
-          </a>
-          <a href="https://www.linkedin.com/in/zeusbatkhar" target="_blank" rel="noopener noreferrer"
-             className="inline-flex items-center font-sans font-medium text-ink rounded-full tracking-[0.01em] border border-white/[0.14] transition-[background,border-color,transform,box-shadow] duration-300 hover:bg-white/[0.06] hover:border-white/[0.26] hover:-translate-y-[2px] hover:shadow-[0_8px_24px_rgba(0,0,0,0.3)]"
-             style={{ fontSize:'0.8125rem', padding:'0.8125rem 1.75rem' }}>LinkedIn ↗</a>
-        </Reveal>
+        <MaskReveal>
+          <h2 className="font-sans font-semibold text-ink tracking-[-0.04em] leading-[0.92]"
+            style={{ fontSize:'clamp(2.5rem,6vw,5rem)' }}>
+            Glimpses
+          </h2>
+        </MaskReveal>
+      </div>
+
+      {/* Left / right fades */}
+      <div className="absolute inset-y-0 left-0 z-10 pointer-events-none"
+        style={{ width:'22vw', background:'linear-gradient(to right,#060606 15%,transparent 100%)' }} />
+      <div className="absolute inset-y-0 right-0 z-10 pointer-events-none"
+        style={{ width:'22vw', background:'linear-gradient(to left,#060606 15%,transparent 100%)' }} />
+      {/* Top / bottom fades */}
+      <div className="absolute top-0 left-0 right-0 z-10 pointer-events-none"
+        style={{ height:'clamp(100px,14vw,180px)', background:'linear-gradient(to bottom,#060606 0%,transparent 100%)' }} />
+      <div className="absolute bottom-0 left-0 right-0 z-10 pointer-events-none"
+        style={{ height:'clamp(100px,14vw,180px)', background:'linear-gradient(to top,#060606 0%,transparent 100%)' }} />
+
+      {/* Perspective tilt */}
+      <div style={{ perspective:'1100px', perspectiveOrigin:'50% 50%' }}>
+        <div
+          style={{
+            transform: 'rotateX(25deg) rotateZ(-5deg)',
+            transformOrigin: 'center center',
+            willChange: 'transform',
+          }}
+          className="flex flex-col gap-[14px]"
+        >
+          <MarqueeRow items={GALLERY_ROWS[1]} reverse={true}  speed={46} />
+          <MarqueeRow items={GALLERY_ROWS[2]} reverse={false} speed={60} />
+        </div>
+      </div>
+
+      {/* CTA — merged below the marquee */}
+      <div className="relative z-20 text-center py-[clamp(5rem,9vw,8rem)]">
+        {/* Glows */}
+        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none" style={{ width:800,height:500,background:'radial-gradient(ellipse,rgba(124,58,237,0.14) 0%,transparent 62%)' }} />
+        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none" style={{ width:400,height:250,background:'radial-gradient(ellipse,rgba(255,75,143,0.085) 0%,transparent 65%)' }} />
+        <div className="relative max-w-[1200px] mx-auto px-[clamp(1.5rem,5vw,3.5rem)]">
+          <Reveal>
+            <span className="flex items-center justify-center gap-2.5 font-mono text-[0.625rem] tracking-[0.16em] uppercase text-ink/32 mb-8">
+              <span className="inline-block w-4 h-[1px] bg-ink/18" />Let's work together
+            </span>
+          </Reveal>
+          <h2 className="font-sans font-semibold text-ink tracking-[-0.04em] leading-[0.95] mb-14" style={{ fontSize:'clamp(2.75rem,7vw,6.5rem)' }}>
+            <MaskReveal>Got a project?</MaskReveal>
+            <MaskReveal delay={0.1}><em className="font-display not-italic" style={{ fontStyle:'italic', fontFamily:'"Cormorant Garamond", Georgia, serif', fontSize:'1.08em' }}>Let's talk.</em></MaskReveal>
+          </h2>
+          <Reveal delay={0.12} className="flex items-center justify-center gap-3 flex-wrap">
+            <a href="mailto:zeusbatkhar.2000@gmail.com"
+               className="relative overflow-hidden group/cta inline-flex items-center font-sans font-semibold text-bg bg-ink rounded-full tracking-[0.01em] transition-[transform,box-shadow] duration-300 hover:-translate-y-[2px] hover:shadow-[0_8px_32px_rgba(242,237,228,0.15)]"
+               style={{ fontSize:'0.8125rem', padding:'0.8125rem 1.75rem' }}>
+              <span className="relative z-10">Get in touch ↗</span>
+              <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/[0.12] to-transparent -translate-x-full group-hover/cta:translate-x-full transition-transform duration-700 ease-in-out" />
+            </a>
+            <a href="https://www.linkedin.com/in/zeusbatkhar" target="_blank" rel="noopener noreferrer"
+               className="inline-flex items-center font-sans font-medium text-ink rounded-full tracking-[0.01em] border border-white/[0.14] transition-[background,border-color,transform,box-shadow] duration-300 hover:bg-white/[0.06] hover:border-white/[0.26] hover:-translate-y-[2px] hover:shadow-[0_8px_24px_rgba(0,0,0,0.3)]"
+               style={{ fontSize:'0.8125rem', padding:'0.8125rem 1.75rem' }}>LinkedIn ↗</a>
+          </Reveal>
+        </div>
       </div>
     </section>
   )
@@ -788,7 +913,7 @@ function CTA() {
 let introPlayedThisLoad = false
 
 // ─── Home ─────────────────────────────────────────────
-// Flow: VideoIntro (once per page load) → Hero → Services → Work → VitalSigns → Professional Exposure → CTA → Footer
+// Flow: VideoIntro (once per page load) → Hero → Services → Work → VitalSigns → Professional Exposure → MarqueeGallery (+ CTA merged) → Footer
 function Home() {
   const [introComplete, setIntroComplete] = useState(introPlayedThisLoad)
 
@@ -809,7 +934,7 @@ function Home() {
           <SectionExit><Work /></SectionExit>
           <SectionExit><VitalSigns /></SectionExit>
           <SectionExit><ProfessionalExposure /></SectionExit>
-          <SectionExit><CTA /></SectionExit>
+          <MarqueeGallery />
           <Footer />
         </>
       )}
@@ -822,14 +947,16 @@ export default function App() {
   return (
     <BrowserRouter>
       <CookieBanner />
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/about" element={<About />} />
-        <Route path="/imprint" element={<Imprint />} />
-        <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-        <Route path="/press" element={<Press />} />
-        <Route path="/work/get-set-globe" element={<GetSetGlobe />} />
-      </Routes>
+      <Suspense fallback={null}>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/imprint" element={<Imprint />} />
+          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+          <Route path="/press" element={<Press />} />
+          <Route path="/work/get-set-globe" element={<GetSetGlobe />} />
+        </Routes>
+      </Suspense>
     </BrowserRouter>
   )
 }

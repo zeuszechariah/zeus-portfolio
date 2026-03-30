@@ -22,6 +22,7 @@ body {
 ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 999px; }
 ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.22); }
 
+
 /* Accessible focus ring — keyboard only */
 :focus-visible {
   outline: 2px solid rgba(124,58,237,0.75);
@@ -111,6 +112,16 @@ body::before {
   position: absolute; inset: 0; z-index: 3;
   background: linear-gradient(135deg, rgba(255,255,255,0.06) 0%, transparent 42%);
   pointer-events: none;
+}
+
+/* Marquee rows */
+@keyframes marqueeL {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+@keyframes marqueeR {
+  from { transform: translateX(-50%); }
+  to   { transform: translateX(0); }
 }
 
 /* Scroll line animation */
