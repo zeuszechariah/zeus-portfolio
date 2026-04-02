@@ -9,10 +9,10 @@ const Press        = lazy(() => import('./Press.jsx'))
 const GetSetGlobe  = lazy(() => import('./GetSetGlobe.jsx'))
 
 const PROJECTS = [
-  { id:1, name:'Study Buddy',     tags:'UX Research · Mobile',   desc:'Rethinking how Indian students study & building habits that actually stick.', color:'from-[#061528] via-[#0f2d52] to-[#1b4a8a]', pitch:'https://app.pitch.com/app/player/e4cb8edc-572e-494d-8e32-567e4807ffe5/7013aa0a-88ad-4b8f-9cb7-86e857f28e62', thumb:'/thumnail-1-opt.gif' },
-  { id:2, name:'Get Set Globe',   tags:'EdTech · Product Design', desc:'Making Earth science something children feel, not just memorise.', color:'from-[#050f08] via-[#0b2e16] to-[#135728]', pitch:'https://app.pitch.com/app/player/e4cb8edc-572e-494d-8e32-567e4807ffe5/5811808d-1999-42c4-88c3-587610a87bfe', thumb:'/thumb-getsetglobe.jpg', thumbPos:'50% 0%' },
-  { id:3, name:'Spectra',         tags:'Data Viz · Experience',   desc:'Two invisible threats, one shared sky. Mapping the overlap of air and light pollution across urban India.', color:'from-[#0d0702] via-[#2e1606] to-[#7a430e]', pitch:'https://app.pitch.com/app/presentation/e4cb8edc-572e-494d-8e32-567e4807ffe5/ed036113-9746-40ed-932d-5259726c2f60', thumb:'/thumb-spectra-opt.jpg', thumbPos:'50% 15%', thumbFilter:'saturate(0.75)' },
-  { id:4, name:'Finance for semi/less literate', tags:'Research · Social Design', desc:'Researching financial literacy through scam resilience and financial literacy.', color:'from-[#040409] via-[#0e0e30] to-[#1a1060]', pitch:'https://canva.link/ftos6no4hro4473', thumb:'/thumb-finance.jpg', thumbBg:'#EEF3DF' },
+  { id:1, name:'Study Buddy',     tags:'UX Research · Mobile',   desc:'Rethinking how Indian students study & building habits that actually stick.', color:'from-[#061528] via-[#0f2d52] to-[#1b4a8a]', pitch:'https://pitch.com/v/study-buddy-pqwx5j', thumb:'/thumnail-1-opt.gif' },
+  { id:2, name:'Get Set Globe',   tags:'EdTech · Product Design', desc:'Making Earth science something children feel, not just memorise.', color:'from-[#050f08] via-[#0b2e16] to-[#135728]', pitch:'https://pitch.com/v/get-set-globe-hefqux', thumb:'/thumb-getsetglobe.jpg', thumbPos:'50% 0%' },
+  { id:3, name:'Spectra',         tags:'Data Viz · Experience',   desc:'Two invisible threats, one shared sky. Mapping the overlap of air and light pollution across urban India.', color:'from-[#0d0702] via-[#2e1606] to-[#7a430e]', pitch:'https://pitch.com/v/spectra-2vnqiq', thumb:'/thumb-spectra-opt.jpg', thumbPos:'50% 15%', thumbFilter:'saturate(0.75)' },
+  { id:4, name:'Finance for semi/less literate', tags:'Research · Social Design', desc:'Researching financial literacy through scam resilience and financial literacy.', color:'from-[#040409] via-[#0e0e30] to-[#1a1060]', pitch:'https://canva.link/ryd4ojcrh70b9qq', thumb:'/thumb-finance.jpg', thumbBg:'#EEF3DF' },
 ]
 
 const SERVICES = [
