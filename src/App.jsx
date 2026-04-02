@@ -1,3 +1,4 @@
+import { Analytics } from '@vercel/analytics/react'
 import { useRef, useEffect, useState, lazy, Suspense } from 'react'
 import { motion, useMotionValue, useTransform, useSpring, useInView } from 'framer-motion'
 import { BrowserRouter, Routes, Route, Link } from 'react-router-dom'
@@ -958,5 +959,6 @@ export default function App() {
         </Routes>
       </Suspense>
     </BrowserRouter>
+    <Analytics />
   )
 }
