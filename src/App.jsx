@@ -958,7 +958,7 @@ export default function App() {
           <Route path="/work/get-set-globe" element={<GetSetGlobe />} />
         </Routes>
       </Suspense>
+      <Analytics />
     </BrowserRouter>
-    <Analytics />
   )
 }
