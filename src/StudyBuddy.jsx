@@ -4,20 +4,20 @@ import { Nav, Footer, ProgressBar, MaskReveal, Reveal } from './shared.jsx'
 
 // ─── Design Tokens ──────────────────────────────────────
 const C = {
-  dark:      '#060606',   // portfolio bg — dark sections
-  surface:   '#0d0d0d',   // portfolio surface
-  pink:      '#FF4B8F',   // portfolio pink
-  blue:      '#7C3AED',   // portfolio purple (accent role)
-  yellow:    '#00FF87',   // portfolio green (highlight role — no yellow in system)
-  green:     '#00FF87',   // portfolio green
+  dark:      '#060606',               // page bg
+  surface:   '#0d0d0d',               // card surfaces
+  pink:      '#FF4B8F',               // portfolio pink
+  blue:      '#7C3AED',               // portfolio purple
+  yellow:    '#00FF87',               // portfolio green (no yellow in system)
+  green:     '#00FF87',               // portfolio green
   white:     '#FFFFFF',
-  bg:        '#F8F8F6',   // light page bg
-  ink:       '#060606',   // dark text on light bg
-  inkLight:  '#F2EDE4',   // cream text on dark bg
-  mid:       '#3A3A3A',   // body text on light bg
-  muted:     '#777777',   // muted text
-  border:    'rgba(0,0,0,0.09)',  // subtle border on light bg
-  borderDark:'rgba(255,255,255,0.07)', // border on dark bg
+  bg:        '#060606',               // page wrapper bg
+  ink:       '#F2EDE4',               // primary text (cream)
+  inkLight:  '#F2EDE4',               // alias
+  mid:       'rgba(242,237,228,0.65)',// secondary text
+  muted:     'rgba(242,237,228,0.35)',// muted text
+  border:    'rgba(255,255,255,0.07)',// subtle border
+  borderDark:'rgba(255,255,255,0.07)',// border alias
 }
 
 const EASE = [0.22, 1, 0.36, 1]
@@ -217,11 +217,12 @@ function SidebarNav({ active }) {
             <motion.div
               animate={{
                 width: isActive ? 3 : 1.5,
-                height: 28,
+                height: isActive ? 32 : 24,
                 background: isActive ? C.pink : C.border,
                 borderRadius: 2,
+                boxShadow: isActive ? `0 0 10px 2px rgba(255,75,143,0.55)` : 'none',
               }}
-              transition={{ duration: 0.25 }}
+              transition={{ duration: 0.3 }}
               style={{ flexShrink: 0 }}
             />
             <span style={{
@@ -232,6 +233,7 @@ function SidebarNav({ active }) {
               color: isActive ? C.pink : C.muted,
               transition: 'color 0.25s',
               whiteSpace: 'nowrap',
+              textShadow: isActive ? `0 0 12px rgba(255,75,143,0.5)` : 'none',
             }}>
               {sec.label}
             </span>
@@ -1005,7 +1007,7 @@ function HeroSection() {
       </Wrap>
 
       {/* Metadata strip */}
-      <div style={{ background: C.white, borderTop: `1px solid ${C.border}` }}>
+      <div style={{ background: C.surface, borderTop: `1px solid ${C.border}` }}>
         <Wrap>
           <div style={{
             display: 'grid',
@@ -1052,7 +1054,7 @@ function HeroSection() {
 // ─── Why This Topic ───────────────────────────────────────
 function WhySection() {
   return (
-    <section style={{ background: C.white, ...PAD }}>
+    <section style={{ background: C.surface, ...PAD }}>
       <Wrap>
         <div style={{ maxWidth: 720, margin: '0 auto', textAlign: 'center' }}>
           <Reveal><SectionTag>Why This Topic</SectionTag></Reveal>
@@ -1110,7 +1112,7 @@ function SystemsSection() {
             },
           ].map((stage, i) => (
             <Reveal key={stage.num} delay={i * 0.1}>
-              <div style={{ background: C.white, padding: 'clamp(1.5rem,3vw,2.5rem)' }}>
+              <div style={{ background: C.surface, padding: 'clamp(1.5rem,3vw,2.5rem)' }}>
                 <div style={{
                   fontFamily: "'Space Mono', monospace",
                   fontSize: '0.58rem',
@@ -1163,7 +1165,7 @@ function SystemsSection() {
             </Reveal>
           </div>
           <Reveal delay={0.1}>
-            <div style={{ background: C.white, borderRadius: '16px', padding: 'clamp(1.5rem,3vw,3rem)', border: `1px solid ${C.border}` }}>
+            <div style={{ background: C.surface, borderRadius: '16px', padding: 'clamp(1.5rem,3vw,3rem)', border: `1px solid ${C.border}` }}>
               <ActorMap />
             </div>
           </Reveal>
@@ -1223,7 +1225,7 @@ function SystemsSection() {
             </Reveal>
           </div>
           <Reveal delay={0.1}>
-            <div style={{ background: C.white, borderRadius: '16px', padding: 'clamp(1.5rem,3vw,3rem)', border: `1px solid ${C.border}` }}>
+            <div style={{ background: C.surface, borderRadius: '16px', padding: 'clamp(1.5rem,3vw,3rem)', border: `1px solid ${C.border}` }}>
               <SubsystemsMap />
             </div>
           </Reveal>
@@ -1323,7 +1325,7 @@ function ResearchSection() {
   }
 
   return (
-    <section id="research" style={{ background: C.white, ...PAD }}>
+    <section id="research" style={{ background: C.surface, ...PAD }}>
       <Wrap>
         <Reveal><Label>Primary Research</Label></Reveal>
 
@@ -1491,7 +1493,7 @@ function DefineSection() {
           {quotes.map((q, i) => (
             <StaggerItem key={i}>
               <div style={{
-                background: C.white,
+                background: C.surface,
                 border: `1px solid ${C.border}`,
                 borderRadius: '12px',
                 padding: '1.5rem',
@@ -1535,7 +1537,7 @@ function DefineSection() {
         </Reveal>
         <Reveal delay={0.1}>
           <div style={{
-            background: C.white, borderRadius: '16px',
+            background: C.surface, borderRadius: '16px',
             padding: 'clamp(1.5rem,3vw,2.5rem)',
             border: `1px solid ${C.border}`,
             marginBottom: 'clamp(2.5rem,4vw,4rem)',
@@ -1576,7 +1578,7 @@ function DefineSection() {
         {/* User Story */}
         <Reveal delay={0.1}>
           <div style={{
-            background: C.white, border: `1px solid ${C.border}`,
+            background: C.surface, border: `1px solid ${C.border}`,
             borderRadius: '16px', padding: 'clamp(1.5rem,3vw,2.5rem)',
           }}>
             <Label>User Story</Label>
@@ -1638,7 +1640,7 @@ function PersonasSection() {
   ]
 
   return (
-    <section id="personas" style={{ background: C.white, ...PAD }}>
+    <section id="personas" style={{ background: C.surface, ...PAD }}>
       <Wrap>
         <Reveal><Label>User Personas & Empathy Map</Label></Reveal>
 
@@ -1766,7 +1768,7 @@ function DesignSystemSection() {
           marginBottom: 'clamp(2.5rem,4vw,4rem)',
         }}>
           <StaggerItem>
-            <div style={{ background: C.white, border: `1px solid ${C.border}`, borderRadius: '16px', padding: '1.75rem', height: '100%' }}>
+            <div style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: '16px', padding: '1.75rem', height: '100%' }}>
               <div style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.58rem', letterSpacing: '0.2em', color: C.blue, marginBottom: '0.75rem' }}>GRID SYSTEM</div>
               <h4 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 600, fontSize: '1.1rem', color: C.ink, marginBottom: '1rem' }}>16px Baseline Grid</h4>
               <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '6px' }}>
@@ -1781,7 +1783,7 @@ function DesignSystemSection() {
           </StaggerItem>
 
           <StaggerItem>
-            <div style={{ background: C.white, border: `1px solid ${C.border}`, borderRadius: '16px', padding: '1.75rem', height: '100%' }}>
+            <div style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: '16px', padding: '1.75rem', height: '100%' }}>
               <div style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.58rem', letterSpacing: '0.2em', color: C.pink, marginBottom: '0.75rem' }}>TYPOGRAPHY</div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                 <div>
@@ -1797,7 +1799,7 @@ function DesignSystemSection() {
           </StaggerItem>
 
           <StaggerItem>
-            <div style={{ background: C.white, border: `1px solid ${C.border}`, borderRadius: '16px', padding: '1.75rem', height: '100%' }}>
+            <div style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: '16px', padding: '1.75rem', height: '100%' }}>
               <div style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.58rem', letterSpacing: '0.2em', color: C.green, marginBottom: '0.75rem' }}>TARGET ENERGY</div>
               <h4 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 600, fontSize: '1.1rem', color: C.ink, marginBottom: '0.75rem' }}>Fresh · Youthful · Focused</h4>
               <p style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '1rem', color: C.mid, lineHeight: 1.65, margin: 0 }}>
@@ -1841,7 +1843,7 @@ function DesignSystemSection() {
 // ─── Features Section ─────────────────────────────────────
 function FeaturesSection() {
   return (
-    <section id="features" style={{ background: C.white, ...PAD }}>
+    <section id="features" style={{ background: C.surface, ...PAD }}>
       <Wrap>
         <Reveal><Label>App Features</Label></Reveal>
 
