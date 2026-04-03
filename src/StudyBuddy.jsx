@@ -1,28 +1,25 @@
 import { useRef, useState, useEffect } from 'react'
-import { motion, useInView, useScroll, useTransform, AnimatePresence } from 'framer-motion'
+import { motion, useInView, AnimatePresence } from 'framer-motion'
 import { Nav, Footer, ProgressBar, MaskReveal, Reveal } from './shared.jsx'
 
-// ─── Design Tokens ────────────────────────────────────
+// ─── Design Tokens ──────────────────────────────────────
 const C = {
-  bg:       '#F9F8F6',
-  white:    '#FFFFFF',
-  cream:    '#F3F1EA',
-  dark:     '#0D0D0D',
-  ink:      '#1A1A1A',
-  mid:      '#454545',
-  muted:    '#888888',
-  border:   '#E4E3DC',
-  blue:     '#2561E8',
-  bluePale: '#ECF1FD',
-  purple:   '#7C3AED',
-  pink:     '#FF4B8F',
-  green:    '#00CC70',
-  amber:    '#F59E0B',
+  dark:   '#1A1919',
+  pink:   '#FE60AC',
+  blue:   '#4A5DE2',
+  yellow: '#FAFF38',
+  green:  '#A6CA00',
+  white:  '#FFFFFF',
+  bg:     '#F8F8F6',
+  ink:    '#1A1919',
+  mid:    '#4A4A4A',
+  muted:  '#888888',
+  border: '#E5E4DC',
 }
 
 const EASE = [0.22, 1, 0.36, 1]
 
-// ─── Sidebar Sections ─────────────────────────────────
+// ─── Sidebar Sections ────────────────────────────────────
 const NAV_SECTIONS = [
   { id: 'overview',      label: 'Overview' },
   { id: 'systems',       label: 'Systems' },
@@ -35,7 +32,7 @@ const NAV_SECTIONS = [
   { id: 'reflections',   label: 'Reflect.' },
 ]
 
-// ─── Shared Helpers ───────────────────────────────────
+// ─── Layout Helpers ──────────────────────────────────────
 function Wrap({ children, className = '' }) {
   return (
     <div className={`max-w-[1120px] mx-auto px-[clamp(1.5rem,5vw,3rem)] ${className}`}>
@@ -46,31 +43,18 @@ function Wrap({ children, className = '' }) {
 
 const PAD = { paddingTop: 'clamp(5rem,8vw,7rem)', paddingBottom: 'clamp(4rem,6vw,6rem)' }
 
-function Label({ children, light = false, style = {} }) {
-  return (
-    <span style={{
-      fontFamily: "'Space Mono', monospace",
-      fontSize: '0.6rem',
-      letterSpacing: '0.22em',
-      textTransform: 'uppercase',
-      color: light ? 'rgba(255,255,255,0.3)' : 'rgba(26,26,26,0.35)',
-      display: 'block',
-      marginBottom: '1.5rem',
-      ...style,
-    }}>{children}</span>
-  )
-}
-
-function SectionTag({ children }) {
+// ─── Typography Components ───────────────────────────────
+function SectionTag({ children, color }) {
+  const col = color || C.blue
   return (
     <span style={{
       display: 'inline-block',
       fontFamily: "'Space Mono', monospace",
-      fontSize: '0.58rem',
-      letterSpacing: '0.2em',
+      fontSize: '0.6rem',
+      letterSpacing: '0.18em',
       textTransform: 'uppercase',
-      color: C.blue,
-      background: C.bluePale,
+      color: col,
+      border: `1px solid ${col}40`,
       padding: '4px 10px',
       borderRadius: '99px',
       marginBottom: '1.25rem',
@@ -78,15 +62,31 @@ function SectionTag({ children }) {
   )
 }
 
-// ─── Placeholder Image Box ─────────────────────────────
-function ImgBox({ label, aspect = '56.25%', style = {} }) {
+function Label({ children, light = false }) {
+  return (
+    <span style={{
+      fontFamily: "'Space Mono', monospace",
+      fontSize: '0.6rem',
+      letterSpacing: '0.18em',
+      textTransform: 'uppercase',
+      color: light ? 'rgba(255,255,255,0.3)' : C.muted,
+      display: 'block',
+      marginBottom: '1.5rem',
+    }}>{children}</span>
+  )
+}
+
+// ─── Placeholder Image Box ────────────────────────────────
+function ImgBox({ label, aspect = '56.25%', style = {}, dark = false }) {
+  const bg = dark ? '#2A2929' : '#EEECEA'
+  const border = dark ? '1.5px dashed rgba(255,255,255,0.1)' : `1.5px dashed ${C.border}`
   return (
     <div style={{
       position: 'relative',
       width: '100%',
       paddingBottom: aspect,
-      background: '#EEECEA',
-      border: `1.5px dashed ${C.border}`,
+      background: bg,
+      border,
       borderRadius: '12px',
       overflow: 'hidden',
       ...style,
@@ -97,16 +97,16 @@ function ImgBox({ label, aspect = '56.25%', style = {} }) {
         alignItems: 'center', justifyContent: 'center',
         gap: '10px',
       }}>
-        <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
-          <rect x="3" y="3" width="18" height="18" rx="3" stroke={C.muted} strokeWidth="1.5" />
-          <circle cx="8.5" cy="8.5" r="1.5" stroke={C.muted} strokeWidth="1.5" />
-          <path d="M3 15l5-5 4 4 3-3 6 6" stroke={C.muted} strokeWidth="1.5" strokeLinejoin="round" />
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none">
+          <rect x="3" y="3" width="18" height="18" rx="3" stroke={dark ? 'rgba(255,255,255,0.3)' : C.muted} strokeWidth="1.5" />
+          <circle cx="8.5" cy="8.5" r="1.5" stroke={dark ? 'rgba(255,255,255,0.3)' : C.muted} strokeWidth="1.5" />
+          <path d="M3 15l5-5 4 4 3-3 6 6" stroke={dark ? 'rgba(255,255,255,0.3)' : C.muted} strokeWidth="1.5" strokeLinejoin="round" />
         </svg>
         <span style={{
           fontFamily: "'Space Mono', monospace",
           fontSize: '0.6rem',
           letterSpacing: '0.1em',
-          color: C.muted,
+          color: dark ? 'rgba(255,255,255,0.35)' : C.muted,
           textAlign: 'center',
           maxWidth: '220px',
           lineHeight: 1.5,
@@ -116,7 +116,45 @@ function ImgBox({ label, aspect = '56.25%', style = {} }) {
   )
 }
 
-// ─── Stagger Wrapper ──────────────────────────────────
+// ─── Screen Annotation Label ─────────────────────────────
+function ScreenLabel({ children, dark = false }) {
+  return (
+    <div style={{
+      fontFamily: "'Space Mono', monospace",
+      fontSize: '0.55rem',
+      letterSpacing: '0.2em',
+      textTransform: 'uppercase',
+      color: dark ? 'rgba(255,255,255,0.45)' : C.muted,
+      textAlign: 'center',
+      marginTop: '0.75rem',
+    }}>{children}</div>
+  )
+}
+
+// ─── HowHelpful annotation ────────────────────────────────
+function HowHelpful({ text }) {
+  return (
+    <div style={{ marginTop: '1.5rem' }}>
+      <p style={{
+        fontFamily: "'Space Mono', monospace",
+        fontSize: '0.62rem',
+        letterSpacing: '0.15em',
+        textTransform: 'uppercase',
+        color: C.blue,
+        textDecoration: 'underline',
+        marginBottom: '0.5rem',
+      }}>
+        How was this helpful?
+      </p>
+      <div style={{ display: 'flex', gap: 10, alignItems: 'flex-start' }}>
+        <span style={{ color: C.blue, fontSize: '0.9rem', flexShrink: 0 }}>→</span>
+        <p style={{ fontSize: '0.85rem', lineHeight: 1.65, color: C.mid, margin: 0, fontFamily: "'Syne', sans-serif" }}>{text}</p>
+      </div>
+    </div>
+  )
+}
+
+// ─── Stagger Helpers ─────────────────────────────────────
 function StaggerGrid({ children, style = {}, className = '' }) {
   const ref = useRef(null)
   const inView = useInView(ref, { once: true, amount: 0.08 })
@@ -129,9 +167,9 @@ function StaggerGrid({ children, style = {}, className = '' }) {
   )
 }
 
-function StaggerItem({ children, style = {}, className = '' }) {
+function StaggerItem({ children, style = {} }) {
   return (
-    <motion.div className={className} style={style}
+    <motion.div style={style}
       variants={{
         hidden:  { opacity: 0, y: 22 },
         visible: { opacity: 1, y: 0, transition: { duration: 0.55, ease: EASE } },
@@ -140,7 +178,7 @@ function StaggerItem({ children, style = {}, className = '' }) {
   )
 }
 
-// ─── Sidebar Nav ──────────────────────────────────────
+// ─── Sidebar Nav ─────────────────────────────────────────
 function SidebarNav({ active }) {
   function scrollTo(id) {
     const el = document.getElementById(id)
@@ -149,23 +187,24 @@ function SidebarNav({ active }) {
   return (
     <div style={{
       position: 'fixed',
-      left: 'clamp(12px, 2vw, 28px)',
+      left: 'clamp(10px, 1.5vw, 22px)',
       top: '50%',
       transform: 'translateY(-50%)',
       zIndex: 200,
       display: 'flex',
       flexDirection: 'column',
-      gap: '10px',
+      gap: '8px',
     }}>
-      {NAV_SECTIONS.map(s => {
-        const isActive = active === s.id
+      {NAV_SECTIONS.map(sec => {
+        const isActive = active === sec.id
         return (
-          <button key={s.id} onClick={() => scrollTo(s.id)}
-            title={s.label}
+          <button
+            key={sec.id}
+            onClick={() => scrollTo(sec.id)}
             style={{
               display: 'flex',
               alignItems: 'center',
-              gap: '6px',
+              gap: '8px',
               background: 'none',
               border: 'none',
               cursor: 'pointer',
@@ -173,28 +212,26 @@ function SidebarNav({ active }) {
             }}
           >
             <motion.div
-              animate={{ width: isActive ? 24 : 10, background: isActive ? C.blue : '#BBBAB6' }}
-              transition={{ duration: 0.3, ease: EASE }}
-              style={{ height: 2, borderRadius: 99 }}
+              animate={{
+                width: isActive ? 3 : 1.5,
+                height: 28,
+                background: isActive ? C.pink : C.border,
+                borderRadius: 2,
+              }}
+              transition={{ duration: 0.25 }}
+              style={{ flexShrink: 0 }}
             />
-            <AnimatePresence>
-              {isActive && (
-                <motion.span
-                  initial={{ opacity: 0, x: -4 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -4 }}
-                  transition={{ duration: 0.2 }}
-                  style={{
-                    fontFamily: "'Space Mono', monospace",
-                    fontSize: '0.52rem',
-                    letterSpacing: '0.12em',
-                    textTransform: 'uppercase',
-                    color: C.blue,
-                    whiteSpace: 'nowrap',
-                  }}
-                >{s.label}</motion.span>
-              )}
-            </AnimatePresence>
+            <span style={{
+              fontFamily: "'Space Mono', monospace",
+              fontSize: '0.58rem',
+              letterSpacing: '0.14em',
+              textTransform: 'uppercase',
+              color: isActive ? C.pink : '#AAAAAA',
+              transition: 'color 0.25s',
+              whiteSpace: 'nowrap',
+            }}>
+              {sec.label}
+            </span>
           </button>
         )
       })}
@@ -202,7 +239,7 @@ function SidebarNav({ active }) {
   )
 }
 
-// ─── useActiveSection ─────────────────────────────────
+// ─── useActiveSection ────────────────────────────────────
 function useActiveSection(ids) {
   const [active, setActive] = useState(ids[0])
   useEffect(() => {
@@ -222,38 +259,38 @@ function useActiveSection(ids) {
   return active
 }
 
-// ═══════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════
 // DIAGRAMS
-// ═══════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════
 
-// ─── 1. Actor Map ─────────────────────────────────────
+// ─── 1. Actor Map ─────────────────────────────────────────
 function ActorMap() {
   const ref = useRef(null)
   const inView = useInView(ref, { once: true, amount: 0.3 })
 
   const primaryActors = [
-    { label: 'Students', angle: -90 },
-    { label: 'Teachers', angle: 0 },
-    { label: 'Parents', angle: 90 },
+    { label: 'Students',         angle: -90 },
+    { label: 'Teachers',         angle: 0 },
+    { label: 'Parents',          angle: 90 },
     { label: 'Education\nBoards', angle: 180 },
   ]
   const secondaryActors = [
-    { label: 'EdTech', angle: -60 },
+    { label: 'EdTech',            angle: -60 },
     { label: 'Coaching\nCenters', angle: -10 },
-    { label: 'Employers', angle: 50 },
-    { label: 'Tutors', angle: 110 },
+    { label: 'Employers',         angle: 50 },
+    { label: 'Tutors',            angle: 110 },
     { label: 'Curriculum\nDesigners', angle: 160 },
-    { label: 'Libraries', angle: 210 },
+    { label: 'Libraries',         angle: 210 },
   ]
   const tertiaryActors = [
-    { label: 'NGOs', angle: -75 },
-    { label: 'Media', angle: -30 },
-    { label: 'Activists', angle: 15 },
-    { label: 'Entrepreneurs', angle: 60 },
-    { label: 'Government', angle: 110 },
-    { label: 'Researchers', angle: 155 },
-    { label: 'Communities', angle: 200 },
-    { label: 'Employers', angle: 245 },
+    { label: 'NGOs',           angle: -75 },
+    { label: 'Media',          angle: -30 },
+    { label: 'Activists',      angle: 15 },
+    { label: 'Entrepreneurs',  angle: 60 },
+    { label: 'Government',     angle: 110 },
+    { label: 'Researchers',    angle: 155 },
+    { label: 'Communities',    angle: 200 },
+    { label: 'Employers',      angle: 245 },
   ]
 
   function toXY(angleDeg, r) {
@@ -264,17 +301,10 @@ function ActorMap() {
   return (
     <div ref={ref} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
       <svg viewBox="0 0 600 600" style={{ width: '100%', maxWidth: 520, overflow: 'visible' }}>
-        <defs>
-          <radialGradient id="centerGrad" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stopColor="#4A8BFF" />
-            <stop offset="100%" stopColor={C.blue} />
-          </radialGradient>
-        </defs>
-
         {/* Guide rings */}
-        {[110, 190, 258].map((r, i) => (
+        {[110, 190, 258].map(r => (
           <circle key={r} cx={300} cy={300} r={r}
-            fill="none" stroke={C.border} strokeWidth={1} strokeDasharray="4 6" opacity={0.6} />
+            fill="none" stroke={C.border} strokeWidth={1} strokeDasharray="4 6" opacity={0.5} />
         ))}
 
         {/* Lines to primary */}
@@ -282,7 +312,7 @@ function ActorMap() {
           const p = toXY(a.angle, 110)
           return (
             <motion.line key={i} x1={300} y1={300} x2={p.x} y2={p.y}
-              stroke={C.blue} strokeWidth={1.2} opacity={0.35}
+              stroke={C.pink} strokeWidth={1.2} opacity={0.35}
               initial={{ pathLength: 0 }} animate={inView ? { pathLength: 1 } : {}}
               transition={{ duration: 0.6, delay: 0.2 + i * 0.05, ease: EASE }}
             />
@@ -294,7 +324,7 @@ function ActorMap() {
           const p = toXY(a.angle, 190)
           return (
             <motion.line key={i} x1={300} y1={300} x2={p.x} y2={p.y}
-              stroke={C.purple} strokeWidth={1} opacity={0.22}
+              stroke={C.green} strokeWidth={1} opacity={0.22}
               initial={{ pathLength: 0 }} animate={inView ? { pathLength: 1 } : {}}
               transition={{ duration: 0.6, delay: 0.3 + i * 0.04, ease: EASE }}
             />
@@ -313,7 +343,7 @@ function ActorMap() {
           )
         })}
 
-        {/* Tertiary nodes */}
+        {/* Tertiary nodes — yellow fill */}
         {tertiaryActors.map((a, i) => {
           const p = toXY(a.angle, 258)
           return (
@@ -321,18 +351,18 @@ function ActorMap() {
               initial={{ opacity: 0, scale: 0 }} animate={inView ? { opacity: 1, scale: 1 } : {}}
               transition={{ duration: 0.45, delay: 0.5 + i * 0.04, ease: EASE }}
             >
-              <circle cx={p.x} cy={p.y} r={22} fill="#F3F2EE" stroke={C.border} strokeWidth={1} />
+              <circle cx={p.x} cy={p.y} r={22} fill={C.yellow} stroke="#D4CF00" strokeWidth={1} />
               {a.label.split('\n').map((line, li) => (
                 <text key={li} x={p.x} y={p.y + (li - (a.label.split('\n').length - 1) / 2) * 10}
                   textAnchor="middle" dominantBaseline="middle"
-                  fontSize={7.5} fill={C.mid} fontFamily="'Space Mono', monospace"
+                  fontSize={7} fill={C.ink} fontFamily="'Space Mono', monospace"
                 >{line}</text>
               ))}
             </motion.g>
           )
         })}
 
-        {/* Secondary nodes */}
+        {/* Secondary nodes — green fill */}
         {secondaryActors.map((a, i) => {
           const p = toXY(a.angle, 190)
           return (
@@ -340,18 +370,18 @@ function ActorMap() {
               initial={{ opacity: 0, scale: 0 }} animate={inView ? { opacity: 1, scale: 1 } : {}}
               transition={{ duration: 0.45, delay: 0.35 + i * 0.05, ease: EASE }}
             >
-              <circle cx={p.x} cy={p.y} r={26} fill="#F0EAF8" stroke="#D4C3F5" strokeWidth={1} />
+              <circle cx={p.x} cy={p.y} r={26} fill={C.green} stroke="#88A800" strokeWidth={1} />
               {a.label.split('\n').map((line, li) => (
                 <text key={li} x={p.x} y={p.y + (li - (a.label.split('\n').length - 1) / 2) * 10}
                   textAnchor="middle" dominantBaseline="middle"
-                  fontSize={7.5} fill={C.purple} fontFamily="'Space Mono', monospace"
+                  fontSize={7} fill={C.dark} fontFamily="'Space Mono', monospace"
                 >{line}</text>
               ))}
             </motion.g>
           )
         })}
 
-        {/* Primary nodes */}
+        {/* Primary nodes — pink fill */}
         {primaryActors.map((a, i) => {
           const p = toXY(a.angle, 110)
           return (
@@ -359,28 +389,28 @@ function ActorMap() {
               initial={{ opacity: 0, scale: 0 }} animate={inView ? { opacity: 1, scale: 1 } : {}}
               transition={{ duration: 0.5, delay: 0.2 + i * 0.06, ease: EASE }}
             >
-              <circle cx={p.x} cy={p.y} r={32} fill={C.blue} />
+              <circle cx={p.x} cy={p.y} r={32} fill={C.pink} />
               {a.label.split('\n').map((line, li) => (
                 <text key={li} x={p.x} y={p.y + (li - (a.label.split('\n').length - 1) / 2) * 11}
                   textAnchor="middle" dominantBaseline="middle"
-                  fontSize={8} fill="white" fontFamily="'Space Mono', monospace" fontWeight="700"
+                  fontSize={8} fill="white" fontFamily="'Space Mono', monospace" fontWeight="600"
                 >{line}</text>
               ))}
             </motion.g>
           )
         })}
 
-        {/* Center node */}
+        {/* Center node — blue fill */}
         <motion.g initial={{ opacity: 0, scale: 0 }} animate={inView ? { opacity: 1, scale: 1 } : {}}
           transition={{ duration: 0.6, delay: 0.1, ease: EASE }}
           style={{ transformBox: 'fill-box', transformOrigin: 'center' }}
         >
-          <circle cx={300} cy={300} r={52} fill="url(#centerGrad)" />
+          <circle cx={300} cy={300} r={52} fill={C.blue} />
           <text x={300} y={295} textAnchor="middle" dominantBaseline="middle"
-            fontSize={7.5} fill="white" fontFamily="'Space Mono', monospace" fontWeight="700"
+            fontSize={7.5} fill="white" fontFamily="'Space Mono', monospace" fontWeight="600"
           >EDUCATION</text>
           <text x={300} y={308} textAnchor="middle" dominantBaseline="middle"
-            fontSize={7.5} fill="white" fontFamily="'Space Mono', monospace" fontWeight="700"
+            fontSize={7.5} fill="white" fontFamily="'Space Mono', monospace" fontWeight="600"
           >SYSTEM</text>
         </motion.g>
       </svg>
@@ -388,12 +418,13 @@ function ActorMap() {
       {/* Legend */}
       <div style={{ display: 'flex', gap: '1.5rem', flexWrap: 'wrap', justifyContent: 'center', marginTop: '1rem' }}>
         {[
-          { color: C.blue, label: 'Primary' },
-          { color: C.purple, label: 'Secondary' },
-          { color: C.muted, label: 'Tertiary' },
+          { color: C.pink,   label: 'Primary' },
+          { color: C.green,  label: 'Secondary' },
+          { color: C.yellow, label: 'Tertiary', outline: true },
+          { color: C.blue,   label: 'Center' },
         ].map(l => (
           <div key={l.label} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-            <div style={{ width: 10, height: 10, borderRadius: '50%', background: l.color }} />
+            <div style={{ width: 10, height: 10, borderRadius: '50%', background: l.color, border: l.outline ? `1px solid #888` : 'none' }} />
             <span style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.58rem', letterSpacing: '0.1em', color: C.mid }}>{l.label}</span>
           </div>
         ))}
@@ -402,20 +433,20 @@ function ActorMap() {
   )
 }
 
-// ─── 2. Subsystems Map ────────────────────────────────
+// ─── 2. Subsystems Map ────────────────────────────────────
 function SubsystemsMap() {
   const ref = useRef(null)
   const inView = useInView(ref, { once: true, amount: 0.3 })
 
   const systems = [
-    { label: 'Financial\n& Economic',       sub: 'Funding · Fees',     angle: -90 },
-    { label: 'Cultural\n& Social',           sub: 'Norms · Values',     angle: -45 },
-    { label: 'Alternative\n& Informal',      sub: 'Non-formal · NGOs',  angle: 0 },
-    { label: 'Research\n& Innovation',       sub: 'Academia · R&D',     angle: 45 },
-    { label: 'Assessment\n& Examination',    sub: 'Tests · Boards',     angle: 90 },
-    { label: 'Infrastructure\n& Resources',  sub: 'Schools · Tech',     angle: 135 },
-    { label: 'Regulatory\n& Governance',     sub: 'Policy · Law',       angle: 180 },
-    { label: 'Employment',                   sub: 'Jobs · Industry',    angle: 225 },
+    { label: 'Financial\n& Economic',      sub: 'Funding · Fees',     angle: -90 },
+    { label: 'Cultural\n& Social',          sub: 'Norms · Values',     angle: -45 },
+    { label: 'Alternative\n& Informal',     sub: 'Non-formal · NGOs',  angle: 0 },
+    { label: 'Research\n& Innovation',      sub: 'Academia · R&D',     angle: 45 },
+    { label: 'Assessment\n& Examination',   sub: 'Tests · Boards',     angle: 90 },
+    { label: 'Infrastructure\n& Resources', sub: 'Schools · Tech',     angle: 135 },
+    { label: 'Regulatory\n& Governance',    sub: 'Policy · Law',       angle: 180 },
+    { label: 'Employment',                  sub: 'Jobs · Industry',    angle: 225 },
   ]
 
   function toXY(angleDeg, r) {
@@ -426,23 +457,20 @@ function SubsystemsMap() {
   return (
     <div ref={ref} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
       <svg viewBox="0 0 600 600" style={{ width: '100%', maxWidth: 520, overflow: 'visible' }}>
-        {/* Guide ring */}
         <circle cx={300} cy={300} r={215}
           fill="none" stroke={C.border} strokeWidth={1.2} strokeDasharray="6 8" opacity={0.5} />
 
-        {/* Lines */}
         {systems.map((s, i) => {
           const p = toXY(s.angle, 215)
           return (
             <motion.line key={i} x1={300} y1={300} x2={p.x} y2={p.y}
-              stroke={C.blue} strokeWidth={1} opacity={0.25}
+              stroke={C.blue} strokeWidth={1} opacity={0.22}
               initial={{ pathLength: 0 }} animate={inView ? { pathLength: 1 } : {}}
               transition={{ duration: 0.5, delay: 0.2 + i * 0.06, ease: EASE }}
             />
           )
         })}
 
-        {/* Satellite nodes */}
         {systems.map((s, i) => {
           const p = toXY(s.angle, 215)
           return (
@@ -450,11 +478,11 @@ function SubsystemsMap() {
               initial={{ opacity: 0, scale: 0 }} animate={inView ? { opacity: 1, scale: 1 } : {}}
               transition={{ duration: 0.45, delay: 0.3 + i * 0.07, ease: EASE }}
             >
-              <circle cx={p.x} cy={p.y} r={44} fill={C.bluePale} stroke={C.blue} strokeWidth={1} opacity={0.85} />
+              <circle cx={p.x} cy={p.y} r={44} fill="transparent" stroke={C.blue} strokeWidth={1.5} />
               {s.label.split('\n').map((line, li) => (
                 <text key={li} x={p.x} y={p.y - 6 + (li - (s.label.split('\n').length - 1) / 2) * 11}
                   textAnchor="middle" dominantBaseline="middle"
-                  fontSize={7.5} fill={C.blue} fontFamily="'Space Mono', monospace" fontWeight="700"
+                  fontSize={7.5} fill={C.blue} fontFamily="'Space Mono', monospace" fontWeight="600"
                 >{line}</text>
               ))}
               <text x={p.x} y={p.y + 16} textAnchor="middle" dominantBaseline="middle"
@@ -464,16 +492,15 @@ function SubsystemsMap() {
           )
         })}
 
-        {/* Center */}
         <motion.g initial={{ opacity: 0, scale: 0 }} animate={inView ? { opacity: 1, scale: 1 } : {}}
           transition={{ duration: 0.6, delay: 0.1, ease: EASE }}
           style={{ transformBox: 'fill-box', transformOrigin: 'center' }}
         >
           <circle cx={300} cy={300} r={60} fill={C.blue} />
           <text x={300} y={293} textAnchor="middle" fontSize={7.5} fill="white"
-            fontFamily="'Space Mono', monospace" fontWeight="700">FORMAL</text>
+            fontFamily="'Space Mono', monospace" fontWeight="600">FORMAL</text>
           <text x={300} y={305} textAnchor="middle" fontSize={7.5} fill="white"
-            fontFamily="'Space Mono', monospace" fontWeight="700">EDUCATION</text>
+            fontFamily="'Space Mono', monospace" fontWeight="600">EDUCATION</text>
           <text x={300} y={317} textAnchor="middle" fontSize={7.5} fill="rgba(255,255,255,0.6)"
             fontFamily="'Space Mono', monospace">SYSTEM</text>
         </motion.g>
@@ -482,10 +509,10 @@ function SubsystemsMap() {
   )
 }
 
-// ─── 3. Empathy Map ───────────────────────────────────
+// ─── 3. Empathy Map ───────────────────────────────────────
 const EMPATHY_DATA = [
   {
-    key: 'says', label: 'Says', color: C.blue, pale: C.bluePale, textColor: C.blue,
+    key: 'says', label: 'Says', color: C.blue, pale: '#EEF0FC', textColor: C.blue,
     icon: (
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
         <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" />
@@ -499,7 +526,7 @@ const EMPATHY_DATA = [
     ],
   },
   {
-    key: 'does', label: 'Does', color: C.purple, pale: '#F3EFFE', textColor: C.purple,
+    key: 'does', label: 'Does', color: C.pink, pale: '#FFF0F7', textColor: C.pink,
     icon: (
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
         <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" />
@@ -516,7 +543,7 @@ const EMPATHY_DATA = [
     ],
   },
   {
-    key: 'thinks', label: 'Thinks', color: C.green, pale: '#E6F9F2', textColor: '#007A43',
+    key: 'thinks', label: 'Thinks', color: C.green, pale: '#F2F8DE', textColor: '#5E7200',
     icon: (
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
         <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="1.8" />
@@ -531,7 +558,7 @@ const EMPATHY_DATA = [
     ],
   },
   {
-    key: 'feels', label: 'Feels', color: C.pink, pale: '#FFF0F6', textColor: '#C4005A',
+    key: 'feels', label: 'Feels', color: C.yellow, pale: '#FEFED8', textColor: '#706A00',
     icon: (
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
         <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" />
@@ -574,7 +601,7 @@ function EmpathyMap() {
             <span style={{
               fontFamily: "'Syne', sans-serif",
               fontSize: '1rem',
-              fontWeight: 700,
+              fontWeight: 600,
               color: q.textColor,
             }}>{q.label}</span>
           </div>
@@ -604,26 +631,26 @@ function EmpathyMap() {
   )
 }
 
-// ─── 4. IA Diagram ────────────────────────────────────
+// ─── 4. IA Diagram ────────────────────────────────────────
 const IA_TREE = [
   {
     label: 'Home\nDashboard', color: C.blue,
-    children: ['Today\'s Plan', 'Quick Start', 'Streak Status'],
+    children: ["Today's Plan", 'Quick Start', 'Streak Status'],
   },
   {
-    label: 'Focus\nSessions', color: C.purple,
+    label: 'Focus\nSessions', color: C.pink,
     children: ['Pomodoro Timer', 'Focus Settings', 'Break Mode', 'Session Log'],
   },
   {
-    label: 'Memorization', color: C.pink,
+    label: 'Memorization', color: C.green,
     children: ['Scan Notes', 'AI Video', 'Mnemonics', 'Review Queue'],
   },
   {
-    label: 'Plan\nMy Day', color: C.green,
+    label: 'Plan\nMy Day', color: '#E89000',
     children: ['Activity Log', 'Daily Routine', 'Rate Activities', 'Calendar'],
   },
   {
-    label: 'Profile\n& Stats', color: C.amber,
+    label: 'Profile\n& Stats', color: C.dark,
     children: ['Achievements', 'Streaks', 'Analytics', 'History'],
   },
 ]
@@ -635,7 +662,6 @@ function IADiagram() {
   return (
     <div ref={ref} style={{ overflowX: 'auto', paddingBottom: '1rem' }}>
       <div style={{ minWidth: 640 }}>
-        {/* Root */}
         <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '1.5rem' }}>
           <motion.div
             initial={{ opacity: 0, scale: 0.85 }} animate={inView ? { opacity: 1, scale: 1 } : {}}
@@ -643,13 +669,12 @@ function IADiagram() {
             style={{
               background: C.blue, color: 'white',
               padding: '12px 28px', borderRadius: '10px',
-              fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: '0.95rem',
-              letterSpacing: '0.02em',
+              fontFamily: "'Syne', sans-serif", fontWeight: 600, fontSize: '0.95rem',
+              letterSpacing: '-0.01em',
             }}
           >Study Buddy</motion.div>
         </div>
 
-        {/* Horizontal connector */}
         <div style={{ position: 'relative', height: '24px', marginBottom: 0 }}>
           <motion.div
             initial={{ scaleX: 0 }} animate={inView ? { scaleX: 1 } : {}}
@@ -661,7 +686,6 @@ function IADiagram() {
               transformOrigin: 'left center',
             }}
           />
-          {/* Vertical drop lines above branches */}
           <div style={{ display: 'flex', justifyContent: 'space-around' }}>
             {IA_TREE.map((_, i) => (
               <motion.div key={i}
@@ -673,7 +697,6 @@ function IADiagram() {
           </div>
         </div>
 
-        {/* Branch nodes */}
         <div style={{ display: 'flex', justifyContent: 'space-around', gap: '8px', alignItems: 'flex-start' }}>
           {IA_TREE.map((branch, i) => (
             <motion.div key={i}
@@ -681,37 +704,34 @@ function IADiagram() {
               transition={{ duration: 0.45, delay: 0.35 + i * 0.07, ease: EASE }}
               style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}
             >
-              {/* Branch label */}
               <div style={{
-                background: branch.color + '18',
-                border: `1.5px solid ${branch.color}40`,
+                border: `1.5px solid ${branch.color}`,
                 borderRadius: '8px',
                 padding: '10px 8px',
                 textAlign: 'center',
                 width: '100%',
+                background: 'transparent',
               }}>
                 {branch.label.split('\n').map((l, li) => (
                   <div key={li} style={{
                     fontFamily: "'Syne', sans-serif",
                     fontSize: '0.72rem',
-                    fontWeight: 700,
+                    fontWeight: 600,
                     color: branch.color,
                     lineHeight: 1.3,
                   }}>{l}</div>
                 ))}
               </div>
 
-              {/* Vertical line */}
               <div style={{ width: '2px', height: '12px', background: branch.color + '40' }} />
 
-              {/* Sub-items */}
               <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', width: '100%' }}>
                 {branch.children.map((child, j) => (
                   <motion.div key={j}
                     initial={{ opacity: 0 }} animate={inView ? { opacity: 1 } : {}}
                     transition={{ duration: 0.3, delay: 0.5 + i * 0.07 + j * 0.04 }}
                     style={{
-                      background: C.cream,
+                      background: C.bg,
                       border: `1px solid ${C.border}`,
                       borderRadius: '6px',
                       padding: '6px 8px',
@@ -732,134 +752,196 @@ function IADiagram() {
   )
 }
 
-// ─── 5. Behavioural Cycle ─────────────────────────────
+// ─── 5. Behavioural Cycle — Flower Shape ─────────────────
 function BehaviouralCycle() {
   const ref = useRef(null)
   const inView = useInView(ref, { once: true, amount: 0.3 })
 
-  const nodes = [
-    { label: 'Demotivated\nFeeling',         color: '#EF4444', pale: '#FEF2F2', angle: -90, r: 140 },
-    { label: 'Procrastination\n& Low Energy', color: C.amber,   pale: '#FFFBEB', angle: 0,   r: 140 },
-    { label: 'Decreased\nActivity',           color: C.purple,  pale: '#F3EFFE', angle: 90,  r: 140 },
-    { label: 'Increased\nGuilt',              color: '#374151', pale: '#F9FAFB', angle: 180, r: 140 },
-  ]
-
-  function toXY(angleDeg, r) {
-    const a = (angleDeg * Math.PI) / 180
-    return { x: 220 + r * Math.cos(a), y: 220 + r * Math.sin(a) }
-  }
-
-  // Arc paths between nodes (quadratic bezier curving outward)
-  function arcPath(from, to, curveOut = 40) {
-    const f = toXY(from, 140)
-    const t = toXY(to, 140)
-    const mx = (f.x + t.x) / 2
-    const my = (f.y + t.y) / 2
-    const cx = mx + (mx - 220) * 0.3 + curveOut * ((t.y - f.y) / 200)
-    const cy = my + (my - 220) * 0.3 - curveOut * ((t.x - f.x) / 200)
-    return `M ${f.x} ${f.y} Q ${cx} ${cy} ${t.x} ${t.y}`
-  }
-
-  const arcs = [
-    { from: -90, to: 0 },
-    { from: 0, to: 90 },
-    { from: 90, to: 180 },
-    { from: 180, to: -90 + 360 },
-  ]
+  // ViewBox: 0 0 420 480
+  // Center: (210, 220)
+  const cx = 210, cy = 220
 
   return (
-    <div ref={ref} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-      <svg viewBox="0 0 440 440" style={{ width: '100%', maxWidth: 440, overflow: 'visible' }}>
+    <div ref={ref} style={{ display: 'flex', alignItems: 'center', gap: '2rem', flexWrap: 'wrap', justifyContent: 'center' }}>
+      <svg viewBox="0 0 420 480" style={{ width: '100%', maxWidth: 360, overflow: 'visible' }}>
         <defs>
-          <marker id="arrowRed"    markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
-            <path d="M0,0 L8,3 L0,6 Z" fill="#EF4444" />
-          </marker>
-          <marker id="arrowAmber"  markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
-            <path d="M0,0 L8,3 L0,6 Z" fill={C.amber} />
-          </marker>
-          <marker id="arrowPurple" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
-            <path d="M0,0 L8,3 L0,6 Z" fill={C.purple} />
-          </marker>
-          <marker id="arrowDark"   markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
-            <path d="M0,0 L8,3 L0,6 Z" fill="#374151" />
+          <marker id="arrowPink" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+            <path d="M0,0 L8,3 L0,6 Z" fill={C.pink} />
           </marker>
         </defs>
 
-        {/* Arc arrows */}
-        {[
-          { from: -90, to: 0,   marker: 'url(#arrowAmber)',  color: C.amber  },
-          { from: 0,   to: 90,  marker: 'url(#arrowPurple)', color: C.purple },
-          { from: 90,  to: 180, marker: 'url(#arrowDark)',   color: '#374151' },
-          { from: 180, to: 270, marker: 'url(#arrowRed)',    color: '#EF4444' },
-        ].map((arc, i) => (
-          <motion.path key={i}
-            d={arcPath(arc.from, arc.to)}
-            fill="none" stroke={arc.color} strokeWidth={2} opacity={0.7}
-            markerEnd={arc.marker}
-            initial={{ pathLength: 0, opacity: 0 }}
-            animate={inView ? { pathLength: 1, opacity: 0.7 } : {}}
-            transition={{ duration: 0.7, delay: 0.4 + i * 0.15, ease: EASE }}
-          />
-        ))}
+        {/* Petals — pink ellipses at N/E/S/W */}
+        {/* Top petal */}
+        <motion.ellipse cx={cx} cy={cy - 74} rx={52} ry={72}
+          fill={C.pink} opacity={0.85}
+          initial={{ opacity: 0, scaleY: 0 }} animate={inView ? { opacity: 0.85, scaleY: 1 } : {}}
+          transition={{ duration: 0.6, delay: 0.15, ease: EASE }}
+          style={{ transformBox: 'fill-box', transformOrigin: 'center bottom' }}
+        />
+        {/* Right petal */}
+        <motion.ellipse cx={cx + 74} cy={cy} rx={72} ry={52}
+          fill={C.pink} opacity={0.85}
+          initial={{ opacity: 0, scaleX: 0 }} animate={inView ? { opacity: 0.85, scaleX: 1 } : {}}
+          transition={{ duration: 0.6, delay: 0.25, ease: EASE }}
+          style={{ transformBox: 'fill-box', transformOrigin: 'left center' }}
+        />
+        {/* Bottom petal */}
+        <motion.ellipse cx={cx} cy={cy + 74} rx={52} ry={72}
+          fill={C.pink} opacity={0.85}
+          initial={{ opacity: 0, scaleY: 0 }} animate={inView ? { opacity: 0.85, scaleY: 1 } : {}}
+          transition={{ duration: 0.6, delay: 0.35, ease: EASE }}
+          style={{ transformBox: 'fill-box', transformOrigin: 'center top' }}
+        />
+        {/* Left petal */}
+        <motion.ellipse cx={cx - 74} cy={cy} rx={72} ry={52}
+          fill={C.pink} opacity={0.85}
+          initial={{ opacity: 0, scaleX: 0 }} animate={inView ? { opacity: 0.85, scaleX: 1 } : {}}
+          transition={{ duration: 0.6, delay: 0.45, ease: EASE }}
+          style={{ transformBox: 'fill-box', transformOrigin: 'right center' }}
+        />
 
-        {/* Nodes */}
-        {nodes.map((n, i) => {
-          const p = toXY(n.angle, n.r)
-          return (
-            <motion.g key={i} style={{ transformBox: 'fill-box', transformOrigin: 'center' }}
-              initial={{ opacity: 0, scale: 0 }} animate={inView ? { opacity: 1, scale: 1 } : {}}
-              transition={{ duration: 0.5, delay: 0.15 + i * 0.1, ease: EASE }}
-            >
-              <circle cx={p.x} cy={p.y} r={42} fill={n.pale} stroke={n.color} strokeWidth={1.5} />
-              {n.label.split('\n').map((line, li) => (
-                <text key={li} x={p.x} y={p.y + (li - (n.label.split('\n').length - 1) / 2) * 12}
-                  textAnchor="middle" dominantBaseline="middle"
-                  fontSize={8} fill={n.color} fontFamily="'Space Mono', monospace" fontWeight="700"
-                >{line}</text>
-              ))}
-            </motion.g>
-          )
-        })}
+        {/* Green stem */}
+        <motion.line x1={cx} y1={cy + 148} x2={cx} y2={460}
+          stroke={C.green} strokeWidth={8} strokeLinecap="round"
+          initial={{ pathLength: 0 }} animate={inView ? { pathLength: 1 } : {}}
+          transition={{ duration: 0.5, delay: 0.6, ease: EASE }}
+        />
 
-        {/* Center label */}
-        <motion.g initial={{ opacity: 0 }} animate={inView ? { opacity: 1 } : {}}
-          transition={{ duration: 0.5, delay: 0.6 }}>
-          <text x={220} y={213} textAnchor="middle" dominantBaseline="middle"
-            fontSize={9} fill={C.mid} fontFamily="'Space Mono', monospace" fontWeight="700"
-            letterSpacing="1">VICIOUS</text>
-          <text x={220} y={227} textAnchor="middle" dominantBaseline="middle"
-            fontSize={9} fill={C.mid} fontFamily="'Space Mono', monospace" fontWeight="700"
-            letterSpacing="1">CYCLE</text>
+        {/* Clockwise arc arrows between nodes */}
+        {/* Top → Right */}
+        <motion.path
+          d={`M ${cx + 38} ${cy - 120} Q ${cx + 120} ${cy - 120} ${cx + 120} ${cy - 38}`}
+          fill="none" stroke={C.dark} strokeWidth={1.5} opacity={0.5}
+          markerEnd="url(#arrowPink)"
+          initial={{ pathLength: 0 }} animate={inView ? { pathLength: 1 } : {}}
+          transition={{ duration: 0.5, delay: 0.7, ease: EASE }}
+        />
+        {/* Right → Bottom */}
+        <motion.path
+          d={`M ${cx + 120} ${cy + 38} Q ${cx + 120} ${cy + 120} ${cx + 38} ${cy + 120}`}
+          fill="none" stroke={C.dark} strokeWidth={1.5} opacity={0.5}
+          markerEnd="url(#arrowPink)"
+          initial={{ pathLength: 0 }} animate={inView ? { pathLength: 1 } : {}}
+          transition={{ duration: 0.5, delay: 0.8, ease: EASE }}
+        />
+        {/* Bottom → Left */}
+        <motion.path
+          d={`M ${cx - 38} ${cy + 120} Q ${cx - 120} ${cy + 120} ${cx - 120} ${cy + 38}`}
+          fill="none" stroke={C.dark} strokeWidth={1.5} opacity={0.5}
+          markerEnd="url(#arrowPink)"
+          initial={{ pathLength: 0 }} animate={inView ? { pathLength: 1 } : {}}
+          transition={{ duration: 0.5, delay: 0.9, ease: EASE }}
+        />
+        {/* Left → Top */}
+        <motion.path
+          d={`M ${cx - 120} ${cy - 38} Q ${cx - 120} ${cy - 120} ${cx - 38} ${cy - 120}`}
+          fill="none" stroke={C.dark} strokeWidth={1.5} opacity={0.5}
+          markerEnd="url(#arrowPink)"
+          initial={{ pathLength: 0 }} animate={inView ? { pathLength: 1 } : {}}
+          transition={{ duration: 0.5, delay: 1.0, ease: EASE }}
+        />
+
+        {/* Center yellow circle */}
+        <motion.circle cx={cx} cy={cy} r={56}
+          fill={C.yellow}
+          initial={{ opacity: 0, scale: 0 }} animate={inView ? { opacity: 1, scale: 1 } : {}}
+          transition={{ duration: 0.5, delay: 0.55, ease: EASE }}
+          style={{ transformBox: 'fill-box', transformOrigin: 'center' }}
+        />
+        {/* Center face */}
+        <motion.g initial={{ opacity: 0 }} animate={inView ? { opacity: 1 } : {}} transition={{ delay: 0.7 }}>
+          <circle cx={cx - 12} cy={cy - 8} r={3.5} fill={C.dark} />
+          <circle cx={cx + 12} cy={cy - 8} r={3.5} fill={C.dark} />
+          <path d={`M ${cx - 14} ${cy + 12} Q ${cx} ${cy + 4} ${cx + 14} ${cy + 12}`}
+            fill="none" stroke={C.dark} strokeWidth={2.5} strokeLinecap="round" />
         </motion.g>
+
+        {/* Dark node circles at N/E/S/W */}
+        {[
+          { lx: cx, ly: cy - 148, label: 'Demotivated\nFeeling' },
+          { lx: cx + 148, ly: cy, label: 'Procrastination\n& Low Energy' },
+          { lx: cx, ly: cy + 148, label: 'Decrease in Activity\n& Neglect' },
+          { lx: cx - 148, ly: cy, label: 'Increased\nGuilt' },
+        ].map((node, i) => (
+          <motion.g key={i} style={{ transformBox: 'fill-box', transformOrigin: 'center' }}
+            initial={{ opacity: 0, scale: 0 }} animate={inView ? { opacity: 1, scale: 1 } : {}}
+            transition={{ duration: 0.45, delay: 0.2 + i * 0.1, ease: EASE }}
+          >
+            <circle cx={node.lx} cy={node.ly} r={34}
+              fill={C.dark} opacity={0.9} />
+            {node.label.split('\n').map((line, li) => (
+              <text key={li}
+                x={node.lx}
+                y={node.ly + (li - (node.label.split('\n').length - 1) / 2) * 11}
+                textAnchor="middle" dominantBaseline="middle"
+                fontSize={7} fill="white" fontFamily="'Space Mono', monospace"
+              >{line}</text>
+            ))}
+          </motion.g>
+        ))}
       </svg>
+
+      {/* Right annotation */}
+      <div style={{ maxWidth: 220 }}>
+        <p style={{
+          fontFamily: "'Cormorant Garamond', serif",
+          fontStyle: 'italic',
+          fontSize: 'clamp(1.5rem, 3vw, 2.25rem)',
+          color: C.green,
+          lineHeight: 1.2,
+          marginBottom: '1rem',
+        }}>
+          "One's academic life shouldn't feel grey"
+        </p>
+        <p style={{
+          fontFamily: "'Syne', sans-serif",
+          fontSize: '0.82rem',
+          lineHeight: 1.65,
+          color: C.mid,
+        }}>
+          <span style={{ color: C.pink }}>Behavioural Activation</span> is a means by which one can{' '}
+          <span style={{ color: C.pink }}>prevent</span> themselves from falling into this{' '}
+          <span style={{ color: C.blue }}>vicious cycle</span>.
+        </p>
+      </div>
     </div>
   )
 }
 
-// ═══════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════
 // SECTIONS
-// ═══════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════
 
-// ─── Hero / Overview ─────────────────────────────────
+// ─── Hero / Overview ──────────────────────────────────────
 function HeroSection() {
   return (
     <section id="overview" style={{ background: C.dark, minHeight: '100vh', position: 'relative', overflow: 'hidden' }}>
-      {/* Background grid */}
+      {/* Subtle grid */}
       <div style={{
         position: 'absolute', inset: 0,
-        backgroundImage: `linear-gradient(${C.blue}10 1px, transparent 1px), linear-gradient(90deg, ${C.blue}10 1px, transparent 1px)`,
+        backgroundImage: `linear-gradient(${C.pink}08 1px, transparent 1px), linear-gradient(90deg, ${C.pink}08 1px, transparent 1px)`,
         backgroundSize: '60px 60px',
-        opacity: 0.4,
+        opacity: 0.5,
       }} />
 
-      {/* Blue accent blob */}
+      {/* Pink accent blob */}
       <motion.div
-        animate={{ scale: [1, 1.08, 1], opacity: [0.12, 0.18, 0.12] }}
-        transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut' }}
+        animate={{ scale: [1, 1.06, 1], opacity: [0.1, 0.16, 0.1] }}
+        transition={{ duration: 9, repeat: Infinity, ease: 'easeInOut' }}
         style={{
-          position: 'absolute', top: '10%', right: '-8%',
-          width: 520, height: 520, borderRadius: '50%',
-          background: `radial-gradient(circle, ${C.blue}60, transparent 70%)`,
+          position: 'absolute', top: '5%', right: '-6%',
+          width: 480, height: 480, borderRadius: '50%',
+          background: `radial-gradient(circle, ${C.pink}55, transparent 70%)`,
+        }}
+      />
+      {/* Blue blob */}
+      <motion.div
+        animate={{ scale: [1, 1.08, 1], opacity: [0.08, 0.13, 0.08] }}
+        transition={{ duration: 11, repeat: Infinity, ease: 'easeInOut', delay: 3 }}
+        style={{
+          position: 'absolute', bottom: '10%', left: '-4%',
+          width: 360, height: 360, borderRadius: '50%',
+          background: `radial-gradient(circle, ${C.blue}50, transparent 70%)`,
         }}
       />
 
@@ -868,18 +950,18 @@ function HeroSection() {
           <MaskReveal delay={0.1}>
             <span style={{
               fontFamily: "'Space Mono', monospace",
-              fontSize: '0.62rem',
+              fontSize: '0.6rem',
               letterSpacing: '0.25em',
               textTransform: 'uppercase',
-              color: C.blue,
+              color: C.pink,
             }}>NID · Mobile App · 2 Weeks</span>
           </MaskReveal>
 
           <MaskReveal delay={0.2}>
             <h1 style={{
               fontFamily: "'Syne', sans-serif",
-              fontWeight: 800,
-              fontSize: 'clamp(3rem,8vw,6.5rem)',
+              fontWeight: 600,
+              fontSize: 'clamp(3.5rem, 7vw, 6.5rem)',
               lineHeight: 0.95,
               letterSpacing: '-0.03em',
               color: C.white,
@@ -900,7 +982,6 @@ function HeroSection() {
             </p>
           </Reveal>
 
-          {/* Tag row */}
           <Reveal delay={0.5}>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginTop: '2rem' }}>
               {['Systems Thinking', 'UX Research', 'UI Design', 'Education in India'].map(t => (
@@ -909,7 +990,7 @@ function HeroSection() {
                   fontSize: '0.6rem',
                   letterSpacing: '0.12em',
                   textTransform: 'uppercase',
-                  color: 'rgba(255,255,255,0.5)',
+                  color: 'rgba(255,255,255,0.45)',
                   border: '1px solid rgba(255,255,255,0.15)',
                   padding: '5px 12px',
                   borderRadius: '99px',
@@ -930,12 +1011,12 @@ function HeroSection() {
             paddingTop: '2rem', paddingBottom: '2rem',
           }}>
             {[
-              { label: 'Timeline', value: '2 Weeks' },
-              { label: 'Institution', value: 'NID — National Institute of Design' },
-              { label: 'Collaborators', value: 'Manali Boudh · Sravan P' },
-              { label: 'Mentors', value: 'Jagriti Galphade · Athul Dinesh' },
-              { label: 'Tools', value: 'Figma · Miro' },
-              { label: 'Output', value: 'Mobile App Prototype' },
+              { label: 'Timeline',       value: '2 Weeks' },
+              { label: 'Institution',    value: 'NID — National Institute of Design' },
+              { label: 'Collaborators',  value: 'Manali Boudh · Sravan P' },
+              { label: 'Mentors',        value: 'Jagriti Galphade · Athul Dinesh' },
+              { label: 'Tools',          value: 'Figma · Miro' },
+              { label: 'Output',         value: 'Mobile App Prototype' },
             ].map((m, i) => (
               <Reveal key={m.label} delay={0.1 + i * 0.05}>
                 <div style={{ paddingRight: '1.5rem' }}>
@@ -965,7 +1046,7 @@ function HeroSection() {
   )
 }
 
-// ─── Why This Topic ───────────────────────────────────
+// ─── Why This Topic ───────────────────────────────────────
 function WhySection() {
   return (
     <section style={{ background: C.white, ...PAD }}>
@@ -975,8 +1056,8 @@ function WhySection() {
           <MaskReveal delay={0.1}>
             <h2 style={{
               fontFamily: "'Syne', sans-serif",
-              fontWeight: 800,
-              fontSize: 'clamp(1.8rem,4vw,2.8rem)',
+              fontWeight: 600,
+              fontSize: 'clamp(1.75rem, 3.5vw, 2.75rem)',
               letterSpacing: '-0.02em',
               color: C.ink,
               marginBottom: '1.5rem',
@@ -998,7 +1079,7 @@ function WhySection() {
   )
 }
 
-// ─── Systems Section ──────────────────────────────────
+// ─── Systems Section ──────────────────────────────────────
 function SystemsSection() {
   return (
     <section id="systems" style={{ background: C.bg, ...PAD }}>
@@ -1036,15 +1117,16 @@ function SystemsSection() {
                 }}>STAGE {stage.num}</div>
                 <h3 style={{
                   fontFamily: "'Syne', sans-serif",
-                  fontWeight: 700,
-                  fontSize: '1.25rem',
+                  fontWeight: 600,
+                  fontSize: 'clamp(1.1rem, 2vw, 1.4rem)',
                   color: C.ink,
                   marginBottom: '1.25rem',
+                  letterSpacing: '-0.02em',
                 }}>{stage.title}</h3>
                 <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '8px' }}>
                   {stage.steps.map((step, j) => (
                     <li key={j} style={{ display: 'flex', gap: '10px', alignItems: 'flex-start' }}>
-                      <div style={{ width: 5, height: 5, borderRadius: '50%', background: C.blue, marginTop: '0.45em', flexShrink: 0 }} />
+                      <div style={{ width: 5, height: 5, borderRadius: '50%', background: C.pink, marginTop: '0.45em', flexShrink: 0 }} />
                       <span style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.72rem', color: C.mid, lineHeight: 1.5 }}>{step}</span>
                     </li>
                   ))}
@@ -1054,43 +1136,95 @@ function SystemsSection() {
           ))}
         </div>
 
-        {/* Actor Map */}
-        <Reveal>
-          <h3 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: '1.4rem', color: C.ink, marginBottom: '0.5rem' }}>
-            Actor Map
-          </h3>
-          <p style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '1.05rem', color: C.mid, marginBottom: '2rem', maxWidth: 600 }}>
-            Three concentric layers of stakeholders — primary actors at the core, supported by secondary bodies and influenced by tertiary forces in the outer ring.
-          </p>
-        </Reveal>
-        <Reveal delay={0.1}>
-          <div style={{ background: C.white, borderRadius: '16px', padding: 'clamp(1.5rem,3vw,3rem)', border: `1px solid ${C.border}`, marginBottom: 'clamp(2.5rem,4vw,4rem)' }}>
-            <ActorMap />
+        {/* Actor Map — split layout */}
+        <div style={{ display: 'grid', gridTemplateColumns: '40% 60%', gap: '4rem', alignItems: 'center', marginBottom: 'clamp(3rem,5vw,5rem)' }}>
+          <div>
+            <Reveal><SectionTag color={C.pink}>Actor Map</SectionTag></Reveal>
+            <Reveal delay={0.05}>
+              <h2 style={{
+                fontFamily: "'Syne', sans-serif",
+                fontWeight: 600,
+                fontSize: 'clamp(1.75rem, 3.5vw, 2.75rem)',
+                letterSpacing: '-0.02em',
+                color: C.ink,
+                marginBottom: '1rem',
+              }}>Stakeholder Ecosystem</h2>
+            </Reveal>
+            <Reveal delay={0.1}>
+              <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.9rem', color: C.mid, lineHeight: 1.7, margin: 0 }}>
+                Three concentric layers of stakeholders — primary actors at the core (pink), supported by secondary bodies (green) and influenced by tertiary forces (yellow) in the outer ring.
+              </p>
+            </Reveal>
+            <Reveal delay={0.15}>
+              <HowHelpful text="This layered view helps identify relationships and power dynamics between all stakeholders in the education ecosystem." />
+            </Reveal>
           </div>
-        </Reveal>
+          <Reveal delay={0.1}>
+            <div style={{ background: C.white, borderRadius: '16px', padding: 'clamp(1.5rem,3vw,3rem)', border: `1px solid ${C.border}` }}>
+              <ActorMap />
+            </div>
+          </Reveal>
+        </div>
 
         {/* Knowledge Graph */}
-        <Reveal delay={0.1}>
-          <div style={{ marginBottom: 'clamp(2.5rem,4vw,4rem)' }}>
-            <Label>Figma Artefact</Label>
-            <ImgBox label="Knowledge Graph — Stakeholder Relationship Network" aspect="50%" />
+        <div style={{ display: 'grid', gridTemplateColumns: '40% 60%', gap: '4rem', alignItems: 'center', marginBottom: 'clamp(3rem,5vw,5rem)' }}>
+          <div>
+            <Reveal><SectionTag color={C.blue}>Knowledge Graph</SectionTag></Reveal>
+            <Reveal delay={0.05}>
+              <h2 style={{
+                fontFamily: "'Syne', sans-serif",
+                fontWeight: 600,
+                fontSize: 'clamp(1.75rem, 3.5vw, 2.75rem)',
+                letterSpacing: '-0.02em',
+                color: C.ink,
+                marginBottom: '1rem',
+              }}>Connecting the Dots</h2>
+            </Reveal>
+            <Reveal delay={0.1}>
+              <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.9rem', color: C.mid, lineHeight: 1.7, margin: 0 }}>
+                A network map of relationships between concepts, actors, and systemic forces shaping education in India.
+              </p>
+            </Reveal>
+            <Reveal delay={0.15}>
+              <HowHelpful text="This helped identify leverage points where design intervention could create maximum impact." />
+            </Reveal>
           </div>
-        </Reveal>
+          <Reveal delay={0.1}>
+            <div>
+              <ImgBox label="Knowledge Graph — Stakeholder Relationship Network" aspect="60%" />
+            </div>
+          </Reveal>
+        </div>
 
-        {/* Sub-systems */}
-        <Reveal>
-          <h3 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: '1.4rem', color: C.ink, marginBottom: '0.5rem' }}>
-            8 Sub-Systems of Formal Education
-          </h3>
-          <p style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '1.05rem', color: C.mid, marginBottom: '2rem', maxWidth: 600 }}>
-            Mapping the surrounding systems that shape, constrain, and enable formal education in India.
-          </p>
-        </Reveal>
-        <Reveal delay={0.1}>
-          <div style={{ background: C.white, borderRadius: '16px', padding: 'clamp(1.5rem,3vw,3rem)', border: `1px solid ${C.border}`, marginBottom: 'clamp(2.5rem,4vw,4rem)' }}>
-            <SubsystemsMap />
+        {/* Sub-systems — split layout */}
+        <div style={{ display: 'grid', gridTemplateColumns: '40% 60%', gap: '4rem', alignItems: 'center', marginBottom: 'clamp(3rem,5vw,5rem)' }}>
+          <div>
+            <Reveal><SectionTag color={C.green}>Sub-systems</SectionTag></Reveal>
+            <Reveal delay={0.05}>
+              <h2 style={{
+                fontFamily: "'Syne', sans-serif",
+                fontWeight: 600,
+                fontSize: 'clamp(1.75rem, 3.5vw, 2.75rem)',
+                letterSpacing: '-0.02em',
+                color: C.ink,
+                marginBottom: '1rem',
+              }}>8 Sub-Systems of Formal Education</h2>
+            </Reveal>
+            <Reveal delay={0.1}>
+              <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.9rem', color: C.mid, lineHeight: 1.7, margin: 0 }}>
+                Mapping the surrounding systems that shape, constrain, and enable formal education in India.
+              </p>
+            </Reveal>
+            <Reveal delay={0.15}>
+              <HowHelpful text="Mapping these helps in understanding systemic complexity and focusing deeper in our system map." />
+            </Reveal>
           </div>
-        </Reveal>
+          <Reveal delay={0.1}>
+            <div style={{ background: C.white, borderRadius: '16px', padding: 'clamp(1.5rem,3vw,3rem)', border: `1px solid ${C.border}` }}>
+              <SubsystemsMap />
+            </div>
+          </Reveal>
+        </div>
 
         {/* System Map I */}
         <Reveal delay={0.1}>
@@ -1100,20 +1234,33 @@ function SystemsSection() {
           </div>
         </Reveal>
 
-        {/* Feedback Loops */}
-        <Reveal>
-          <h3 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: '1.4rem', color: C.ink, marginBottom: '0.5rem' }}>
-            Feedback Loops
-          </h3>
-          <p style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '1.05rem', color: C.mid, marginBottom: '2rem', maxWidth: 640 }}>
-            Highlights dynamic interdependencies — influence of technology, career pressure, policy reforms, and awareness on student motivation and outcomes. Identifying reinforcing and balancing loops helps uncover leverage points for systemic change.
-          </p>
-        </Reveal>
-        <Reveal delay={0.1}>
-          <div style={{ marginBottom: 'clamp(2.5rem,4vw,4rem)' }}>
-            <ImgBox label="Feedback Loops — Reinforcing & Balancing Dynamics" aspect="45%" />
+        {/* Feedback Loops — split layout */}
+        <div style={{ display: 'grid', gridTemplateColumns: '40% 60%', gap: '4rem', alignItems: 'center', marginBottom: 'clamp(3rem,5vw,5rem)' }}>
+          <div>
+            <Reveal><SectionTag color={C.pink}>Feedback Loops</SectionTag></Reveal>
+            <Reveal delay={0.05}>
+              <h2 style={{
+                fontFamily: "'Syne', sans-serif",
+                fontWeight: 600,
+                fontSize: 'clamp(1.75rem, 3.5vw, 2.75rem)',
+                letterSpacing: '-0.02em',
+                color: C.ink,
+                marginBottom: '1rem',
+              }}>Reinforcing & Balancing Loops</h2>
+            </Reveal>
+            <Reveal delay={0.1}>
+              <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.9rem', color: C.mid, lineHeight: 1.7, margin: 0 }}>
+                Highlights dynamic interdependencies — influence of technology, career pressure, policy reforms, and awareness on student motivation and outcomes.
+              </p>
+            </Reveal>
+            <Reveal delay={0.15}>
+              <HowHelpful text="Identifying reinforcing and balancing loops helps uncover leverage points for systemic change — where a small intervention creates large ripple effects." />
+            </Reveal>
           </div>
-        </Reveal>
+          <Reveal delay={0.1}>
+            <ImgBox label="Feedback Loops — Reinforcing & Balancing Dynamics" aspect="75%" />
+          </Reveal>
+        </div>
 
         {/* HMW 1 */}
         <Reveal delay={0.1}>
@@ -1122,7 +1269,14 @@ function SystemsSection() {
             padding: 'clamp(2rem,4vw,3.5rem)',
             marginTop: 'clamp(2rem,4vw,3.5rem)',
           }}>
-            <span style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.58rem', letterSpacing: '0.2em', color: C.blue, display: 'block', marginBottom: '1.25rem' }}>HOW MIGHT WE</span>
+            <span style={{
+              fontFamily: "'Space Mono', monospace",
+              fontSize: '0.58rem',
+              letterSpacing: '0.2em',
+              color: C.pink,
+              display: 'block',
+              marginBottom: '1.25rem',
+            }}>HOW MIGHT WE</span>
             <p style={{
               fontFamily: "'Cormorant Garamond', serif",
               fontStyle: 'italic',
@@ -1140,16 +1294,30 @@ function SystemsSection() {
   )
 }
 
-// ─── Research Section ─────────────────────────────────
+// ─── Research Section ─────────────────────────────────────
 function ResearchSection() {
   const insights = [
-    { n: '01', text: 'Motivation fluctuates with exam stress; autonomy boosts recovery' },
-    { n: '02', text: 'Students prefer flexible, self-paced, and interactive learning' },
-    { n: '03', text: 'Teacher appreciation motivates more than grades alone' },
-    { n: '04', text: 'Burnout and pressure are common across age groups' },
-    { n: '05', text: 'Learning lacks personalisation, relevance & real-world connection' },
-    { n: '06', text: 'Support systems are uneven; reliance on textbooks & external help persists' },
+    { text: 'Motivation fluctuates with exam stress; autonomy boosts recovery.', keyword: 'Motivation fluctuates', color: C.pink },
+    { text: 'Students prefer flexible, self-paced, and interactive learning.', keyword: 'flexible, self-paced, and interactive', color: C.blue },
+    { text: 'Teacher appreciation motivates more than grades.', keyword: 'appreciation motivates', color: C.green },
+    { text: 'Burnout and pressure are common.', keyword: 'Burnout and pressure', color: C.yellow },
+    { text: 'Learning lacks personalization, relevance, & real-world connection.', keyword: 'lacks personalization', color: C.blue },
+    { text: 'Support systems are uneven; reliance on textbooks & external help persists.', keyword: 'reliance on', color: C.pink },
   ]
+
+  function HighlightText({ text, keyword, color }) {
+    if (!keyword || !text.includes(keyword)) {
+      return <span style={{ fontFamily: "'Syne', sans-serif", fontSize: '1rem', lineHeight: 1.7, color: C.ink }}>{text}</span>
+    }
+    const parts = text.split(keyword)
+    return (
+      <span style={{ fontFamily: "'Syne', sans-serif", fontSize: '1rem', lineHeight: 1.7, color: C.ink }}>
+        {parts[0]}
+        <span style={{ color, fontWeight: 600 }}>{keyword}</span>
+        {parts[1]}
+      </span>
+    )
+  }
 
   return (
     <section id="research" style={{ background: C.white, ...PAD }}>
@@ -1159,68 +1327,71 @@ function ResearchSection() {
         {/* System Map II */}
         <Reveal delay={0.05}>
           <div style={{ marginBottom: 'clamp(2.5rem,4vw,4rem)' }}>
-            <h3 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: '1.4rem', color: C.ink, marginBottom: '0.5rem' }}>
+            <h3 style={{
+              fontFamily: "'Syne', sans-serif",
+              fontWeight: 600,
+              fontSize: 'clamp(1.1rem, 2vw, 1.4rem)',
+              color: C.ink,
+              marginBottom: '0.5rem',
+              letterSpacing: '-0.02em',
+            }}>
               System Map II — Student Motivation Focus
             </h3>
-            <p style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '1.05rem', color: C.mid, marginBottom: '1.5rem', maxWidth: 560 }}>
+            <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.9rem', color: C.mid, lineHeight: 1.7, marginBottom: '1.5rem', maxWidth: 560 }}>
               Diverging on more factors with the emerging idea of student motivation as a central leverage point.
             </p>
             <ImgBox label="System Map II — Student Motivation Focus" aspect="48%" />
           </div>
         </Reveal>
 
-        {/* Research Insights */}
+        {/* Research Insights — outlined cards, 3×2 grid */}
         <Reveal>
-          <h3 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: '1.4rem', color: C.ink, marginBottom: '2rem' }}>
+          <h3 style={{
+            fontFamily: "'Syne', sans-serif",
+            fontWeight: 600,
+            fontSize: 'clamp(1.1rem, 2vw, 1.4rem)',
+            color: C.ink,
+            marginBottom: '2rem',
+            letterSpacing: '-0.02em',
+          }}>
             6 Research Insights
           </h3>
         </Reveal>
         <StaggerGrid style={{
           display: 'grid',
           gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
-          gap: '1px',
-          background: C.border,
-          borderRadius: '16px',
-          overflow: 'hidden',
+          gap: '1.25rem',
           marginBottom: 'clamp(2.5rem,4vw,4rem)',
         }}>
-          {insights.map((ins) => (
-            <StaggerItem key={ins.n}>
+          {insights.map((ins, i) => (
+            <StaggerItem key={i}>
               <div style={{
-                background: C.white,
-                padding: '1.75rem',
+                border: `2px solid ${ins.color}`,
+                borderRadius: 18,
+                padding: '1.5rem 1.75rem',
+                background: 'transparent',
                 height: '100%',
               }}>
-                <div style={{
-                  fontFamily: "'Space Mono', monospace",
-                  fontSize: '0.6rem',
-                  letterSpacing: '0.2em',
-                  color: C.blue,
-                  marginBottom: '0.75rem',
-                }}>{ins.n}</div>
-                <p style={{
-                  fontFamily: "'Cormorant Garamond', serif",
-                  fontSize: '1.1rem',
-                  color: C.ink,
-                  lineHeight: 1.6,
-                  margin: 0,
-                }}>{ins.text}</p>
+                <p style={{ fontSize: '1rem', lineHeight: 1.7, color: C.ink, margin: 0, fontFamily: "'Syne', sans-serif" }}>
+                  <span style={{ color: ins.color, fontWeight: 600 }}>{ins.keyword}</span>
+                  {ins.text.replace(ins.keyword, '')}
+                </p>
               </div>
             </StaggerItem>
           ))}
         </StaggerGrid>
 
-        {/* Target Audience pull quote */}
+        {/* Target Audience */}
         <Reveal delay={0.1}>
           <div style={{
-            background: C.bluePale,
-            border: `1.5px solid ${C.blue}30`,
+            background: C.dark,
+            border: `1.5px solid ${C.pink}30`,
             borderRadius: '16px',
             padding: 'clamp(1.75rem,3vw,2.75rem)',
             display: 'flex', alignItems: 'flex-start', gap: '1.25rem',
           }}>
             <div style={{
-              background: C.blue,
+              background: C.pink,
               borderRadius: '10px',
               padding: '10px',
               flexShrink: 0,
@@ -1232,8 +1403,21 @@ function ResearchSection() {
               </svg>
             </div>
             <div>
-              <div style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.58rem', letterSpacing: '0.18em', textTransform: 'uppercase', color: C.blue, marginBottom: '0.5rem' }}>Target Audience</div>
-              <p style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: 'clamp(1rem,2vw,1.35rem)', color: C.ink, margin: 0 }}>
+              <div style={{
+                fontFamily: "'Space Mono', monospace",
+                fontSize: '0.58rem',
+                letterSpacing: '0.18em',
+                textTransform: 'uppercase',
+                color: C.pink,
+                marginBottom: '0.5rem',
+              }}>Target Audience</div>
+              <p style={{
+                fontFamily: "'Syne', sans-serif",
+                fontWeight: 600,
+                fontSize: 'clamp(1rem,2vw,1.35rem)',
+                color: C.white,
+                margin: 0,
+              }}>
                 Students 13+ years of age, primarily from upper-middle class income groups
               </p>
             </div>
@@ -1244,7 +1428,7 @@ function ResearchSection() {
   )
 }
 
-// ─── Define Section ───────────────────────────────────
+// ─── Define Section ───────────────────────────────────────
 function DefineSection() {
   const quotes = [
     '"She didn\'t just teach from textbooks — she told stories, connected events to real life, and encouraged discussions that made us think critically."',
@@ -1281,7 +1465,14 @@ function DefineSection() {
 
         {/* Research Voices */}
         <Reveal>
-          <h3 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: '1.3rem', color: C.ink, marginBottom: '1.5rem' }}>
+          <h3 style={{
+            fontFamily: "'Syne', sans-serif",
+            fontWeight: 600,
+            fontSize: 'clamp(1.1rem, 2vw, 1.4rem)',
+            color: C.ink,
+            marginBottom: '1.5rem',
+            letterSpacing: '-0.02em',
+          }}>
             Research Voices
           </h3>
         </Reveal>
@@ -1303,7 +1494,7 @@ function DefineSection() {
                 <div style={{
                   fontFamily: "'Cormorant Garamond', serif",
                   fontSize: '2rem',
-                  color: C.blue,
+                  color: C.pink,
                   lineHeight: 1,
                   marginBottom: '0.5rem',
                 }}>"</div>
@@ -1322,10 +1513,17 @@ function DefineSection() {
 
         {/* IA Diagram */}
         <Reveal>
-          <h3 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: '1.4rem', color: C.ink, marginBottom: '0.5rem' }}>
+          <h3 style={{
+            fontFamily: "'Syne', sans-serif",
+            fontWeight: 600,
+            fontSize: 'clamp(1.1rem, 2vw, 1.4rem)',
+            color: C.ink,
+            marginBottom: '0.5rem',
+            letterSpacing: '-0.02em',
+          }}>
             Information Architecture
           </h3>
-          <p style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '1.05rem', color: C.mid, marginBottom: '2rem', maxWidth: 560 }}>
+          <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.9rem', color: C.mid, lineHeight: 1.7, marginBottom: '2rem', maxWidth: 560 }}>
             App structure across five primary sections, each with 3–4 focused sub-screens.
           </p>
         </Reveal>
@@ -1348,7 +1546,14 @@ function DefineSection() {
             padding: 'clamp(2rem,4vw,3.5rem)',
             marginBottom: 'clamp(2.5rem,4vw,4rem)',
           }}>
-            <span style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.58rem', letterSpacing: '0.2em', color: C.blue, display: 'block', marginBottom: '1.25rem' }}>HOW MIGHT WE</span>
+            <span style={{
+              fontFamily: "'Space Mono', monospace",
+              fontSize: '0.58rem',
+              letterSpacing: '0.2em',
+              color: C.blue,
+              display: 'block',
+              marginBottom: '1.25rem',
+            }}>HOW MIGHT WE</span>
             <p style={{
               fontFamily: "'Cormorant Garamond', serif",
               fontStyle: 'italic',
@@ -1384,8 +1589,8 @@ function DefineSection() {
                   fontFamily: "'Space Mono', monospace",
                   fontSize: '0.6rem',
                   letterSpacing: '0.1em',
-                  color: C.blue,
-                  background: C.bluePale,
+                  color: C.pink,
+                  border: `1px solid ${C.pink}40`,
                   padding: '4px 10px', borderRadius: '99px',
                 }}>{f}</span>
               ))}
@@ -1397,7 +1602,7 @@ function DefineSection() {
   )
 }
 
-// ─── Personas Section ─────────────────────────────────
+// ─── Personas Section ─────────────────────────────────────
 function PersonasSection() {
   const personas = [
     {
@@ -1433,10 +1638,17 @@ function PersonasSection() {
 
         {/* Empathy Map */}
         <Reveal>
-          <h3 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: '1.4rem', color: C.ink, marginBottom: '0.5rem' }}>
+          <h3 style={{
+            fontFamily: "'Syne', sans-serif",
+            fontWeight: 600,
+            fontSize: 'clamp(1.1rem, 2vw, 1.4rem)',
+            color: C.ink,
+            marginBottom: '0.5rem',
+            letterSpacing: '-0.02em',
+          }}>
             Empathy Map
           </h3>
-          <p style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '1.05rem', color: C.mid, marginBottom: '2rem', maxWidth: 560 }}>
+          <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.9rem', color: C.mid, lineHeight: 1.7, marginBottom: '2rem', maxWidth: 560 }}>
             What our primary user says, does, thinks, and feels — capturing the emotional landscape of a student who wants to do better.
           </p>
         </Reveal>
@@ -1460,7 +1672,6 @@ function PersonasSection() {
                 borderRadius: '16px',
                 overflow: 'hidden',
               }}>
-                {/* Header */}
                 <div style={{ background: p.color, padding: '2rem', position: 'relative' }}>
                   <div style={{
                     width: 56, height: 56, borderRadius: '50%',
@@ -1468,15 +1679,13 @@ function PersonasSection() {
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                     marginBottom: '1rem',
                   }}>
-                    <span style={{ fontFamily: "'Syne', sans-serif", fontWeight: 800, fontSize: '1.1rem', color: 'white' }}>{p.initials}</span>
+                    <span style={{ fontFamily: "'Syne', sans-serif", fontWeight: 600, fontSize: '1.1rem', color: 'white' }}>{p.initials}</span>
                   </div>
-                  <h4 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: '1.3rem', color: 'white', margin: '0 0 4px' }}>{p.name}</h4>
+                  <h4 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 600, fontSize: '1.3rem', color: 'white', margin: '0 0 4px' }}>{p.name}</h4>
                   <span style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.6rem', color: 'rgba(255,255,255,0.65)', letterSpacing: '0.08em' }}>{p.age} · {p.context}</span>
                 </div>
 
-                {/* Body */}
                 <div style={{ padding: '1.75rem' }}>
-                  {/* Quote */}
                   <p style={{
                     fontFamily: "'Cormorant Garamond', serif",
                     fontStyle: 'italic',
@@ -1488,7 +1697,6 @@ function PersonasSection() {
                     marginBottom: '1.5rem',
                   }}>{p.quote}</p>
 
-                  {/* Personality */}
                   <div style={{ marginBottom: '1.25rem' }}>
                     <span style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.58rem', letterSpacing: '0.15em', color: C.muted, textTransform: 'uppercase', display: 'block', marginBottom: '4px' }}>Personality</span>
                     <span style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.85rem', color: C.ink }}>{p.personality}</span>
@@ -1498,11 +1706,10 @@ function PersonasSection() {
                     <span style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.85rem', color: C.ink }}>{p.learningStyle}</span>
                   </div>
 
-                  {/* 3-col grid */}
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '1rem' }}>
                     {[
-                      { title: 'Needs', items: p.needs, dot: p.color },
-                      { title: 'Challenges', items: p.challenges, dot: '#EF4444' },
+                      { title: 'Needs',        items: p.needs,        dot: p.color },
+                      { title: 'Challenges',   items: p.challenges,   dot: '#EF4444' },
                       { title: 'Opportunities', items: p.opportunities, dot: C.green },
                     ].map(col => (
                       <div key={col.title}>
@@ -1528,17 +1735,17 @@ function PersonasSection() {
   )
 }
 
-// ─── Design System Section ────────────────────────────
+// ─── Design System Section ────────────────────────────────
 function DesignSystemSection() {
   const colors = [
-    { name: 'Primary Blue', hex: '#2561E8', role: 'CTA · Nav · Highlights' },
-    { name: 'Pale Blue', hex: '#ECF1FD', role: 'Backgrounds · Chips' },
-    { name: 'Violet', hex: '#7C3AED', role: 'Focus Sessions' },
-    { name: 'Pink', hex: '#FF4B8F', role: 'Memorisation · Alerts' },
-    { name: 'Green', hex: '#00CC70', role: 'Success · Streaks' },
-    { name: 'Amber', hex: '#F59E0B', role: 'Warnings · Motivation' },
-    { name: 'Ink', hex: '#1A1A1A', role: 'Primary Text' },
-    { name: 'Muted', hex: '#888888', role: 'Captions · Labels' },
+    { name: 'Hot Pink',    hex: C.pink,   role: 'Primary Accent · CTA' },
+    { name: 'Periwinkle',  hex: C.blue,   role: 'Secondary · Highlights' },
+    { name: 'Electric Yellow', hex: C.yellow, role: 'Emphasis · Danger' },
+    { name: 'Lime Green',  hex: C.green,  role: 'Success · Streaks' },
+    { name: 'Near-Black',  hex: C.dark,   role: 'Body Bg · Dark sections' },
+    { name: 'Ink',         hex: C.ink,    role: 'Primary Text' },
+    { name: 'Mid',         hex: C.mid,    role: 'Supporting Text' },
+    { name: 'Muted',       hex: C.muted,  role: 'Captions · Labels' },
   ]
 
   return (
@@ -1546,7 +1753,6 @@ function DesignSystemSection() {
       <Wrap>
         <Reveal><Label>Design System</Label></Reveal>
 
-        {/* Grid + Type */}
         <StaggerGrid style={{
           display: 'grid',
           gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
@@ -1556,7 +1762,7 @@ function DesignSystemSection() {
           <StaggerItem>
             <div style={{ background: C.white, border: `1px solid ${C.border}`, borderRadius: '16px', padding: '1.75rem', height: '100%' }}>
               <div style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.58rem', letterSpacing: '0.2em', color: C.blue, marginBottom: '0.75rem' }}>GRID SYSTEM</div>
-              <h4 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: '1.1rem', color: C.ink, marginBottom: '1rem' }}>16px Baseline Grid</h4>
+              <h4 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 600, fontSize: '1.1rem', color: C.ink, marginBottom: '1rem' }}>16px Baseline Grid</h4>
               <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '6px' }}>
                 {['16px margin & gutter space', '8pt baseline grid', 'Perfect Fifth scale (×1.5) for headers', 'Golden Ratio (×1.618) for incremental type'].map(item => (
                   <li key={item} style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.65rem', color: C.mid, display: 'flex', gap: '8px', alignItems: 'flex-start' }}>
@@ -1570,10 +1776,10 @@ function DesignSystemSection() {
 
           <StaggerItem>
             <div style={{ background: C.white, border: `1px solid ${C.border}`, borderRadius: '16px', padding: '1.75rem', height: '100%' }}>
-              <div style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.58rem', letterSpacing: '0.2em', color: C.purple, marginBottom: '0.75rem' }}>TYPOGRAPHY</div>
+              <div style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.58rem', letterSpacing: '0.2em', color: C.pink, marginBottom: '0.75rem' }}>TYPOGRAPHY</div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                 <div>
-                  <div style={{ fontFamily: "'Syne', sans-serif", fontWeight: 800, fontSize: '2rem', color: C.ink, lineHeight: 1 }}>Absans</div>
+                  <div style={{ fontFamily: "'Syne', sans-serif", fontWeight: 600, fontSize: '2rem', color: C.ink, lineHeight: 1 }}>Absans</div>
                   <div style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.58rem', color: C.muted, marginTop: '4px' }}>H1 · H2 · Content headings</div>
                 </div>
                 <div>
@@ -1586,8 +1792,8 @@ function DesignSystemSection() {
 
           <StaggerItem>
             <div style={{ background: C.white, border: `1px solid ${C.border}`, borderRadius: '16px', padding: '1.75rem', height: '100%' }}>
-              <div style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.58rem', letterSpacing: '0.2em', color: C.pink, marginBottom: '0.75rem' }}>TARGET ENERGY</div>
-              <h4 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: '1.1rem', color: C.ink, marginBottom: '0.75rem' }}>Fresh · Youthful · Focused</h4>
+              <div style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.58rem', letterSpacing: '0.2em', color: C.green, marginBottom: '0.75rem' }}>TARGET ENERGY</div>
+              <h4 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 600, fontSize: '1.1rem', color: C.ink, marginBottom: '0.75rem' }}>Fresh · Youthful · Focused</h4>
               <p style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '1rem', color: C.mid, lineHeight: 1.65, margin: 0 }}>
                 Palette chosen to resonate with 13+ age group — vibrant enough to feel energetic, restrained enough to aid focus during long study sessions.
               </p>
@@ -1597,7 +1803,7 @@ function DesignSystemSection() {
 
         {/* Colour Palette */}
         <Reveal>
-          <h3 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: '1.2rem', color: C.ink, marginBottom: '1.25rem' }}>Colour Palette</h3>
+          <h3 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 600, fontSize: '1.2rem', color: C.ink, marginBottom: '1.25rem', letterSpacing: '-0.02em' }}>Colour Palette</h3>
         </Reveal>
         <StaggerGrid style={{
           display: 'grid',
@@ -1612,7 +1818,7 @@ function DesignSystemSection() {
                   borderRadius: '10px',
                   height: '72px',
                   marginBottom: '8px',
-                  border: col.hex === '#F9F8F6' ? `1px solid ${C.border}` : 'none',
+                  border: col.hex === C.bg ? `1px solid ${C.border}` : col.hex === C.yellow ? `1px solid #D4CF00` : 'none',
                 }} />
                 <div style={{ fontFamily: "'Syne', sans-serif", fontWeight: 600, fontSize: '0.72rem', color: C.ink, marginBottom: '2px' }}>{col.name}</div>
                 <div style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.58rem', color: C.muted, marginBottom: '2px' }}>{col.hex}</div>
@@ -1626,139 +1832,266 @@ function DesignSystemSection() {
   )
 }
 
-// ─── Features Section ─────────────────────────────────
+// ─── Features Section ─────────────────────────────────────
 function FeaturesSection() {
-  const features = [
-    {
-      num: '01', name: 'Home Dashboard', color: C.blue,
-      desc: 'Centralised overview — today\'s plan, quick-start shortcuts, and streak status at a glance.',
-      badge: 'Dashboard',
-      imgLabel: 'Home Dashboard — Daily Overview UI',
-    },
-    {
-      num: '02', name: 'Focus Sessions', color: C.purple,
-      desc: 'Pomodoro timer with quirky localisation, micro-interactions, dynamic motivating stickers, and contextually relevant illustrations. 25 min work → 5 min break → 4 cycles → longer break.',
-      badge: 'Productivity',
-      imgLabel: 'Focus Sessions — Pomodoro Timer UI',
-    },
-    {
-      num: '03', name: 'Mnemonics & Memorisation', color: C.pink,
-      desc: 'Assisted memorisation through imagery and organisation. Acronyms, vivid mental images, structured formats. Flow: Intro → Upload → Analyse → Generate.',
-      badge: 'Memory',
-      imgLabel: 'Mnemonics Flow — Upload & Analyse UI',
-    },
-    {
-      num: '04', name: 'Behavioural Activation', color: C.green,
-      desc: 'Effective planning through draggable routine tags, customisable logs, and activity ratings. Breaks the vicious cycle of demotivation → procrastination → decreased activity → guilt.',
-      badge: 'Habit',
-      imgLabel: 'Plan My Day — Routine Builder UI',
-    },
-    {
-      num: '05', name: 'Stats & Profile', color: C.amber,
-      desc: 'Check-in dashboard with editable avatar, progress sorted across different time periods, streaks, and achievement history.',
-      badge: 'Analytics',
-      imgLabel: 'Profile & Stats — Analytics Dashboard UI',
-    },
-    {
-      num: '06', name: 'Video Playback', color: C.ink,
-      desc: 'AI-generated video player with brightness adjustment, 10-second skip controls, captions, speed adjustment, and lock screen support.',
-      badge: 'Media',
-      imgLabel: 'Video Player — AI-Generated Explanation UI',
-    },
-  ]
-
   return (
     <section id="features" style={{ background: C.white, ...PAD }}>
       <Wrap>
         <Reveal><Label>App Features</Label></Reveal>
 
-        <StaggerGrid style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))',
-          gap: '1.5rem',
-          marginBottom: 'clamp(3rem,5vw,5rem)',
-        }}>
-          {features.map(f => (
-            <StaggerItem key={f.num}>
-              <div style={{
-                background: C.bg,
-                border: `1px solid ${C.border}`,
-                borderRadius: '16px',
-                overflow: 'hidden',
-                height: '100%',
-                display: 'flex', flexDirection: 'column',
-              }}>
-                <ImgBox label={f.imgLabel} aspect="62%" />
-                <div style={{ padding: '1.5rem', flex: 1 }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '0.75rem' }}>
-                    <span style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.58rem', letterSpacing: '0.15em', color: C.muted }}>{f.num}</span>
-                    <span style={{
-                      fontFamily: "'Space Mono', monospace",
-                      fontSize: '0.55rem', letterSpacing: '0.1em',
-                      color: f.color, background: f.color + '18',
-                      padding: '3px 8px', borderRadius: '99px',
-                    }}>{f.badge}</span>
+        {/* Home Dashboard */}
+        <div style={{ marginBottom: 'clamp(3rem,5vw,5rem)' }}>
+          <Reveal>
+            <SectionTag>01</SectionTag>
+          </Reveal>
+          <Reveal delay={0.05}>
+            <h2 style={{
+              fontFamily: "'Syne', sans-serif",
+              fontWeight: 600,
+              fontSize: 'clamp(1.75rem, 3.5vw, 2.75rem)',
+              letterSpacing: '-0.02em',
+              color: C.ink,
+              marginBottom: '1rem',
+            }}>Home Dashboard</h2>
+          </Reveal>
+          <Reveal delay={0.1}>
+            <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.9rem', color: C.mid, lineHeight: 1.7, maxWidth: 560, marginBottom: '2rem' }}>
+              Centralised overview — today's plan, quick-start shortcuts, and streak status at a glance.
+            </p>
+          </Reveal>
+          <Reveal delay={0.15}>
+            <ImgBox label="Home Dashboard — Daily Overview UI" aspect="56%" />
+          </Reveal>
+        </div>
+
+        {/* Focus Sessions — dark bg */}
+        <div style={{ background: C.dark, borderRadius: '24px', padding: 'clamp(2rem,4vw,3.5rem)', marginBottom: 'clamp(3rem,5vw,5rem)', position: 'relative', overflow: 'hidden' }}>
+          {/* Blob decoration */}
+          <div style={{ position: 'absolute', width: 320, height: 320, borderRadius: '50%', background: C.pink, top: -80, right: -80, opacity: 0.1, zIndex: 0, pointerEvents: 'none' }} />
+          <div style={{ position: 'relative', zIndex: 1 }}>
+            <Reveal>
+              <SectionTag color={C.pink}>02</SectionTag>
+            </Reveal>
+            <Reveal delay={0.05}>
+              <h2 style={{
+                fontFamily: "'Syne', sans-serif",
+                fontWeight: 600,
+                fontSize: 'clamp(1.75rem, 3.5vw, 2.75rem)',
+                letterSpacing: '-0.02em',
+                color: C.white,
+                marginBottom: '1rem',
+              }}>Focus Sessions</h2>
+            </Reveal>
+            <Reveal delay={0.1}>
+              <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.9rem', color: 'rgba(255,255,255,0.6)', lineHeight: 1.7, maxWidth: 560, marginBottom: '2rem' }}>
+                Pomodoro timer with quirky localisation, micro-interactions, dynamic motivating stickers, and contextually relevant illustrations. 25 min work → 5 min break → 4 cycles → longer break.
+              </p>
+            </Reveal>
+            <Reveal delay={0.15}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem' }}>
+                {[
+                  'Timer Interface — Active Focus Mode',
+                  'Break Screen — Motivational Stickers',
+                  'Control Panel — Settings, Pause/Play, Next',
+                ].map((lbl, i) => (
+                  <div key={i}>
+                    <ImgBox label={lbl} aspect="177%" dark />
+                    <ScreenLabel dark>{lbl}</ScreenLabel>
                   </div>
-                  <h4 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: '1.05rem', color: C.ink, marginBottom: '0.5rem' }}>{f.name}</h4>
-                  <p style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '1rem', color: C.mid, lineHeight: 1.65, margin: 0 }}>{f.desc}</p>
-                </div>
+                ))}
               </div>
-            </StaggerItem>
-          ))}
-        </StaggerGrid>
-
-        {/* Behavioural Cycle diagram */}
-        <Reveal>
-          <h3 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: '1.4rem', color: C.ink, marginBottom: '0.5rem' }}>
-            Behavioural Activation — Breaking the Vicious Cycle
-          </h3>
-          <p style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '1.05rem', color: C.mid, marginBottom: '2rem', maxWidth: 600 }}>
-            Consciously rating activities and building routines interrupts the self-reinforcing loop of demotivation.
-          </p>
-        </Reveal>
-        <Reveal delay={0.1}>
-          <div style={{ background: C.bg, border: `1px solid ${C.border}`, borderRadius: '16px', padding: 'clamp(1.5rem,3vw,3rem)', marginBottom: 'clamp(2.5rem,4vw,4rem)' }}>
-            <BehaviouralCycle />
+            </Reveal>
           </div>
-        </Reveal>
+        </div>
 
-        {/* Scan to Video Flow */}
-        <Reveal>
-          <h3 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: '1.4rem', color: C.ink, marginBottom: '1.5rem' }}>
-            Scan to Video — 3-Step Flow
-          </h3>
-        </Reveal>
-        <StaggerGrid style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(3, 1fr)',
-          gap: '1rem',
-          marginBottom: 'clamp(2rem,4vw,3.5rem)',
-        }}>
-          {[
-            { step: '01', title: 'Begin Scanning Notes', desc: 'Point camera at handwritten or printed notes to begin AI analysis.' },
-            { step: '02', title: 'Play Video', desc: 'AI generates a personalised video explanation from the scanned content.' },
-            { step: '03', title: 'Saved to Profile', desc: 'Video is automatically saved in your Profile section for later review.' },
-          ].map(s => (
-            <StaggerItem key={s.step}>
-              <div style={{ background: C.bluePale, borderRadius: '12px', padding: '1.5rem', height: '100%' }}>
-                <ImgBox label={`Step ${s.step} — ${s.title}`} aspect="80%" style={{ marginBottom: '1rem', background: 'rgba(255,255,255,0.5)' }} />
-                <div style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.58rem', letterSpacing: '0.2em', color: C.blue, marginBottom: '6px' }}>STEP {s.step}</div>
-                <h4 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: '0.9rem', color: C.ink, marginBottom: '6px' }}>{s.title}</h4>
-                <p style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '0.95rem', color: C.mid, lineHeight: 1.6, margin: 0 }}>{s.desc}</p>
+        {/* Mnemonics — dark bg */}
+        <div style={{ background: C.dark, borderRadius: '24px', padding: 'clamp(2rem,4vw,3.5rem)', marginBottom: 'clamp(3rem,5vw,5rem)', position: 'relative', overflow: 'hidden' }}>
+          <div style={{ position: 'absolute', width: 280, height: 280, borderRadius: '50%', background: C.blue, bottom: -60, left: -60, opacity: 0.12, zIndex: 0, pointerEvents: 'none' }} />
+          <div style={{ position: 'relative', zIndex: 1 }}>
+            <Reveal>
+              <SectionTag color={C.green}>03</SectionTag>
+            </Reveal>
+            <Reveal delay={0.05}>
+              <h2 style={{
+                fontFamily: "'Syne', sans-serif",
+                fontWeight: 600,
+                fontSize: 'clamp(1.75rem, 3.5vw, 2.75rem)',
+                letterSpacing: '-0.02em',
+                color: C.white,
+                marginBottom: '1rem',
+              }}>Mnemonics & Memorisation</h2>
+            </Reveal>
+            <Reveal delay={0.1}>
+              <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.9rem', color: 'rgba(255,255,255,0.6)', lineHeight: 1.7, maxWidth: 560, marginBottom: '2rem' }}>
+                Assisted memorisation through imagery and organisation. Acronyms, vivid mental images, structured formats. Flow: Intro → Upload → Analyse → Generate.
+              </p>
+            </Reveal>
+            <Reveal delay={0.15}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '1rem' }}>
+                {['Intro Screen', 'Upload Notes', 'Analysing', 'Generated Mnemonic'].map((lbl, i) => (
+                  <div key={i}>
+                    <ImgBox label={lbl} aspect="177%" dark />
+                    <ScreenLabel dark>{lbl}</ScreenLabel>
+                  </div>
+                ))}
               </div>
-            </StaggerItem>
-          ))}
-        </StaggerGrid>
+            </Reveal>
+          </div>
+        </div>
+
+        {/* Behavioural Activation */}
+        <div style={{ marginBottom: 'clamp(3rem,5vw,5rem)', position: 'relative', overflow: 'hidden' }}>
+          <div style={{ position: 'absolute', width: 320, height: 320, borderRadius: '50%', background: C.yellow, top: -80, right: -80, opacity: 0.18, zIndex: 0, pointerEvents: 'none' }} />
+          <div style={{ position: 'absolute', width: 240, height: 240, borderRadius: '50%', background: C.green, bottom: -60, left: -60, opacity: 0.14, zIndex: 0, pointerEvents: 'none' }} />
+          <div style={{ position: 'relative', zIndex: 1 }}>
+            <Reveal>
+              <SectionTag color={C.green}>04</SectionTag>
+            </Reveal>
+            <Reveal delay={0.05}>
+              <h2 style={{
+                fontFamily: "'Syne', sans-serif",
+                fontWeight: 600,
+                fontSize: 'clamp(1.75rem, 3.5vw, 2.75rem)',
+                letterSpacing: '-0.02em',
+                color: C.ink,
+                marginBottom: '1rem',
+              }}>Behavioural Activation</h2>
+            </Reveal>
+            <Reveal delay={0.1}>
+              <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.9rem', color: C.mid, lineHeight: 1.7, maxWidth: 560, marginBottom: '2.5rem' }}>
+                Effective planning through draggable routine tags, customisable logs, and activity ratings. Breaks the vicious cycle of demotivation → procrastination → decreased activity → guilt.
+              </p>
+            </Reveal>
+            {/* Flower diagram */}
+            <Reveal delay={0.15}>
+              <div style={{ background: C.bg, border: `1px solid ${C.border}`, borderRadius: '16px', padding: 'clamp(1.5rem,3vw,3rem)', marginBottom: '2rem' }}>
+                <BehaviouralCycle />
+              </div>
+            </Reveal>
+            <Reveal delay={0.2}>
+              <ImgBox label="Plan My Day — Routine Builder UI" aspect="50%" />
+            </Reveal>
+          </div>
+        </div>
+
+        {/* Stats & Profile — dark bg */}
+        <div style={{ background: C.dark, borderRadius: '24px', padding: 'clamp(2rem,4vw,3.5rem)', marginBottom: 'clamp(3rem,5vw,5rem)', position: 'relative', overflow: 'hidden' }}>
+          <div style={{ position: 'absolute', width: 260, height: 260, borderRadius: '50%', background: C.yellow, top: -60, right: -60, opacity: 0.12, zIndex: 0, pointerEvents: 'none' }} />
+          <div style={{ position: 'relative', zIndex: 1 }}>
+            <Reveal>
+              <SectionTag color={C.yellow}>05</SectionTag>
+            </Reveal>
+            <Reveal delay={0.05}>
+              <h2 style={{
+                fontFamily: "'Syne', sans-serif",
+                fontWeight: 600,
+                fontSize: 'clamp(1.75rem, 3.5vw, 2.75rem)',
+                letterSpacing: '-0.02em',
+                color: C.white,
+                marginBottom: '1rem',
+              }}>Stats & Profile</h2>
+            </Reveal>
+            <Reveal delay={0.1}>
+              <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.9rem', color: 'rgba(255,255,255,0.6)', lineHeight: 1.7, maxWidth: 560, marginBottom: '2rem' }}>
+                Check-in dashboard with editable avatar, progress sorted across different time periods, streaks, and achievement history.
+              </p>
+            </Reveal>
+            <Reveal delay={0.15}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem' }}>
+                {['Profile Overview', 'Streak History', 'Achievement Badges'].map((lbl, i) => (
+                  <div key={i}>
+                    <ImgBox label={lbl} aspect="177%" dark />
+                    <ScreenLabel dark>{lbl}</ScreenLabel>
+                  </div>
+                ))}
+              </div>
+            </Reveal>
+          </div>
+        </div>
+
+        {/* Video Playback — dark bg */}
+        <div style={{ background: C.dark, borderRadius: '24px', padding: 'clamp(2rem,4vw,3.5rem)', marginBottom: 'clamp(3rem,5vw,5rem)', position: 'relative', overflow: 'hidden' }}>
+          <div style={{ position: 'absolute', width: 300, height: 300, borderRadius: '50%', background: C.green, bottom: -80, right: 60, opacity: 0.12, zIndex: 0, pointerEvents: 'none' }} />
+          <div style={{ position: 'relative', zIndex: 1 }}>
+            <Reveal>
+              <SectionTag color={C.green}>06</SectionTag>
+            </Reveal>
+            <Reveal delay={0.05}>
+              <h2 style={{
+                fontFamily: "'Syne', sans-serif",
+                fontWeight: 600,
+                fontSize: 'clamp(1.75rem, 3.5vw, 2.75rem)',
+                letterSpacing: '-0.02em',
+                color: C.white,
+                marginBottom: '1rem',
+              }}>Video Playback</h2>
+            </Reveal>
+            <Reveal delay={0.1}>
+              <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.9rem', color: 'rgba(255,255,255,0.6)', lineHeight: 1.7, maxWidth: 560, marginBottom: '2rem' }}>
+                AI-generated video player with brightness adjustment, 10-second skip controls, captions, speed adjustment, and lock screen support.
+              </p>
+            </Reveal>
+            <Reveal delay={0.15}>
+              <ImgBox label="Video Player — AI-Generated Explanation UI" aspect="50%" dark />
+            </Reveal>
+          </div>
+        </div>
+
+        {/* Scan to Video Flow — white bg, lime blob */}
+        <div style={{ position: 'relative', overflow: 'hidden', marginBottom: 'clamp(3rem,5vw,5rem)' }}>
+          {/* Lime green blob at bottom right */}
+          <div style={{ position: 'absolute', width: 280, height: 280, borderRadius: '50%', background: C.green, bottom: -60, right: -60, opacity: 0.15, zIndex: 0, pointerEvents: 'none' }} />
+          <div style={{ position: 'relative', zIndex: 1 }}>
+            <Reveal>
+              <h3 style={{
+                fontFamily: "'Syne', sans-serif",
+                fontWeight: 600,
+                fontSize: 'clamp(1.1rem, 2vw, 1.4rem)',
+                color: C.ink,
+                marginBottom: '1.5rem',
+                letterSpacing: '-0.02em',
+              }}>
+                Scan to Video — 3-Step Flow
+              </h3>
+            </Reveal>
+            <StaggerGrid style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(3, 1fr)',
+              gap: '1rem',
+            }}>
+              {[
+                { num: '01', label: 'Begin Scanning Notes',                   color: C.blue },
+                { num: '02', label: 'Play Video',                             color: C.dark },
+                { num: '03', label: 'Video Automatically Saved in Profile',   color: C.green },
+              ].map(s => (
+                <StaggerItem key={s.num}>
+                  <div>
+                    <ImgBox label={`Step ${s.num} — ${s.label}`} aspect="177%" style={{ borderRadius: '12px' }} />
+                    <div style={{
+                      fontFamily: "'Space Mono', monospace",
+                      fontSize: '0.55rem',
+                      letterSpacing: '0.2em',
+                      textTransform: 'uppercase',
+                      color: s.color,
+                      textAlign: 'center',
+                      marginTop: '0.75rem',
+                    }}>{s.label}</div>
+                  </div>
+                </StaggerItem>
+              ))}
+            </StaggerGrid>
+          </div>
+        </div>
       </Wrap>
     </section>
   )
 }
 
-// ─── Accessibility Section ────────────────────────────
+// ─── Accessibility Section ────────────────────────────────
 function AccessibilitySection() {
   const pour = [
     {
-      letter: 'P', title: 'Perceivable', color: C.blue, pale: C.bluePale,
+      letter: 'P', title: 'Perceivable', color: C.blue, pale: '#EEF0FC',
       icon: (
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
           <circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="1.8" />
@@ -1768,7 +2101,7 @@ function AccessibilitySection() {
       items: ['High-contrast, youthful colour palette with clear hierarchy', 'Typography system (Perfect Fifth / 8pt grid) ensures legibility', 'Visual cues (stickers, avatars, streak icons) provide multi-sensory feedback'],
     },
     {
-      letter: 'O', title: 'Operable', color: C.purple, pale: '#F3EFFE',
+      letter: 'O', title: 'Operable', color: C.pink, pale: '#FFF0F7',
       icon: (
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
           <path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
@@ -1777,7 +2110,7 @@ function AccessibilitySection() {
       items: ['Simple, tap-based interaction model with minimal scroll depth', 'Micro-interactions add meaningful haptic + visual feedback', 'Consistent navigation structure across all sections'],
     },
     {
-      letter: 'U', title: 'Understandable', color: C.green, pale: '#E6F9F2',
+      letter: 'U', title: 'Understandable', color: C.green, pale: '#F2F8DE',
       icon: (
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
           <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" />
@@ -1786,7 +2119,7 @@ function AccessibilitySection() {
       items: ['Gamified flow and mascot feedback simplify complex functions', 'Onboarding uses familiar metaphors — streaks, tasks, achievements', 'Progress visualisation reinforces sense of control and ownership'],
     },
     {
-      letter: 'R', title: 'Robust', color: C.amber, pale: '#FFFBEB',
+      letter: 'R', title: 'Robust', color: '#E89000', pale: '#FFF8EC',
       icon: (
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
           <rect x="2" y="3" width="20" height="14" rx="2" stroke="currentColor" strokeWidth="1.8" />
@@ -1802,10 +2135,17 @@ function AccessibilitySection() {
       <Wrap>
         <Reveal><Label>Accessibility — POUR Framework</Label></Reveal>
         <Reveal>
-          <h2 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 800, fontSize: 'clamp(1.5rem,3.5vw,2.2rem)', color: C.ink, marginBottom: '0.5rem', letterSpacing: '-0.02em' }}>
+          <h2 style={{
+            fontFamily: "'Syne', sans-serif",
+            fontWeight: 600,
+            fontSize: 'clamp(1.75rem, 3.5vw, 2.75rem)',
+            color: C.ink,
+            marginBottom: '0.5rem',
+            letterSpacing: '-0.02em',
+          }}>
             Designed for every learner
           </h2>
-          <p style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '1.1rem', color: C.mid, marginBottom: '2.5rem', maxWidth: 560 }}>
+          <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.9rem', color: C.mid, lineHeight: 1.7, marginBottom: '2.5rem', maxWidth: 560 }}>
             Study Buddy is evaluated against the POUR principles — ensuring the app works for students with diverse abilities and contexts.
           </p>
         </Reveal>
@@ -1818,7 +2158,7 @@ function AccessibilitySection() {
             <StaggerItem key={p.letter}>
               <div style={{
                 background: p.pale,
-                border: `1px solid ${p.color}20`,
+                border: `1px solid ${p.color}25`,
                 borderRadius: '16px',
                 padding: '1.75rem',
                 height: '100%',
@@ -1833,8 +2173,8 @@ function AccessibilitySection() {
                     {p.icon}
                   </div>
                   <div>
-                    <div style={{ fontFamily: "'Space Mono', monospace", fontSize: '1rem', fontWeight: 700, color: p.color, lineHeight: 1 }}>{p.letter}</div>
-                    <div style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: '0.95rem', color: C.ink }}>{p.title}</div>
+                    <div style={{ fontFamily: "'Space Mono', monospace", fontSize: '1rem', fontWeight: 600, color: p.color, lineHeight: 1 }}>{p.letter}</div>
+                    <div style={{ fontFamily: "'Syne', sans-serif", fontWeight: 600, fontSize: '0.95rem', color: C.ink }}>{p.title}</div>
                   </div>
                 </div>
                 <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '8px' }}>
@@ -1854,25 +2194,13 @@ function AccessibilitySection() {
   )
 }
 
-// ─── Reflections Section ──────────────────────────────
+// ─── Reflections Section ──────────────────────────────────
 function ReflectionsSection() {
   const reflections = [
-    {
-      n: '01',
-      text: '"Motivation is systemic. It grows when systems reinforce small wins, not just grades."',
-    },
-    {
-      n: '02',
-      text: '"Progress isn\'t about pace, but about presence — for us and students alike."',
-    },
-    {
-      n: '03',
-      text: '"Productivity follows when learning feels rewarding."',
-    },
-    {
-      n: '04',
-      text: '"We can leverage technology as a mirror — reflecting back progress and building belief."',
-    },
+    { n: '01', text: '"Motivation is systemic. It grows when systems reinforce small wins, not just grades."' },
+    { n: '02', text: '"Progress isn\'t about pace, but about presence — for us and students alike."' },
+    { n: '03', text: '"Productivity follows when learning feels rewarding."' },
+    { n: '04', text: '"We can leverage technology as a mirror — reflecting back progress and building belief."' },
   ]
 
   return (
@@ -1884,8 +2212,8 @@ function ReflectionsSection() {
         <Reveal delay={0.1}>
           <h2 style={{
             fontFamily: "'Syne', sans-serif",
-            fontWeight: 800,
-            fontSize: 'clamp(1.8rem,4vw,2.8rem)',
+            fontWeight: 600,
+            fontSize: 'clamp(1.75rem, 3.5vw, 2.75rem)',
             color: C.white,
             letterSpacing: '-0.02em',
             marginBottom: 'clamp(2rem,4vw,3.5rem)',
@@ -1901,14 +2229,14 @@ function ReflectionsSection() {
           overflow: 'hidden',
           marginBottom: 'clamp(3rem,5vw,5rem)',
         }}>
-          {reflections.map((r, i) => (
+          {reflections.map((r) => (
             <StaggerItem key={r.n}>
               <div style={{ background: '#111111', padding: '2.25rem', height: '100%' }}>
                 <div style={{
                   fontFamily: "'Space Mono', monospace",
                   fontSize: '0.58rem',
                   letterSpacing: '0.22em',
-                  color: C.blue,
+                  color: C.pink,
                   marginBottom: '1.25rem',
                 }}>{r.n}</div>
                 <p style={{
@@ -1924,7 +2252,6 @@ function ReflectionsSection() {
           ))}
         </StaggerGrid>
 
-        {/* Closing */}
         <Reveal delay={0.2}>
           <div style={{
             display: 'flex', flexDirection: 'column', alignItems: 'center',
@@ -1947,9 +2274,9 @@ function ReflectionsSection() {
   )
 }
 
-// ═══════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════
 // ROOT EXPORT
-// ═══════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════
 export default function StudyBuddy() {
   const active = useActiveSection(NAV_SECTIONS.map(s => s.id))
 
