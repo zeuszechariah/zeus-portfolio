@@ -4,19 +4,16 @@ import { Nav, Footer, ProgressBar, MaskReveal, Reveal } from './shared.jsx'
 
 // ─── Design Tokens ──────────────────────────────────────
 const C = {
-  dark:       '#060606',
-  surface:    '#0d0d0d',
-  pink:       '#FF4B8F',
-  purple:     '#7C3AED',
-  green:      '#00FF87',
-  white:      '#FFFFFF',
-  bg:         '#F8F8F6',
-  ink:        '#060606',
-  inkLight:   '#F2EDE4',
-  mid:        '#3A3A3A',
-  muted:      '#777777',
-  border:     'rgba(0,0,0,0.09)',
-  borderDark: 'rgba(255,255,255,0.07)',
+  dark:    '#060606',   // portfolio bg
+  surface: '#0d0d0d',   // portfolio surface
+  pink:    '#FF4B8F',   // portfolio pink
+  purple:  '#7C3AED',   // portfolio purple
+  green:   '#00FF87',   // portfolio green
+  ink:     '#F2EDE4',   // cream — primary text
+  inkLight:'#F2EDE4',   // alias for ink
+  mid:     'rgba(242,237,228,0.68)', // secondary text
+  muted:   'rgba(242,237,228,0.4)',  // muted / labels
+  border:  'rgba(255,255,255,0.07)', // border
 }
 
 const EASE = [0.22, 1, 0.36, 1]
@@ -79,13 +76,12 @@ function Label({ children, light = false }) {
 }
 
 // ─── Placeholder Image Box ────────────────────────────────
-function ImgBox({ label, aspect = '56.25%', style = {}, dark = false }) {
-  const bg = dark ? C.surface : C.bg
-  const border = dark ? `1.5px dashed ${C.borderDark}` : `1.5px dashed ${C.border}`
+function ImgBox({ label, aspect = '56.25%', style = {} }) {
   return (
     <div style={{
       position: 'relative', width: '100%', paddingBottom: aspect,
-      background: bg, border, borderRadius: '12px', overflow: 'hidden', ...style,
+      background: C.surface, border: `1.5px dashed ${C.border}`,
+      borderRadius: '12px', overflow: 'hidden', ...style,
     }}>
       <div style={{
         position: 'absolute', inset: 0,
@@ -93,13 +89,13 @@ function ImgBox({ label, aspect = '56.25%', style = {}, dark = false }) {
         alignItems: 'center', justifyContent: 'center', gap: '10px',
       }}>
         <svg width="26" height="26" viewBox="0 0 24 24" fill="none">
-          <rect x="3" y="3" width="18" height="18" rx="3" stroke={dark ? 'rgba(255,255,255,0.3)' : C.muted} strokeWidth="1.5" />
-          <circle cx="8.5" cy="8.5" r="1.5" stroke={dark ? 'rgba(255,255,255,0.3)' : C.muted} strokeWidth="1.5" />
-          <path d="M3 15l5-5 4 4 3-3 6 6" stroke={dark ? 'rgba(255,255,255,0.3)' : C.muted} strokeWidth="1.5" strokeLinejoin="round" />
+          <rect x="3" y="3" width="18" height="18" rx="3" stroke={C.muted} strokeWidth="1.5" />
+          <circle cx="8.5" cy="8.5" r="1.5" stroke={C.muted} strokeWidth="1.5" />
+          <path d="M3 15l5-5 4 4 3-3 6 6" stroke={C.muted} strokeWidth="1.5" strokeLinejoin="round" />
         </svg>
         <span style={{
           fontFamily: "'Space Mono', monospace", fontSize: '0.6rem', letterSpacing: '0.1em',
-          color: dark ? 'rgba(255,255,255,0.35)' : C.muted,
+          color: C.muted,
           textAlign: 'center', maxWidth: '220px', lineHeight: 1.5,
         }}>{label}</span>
       </div>
@@ -108,13 +104,12 @@ function ImgBox({ label, aspect = '56.25%', style = {}, dark = false }) {
 }
 
 // ─── Screen Label ─────────────────────────────────────────
-function ScreenLabel({ children, dark = false }) {
+function ScreenLabel({ children }) {
   return (
     <div style={{
       fontFamily: "'Space Mono', monospace", fontSize: '0.55rem',
       letterSpacing: '0.2em', textTransform: 'uppercase',
-      color: dark ? 'rgba(255,255,255,0.45)' : C.muted,
-      textAlign: 'center', marginTop: '0.75rem',
+      color: C.muted, textAlign: 'center', marginTop: '0.75rem',
     }}>{children}</div>
   )
 }
@@ -280,7 +275,7 @@ function ResearchPhaseDiagram() {
                   transform: 'translateY(-50%)',
                   width: 20, height: 20, borderRadius: '50%',
                   border: `2px solid ${phase.color}`,
-                  background: C.bg, zIndex: 3,
+                  background: C.dark, zIndex: 3,
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                 }}>
                   <span style={{ fontSize: '0.55rem', color: phase.color }}>›</span>
@@ -288,7 +283,7 @@ function ResearchPhaseDiagram() {
               )}
 
               <p style={{
-                fontFamily: "'Syne', sans-serif", fontWeight: 700,
+                fontFamily: "'Syne', sans-serif", fontWeight: 500,
                 fontSize: 'clamp(0.7rem,1.5vw,0.85rem)', color: C.ink,
                 margin: 0, lineHeight: 1.3, whiteSpace: 'pre-line',
               }}>{phase.label}</p>
@@ -363,7 +358,7 @@ function POEMSDiagram() {
           style={{ transformOrigin: `${CX}px ${CY}px` }}
         />
         <text x={CX} y={CY + 5} textAnchor="middle"
-          style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.55rem', fill: C.inkLight, letterSpacing: '0.1em' }}>
+          style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.55rem', fill: C.ink, letterSpacing: '0.1em' }}>
           POEMS
         </text>
 
@@ -381,7 +376,7 @@ function POEMSDiagram() {
             >
               <circle cx={x} cy={y} r={24} fill={item.color} fillOpacity={0.12} stroke={item.color} strokeWidth={1.5} />
               <text x={x} y={y - 4} textAnchor="middle"
-                style={{ fontFamily: "'Syne', sans-serif", fontWeight: 800, fontSize: '0.9rem', fill: item.color }}>
+                style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: '0.9rem', fill: item.color }}>
                 {item.letter}
               </text>
               <text x={x} y={y + 10} textAnchor="middle"
@@ -407,12 +402,12 @@ function POEMSDiagram() {
               background: `${item.color}15`, border: `1.5px solid ${item.color}`,
               display: 'flex', alignItems: 'center', justifyContent: 'center',
             }}>
-              <span style={{ fontFamily: "'Syne', sans-serif", fontWeight: 800, fontSize: '0.75rem', color: item.color }}>
+              <span style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: '0.75rem', color: item.color }}>
                 {item.letter}
               </span>
             </div>
             <div>
-              <p style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: '0.8rem', color: C.ink, margin: '0 0 0.25rem' }}>
+              <p style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: '0.8rem', color: C.ink, margin: '0 0 0.25rem' }}>
                 {item.word}
               </p>
               <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.78rem', color: C.muted, margin: 0, lineHeight: 1.55 }}>
@@ -452,13 +447,13 @@ function ParticipantCard({ p, delay }) {
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           flexShrink: 0,
         }}>
-          <span style={{ fontFamily: "'Syne', sans-serif", fontWeight: 800, fontSize: '1rem', color: p.color }}>
+          <span style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: '1rem', color: p.color }}>
             {p.name[0]}
           </span>
         </div>
 
         <div>
-          <p style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: '0.95rem', color: C.ink, margin: '0 0 0.15rem' }}>
+          <p style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: '0.95rem', color: C.ink, margin: '0 0 0.15rem' }}>
             {p.name}
           </p>
           <p style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.58rem', letterSpacing: '0.12em', color: p.color, margin: 0 }}>
@@ -522,7 +517,7 @@ function ResultsChart() {
           style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}
         >
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
-            <p style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: '0.85rem', color: C.ink, margin: 0 }}>
+            <p style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: '0.85rem', color: C.ink, margin: 0 }}>
               {r.param}
             </p>
             <span style={{
@@ -573,10 +568,10 @@ function ResultsChart() {
           borderRadius: '10px', display: 'flex', justifyContent: 'space-between', alignItems: 'center',
         }}
       >
-        <p style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: '0.85rem', color: C.ink, margin: 0 }}>
+        <p style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: '0.85rem', color: C.ink, margin: 0 }}>
           Overall Improvement
         </p>
-        <span style={{ fontFamily: "'Space Mono', monospace", fontSize: '1.1rem', fontWeight: 700, color: C.purple }}>
+        <span style={{ fontFamily: "'Space Mono', monospace", fontSize: '1.1rem', fontWeight: 500, color: C.purple }}>
           +12.59%
         </span>
       </motion.div>
@@ -610,10 +605,10 @@ function StatCard({ stat, label, sub, color }) {
         display: 'flex', flexDirection: 'column', gap: '0.4rem',
       }}
     >
-      <p style={{ fontFamily: "'Syne', sans-serif", fontWeight: 800, fontSize: 'clamp(1.6rem,3vw,2.4rem)', color, margin: 0, lineHeight: 1 }}>
+      <p style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: 'clamp(1.6rem,3vw,2.4rem)', color, margin: 0, lineHeight: 1 }}>
         {stat}
       </p>
-      <p style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: '0.85rem', color: C.ink, margin: 0 }}>
+      <p style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: '0.85rem', color: C.ink, margin: 0 }}>
         {label}
       </p>
       {sub && <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.78rem', color: C.muted, margin: 0, lineHeight: 1.5 }}>{sub}</p>}
@@ -634,14 +629,14 @@ export default function Finance() {
   }, [])
 
   return (
-    <div style={{ background: C.bg, minHeight: '100vh', color: C.ink }}>
+    <div style={{ background: C.dark, minHeight: '100vh', color: C.ink }}>
       <ProgressBar />
       <Nav />
       <SidebarNav active={active} />
 
       {/* ─── HERO ─── */}
       <section style={{
-        background: C.dark, color: C.inkLight,
+        background: C.dark, color: C.ink,
         paddingTop: 'clamp(7rem,12vw,11rem)',
         paddingBottom: 'clamp(5rem,8vw,8rem)',
       }}>
@@ -651,9 +646,9 @@ export default function Finance() {
           </MaskReveal>
           <MaskReveal delay={0.1}>
             <h1 style={{
-              fontFamily: "'Syne', sans-serif", fontWeight: 800,
+              fontFamily: "'Syne', sans-serif", fontWeight: 500,
               fontSize: 'clamp(2.4rem,5.5vw,4.2rem)', lineHeight: 1.08,
-              color: C.inkLight, margin: '0 0 1.75rem',
+              color: C.ink, margin: '0 0 1.75rem',
               maxWidth: '16ch',
             }}>
               Finance for<br />
@@ -683,7 +678,7 @@ export default function Finance() {
             ].map(m => (
               <div key={m.l}>
                 <p style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.55rem', letterSpacing: '0.18em', color: 'rgba(255,255,255,0.35)', textTransform: 'uppercase', margin: '0 0 0.25rem' }}>{m.l}</p>
-                <p style={{ fontFamily: "'Syne', sans-serif", fontWeight: 600, fontSize: '0.9rem', color: C.inkLight, margin: 0 }}>{m.v}</p>
+                <p style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: '0.9rem', color: C.ink, margin: 0 }}>{m.v}</p>
               </div>
             ))}
           </div>
@@ -691,11 +686,11 @@ export default function Finance() {
       </section>
 
       {/* ─── OVERVIEW ─── */}
-      <section id="overview" style={{ ...PAD, background: C.bg }}>
+      <section id="overview" style={{ ...PAD, background: C.dark }}>
         <Wrap>
           <Reveal>
             <SectionTag color={C.purple}>01 — Overview</SectionTag>
-            <h2 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 800, fontSize: 'clamp(1.8rem,3.5vw,2.8rem)', color: C.ink, margin: '0 0 1.5rem', lineHeight: 1.15 }}>
+            <h2 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: 'clamp(1.8rem,3.5vw,2.8rem)', color: C.ink, margin: '0 0 1.5rem', lineHeight: 1.15 }}>
               The Problem Space
             </h2>
           </Reveal>
@@ -727,11 +722,11 @@ export default function Finance() {
       </section>
 
       {/* ─── CONTEXT ─── */}
-      <section id="context" style={{ ...PAD, background: '#EFEFED' }}>
+      <section id="context" style={{ ...PAD, background: C.surface }}>
         <Wrap>
           <Reveal>
             <SectionTag color={C.pink}>02 — Problem Context</SectionTag>
-            <h2 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 800, fontSize: 'clamp(1.8rem,3.5vw,2.8rem)', color: C.ink, margin: '0 0 1.5rem', lineHeight: 1.15 }}>
+            <h2 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: 'clamp(1.8rem,3.5vw,2.8rem)', color: C.ink, margin: '0 0 1.5rem', lineHeight: 1.15 }}>
               Literature Review
             </h2>
             <p style={{ fontFamily: "'Syne', sans-serif", fontSize: 'clamp(0.95rem,1.6vw,1.05rem)', lineHeight: 1.75, color: C.mid, maxWidth: '70ch', margin: '0 0 2.5rem' }}>
@@ -753,10 +748,10 @@ export default function Finance() {
                 <div style={{
                   flex: 1, border: `1.5px solid ${card.color}25`,
                   borderRadius: '12px', padding: '1.5rem',
-                  background: C.bg, display: 'flex', flexDirection: 'column', gap: '0.6rem',
+                  background: C.dark, display: 'flex', flexDirection: 'column', gap: '0.6rem',
                 }}>
                   <div style={{ width: 32, height: 3, borderRadius: 2, background: card.color, marginBottom: '0.25rem' }} />
-                  <p style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: '0.9rem', color: C.ink, margin: 0 }}>{card.title}</p>
+                  <p style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: '0.9rem', color: C.ink, margin: 0 }}>{card.title}</p>
                   <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.8rem', lineHeight: 1.65, color: C.mid, margin: 0, flex: 1 }}>{card.body}</p>
                 </div>
               </StaggerItem>
@@ -775,7 +770,7 @@ export default function Finance() {
                 {['Money Management Skills', 'Fraud / Scam Awareness', 'Decoding Financial Jargon', 'Accessible Expense Tracking'].map(opp => (
                   <div key={opp} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                     <div style={{ width: 6, height: 6, borderRadius: '50%', background: C.purple, flexShrink: 0 }} />
-                    <span style={{ fontFamily: "'Syne', sans-serif", fontWeight: 600, fontSize: '0.85rem', color: C.ink }}>{opp}</span>
+                    <span style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: '0.85rem', color: C.ink }}>{opp}</span>
                   </div>
                 ))}
               </div>
@@ -785,11 +780,11 @@ export default function Finance() {
       </section>
 
       {/* ─── METHODS ─── */}
-      <section id="methods" style={{ ...PAD, background: C.bg }}>
+      <section id="methods" style={{ ...PAD, background: C.dark }}>
         <Wrap>
           <Reveal>
             <SectionTag color={C.green}>03 — Research Methods</SectionTag>
-            <h2 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 800, fontSize: 'clamp(1.8rem,3.5vw,2.8rem)', color: C.ink, margin: '0 0 1.5rem', lineHeight: 1.15 }}>
+            <h2 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: 'clamp(1.8rem,3.5vw,2.8rem)', color: C.ink, margin: '0 0 1.5rem', lineHeight: 1.15 }}>
               POEMS Framework
             </h2>
             <p style={{ fontFamily: "'Syne', sans-serif", fontSize: 'clamp(0.95rem,1.6vw,1.05rem)', lineHeight: 1.75, color: C.mid, maxWidth: '68ch', margin: '0 0 2.5rem' }}>
@@ -867,11 +862,11 @@ export default function Finance() {
       </section>
 
       {/* ─── FIELDWORK ─── */}
-      <section id="fieldwork" style={{ ...PAD, background: '#EFEFED' }}>
+      <section id="fieldwork" style={{ ...PAD, background: C.surface }}>
         <Wrap>
           <Reveal>
             <SectionTag color={C.purple}>04 — On-Ground Research</SectionTag>
-            <h2 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 800, fontSize: 'clamp(1.8rem,3.5vw,2.8rem)', color: C.ink, margin: '0 0 1.5rem', lineHeight: 1.15 }}>
+            <h2 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: 'clamp(1.8rem,3.5vw,2.8rem)', color: C.ink, margin: '0 0 1.5rem', lineHeight: 1.15 }}>
               Field Interviews
             </h2>
             <p style={{ fontFamily: "'Syne', sans-serif", fontSize: 'clamp(0.95rem,1.6vw,1.05rem)', lineHeight: 1.75, color: C.mid, maxWidth: '70ch', margin: '0 0 1rem' }}>
@@ -889,23 +884,23 @@ export default function Finance() {
           <Reveal delay={0.05}>
             <div style={{
               padding: '1.5rem', borderRadius: '12px',
-              border: `1.5px solid ${C.purple}25`, background: C.bg,
+              border: `1.5px solid ${C.purple}25`, background: C.dark,
               marginBottom: '2rem',
               display: 'flex', gap: '2rem', alignItems: 'center', flexWrap: 'wrap',
             }}>
               <div>
                 <p style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.55rem', letterSpacing: '0.18em', color: C.muted, textTransform: 'uppercase', margin: '0 0 0.4rem' }}>Target Group</p>
-                <p style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: '0.95rem', color: C.ink, margin: 0 }}>
+                <p style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: '0.95rem', color: C.ink, margin: 0 }}>
                   Security guards · Cleaning staff · Small business owners
                 </p>
               </div>
               <div style={{ borderLeft: `1.5px solid ${C.border}`, paddingLeft: '2rem' }}>
                 <p style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.55rem', letterSpacing: '0.18em', color: C.muted, textTransform: 'uppercase', margin: '0 0 0.4rem' }}>Age Range</p>
-                <p style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: '0.95rem', color: C.ink, margin: 0 }}>18–50 years</p>
+                <p style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: '0.95rem', color: C.ink, margin: 0 }}>18–50 years</p>
               </div>
               <div style={{ borderLeft: `1.5px solid ${C.border}`, paddingLeft: '2rem' }}>
                 <p style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.55rem', letterSpacing: '0.18em', color: C.muted, textTransform: 'uppercase', margin: '0 0 0.4rem' }}>Education</p>
-                <p style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: '0.95rem', color: C.ink, margin: 0 }}>Less or semi-literate</p>
+                <p style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: '0.95rem', color: C.ink, margin: 0 }}>Less or semi-literate</p>
               </div>
             </div>
           </Reveal>
@@ -929,11 +924,11 @@ export default function Finance() {
       </section>
 
       {/* ─── INSIGHTS ─── */}
-      <section id="insights" style={{ ...PAD, background: C.bg }}>
+      <section id="insights" style={{ ...PAD, background: C.dark }}>
         <Wrap>
           <Reveal>
             <SectionTag color={C.pink}>05 — Insights</SectionTag>
-            <h2 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 800, fontSize: 'clamp(1.8rem,3.5vw,2.8rem)', color: C.ink, margin: '0 0 1rem', lineHeight: 1.15 }}>
+            <h2 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: 'clamp(1.8rem,3.5vw,2.8rem)', color: C.ink, margin: '0 0 1rem', lineHeight: 1.15 }}>
               12 Interesting Findings
             </h2>
             <p style={{ fontFamily: "'Syne', sans-serif", fontSize: 'clamp(0.95rem,1.6vw,1.05rem)', lineHeight: 1.75, color: C.mid, maxWidth: '70ch', margin: '0 0 2.5rem' }}>
@@ -958,7 +953,7 @@ export default function Finance() {
                       <span style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.65rem', color: col }}>{String(i + 1).padStart(2, '0')}</span>
                       <div style={{ flex: 1, height: 1, background: `${col}25` }} />
                     </div>
-                    <p style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: '0.88rem', color: C.ink, margin: 0 }}>{f.title}</p>
+                    <p style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: '0.88rem', color: C.ink, margin: 0 }}>{f.title}</p>
                     <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.78rem', lineHeight: 1.65, color: C.mid, margin: 0, flex: 1 }}>{f.body}</p>
                   </div>
                 </StaggerItem>
@@ -969,7 +964,7 @@ export default function Finance() {
           {/* Inferences Summary */}
           <Reveal>
             <Label>Inferences — 6 Contexts</Label>
-            <h3 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: '1.3rem', color: C.ink, margin: '0 0 1.5rem' }}>
+            <h3 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: '1.3rem', color: C.ink, margin: '0 0 1.5rem' }}>
               Structural Analysis Across Contexts
             </h3>
           </Reveal>
@@ -991,7 +986,7 @@ export default function Finance() {
                 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
                     <span style={{ color: ctx.color, fontSize: '1rem' }}>{ctx.icon}</span>
-                    <p style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: '0.88rem', color: C.ink, margin: 0 }}>{ctx.ctx}</p>
+                    <p style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: '0.88rem', color: C.ink, margin: 0 }}>{ctx.ctx}</p>
                   </div>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
                     {ctx.points.map((pt, j) => (
@@ -1009,11 +1004,11 @@ export default function Finance() {
       </section>
 
       {/* ─── WORKSHOP ─── */}
-      <section id="workshop" style={{ ...PAD, background: C.dark, color: C.inkLight }}>
+      <section id="workshop" style={{ ...PAD, background: C.dark, color: C.ink }}>
         <Wrap>
           <Reveal>
             <SectionTag color={C.green}>06 — Participatory Workshop</SectionTag>
-            <h2 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 800, fontSize: 'clamp(1.8rem,3.5vw,2.8rem)', color: C.inkLight, margin: '0 0 1.5rem', lineHeight: 1.15 }}>
+            <h2 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: 'clamp(1.8rem,3.5vw,2.8rem)', color: C.ink, margin: '0 0 1.5rem', lineHeight: 1.15 }}>
               Workshop Design
             </h2>
             <p style={{ fontFamily: "'Syne', sans-serif", fontSize: 'clamp(0.95rem,1.6vw,1.05rem)', lineHeight: 1.75, color: 'rgba(242,237,228,0.72)', maxWidth: '68ch', margin: '0 0 2.5rem' }}>
@@ -1029,7 +1024,7 @@ export default function Finance() {
             <Reveal>
               <div style={{ border: `1.5px solid ${C.green}30`, borderRadius: '12px', padding: '1.75rem', background: `${C.green}08`, height: '100%' }}>
                 <p style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.55rem', letterSpacing: '0.18em', color: C.green, textTransform: 'uppercase', margin: '0 0 1rem' }}>Mission</p>
-                <p style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: '0.95rem', color: C.inkLight, margin: '0 0 0.75rem', lineHeight: 1.4 }}>
+                <p style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: '0.95rem', color: C.ink, margin: '0 0 0.75rem', lineHeight: 1.4 }}>
                   To empower semi-literate individuals in urban areas to protect themselves from financial scams.
                 </p>
                 <ul style={{ margin: 0, padding: '0 0 0 1.2rem', display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
@@ -1042,7 +1037,7 @@ export default function Finance() {
             <Reveal delay={0.1}>
               <div style={{ border: `1.5px solid ${C.purple}30`, borderRadius: '12px', padding: '1.75rem', background: `${C.purple}08`, height: '100%' }}>
                 <p style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.55rem', letterSpacing: '0.18em', color: C.purple, textTransform: 'uppercase', margin: '0 0 1rem' }}>Vision</p>
-                <p style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: '0.95rem', color: C.inkLight, margin: '0 0 0.75rem', lineHeight: 1.4 }}>
+                <p style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: '0.95rem', color: C.ink, margin: '0 0 0.75rem', lineHeight: 1.4 }}>
                   A financially aware and resilient community in Bangalore.
                 </p>
                 <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.8rem', lineHeight: 1.7, color: 'rgba(242,237,228,0.7)', margin: 0 }}>
@@ -1060,7 +1055,7 @@ export default function Finance() {
           </Reveal>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1rem', marginBottom: '3rem' }}>
             <Reveal>
-              <div style={{ border: `1.5px solid ${C.borderDark}`, borderRadius: '12px', padding: '1.5rem', background: 'rgba(255,255,255,0.04)' }}>
+              <div style={{ border: `1.5px solid ${C.border}`, borderRadius: '12px', padding: '1.5rem', background: 'rgba(255,255,255,0.04)' }}>
                 <p style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.55rem', letterSpacing: '0.18em', color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', margin: '0 0 1rem' }}>10 Participants — NID Staff</p>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
                   {[
@@ -1075,11 +1070,11 @@ export default function Finance() {
                     ['Venkat Charpata', 33, 'M', 'Gardening Staff'],
                     ['Shivraj', 30, 'M', 'Gardening Staff'],
                   ].map(([name, age, gender, role]) => (
-                    <div key={name} style={{ display: 'flex', gap: '0.75rem', alignItems: 'center', padding: '0.35rem 0', borderBottom: `1px solid ${C.borderDark}` }}>
+                    <div key={name} style={{ display: 'flex', gap: '0.75rem', alignItems: 'center', padding: '0.35rem 0', borderBottom: `1px solid ${C.border}` }}>
                       <div style={{ width: 24, height: 24, borderRadius: '50%', background: gender === 'F' ? `${C.pink}25` : `${C.purple}25`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                         <span style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.5rem', color: gender === 'F' ? C.pink : C.purple }}>{gender}</span>
                       </div>
-                      <span style={{ fontFamily: "'Syne', sans-serif", fontWeight: 600, fontSize: '0.8rem', color: C.inkLight, flex: 1 }}>{name}</span>
+                      <span style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: '0.8rem', color: C.ink, flex: 1 }}>{name}</span>
                       <span style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.55rem', color: 'rgba(255,255,255,0.35)' }}>{age}</span>
                     </div>
                   ))}
@@ -1088,25 +1083,25 @@ export default function Finance() {
             </Reveal>
             <Reveal delay={0.1}>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                <div style={{ border: `1.5px solid ${C.borderDark}`, borderRadius: '12px', padding: '1.5rem', background: 'rgba(255,255,255,0.04)' }}>
+                <div style={{ border: `1.5px solid ${C.border}`, borderRadius: '12px', padding: '1.5rem', background: 'rgba(255,255,255,0.04)' }}>
                   <p style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.55rem', letterSpacing: '0.18em', color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', margin: '0 0 0.75rem' }}>Gender Split</p>
                   <div style={{ display: 'flex', gap: '1.5rem' }}>
                     <div>
-                      <p style={{ fontFamily: "'Syne', sans-serif", fontWeight: 800, fontSize: '2rem', color: C.pink, margin: '0 0 0.2rem' }}>50%</p>
+                      <p style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: '2rem', color: C.pink, margin: '0 0 0.2rem' }}>50%</p>
                       <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.8rem', color: 'rgba(255,255,255,0.5)', margin: 0 }}>Women</p>
                     </div>
                     <div>
-                      <p style={{ fontFamily: "'Syne', sans-serif", fontWeight: 800, fontSize: '2rem', color: C.purple, margin: '0 0 0.2rem' }}>50%</p>
+                      <p style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: '2rem', color: C.purple, margin: '0 0 0.2rem' }}>50%</p>
                       <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.8rem', color: 'rgba(255,255,255,0.5)', margin: 0 }}>Men</p>
                     </div>
                   </div>
                 </div>
-                <div style={{ border: `1.5px solid ${C.borderDark}`, borderRadius: '12px', padding: '1.5rem', background: 'rgba(255,255,255,0.04)' }}>
+                <div style={{ border: `1.5px solid ${C.border}`, borderRadius: '12px', padding: '1.5rem', background: 'rgba(255,255,255,0.04)' }}>
                   <p style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.55rem', letterSpacing: '0.18em', color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', margin: '0 0 0.75rem' }}>Age Distribution</p>
                   {[['20–30', '20%', 2, C.green], ['31–40', '70%', 7, C.purple], ['41–45', '10%', 1, C.pink]].map(([range, pct, n, color]) => (
                     <div key={range} style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.5rem' }}>
                       <span style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.58rem', color: 'rgba(255,255,255,0.45)', minWidth: 42 }}>{range}</span>
-                      <div style={{ flex: 1, height: 6, background: C.borderDark, borderRadius: 3, overflow: 'hidden' }}>
+                      <div style={{ flex: 1, height: 6, background: C.border, borderRadius: 3, overflow: 'hidden' }}>
                         <div style={{ width: pct, height: '100%', background: color, borderRadius: 3 }} />
                       </div>
                       <span style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.58rem', color: 'rgba(255,255,255,0.45)', minWidth: 28 }}>{pct}</span>
@@ -1134,7 +1129,7 @@ export default function Finance() {
                     <div style={{ width: 28, height: 28, borderRadius: '50%', background: `${seg.color}20`, border: `1.5px solid ${seg.color}`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                       <span style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.58rem', color: seg.color }}>{seg.num}</span>
                     </div>
-                    <p style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: '0.88rem', color: C.inkLight, margin: 0 }}>{seg.title}</p>
+                    <p style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: '0.88rem', color: C.ink, margin: 0 }}>{seg.title}</p>
                   </div>
                   <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.8rem', lineHeight: 1.65, color: 'rgba(242,237,228,0.65)', margin: 0 }}>{seg.desc}</p>
                 </div>
@@ -1147,20 +1142,20 @@ export default function Finance() {
             <Label light>Workshop Documentation</Label>
           </Reveal>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1rem' }}>
-            <div><ImgBox dark label="Introduction segment — agenda overview with participants" aspect="70%" /><ScreenLabel dark>Segment 1 — Introduction</ScreenLabel></div>
-            <div><ImgBox dark label="Spot the Scam activity — printed examples of fraud" aspect="70%" /><ScreenLabel dark>Segment 3 — Spot the Scam</ScreenLabel></div>
-            <div><ImgBox dark label="RBI comic 'Raju and the 40 Thieves' — awareness session" aspect="70%" /><ScreenLabel dark>Segment 4 — Education Videos</ScreenLabel></div>
-            <div><ImgBox dark label="Follow-up scam identification and brochure distribution" aspect="70%" /><ScreenLabel dark>Segments 5 & 6 — Follow-up & Closure</ScreenLabel></div>
+            <div><ImgBox label="Introduction segment — agenda overview with participants" aspect="70%" /><ScreenLabel>Segment 1 — Introduction</ScreenLabel></div>
+            <div><ImgBox label="Spot the Scam activity — printed examples of fraud" aspect="70%" /><ScreenLabel>Segment 3 — Spot the Scam</ScreenLabel></div>
+            <div><ImgBox label="RBI comic 'Raju and the 40 Thieves' — awareness session" aspect="70%" /><ScreenLabel>Segment 4 — Education Videos</ScreenLabel></div>
+            <div><ImgBox label="Follow-up scam identification and brochure distribution" aspect="70%" /><ScreenLabel>Segments 5 & 6 — Follow-up & Closure</ScreenLabel></div>
           </div>
         </Wrap>
       </section>
 
       {/* ─── ANALYSIS ─── */}
-      <section id="analysis" style={{ ...PAD, background: C.bg }}>
+      <section id="analysis" style={{ ...PAD, background: C.dark }}>
         <Wrap>
           <Reveal>
             <SectionTag color={C.purple}>07 — Analysis</SectionTag>
-            <h2 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 800, fontSize: 'clamp(1.8rem,3.5vw,2.8rem)', color: C.ink, margin: '0 0 1.5rem', lineHeight: 1.15 }}>
+            <h2 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: 'clamp(1.8rem,3.5vw,2.8rem)', color: C.ink, margin: '0 0 1.5rem', lineHeight: 1.15 }}>
               Pre & Post Workshop Results
             </h2>
             <p style={{ fontFamily: "'Syne', sans-serif", fontSize: 'clamp(0.95rem,1.6vw,1.05rem)', lineHeight: 1.75, color: C.mid, maxWidth: '70ch', margin: '0 0 2.5rem' }}>
@@ -1192,11 +1187,11 @@ export default function Finance() {
                     <div style={{ display: 'flex', gap: '1.5rem' }}>
                       <div>
                         <p style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.6rem', color: C.muted, margin: '0 0 0.2rem' }}>Pre-Test</p>
-                        <p style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: '0.85rem', color: C.ink, margin: 0 }}>W = 0.887, p = 0.368</p>
+                        <p style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: '0.85rem', color: C.ink, margin: 0 }}>W = 0.887, p = 0.368</p>
                       </div>
                       <div>
                         <p style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.6rem', color: C.muted, margin: '0 0 0.2rem' }}>Post-Test</p>
-                        <p style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: '0.85rem', color: C.ink, margin: 0 }}>W = 0.983, p = 0.920</p>
+                        <p style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: '0.85rem', color: C.ink, margin: 0 }}>W = 0.983, p = 0.920</p>
                       </div>
                     </div>
                   </div>
@@ -1204,7 +1199,7 @@ export default function Finance() {
                   {/* Paired T-Test */}
                   <div style={{ border: `1.5px solid ${C.border}`, borderRadius: '12px', padding: '1.5rem', background: `${C.pink}04` }}>
                     <p style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.6rem', letterSpacing: '0.15em', color: C.pink, textTransform: 'uppercase', margin: '0 0 0.75rem' }}>Paired T-Test Result</p>
-                    <p style={{ fontFamily: "'Syne', sans-serif", fontWeight: 800, fontSize: '1.5rem', color: C.ink, margin: '0 0 0.5rem' }}>p = 0.162</p>
+                    <p style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: '1.5rem', color: C.ink, margin: '0 0 0.5rem' }}>p = 0.162</p>
                     <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.82rem', lineHeight: 1.65, color: C.mid, margin: 0 }}>
                       The p-value (0.162) exceeds the 0.05 threshold, meaning the null hypothesis holds —
                       the workshop did not produce <em>statistically significant</em> improvement. However,
@@ -1255,11 +1250,11 @@ export default function Finance() {
       </section>
 
       {/* ─── RECOMMENDATIONS ─── */}
-      <section id="recommendations" style={{ ...PAD, background: '#EFEFED' }}>
+      <section id="recommendations" style={{ ...PAD, background: C.surface }}>
         <Wrap>
           <Reveal>
             <SectionTag color={C.green}>08 — Recommendations</SectionTag>
-            <h2 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 800, fontSize: 'clamp(1.8rem,3.5vw,2.8rem)', color: C.ink, margin: '0 0 1.5rem', lineHeight: 1.15 }}>
+            <h2 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: 'clamp(1.8rem,3.5vw,2.8rem)', color: C.ink, margin: '0 0 1.5rem', lineHeight: 1.15 }}>
               5 Design & Policy Recommendations
             </h2>
             <p style={{ fontFamily: "'Syne', sans-serif", fontSize: 'clamp(0.95rem,1.6vw,1.05rem)', lineHeight: 1.75, color: C.mid, maxWidth: '70ch', margin: '0 0 2.5rem' }}>
@@ -1296,7 +1291,7 @@ export default function Finance() {
                 <div style={{
                   border: `1.5px solid ${rec.color}25`,
                   borderRadius: '12px', padding: '1.75rem',
-                  background: C.bg,
+                  background: C.dark,
                   display: 'flex', gap: '1.5rem', alignItems: 'flex-start',
                 }}>
                   <div style={{
@@ -1307,7 +1302,7 @@ export default function Finance() {
                     <span style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.7rem', color: rec.color }}>{rec.num}</span>
                   </div>
                   <div style={{ flex: 1 }}>
-                    <p style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: '1rem', color: C.ink, margin: '0 0 0.5rem' }}>{rec.title}</p>
+                    <p style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: '1rem', color: C.ink, margin: '0 0 0.5rem' }}>{rec.title}</p>
                     <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.85rem', lineHeight: 1.7, color: C.mid, margin: 0 }}>{rec.body}</p>
                   </div>
                 </div>
@@ -1318,11 +1313,11 @@ export default function Finance() {
       </section>
 
       {/* ─── REFLECTIONS ─── */}
-      <section id="reflections" style={{ ...PAD, background: C.dark, color: C.inkLight }}>
+      <section id="reflections" style={{ ...PAD, background: C.dark, color: C.ink }}>
         <Wrap>
           <Reveal>
             <SectionTag color={C.pink}>09 — Reflections</SectionTag>
-            <h2 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 800, fontSize: 'clamp(1.8rem,3.5vw,2.8rem)', color: C.inkLight, margin: '0 0 1.5rem', lineHeight: 1.15 }}>
+            <h2 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: 'clamp(1.8rem,3.5vw,2.8rem)', color: C.ink, margin: '0 0 1.5rem', lineHeight: 1.15 }}>
               What the Research Taught Us
             </h2>
           </Reveal>
@@ -1330,7 +1325,7 @@ export default function Finance() {
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '2rem', marginBottom: '3rem' }}>
             <Reveal>
               <div>
-                <p style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: '1.05rem', color: C.inkLight, margin: '0 0 0.75rem' }}>
+                <p style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: '1.05rem', color: C.ink, margin: '0 0 0.75rem' }}>
                   The gap is structural, not cognitive
                 </p>
                 <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.88rem', lineHeight: 1.75, color: 'rgba(242,237,228,0.7)', margin: 0 }}>
@@ -1343,7 +1338,7 @@ export default function Finance() {
             </Reveal>
             <Reveal delay={0.1}>
               <div>
-                <p style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: '1.05rem', color: C.inkLight, margin: '0 0 0.75rem' }}>
+                <p style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: '1.05rem', color: C.ink, margin: '0 0 0.75rem' }}>
                   Trust is the real design material
                 </p>
                 <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.88rem', lineHeight: 1.75, color: 'rgba(242,237,228,0.7)', margin: 0 }}>
@@ -1356,7 +1351,7 @@ export default function Finance() {
             </Reveal>
             <Reveal delay={0.2}>
               <div>
-                <p style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: '1.05rem', color: C.inkLight, margin: '0 0 0.75rem' }}>
+                <p style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: '1.05rem', color: C.ink, margin: '0 0 0.75rem' }}>
                   Participatory methods are non-negotiable
                 </p>
                 <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.88rem', lineHeight: 1.75, color: 'rgba(242,237,228,0.7)', margin: 0 }}>
@@ -1369,7 +1364,7 @@ export default function Finance() {
             </Reveal>
             <Reveal delay={0.3}>
               <div>
-                <p style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: '1.05rem', color: C.inkLight, margin: '0 0 0.75rem' }}>
+                <p style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: '1.05rem', color: C.ink, margin: '0 0 0.75rem' }}>
                   Statistical limits are research lessons
                 </p>
                 <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.88rem', lineHeight: 1.75, color: 'rgba(242,237,228,0.7)', margin: 0 }}>
@@ -1384,11 +1379,11 @@ export default function Finance() {
 
           {/* Closing Quote */}
           <Reveal>
-            <div style={{ borderTop: `1.5px solid ${C.borderDark}`, paddingTop: '2.5rem' }}>
+            <div style={{ borderTop: `1.5px solid ${C.border}`, paddingTop: '2.5rem' }}>
               <blockquote style={{
                 fontFamily: "'Cormorant Garamond', serif",
                 fontSize: 'clamp(1.4rem,2.8vw,2rem)', fontStyle: 'italic',
-                lineHeight: 1.55, color: C.inkLight, margin: '0 0 1.5rem',
+                lineHeight: 1.55, color: C.ink, margin: '0 0 1.5rem',
                 maxWidth: '26ch',
               }}>
                 "Designing for the margins doesn't mean designing differently — it means designing
@@ -1403,12 +1398,12 @@ export default function Finance() {
       </section>
 
       {/* ─── NEXT PROJECT ─── */}
-      <section style={{ paddingTop: '4rem', paddingBottom: '4rem', background: C.bg }}>
+      <section style={{ paddingTop: '4rem', paddingBottom: '4rem', background: C.dark }}>
         <Wrap>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
             <div>
               <p style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.58rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: C.muted, margin: '0 0 0.4rem' }}>Next Project</p>
-              <p style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: '1.3rem', color: C.ink, margin: 0 }}>Spectra — Data Viz & Experience</p>
+              <p style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: '1.3rem', color: C.ink, margin: 0 }}>Spectra — Data Viz & Experience</p>
             </div>
             <a href="/work/study-buddy" style={{
               display: 'inline-flex', alignItems: 'center', gap: '0.5rem',

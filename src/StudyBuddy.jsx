@@ -4,20 +4,20 @@ import { Nav, Footer, ProgressBar, MaskReveal, Reveal } from './shared.jsx'
 
 // ─── Design Tokens ──────────────────────────────────────
 const C = {
-  dark:      '#060606',   // portfolio bg — dark sections
-  surface:   '#0d0d0d',   // portfolio surface
-  pink:      '#FF4B8F',   // portfolio pink
-  blue:      '#7C3AED',   // portfolio purple (accent role)
-  yellow:    '#00FF87',   // portfolio green (highlight role — no yellow in system)
-  green:     '#00FF87',   // portfolio green
-  white:     '#FFFFFF',
-  bg:        '#F8F8F6',   // light page bg
-  ink:       '#060606',   // dark text on light bg
-  inkLight:  '#F2EDE4',   // cream text on dark bg
-  mid:       '#3A3A3A',   // body text on light bg
-  muted:     '#777777',   // muted text
-  border:    'rgba(0,0,0,0.09)',  // subtle border on light bg
-  borderDark:'rgba(255,255,255,0.07)', // border on dark bg
+  dark:       '#060606',   // portfolio bg
+  surface:    '#0d0d0d',   // portfolio surface
+  pink:       '#FF4B8F',   // portfolio pink
+  blue:       '#7C3AED',   // portfolio purple
+  yellow:     '#00FF87',   // portfolio green
+  green:      '#00FF87',   // portfolio green
+  white:      '#FFFFFF',   // for text on coloured bg
+  bg:         '#060606',   // page bg → now dark (homepage palette)
+  ink:        '#F2EDE4',   // cream — primary text
+  inkLight:   '#F2EDE4',   // same as ink
+  mid:        'rgba(242,237,228,0.68)', // secondary text
+  muted:      'rgba(242,237,228,0.4)',  // muted / labels
+  border:     'rgba(255,255,255,0.07)', // border
+  borderDark: 'rgba(255,255,255,0.07)', // same as border
 }
 
 const EASE = [0.22, 1, 0.36, 1]
@@ -398,7 +398,7 @@ function ActorMap() {
               {a.label.split('\n').map((line, li) => (
                 <text key={li} x={p.x} y={p.y + (li - (a.label.split('\n').length - 1) / 2) * 11}
                   textAnchor="middle" dominantBaseline="middle"
-                  fontSize={8} fill="white" fontFamily="'Space Mono', monospace" fontWeight="600"
+                  fontSize={8} fill="white" fontFamily="'Space Mono', monospace" fontWeight="500"
                 >{line}</text>
               ))}
             </motion.g>
@@ -412,10 +412,10 @@ function ActorMap() {
         >
           <circle cx={300} cy={300} r={52} fill={C.blue} />
           <text x={300} y={295} textAnchor="middle" dominantBaseline="middle"
-            fontSize={7.5} fill="white" fontFamily="'Space Mono', monospace" fontWeight="600"
+            fontSize={7.5} fill="white" fontFamily="'Space Mono', monospace" fontWeight="500"
           >EDUCATION</text>
           <text x={300} y={308} textAnchor="middle" dominantBaseline="middle"
-            fontSize={7.5} fill="white" fontFamily="'Space Mono', monospace" fontWeight="600"
+            fontSize={7.5} fill="white" fontFamily="'Space Mono', monospace" fontWeight="500"
           >SYSTEM</text>
         </motion.g>
       </svg>
@@ -487,7 +487,7 @@ function SubsystemsMap() {
               {s.label.split('\n').map((line, li) => (
                 <text key={li} x={p.x} y={p.y - 6 + (li - (s.label.split('\n').length - 1) / 2) * 11}
                   textAnchor="middle" dominantBaseline="middle"
-                  fontSize={7.5} fill={C.blue} fontFamily="'Space Mono', monospace" fontWeight="600"
+                  fontSize={7.5} fill={C.blue} fontFamily="'Space Mono', monospace" fontWeight="500"
                 >{line}</text>
               ))}
               <text x={p.x} y={p.y + 16} textAnchor="middle" dominantBaseline="middle"
@@ -503,9 +503,9 @@ function SubsystemsMap() {
         >
           <circle cx={300} cy={300} r={60} fill={C.blue} />
           <text x={300} y={293} textAnchor="middle" fontSize={7.5} fill="white"
-            fontFamily="'Space Mono', monospace" fontWeight="600">FORMAL</text>
+            fontFamily="'Space Mono', monospace" fontWeight="500">FORMAL</text>
           <text x={300} y={305} textAnchor="middle" fontSize={7.5} fill="white"
-            fontFamily="'Space Mono', monospace" fontWeight="600">EDUCATION</text>
+            fontFamily="'Space Mono', monospace" fontWeight="500">EDUCATION</text>
           <text x={300} y={317} textAnchor="middle" fontSize={7.5} fill="rgba(255,255,255,0.6)"
             fontFamily="'Space Mono', monospace">SYSTEM</text>
         </motion.g>
@@ -606,7 +606,7 @@ function EmpathyMap() {
             <span style={{
               fontFamily: "'Syne', sans-serif",
               fontSize: '1rem',
-              fontWeight: 600,
+              fontWeight: 500,
               color: q.textColor,
             }}>{q.label}</span>
           </div>
@@ -674,7 +674,7 @@ function IADiagram() {
             style={{
               background: C.blue, color: 'white',
               padding: '12px 28px', borderRadius: '10px',
-              fontFamily: "'Syne', sans-serif", fontWeight: 600, fontSize: '0.95rem',
+              fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: '0.95rem',
               letterSpacing: '-0.01em',
             }}
           >Study Buddy</motion.div>
@@ -721,7 +721,7 @@ function IADiagram() {
                   <div key={li} style={{
                     fontFamily: "'Syne', sans-serif",
                     fontSize: '0.72rem',
-                    fontWeight: 600,
+                    fontWeight: 500,
                     color: branch.color,
                     lineHeight: 1.3,
                   }}>{l}</div>
@@ -965,7 +965,7 @@ function HeroSection() {
           <MaskReveal delay={0.2}>
             <h1 style={{
               fontFamily: "'Syne', sans-serif",
-              fontWeight: 600,
+              fontWeight: 500,
               fontSize: 'clamp(3.5rem, 7vw, 6.5rem)',
               lineHeight: 0.95,
               letterSpacing: '-0.03em',
@@ -1007,7 +1007,7 @@ function HeroSection() {
       </Wrap>
 
       {/* Metadata strip */}
-      <div style={{ background: C.white, borderTop: `1px solid ${C.border}` }}>
+      <div style={{ background: C.surface, borderTop: `1px solid ${C.border}` }}>
         <Wrap>
           <div style={{
             display: 'grid',
@@ -1037,7 +1037,7 @@ function HeroSection() {
                   <span style={{
                     fontFamily: "'Syne', sans-serif",
                     fontSize: '0.82rem',
-                    fontWeight: 600,
+                    fontWeight: 500,
                     color: C.ink,
                     lineHeight: 1.4,
                   }}>{m.value}</span>
@@ -1054,14 +1054,14 @@ function HeroSection() {
 // ─── Why This Topic ───────────────────────────────────────
 function WhySection() {
   return (
-    <section style={{ background: C.white, ...PAD }}>
+    <section style={{ background: C.surface, ...PAD }}>
       <Wrap>
         <div style={{ maxWidth: 720, margin: '0 auto', textAlign: 'center' }}>
           <Reveal><SectionTag>Why This Topic</SectionTag></Reveal>
           <MaskReveal delay={0.1}>
             <h2 style={{
               fontFamily: "'Syne', sans-serif",
-              fontWeight: 600,
+              fontWeight: 500,
               fontSize: 'clamp(1.75rem, 3.5vw, 2.75rem)',
               letterSpacing: '-0.02em',
               color: C.ink,
@@ -1112,7 +1112,7 @@ function SystemsSection() {
             },
           ].map((stage, i) => (
             <Reveal key={stage.num} delay={i * 0.1}>
-              <div style={{ background: C.white, padding: 'clamp(1.5rem,3vw,2.5rem)' }}>
+              <div style={{ background: C.surface, padding: 'clamp(1.5rem,3vw,2.5rem)' }}>
                 <div style={{
                   fontFamily: "'Space Mono', monospace",
                   fontSize: '0.58rem',
@@ -1122,7 +1122,7 @@ function SystemsSection() {
                 }}>STAGE {stage.num}</div>
                 <h3 style={{
                   fontFamily: "'Syne', sans-serif",
-                  fontWeight: 600,
+                  fontWeight: 500,
                   fontSize: 'clamp(1.1rem, 2vw, 1.4rem)',
                   color: C.ink,
                   marginBottom: '1.25rem',
@@ -1148,7 +1148,7 @@ function SystemsSection() {
             <Reveal delay={0.05}>
               <h2 style={{
                 fontFamily: "'Syne', sans-serif",
-                fontWeight: 600,
+                fontWeight: 500,
                 fontSize: 'clamp(1.75rem, 3.5vw, 2.75rem)',
                 letterSpacing: '-0.02em',
                 color: C.ink,
@@ -1165,7 +1165,7 @@ function SystemsSection() {
             </Reveal>
           </div>
           <Reveal delay={0.1}>
-            <div style={{ background: C.white, borderRadius: '16px', padding: 'clamp(1.5rem,3vw,3rem)', border: `1px solid ${C.border}` }}>
+            <div style={{ background: C.surface, borderRadius: '16px', padding: 'clamp(1.5rem,3vw,3rem)', border: `1px solid ${C.border}` }}>
               <ActorMap />
             </div>
           </Reveal>
@@ -1178,7 +1178,7 @@ function SystemsSection() {
             <Reveal delay={0.05}>
               <h2 style={{
                 fontFamily: "'Syne', sans-serif",
-                fontWeight: 600,
+                fontWeight: 500,
                 fontSize: 'clamp(1.75rem, 3.5vw, 2.75rem)',
                 letterSpacing: '-0.02em',
                 color: C.ink,
@@ -1208,7 +1208,7 @@ function SystemsSection() {
             <Reveal delay={0.05}>
               <h2 style={{
                 fontFamily: "'Syne', sans-serif",
-                fontWeight: 600,
+                fontWeight: 500,
                 fontSize: 'clamp(1.75rem, 3.5vw, 2.75rem)',
                 letterSpacing: '-0.02em',
                 color: C.ink,
@@ -1225,7 +1225,7 @@ function SystemsSection() {
             </Reveal>
           </div>
           <Reveal delay={0.1}>
-            <div style={{ background: C.white, borderRadius: '16px', padding: 'clamp(1.5rem,3vw,3rem)', border: `1px solid ${C.border}` }}>
+            <div style={{ background: C.surface, borderRadius: '16px', padding: 'clamp(1.5rem,3vw,3rem)', border: `1px solid ${C.border}` }}>
               <SubsystemsMap />
             </div>
           </Reveal>
@@ -1246,7 +1246,7 @@ function SystemsSection() {
             <Reveal delay={0.05}>
               <h2 style={{
                 fontFamily: "'Syne', sans-serif",
-                fontWeight: 600,
+                fontWeight: 500,
                 fontSize: 'clamp(1.75rem, 3.5vw, 2.75rem)',
                 letterSpacing: '-0.02em',
                 color: C.ink,
@@ -1318,14 +1318,14 @@ function ResearchSection() {
     return (
       <span style={{ fontFamily: "'Syne', sans-serif", fontSize: '1rem', lineHeight: 1.7, color: C.ink }}>
         {parts[0]}
-        <span style={{ color, fontWeight: 600 }}>{keyword}</span>
+        <span style={{ color, fontWeight: 500 }}>{keyword}</span>
         {parts[1]}
       </span>
     )
   }
 
   return (
-    <section id="research" style={{ background: C.white, ...PAD }}>
+    <section id="research" style={{ background: C.surface, ...PAD }}>
       <Wrap>
         <Reveal><Label>Primary Research</Label></Reveal>
 
@@ -1334,7 +1334,7 @@ function ResearchSection() {
           <div style={{ marginBottom: 'clamp(2.5rem,4vw,4rem)' }}>
             <h3 style={{
               fontFamily: "'Syne', sans-serif",
-              fontWeight: 600,
+              fontWeight: 500,
               fontSize: 'clamp(1.1rem, 2vw, 1.4rem)',
               color: C.ink,
               marginBottom: '0.5rem',
@@ -1353,7 +1353,7 @@ function ResearchSection() {
         <Reveal>
           <h3 style={{
             fontFamily: "'Syne', sans-serif",
-            fontWeight: 600,
+            fontWeight: 500,
             fontSize: 'clamp(1.1rem, 2vw, 1.4rem)',
             color: C.ink,
             marginBottom: '2rem',
@@ -1381,7 +1381,7 @@ function ResearchSection() {
                 flexDirection: 'column',
               }}>
                 <p style={{ fontSize: '1rem', lineHeight: 1.7, color: C.ink, margin: 0, fontFamily: "'Syne', sans-serif", flex: 1 }}>
-                  <span style={{ color: ins.color, fontWeight: 600 }}>{ins.keyword}</span>
+                  <span style={{ color: ins.color, fontWeight: 500 }}>{ins.keyword}</span>
                   {ins.text.replace(ins.keyword, '')}
                 </p>
               </div>
@@ -1421,7 +1421,7 @@ function ResearchSection() {
               }}>Target Audience</div>
               <p style={{
                 fontFamily: "'Syne', sans-serif",
-                fontWeight: 600,
+                fontWeight: 500,
                 fontSize: 'clamp(1rem,2vw,1.35rem)',
                 color: C.white,
                 margin: 0,
@@ -1475,7 +1475,7 @@ function DefineSection() {
         <Reveal>
           <h3 style={{
             fontFamily: "'Syne', sans-serif",
-            fontWeight: 600,
+            fontWeight: 500,
             fontSize: 'clamp(1.1rem, 2vw, 1.4rem)',
             color: C.ink,
             marginBottom: '1.5rem',
@@ -1493,7 +1493,7 @@ function DefineSection() {
           {quotes.map((q, i) => (
             <StaggerItem key={i}>
               <div style={{
-                background: C.white,
+                background: C.surface,
                 border: `1px solid ${C.border}`,
                 borderRadius: '12px',
                 padding: '1.5rem',
@@ -1523,7 +1523,7 @@ function DefineSection() {
         <Reveal>
           <h3 style={{
             fontFamily: "'Syne', sans-serif",
-            fontWeight: 600,
+            fontWeight: 500,
             fontSize: 'clamp(1.1rem, 2vw, 1.4rem)',
             color: C.ink,
             marginBottom: '0.5rem',
@@ -1537,7 +1537,7 @@ function DefineSection() {
         </Reveal>
         <Reveal delay={0.1}>
           <div style={{
-            background: C.white, borderRadius: '16px',
+            background: C.surface, borderRadius: '16px',
             padding: 'clamp(1.5rem,3vw,2.5rem)',
             border: `1px solid ${C.border}`,
             marginBottom: 'clamp(2.5rem,4vw,4rem)',
@@ -1578,7 +1578,7 @@ function DefineSection() {
         {/* User Story */}
         <Reveal delay={0.1}>
           <div style={{
-            background: C.white, border: `1px solid ${C.border}`,
+            background: C.surface, border: `1px solid ${C.border}`,
             borderRadius: '16px', padding: 'clamp(1.5rem,3vw,2.5rem)',
           }}>
             <Label>User Story</Label>
@@ -1640,7 +1640,7 @@ function PersonasSection() {
   ]
 
   return (
-    <section id="personas" style={{ background: C.white, ...PAD }}>
+    <section id="personas" style={{ background: C.surface, ...PAD }}>
       <Wrap>
         <Reveal><Label>User Personas & Empathy Map</Label></Reveal>
 
@@ -1648,7 +1648,7 @@ function PersonasSection() {
         <Reveal>
           <h3 style={{
             fontFamily: "'Syne', sans-serif",
-            fontWeight: 600,
+            fontWeight: 500,
             fontSize: 'clamp(1.1rem, 2vw, 1.4rem)',
             color: C.ink,
             marginBottom: '0.5rem',
@@ -1687,9 +1687,9 @@ function PersonasSection() {
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                     marginBottom: '1rem',
                   }}>
-                    <span style={{ fontFamily: "'Syne', sans-serif", fontWeight: 600, fontSize: '1.1rem', color: 'white' }}>{p.initials}</span>
+                    <span style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: '1.1rem', color: 'white' }}>{p.initials}</span>
                   </div>
-                  <h4 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 600, fontSize: '1.3rem', color: 'white', margin: '0 0 4px' }}>{p.name}</h4>
+                  <h4 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: '1.3rem', color: 'white', margin: '0 0 4px' }}>{p.name}</h4>
                   <span style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.6rem', color: 'rgba(255,255,255,0.65)', letterSpacing: '0.08em' }}>{p.age} · {p.context}</span>
                 </div>
 
@@ -1768,9 +1768,9 @@ function DesignSystemSection() {
           marginBottom: 'clamp(2.5rem,4vw,4rem)',
         }}>
           <StaggerItem>
-            <div style={{ background: C.white, border: `1px solid ${C.border}`, borderRadius: '16px', padding: '1.75rem', height: '100%' }}>
+            <div style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: '16px', padding: '1.75rem', height: '100%' }}>
               <div style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.58rem', letterSpacing: '0.2em', color: C.blue, marginBottom: '0.75rem' }}>GRID SYSTEM</div>
-              <h4 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 600, fontSize: '1.1rem', color: C.ink, marginBottom: '1rem' }}>16px Baseline Grid</h4>
+              <h4 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: '1.1rem', color: C.ink, marginBottom: '1rem' }}>16px Baseline Grid</h4>
               <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '6px' }}>
                 {['16px margin & gutter space', '8pt baseline grid', 'Perfect Fifth scale (×1.5) for headers', 'Golden Ratio (×1.618) for incremental type'].map(item => (
                   <li key={item} style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.65rem', color: C.mid, display: 'flex', gap: '8px', alignItems: 'flex-start' }}>
@@ -1783,11 +1783,11 @@ function DesignSystemSection() {
           </StaggerItem>
 
           <StaggerItem>
-            <div style={{ background: C.white, border: `1px solid ${C.border}`, borderRadius: '16px', padding: '1.75rem', height: '100%' }}>
+            <div style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: '16px', padding: '1.75rem', height: '100%' }}>
               <div style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.58rem', letterSpacing: '0.2em', color: C.pink, marginBottom: '0.75rem' }}>TYPOGRAPHY</div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                 <div>
-                  <div style={{ fontFamily: "'Syne', sans-serif", fontWeight: 600, fontSize: '2rem', color: C.ink, lineHeight: 1 }}>Absans</div>
+                  <div style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: '2rem', color: C.ink, lineHeight: 1 }}>Absans</div>
                   <div style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.58rem', color: C.muted, marginTop: '4px' }}>H1 · H2 · Content headings</div>
                 </div>
                 <div>
@@ -1799,9 +1799,9 @@ function DesignSystemSection() {
           </StaggerItem>
 
           <StaggerItem>
-            <div style={{ background: C.white, border: `1px solid ${C.border}`, borderRadius: '16px', padding: '1.75rem', height: '100%' }}>
+            <div style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: '16px', padding: '1.75rem', height: '100%' }}>
               <div style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.58rem', letterSpacing: '0.2em', color: C.green, marginBottom: '0.75rem' }}>TARGET ENERGY</div>
-              <h4 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 600, fontSize: '1.1rem', color: C.ink, marginBottom: '0.75rem' }}>Fresh · Youthful · Focused</h4>
+              <h4 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: '1.1rem', color: C.ink, marginBottom: '0.75rem' }}>Fresh · Youthful · Focused</h4>
               <p style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '1rem', color: C.mid, lineHeight: 1.65, margin: 0 }}>
                 Palette chosen to resonate with 13+ age group — vibrant enough to feel energetic, restrained enough to aid focus during long study sessions.
               </p>
@@ -1811,7 +1811,7 @@ function DesignSystemSection() {
 
         {/* Colour Palette */}
         <Reveal>
-          <h3 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 600, fontSize: '1.2rem', color: C.ink, marginBottom: '1.25rem', letterSpacing: '-0.02em' }}>Colour Palette</h3>
+          <h3 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: '1.2rem', color: C.ink, marginBottom: '1.25rem', letterSpacing: '-0.02em' }}>Colour Palette</h3>
         </Reveal>
         <StaggerGrid style={{
           display: 'grid',
@@ -1828,7 +1828,7 @@ function DesignSystemSection() {
                   marginBottom: '8px',
                   border: col.hex === C.bg ? `1px solid ${C.border}` : 'none',
                 }} />
-                <div style={{ fontFamily: "'Syne', sans-serif", fontWeight: 600, fontSize: '0.72rem', color: C.ink, marginBottom: '2px' }}>{col.name}</div>
+                <div style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: '0.72rem', color: C.ink, marginBottom: '2px' }}>{col.name}</div>
                 <div style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.58rem', color: C.muted, marginBottom: '2px' }}>{col.hex}</div>
                 <div style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.55rem', color: C.muted, lineHeight: 1.4 }}>{col.role}</div>
               </div>
@@ -1843,7 +1843,7 @@ function DesignSystemSection() {
 // ─── Features Section ─────────────────────────────────────
 function FeaturesSection() {
   return (
-    <section id="features" style={{ background: C.white, ...PAD }}>
+    <section id="features" style={{ background: C.surface, ...PAD }}>
       <Wrap>
         <Reveal><Label>App Features</Label></Reveal>
 
@@ -1855,7 +1855,7 @@ function FeaturesSection() {
           <Reveal delay={0.05}>
             <h2 style={{
               fontFamily: "'Syne', sans-serif",
-              fontWeight: 600,
+              fontWeight: 500,
               fontSize: 'clamp(1.75rem, 3.5vw, 2.75rem)',
               letterSpacing: '-0.02em',
               color: C.ink,
@@ -1883,7 +1883,7 @@ function FeaturesSection() {
             <Reveal delay={0.05}>
               <h2 style={{
                 fontFamily: "'Syne', sans-serif",
-                fontWeight: 600,
+                fontWeight: 500,
                 fontSize: 'clamp(1.75rem, 3.5vw, 2.75rem)',
                 letterSpacing: '-0.02em',
                 color: C.white,
@@ -1922,7 +1922,7 @@ function FeaturesSection() {
             <Reveal delay={0.05}>
               <h2 style={{
                 fontFamily: "'Syne', sans-serif",
-                fontWeight: 600,
+                fontWeight: 500,
                 fontSize: 'clamp(1.75rem, 3.5vw, 2.75rem)',
                 letterSpacing: '-0.02em',
                 color: C.white,
@@ -1958,7 +1958,7 @@ function FeaturesSection() {
             <Reveal delay={0.05}>
               <h2 style={{
                 fontFamily: "'Syne', sans-serif",
-                fontWeight: 600,
+                fontWeight: 500,
                 fontSize: 'clamp(1.75rem, 3.5vw, 2.75rem)',
                 letterSpacing: '-0.02em',
                 color: C.ink,
@@ -1992,7 +1992,7 @@ function FeaturesSection() {
             <Reveal delay={0.05}>
               <h2 style={{
                 fontFamily: "'Syne', sans-serif",
-                fontWeight: 600,
+                fontWeight: 500,
                 fontSize: 'clamp(1.75rem, 3.5vw, 2.75rem)',
                 letterSpacing: '-0.02em',
                 color: C.white,
@@ -2027,7 +2027,7 @@ function FeaturesSection() {
             <Reveal delay={0.05}>
               <h2 style={{
                 fontFamily: "'Syne', sans-serif",
-                fontWeight: 600,
+                fontWeight: 500,
                 fontSize: 'clamp(1.75rem, 3.5vw, 2.75rem)',
                 letterSpacing: '-0.02em',
                 color: C.white,
@@ -2053,7 +2053,7 @@ function FeaturesSection() {
             <Reveal>
               <h3 style={{
                 fontFamily: "'Syne', sans-serif",
-                fontWeight: 600,
+                fontWeight: 500,
                 fontSize: 'clamp(1.1rem, 2vw, 1.4rem)',
                 color: C.ink,
                 marginBottom: '1.5rem',
@@ -2145,7 +2145,7 @@ function AccessibilitySection() {
         <Reveal>
           <h2 style={{
             fontFamily: "'Syne', sans-serif",
-            fontWeight: 600,
+            fontWeight: 500,
             fontSize: 'clamp(1.75rem, 3.5vw, 2.75rem)',
             color: C.ink,
             marginBottom: '0.5rem',
@@ -2181,8 +2181,8 @@ function AccessibilitySection() {
                     {p.icon}
                   </div>
                   <div>
-                    <div style={{ fontFamily: "'Space Mono', monospace", fontSize: '1rem', fontWeight: 600, color: p.color, lineHeight: 1 }}>{p.letter}</div>
-                    <div style={{ fontFamily: "'Syne', sans-serif", fontWeight: 600, fontSize: '0.95rem', color: C.ink }}>{p.title}</div>
+                    <div style={{ fontFamily: "'Space Mono', monospace", fontSize: '1rem', fontWeight: 500, color: p.color, lineHeight: 1 }}>{p.letter}</div>
+                    <div style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: '0.95rem', color: C.ink }}>{p.title}</div>
                   </div>
                 </div>
                 <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '8px' }}>
@@ -2220,7 +2220,7 @@ function ReflectionsSection() {
         <Reveal delay={0.1}>
           <h2 style={{
             fontFamily: "'Syne', sans-serif",
-            fontWeight: 600,
+            fontWeight: 500,
             fontSize: 'clamp(1.75rem, 3.5vw, 2.75rem)',
             color: C.white,
             letterSpacing: '-0.02em',
