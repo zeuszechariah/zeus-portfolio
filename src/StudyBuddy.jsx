@@ -4,17 +4,20 @@ import { Nav, Footer, ProgressBar, MaskReveal, Reveal } from './shared.jsx'
 
 // ─── Design Tokens ──────────────────────────────────────
 const C = {
-  dark:   '#1A1919',
-  pink:   '#FE60AC',
-  blue:   '#4A5DE2',
-  yellow: '#FAFF38',
-  green:  '#A6CA00',
-  white:  '#FFFFFF',
-  bg:     '#F8F8F6',
-  ink:    '#1A1919',
-  mid:    '#4A4A4A',
-  muted:  '#888888',
-  border: '#E5E4DC',
+  dark:      '#060606',   // portfolio bg — dark sections
+  surface:   '#0d0d0d',   // portfolio surface
+  pink:      '#FF4B8F',   // portfolio pink
+  blue:      '#7C3AED',   // portfolio purple (accent role)
+  yellow:    '#00FF87',   // portfolio green (highlight role — no yellow in system)
+  green:     '#00FF87',   // portfolio green
+  white:     '#FFFFFF',
+  bg:        '#F8F8F6',   // light page bg
+  ink:       '#060606',   // dark text on light bg
+  inkLight:  '#F2EDE4',   // cream text on dark bg
+  mid:       '#3A3A3A',   // body text on light bg
+  muted:     '#777777',   // muted text
+  border:    'rgba(0,0,0,0.09)',  // subtle border on light bg
+  borderDark:'rgba(255,255,255,0.07)', // border on dark bg
 }
 
 const EASE = [0.22, 1, 0.36, 1]
@@ -78,8 +81,8 @@ function Label({ children, light = false }) {
 
 // ─── Placeholder Image Box ────────────────────────────────
 function ImgBox({ label, aspect = '56.25%', style = {}, dark = false }) {
-  const bg = dark ? '#2A2929' : '#EEECEA'
-  const border = dark ? '1.5px dashed rgba(255,255,255,0.1)' : `1.5px dashed ${C.border}`
+  const bg = dark ? C.surface : C.bg
+  const border = dark ? `1.5px dashed ${C.borderDark}` : `1.5px dashed ${C.border}`
   return (
     <div style={{
       position: 'relative',
@@ -169,7 +172,7 @@ function StaggerGrid({ children, style = {}, className = '' }) {
 
 function StaggerItem({ children, style = {} }) {
   return (
-    <motion.div style={style}
+    <motion.div style={{ display: 'flex', flexDirection: 'column', ...style }}
       variants={{
         hidden:  { opacity: 0, y: 22 },
         visible: { opacity: 1, y: 0, transition: { duration: 0.55, ease: EASE } },
@@ -226,7 +229,7 @@ function SidebarNav({ active }) {
               fontSize: '0.58rem',
               letterSpacing: '0.14em',
               textTransform: 'uppercase',
-              color: isActive ? C.pink : '#AAAAAA',
+              color: isActive ? C.pink : C.muted,
               transition: 'color 0.25s',
               whiteSpace: 'nowrap',
             }}>
@@ -351,7 +354,7 @@ function ActorMap() {
               initial={{ opacity: 0, scale: 0 }} animate={inView ? { opacity: 1, scale: 1 } : {}}
               transition={{ duration: 0.45, delay: 0.5 + i * 0.04, ease: EASE }}
             >
-              <circle cx={p.x} cy={p.y} r={22} fill={C.yellow} stroke="#D4CF00" strokeWidth={1} />
+              <circle cx={p.x} cy={p.y} r={22} fill={C.yellow} stroke={C.green} strokeWidth={1} />
               {a.label.split('\n').map((line, li) => (
                 <text key={li} x={p.x} y={p.y + (li - (a.label.split('\n').length - 1) / 2) * 10}
                   textAnchor="middle" dominantBaseline="middle"
@@ -370,7 +373,7 @@ function ActorMap() {
               initial={{ opacity: 0, scale: 0 }} animate={inView ? { opacity: 1, scale: 1 } : {}}
               transition={{ duration: 0.45, delay: 0.35 + i * 0.05, ease: EASE }}
             >
-              <circle cx={p.x} cy={p.y} r={26} fill={C.green} stroke="#88A800" strokeWidth={1} />
+              <circle cx={p.x} cy={p.y} r={26} fill={C.green} stroke={C.green} strokeWidth={1} />
               {a.label.split('\n').map((line, li) => (
                 <text key={li} x={p.x} y={p.y + (li - (a.label.split('\n').length - 1) / 2) * 10}
                   textAnchor="middle" dominantBaseline="middle"
@@ -424,7 +427,7 @@ function ActorMap() {
           { color: C.blue,   label: 'Center' },
         ].map(l => (
           <div key={l.label} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-            <div style={{ width: 10, height: 10, borderRadius: '50%', background: l.color, border: l.outline ? `1px solid #888` : 'none' }} />
+            <div style={{ width: 10, height: 10, borderRadius: '50%', background: l.color, border: l.outline ? `1px solid ${C.muted}` : 'none' }} />
             <span style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.58rem', letterSpacing: '0.1em', color: C.mid }}>{l.label}</span>
           </div>
         ))}
@@ -512,7 +515,7 @@ function SubsystemsMap() {
 // ─── 3. Empathy Map ───────────────────────────────────────
 const EMPATHY_DATA = [
   {
-    key: 'says', label: 'Says', color: C.blue, pale: '#EEF0FC', textColor: C.blue,
+    key: 'says', label: 'Says', color: C.blue, pale: 'rgba(124,58,237,0.06)', textColor: C.blue,
     icon: (
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
         <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" />
@@ -526,7 +529,7 @@ const EMPATHY_DATA = [
     ],
   },
   {
-    key: 'does', label: 'Does', color: C.pink, pale: '#FFF0F7', textColor: C.pink,
+    key: 'does', label: 'Does', color: C.pink, pale: 'rgba(255,75,143,0.06)', textColor: C.pink,
     icon: (
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
         <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" />
@@ -543,7 +546,7 @@ const EMPATHY_DATA = [
     ],
   },
   {
-    key: 'thinks', label: 'Thinks', color: C.green, pale: '#F2F8DE', textColor: '#5E7200',
+    key: 'thinks', label: 'Thinks', color: C.green, pale: 'rgba(0,255,135,0.06)', textColor: C.ink,
     icon: (
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
         <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="1.8" />
@@ -558,7 +561,7 @@ const EMPATHY_DATA = [
     ],
   },
   {
-    key: 'feels', label: 'Feels', color: C.yellow, pale: '#FEFED8', textColor: '#706A00',
+    key: 'feels', label: 'Feels', color: C.yellow, pale: 'rgba(0,255,135,0.06)', textColor: C.ink,
     icon: (
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
         <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" />
@@ -646,7 +649,7 @@ const IA_TREE = [
     children: ['Scan Notes', 'AI Video', 'Mnemonics', 'Review Queue'],
   },
   {
-    label: 'Plan\nMy Day', color: '#E89000',
+    label: 'Plan\nMy Day', color: C.pink,
     children: ['Activity Log', 'Daily Routine', 'Rate Activities', 'Calendar'],
   },
   {
@@ -1361,18 +1364,21 @@ function ResearchSection() {
           display: 'grid',
           gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
           gap: '1.25rem',
+          alignItems: 'stretch',
           marginBottom: 'clamp(2.5rem,4vw,4rem)',
         }}>
           {insights.map((ins, i) => (
-            <StaggerItem key={i}>
+            <StaggerItem key={i} style={{ flex: 1 }}>
               <div style={{
                 border: `2px solid ${ins.color}`,
                 borderRadius: 18,
                 padding: '1.5rem 1.75rem',
                 background: 'transparent',
-                height: '100%',
+                flex: 1,
+                display: 'flex',
+                flexDirection: 'column',
               }}>
-                <p style={{ fontSize: '1rem', lineHeight: 1.7, color: C.ink, margin: 0, fontFamily: "'Syne', sans-serif" }}>
+                <p style={{ fontSize: '1rem', lineHeight: 1.7, color: C.ink, margin: 0, fontFamily: "'Syne', sans-serif", flex: 1 }}>
                   <span style={{ color: ins.color, fontWeight: 600 }}>{ins.keyword}</span>
                   {ins.text.replace(ins.keyword, '')}
                 </p>
@@ -1709,7 +1715,7 @@ function PersonasSection() {
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '1rem' }}>
                     {[
                       { title: 'Needs',        items: p.needs,        dot: p.color },
-                      { title: 'Challenges',   items: p.challenges,   dot: '#EF4444' },
+                      { title: 'Challenges',   items: p.challenges,   dot: C.pink },
                       { title: 'Opportunities', items: p.opportunities, dot: C.green },
                     ].map(col => (
                       <div key={col.title}>
@@ -1818,7 +1824,7 @@ function DesignSystemSection() {
                   borderRadius: '10px',
                   height: '72px',
                   marginBottom: '8px',
-                  border: col.hex === C.bg ? `1px solid ${C.border}` : col.hex === C.yellow ? `1px solid #D4CF00` : 'none',
+                  border: col.hex === C.bg ? `1px solid ${C.border}` : 'none',
                 }} />
                 <div style={{ fontFamily: "'Syne', sans-serif", fontWeight: 600, fontSize: '0.72rem', color: C.ink, marginBottom: '2px' }}>{col.name}</div>
                 <div style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.58rem', color: C.muted, marginBottom: '2px' }}>{col.hex}</div>
@@ -2091,7 +2097,7 @@ function FeaturesSection() {
 function AccessibilitySection() {
   const pour = [
     {
-      letter: 'P', title: 'Perceivable', color: C.blue, pale: '#EEF0FC',
+      letter: 'P', title: 'Perceivable', color: C.blue, pale: 'rgba(124,58,237,0.06)',
       icon: (
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
           <circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="1.8" />
@@ -2101,7 +2107,7 @@ function AccessibilitySection() {
       items: ['High-contrast, youthful colour palette with clear hierarchy', 'Typography system (Perfect Fifth / 8pt grid) ensures legibility', 'Visual cues (stickers, avatars, streak icons) provide multi-sensory feedback'],
     },
     {
-      letter: 'O', title: 'Operable', color: C.pink, pale: '#FFF0F7',
+      letter: 'O', title: 'Operable', color: C.pink, pale: 'rgba(255,75,143,0.06)',
       icon: (
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
           <path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
@@ -2110,7 +2116,7 @@ function AccessibilitySection() {
       items: ['Simple, tap-based interaction model with minimal scroll depth', 'Micro-interactions add meaningful haptic + visual feedback', 'Consistent navigation structure across all sections'],
     },
     {
-      letter: 'U', title: 'Understandable', color: C.green, pale: '#F2F8DE',
+      letter: 'U', title: 'Understandable', color: C.green, pale: 'rgba(0,255,135,0.06)',
       icon: (
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
           <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" />
@@ -2119,7 +2125,7 @@ function AccessibilitySection() {
       items: ['Gamified flow and mascot feedback simplify complex functions', 'Onboarding uses familiar metaphors — streaks, tasks, achievements', 'Progress visualisation reinforces sense of control and ownership'],
     },
     {
-      letter: 'R', title: 'Robust', color: '#E89000', pale: '#FFF8EC',
+      letter: 'R', title: 'Robust', color: C.pink, pale: 'rgba(255,75,143,0.06)',
       icon: (
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
           <rect x="2" y="3" width="20" height="14" rx="2" stroke="currentColor" strokeWidth="1.8" />
@@ -2231,7 +2237,7 @@ function ReflectionsSection() {
         }}>
           {reflections.map((r) => (
             <StaggerItem key={r.n}>
-              <div style={{ background: '#111111', padding: '2.25rem', height: '100%' }}>
+              <div style={{ background: C.surface, padding: '2.25rem', height: '100%' }}>
                 <div style={{
                   fontFamily: "'Space Mono', monospace",
                   fontSize: '0.58rem',
