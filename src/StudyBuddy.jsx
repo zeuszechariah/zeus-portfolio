@@ -3,21 +3,46 @@ import { motion, useInView, AnimatePresence } from 'framer-motion'
 import { Nav, Footer, ProgressBar, MaskReveal, Reveal } from './shared.jsx'
 
 // ─── Design Tokens ──────────────────────────────────────
+// Accent colours derived from Study Buddy project card gradient:
+// from-[#061528] via-[#0f2d52] to-[#1b4a8a]
 const C = {
-  dark:       '#060606',   // portfolio bg
-  surface:    '#0d0d0d',   // portfolio surface
-  pink:       '#FF4B8F',   // portfolio pink
-  blue:       '#7C3AED',   // portfolio purple
-  yellow:     '#00FF87',   // portfolio green
-  green:      '#00FF87',   // portfolio green
-  white:      '#FFFFFF',   // for text on coloured bg
-  bg:         '#060606',   // page bg → now dark (homepage palette)
-  ink:        '#F2EDE4',   // cream — primary text
-  inkLight:   '#F2EDE4',   // same as ink
-  mid:        'rgba(242,237,228,0.68)', // secondary text
-  muted:      'rgba(242,237,228,0.4)',  // muted / labels
-  border:     'rgba(255,255,255,0.07)', // border
-  borderDark: 'rgba(255,255,255,0.07)', // same as border
+  // Light page backgrounds
+  page:    '#F4F6FA',               // main page bg (slight cool-blue tint)
+  surface: '#EAECF2',               // alternate section bg
+  card:    '#F7F9FD',               // card bg for neumorphic
+
+  // Neumorphic shadows
+  neu:     '6px 6px 18px rgba(0,0,0,0.08), -4px -4px 12px rgba(255,255,255,0.88)',
+  neuSm:   '4px 4px 10px rgba(0,0,0,0.07), -3px -3px 7px rgba(255,255,255,0.9)',
+
+  // Accent — from StudyBuddy gradient
+  accent:  '#1b4a8a',               // royal blue
+  accentMid: '#2D5FA3',
+  accentDim: 'rgba(27,74,138,0.08)',
+  accentBorder: 'rgba(27,74,138,0.14)',
+
+  // Diagram node colours — pulled from gradient tones
+  blue:    '#1b4a8a',               // primary (was purple)
+  pink:    '#2D5FA3',               // secondary blue shade (was pink)
+  green:   '#1D6B58',               // complementary deep teal (was neon green)
+  yellow:  '#B07A12',               // warm amber (was neon yellow)
+
+  // Dark sections (hero, reflections)
+  dark:    '#061528',               // from gradient start
+  heroGrad: 'linear-gradient(145deg,#061528 0%,#0f2d52 55%,#1b4a8a 100%)',
+  surface_dark: '#0d0d0d',          // used for dark card surfaces
+  inkLight: '#F2EDE4',              // cream text on dark bg
+  white:   '#FFFFFF',               // for text on coloured elements
+
+  // Light-section typography
+  bg:      '#F4F6FA',               // alias → page
+  ink:     '#0B1A2E',               // near-black, deep navy tint
+  mid:     '#3E5270',               // secondary body text
+  muted:   '#7A8A9E',               // labels / placeholders
+
+  // Borders
+  border:  'rgba(0,0,0,0.08)',
+  borderDark: 'rgba(255,255,255,0.07)',
 }
 
 const EASE = [0.22, 1, 0.36, 1]
@@ -181,6 +206,25 @@ function StaggerItem({ children, style = {} }) {
   )
 }
 
+// ─── Neumorphic Card ─────────────────────────────────────
+function NeuCard({ children, style = {}, dark = false }) {
+  if (dark) {
+    return (
+      <div style={{
+        background: 'rgba(255,255,255,0.04)', borderRadius: '14px',
+        boxShadow: '6px 6px 18px rgba(0,0,0,0.4), -3px -3px 10px rgba(255,255,255,0.04)',
+        border: '1px solid rgba(255,255,255,0.07)', ...style,
+      }}>{children}</div>
+    )
+  }
+  return (
+    <div style={{
+      background: C.card, borderRadius: '14px',
+      boxShadow: C.neu, border: 'none', ...style,
+    }}>{children}</div>
+  )
+}
+
 // ─── Sidebar Nav ─────────────────────────────────────────
 function SidebarNav({ active }) {
   function scrollTo(id) {
@@ -218,9 +262,9 @@ function SidebarNav({ active }) {
               animate={{
                 width: isActive ? 3 : 1.5,
                 height: isActive ? 32 : 24,
-                background: isActive ? C.pink : C.border,
+                background: isActive ? C.accent : C.border,
                 borderRadius: 2,
-                boxShadow: isActive ? '0 0 10px 2px rgba(255,75,143,0.5)' : 'none',
+                boxShadow: isActive ? `0 0 8px 2px ${C.accent}60` : 'none',
               }}
               transition={{ duration: 0.3 }}
               style={{ flexShrink: 0 }}
@@ -230,10 +274,10 @@ function SidebarNav({ active }) {
               fontSize: '0.58rem',
               letterSpacing: '0.14em',
               textTransform: 'uppercase',
-              color: isActive ? C.pink : C.muted,
+              color: isActive ? C.accent : C.muted,
               transition: 'color 0.25s',
               whiteSpace: 'nowrap',
-              textShadow: isActive ? '0 0 10px rgba(255,75,143,0.45)' : 'none',
+              textShadow: isActive ? `0 0 10px ${C.accent}50` : 'none',
             }}>
               {sec.label}
             </span>
@@ -531,7 +575,7 @@ const EMPATHY_DATA = [
     ],
   },
   {
-    key: 'does', label: 'Does', color: C.pink, pale: 'rgba(255,75,143,0.06)', textColor: C.pink,
+    key: 'does', label: 'Does', color: C.pink, pale: C.accentDim, textColor: C.accent,
     icon: (
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
         <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" />
@@ -1165,7 +1209,7 @@ function SystemsSection() {
             </Reveal>
           </div>
           <Reveal delay={0.1}>
-            <div style={{ background: C.surface, borderRadius: '16px', padding: 'clamp(1.5rem,3vw,3rem)', border: `1px solid ${C.border}` }}>
+            <div style={{ background: C.card, borderRadius: '14px', padding: 'clamp(1.5rem,3vw,3rem)', boxShadow: C.neu }}>
               <ActorMap />
             </div>
           </Reveal>
@@ -1225,7 +1269,7 @@ function SystemsSection() {
             </Reveal>
           </div>
           <Reveal delay={0.1}>
-            <div style={{ background: C.surface, borderRadius: '16px', padding: 'clamp(1.5rem,3vw,3rem)', border: `1px solid ${C.border}` }}>
+            <div style={{ background: C.card, borderRadius: '14px', padding: 'clamp(1.5rem,3vw,3rem)', boxShadow: C.neu }}>
               <SubsystemsMap />
             </div>
           </Reveal>
@@ -1768,7 +1812,7 @@ function DesignSystemSection() {
           marginBottom: 'clamp(2.5rem,4vw,4rem)',
         }}>
           <StaggerItem>
-            <div style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: '16px', padding: '1.75rem', height: '100%' }}>
+            <div style={{ background: C.card, borderRadius: '14px', padding: '1.75rem', height: '100%', boxShadow: C.neu }}>
               <div style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.58rem', letterSpacing: '0.2em', color: C.blue, marginBottom: '0.75rem' }}>GRID SYSTEM</div>
               <h4 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: '1.1rem', color: C.ink, marginBottom: '1rem' }}>16px Baseline Grid</h4>
               <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '6px' }}>
@@ -1783,7 +1827,7 @@ function DesignSystemSection() {
           </StaggerItem>
 
           <StaggerItem>
-            <div style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: '16px', padding: '1.75rem', height: '100%' }}>
+            <div style={{ background: C.card, borderRadius: '14px', padding: '1.75rem', height: '100%', boxShadow: C.neu }}>
               <div style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.58rem', letterSpacing: '0.2em', color: C.pink, marginBottom: '0.75rem' }}>TYPOGRAPHY</div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                 <div>
@@ -1799,7 +1843,7 @@ function DesignSystemSection() {
           </StaggerItem>
 
           <StaggerItem>
-            <div style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: '16px', padding: '1.75rem', height: '100%' }}>
+            <div style={{ background: C.card, borderRadius: '14px', padding: '1.75rem', height: '100%', boxShadow: C.neu }}>
               <div style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.58rem', letterSpacing: '0.2em', color: C.green, marginBottom: '0.75rem' }}>TARGET ENERGY</div>
               <h4 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: '1.1rem', color: C.ink, marginBottom: '0.75rem' }}>Fresh · Youthful · Focused</h4>
               <p style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '1rem', color: C.mid, lineHeight: 1.65, margin: 0 }}>
@@ -1972,7 +2016,7 @@ function FeaturesSection() {
             </Reveal>
             {/* Flower diagram */}
             <Reveal delay={0.15}>
-              <div style={{ background: C.bg, border: `1px solid ${C.border}`, borderRadius: '16px', padding: 'clamp(1.5rem,3vw,3rem)', marginBottom: '2rem' }}>
+              <div style={{ background: C.card, borderRadius: '14px', padding: 'clamp(1.5rem,3vw,3rem)', marginBottom: '2rem', boxShadow: C.neu }}>
                 <BehaviouralCycle />
               </div>
             </Reveal>
