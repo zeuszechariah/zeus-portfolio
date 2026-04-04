@@ -79,7 +79,9 @@ export function SectionExit({ children }) {
 // Both light and default share the same white-pill style.
 // light=true  → dark text (#0f0f0f)  for light-bg pages (e.g. GetSetGlobe)
 // light=false → cream text (#F2EDE4) for dark-bg pages (e.g. Home)
-export function Nav({ light = false, scrollThreshold = 60 }) {
+// photoHero=true → pre-scroll text is white (for pages with a dark hero photo),
+//                   post-scroll pill reverts to the light frosted style.
+export function Nav({ light = false, photoHero = false, scrollThreshold = 60 }) {
   const [scrolled, setScrolled] = useState(false)
 
   useEffect(() => {
@@ -90,12 +92,13 @@ export function Nav({ light = false, scrollThreshold = 60 }) {
 
   const lt = { duration:0.6, ease:EASE }
 
-  // Spread (pre-scroll) text colour
-  const spreadCol = light ? '#0f0f0f' : '#F2EDE4'
+  // Spread (pre-scroll) text colour — white when sitting over a dark hero photo
+  const spreadCol = (light && !photoHero) ? '#0f0f0f' : '#F2EDE4'
 
-  // Pill style + text colour — dark frosted on dark pages, white frosted on light pages
-  const pillCol   = light ? '#0f0f0f' : '#F2EDE4'
-  const pillStyle = light
+  // Pill style + text colour — always light frosted on light pages (photoHero OR light)
+  const useLightPill = light || photoHero
+  const pillCol   = useLightPill ? '#0f0f0f' : '#F2EDE4'
+  const pillStyle = useLightPill
     ? { background:'rgba(255,255,255,0.88)', backdropFilter:'blur(20px)', WebkitBackdropFilter:'blur(20px)', border:'1px solid rgba(0,0,0,0.08)', boxShadow:'0 2px 20px rgba(0,0,0,0.07)' }
     : { background:'rgba(10,10,10,0.72)', backdropFilter:'blur(28px) saturate(160%)', WebkitBackdropFilter:'blur(28px) saturate(160%)', border:'1px solid rgba(255,255,255,0.10)', boxShadow:'0 8px 32px rgba(0,0,0,0.35)' }
 

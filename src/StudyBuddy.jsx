@@ -986,10 +986,10 @@ function HeroSection() {
       paddingTop: 'clamp(7rem,12vw,11rem)',
       paddingBottom: 'clamp(5rem,8vw,8rem)',
     }}>
-      {/* Dark gradient overlay — heavy on left for text, opens on right to show the photo */}
+      {/* Dark gradient overlay — slightly reduced so the photo breathes */}
       <div style={{
         position: 'absolute', inset: 0, zIndex: 0,
-        background: 'linear-gradient(to right, rgba(6,21,40,0.93) 0%, rgba(6,21,40,0.88) 38%, rgba(6,21,40,0.55) 65%, rgba(6,21,40,0.25) 100%)',
+        background: 'linear-gradient(to right, rgba(6,21,40,0.80) 0%, rgba(6,21,40,0.70) 40%, rgba(6,21,40,0.38) 68%, rgba(6,21,40,0.10) 100%)',
       }} />
 
       <Wrap style={{ position: 'relative', zIndex: 1 }}>
@@ -998,8 +998,8 @@ function HeroSection() {
             display: 'inline-block',
             fontFamily: "'Space Mono', monospace",
             fontSize: '0.6rem', letterSpacing: '0.18em', textTransform: 'uppercase',
-            color: C.darkMuted,
-            border: '1px solid rgba(255,255,255,0.12)',
+            color: 'rgba(255,255,255,0.55)',
+            border: '1px solid rgba(255,255,255,0.22)',
             padding: '4px 10px', borderRadius: '99px', marginBottom: '1.25rem',
           }}>Mobile App · UX Design · Systems Thinking</span>
         </MaskReveal>
@@ -1007,7 +1007,7 @@ function HeroSection() {
           <h1 style={{
             fontFamily: "'Syne', sans-serif", fontWeight: 500,
             fontSize: 'clamp(2.4rem,5.5vw,4.2rem)', lineHeight: 1.08,
-            color: C.darkInk, margin: '0 0 1.75rem', maxWidth: '18ch',
+            color: '#FFFFFF', margin: '0 0 1.75rem', maxWidth: '18ch',
           }}>
             Study Buddy
           </h1>
@@ -1015,7 +1015,7 @@ function HeroSection() {
         <MaskReveal delay={0.2}>
           <p style={{
             fontFamily: "'Syne', sans-serif", fontSize: 'clamp(1rem,2vw,1.15rem)',
-            lineHeight: 1.75, color: C.darkMid, maxWidth: '52ch', margin: '0 0 3rem',
+            lineHeight: 1.75, color: 'rgba(255,255,255,0.78)', maxWidth: '52ch', margin: '0 0 3rem',
           }}>
             An AI-powered learning companion that helps students study smarter, transforming notes into engaging videos, optimising focus through personalised Pomodoro sessions, and enhancing memory through science-backed mnemonics.
           </p>
@@ -1030,8 +1030,8 @@ function HeroSection() {
             { l: 'Output',        v: 'Mobile App Prototype' },
           ].map(m => (
             <div key={m.l}>
-              <p style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.55rem', letterSpacing: '0.18em', color: C.darkMuted, textTransform: 'uppercase', margin: '0 0 0.3rem' }}>{m.l}</p>
-              <p style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: '0.9rem', color: C.darkInk, margin: 0 }}>{m.v}</p>
+              <p style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.55rem', letterSpacing: '0.18em', color: 'rgba(255,255,255,0.45)', textTransform: 'uppercase', margin: '0 0 0.3rem' }}>{m.l}</p>
+              <p style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: '0.9rem', color: '#FFFFFF', margin: 0 }}>{m.v}</p>
             </div>
           ))}
         </div>
@@ -2280,7 +2280,7 @@ export default function StudyBuddy() {
   return (
     <div style={{ background: C.bg, color: C.ink, minHeight: '100vh' }}>
       <ProgressBar />
-      <Nav light />
+      <Nav light photoHero />
       <SidebarNav active={active} />
 
       <main>
