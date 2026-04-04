@@ -1083,59 +1083,65 @@ function SystemsSection() {
                 steps: ['Research-led Redesign', 'UX & Screen Design', 'Systems Approach', 'Design Briefs'],
               },
             ].map((stage, i) => {
-              const size = 'clamp(260px, 38vw, 380px)'
+              const outerSize = 'clamp(300px, 44vw, 460px)'
               return (
                 <div key={stage.num} style={{
-                  filter: 'drop-shadow(5px 5px 14px rgba(0,0,0,0.09)) drop-shadow(-3px -3px 10px rgba(255,255,255,0.9))',
                   flexShrink: 0,
-                  width: size,
-                  height: size,
+                  width: outerSize,
+                  height: outerSize,
+                  position: 'relative',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
                 }}>
+                  {/* Rotated rounded square = rounded diamond */}
                   <div style={{
-                    width: '100%',
-                    height: '100%',
-                    clipPath: 'polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%)',
+                    position: 'absolute',
+                    width: '74%',
+                    height: '74%',
                     background: C.card,
+                    borderRadius: '8%',
+                    transform: 'rotate(45deg)',
+                    boxShadow: C.neu,
+                  }} />
+                  {/* Content sits on top, unrotated */}
+                  <div style={{
+                    position: 'relative',
+                    zIndex: 1,
+                    textAlign: 'center',
+                    maxWidth: '54%',
                     display: 'flex',
+                    flexDirection: 'column',
                     alignItems: 'center',
-                    justifyContent: 'center',
+                    gap: '0.6rem',
                   }}>
-                    <div style={{
-                      textAlign: 'center',
-                      maxWidth: '52%',
-                      display: 'flex',
-                      flexDirection: 'column',
-                      alignItems: 'center',
-                      gap: '0.5rem',
-                    }}>
-                      <span style={{
-                        fontFamily: "'Space Mono', monospace",
-                        fontSize: '0.5rem',
-                        letterSpacing: '0.22em',
-                        color: C.muted,
-                      }}>{stage.num}</span>
-                      <h3 style={{
-                        fontFamily: "'Syne', sans-serif",
-                        fontWeight: 500,
-                        fontSize: 'clamp(0.75rem, 1.4vw, 0.95rem)',
-                        color: C.ink,
-                        letterSpacing: '-0.01em',
-                        lineHeight: 1.25,
-                        whiteSpace: 'pre-line',
-                        margin: 0,
-                      }}>{stage.title}</h3>
-                      <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '4px', width: '100%' }}>
-                        {stage.steps.map((step, j) => (
-                          <li key={j} style={{
-                            fontFamily: "'Space Mono', monospace",
-                            fontSize: 'clamp(0.42rem, 0.7vw, 0.52rem)',
-                            color: C.mid,
-                            lineHeight: 1.4,
-                            letterSpacing: '0.03em',
-                          }}>{step}</li>
-                        ))}
-                      </ul>
-                    </div>
+                    <span style={{
+                      fontFamily: "'Space Mono', monospace",
+                      fontSize: '0.52rem',
+                      letterSpacing: '0.22em',
+                      color: C.muted,
+                    }}>{stage.num}</span>
+                    <h3 style={{
+                      fontFamily: "'Syne', sans-serif",
+                      fontWeight: 500,
+                      fontSize: 'clamp(0.9rem, 1.6vw, 1.1rem)',
+                      color: C.ink,
+                      letterSpacing: '-0.01em',
+                      lineHeight: 1.25,
+                      whiteSpace: 'pre-line',
+                      margin: 0,
+                    }}>{stage.title}</h3>
+                    <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '5px', width: '100%' }}>
+                      {stage.steps.map((step, j) => (
+                        <li key={j} style={{
+                          fontFamily: "'Space Mono', monospace",
+                          fontSize: 'clamp(0.52rem, 0.82vw, 0.62rem)',
+                          color: C.mid,
+                          lineHeight: 1.4,
+                          letterSpacing: '0.03em',
+                        }}>{step}</li>
+                      ))}
+                    </ul>
                   </div>
                 </div>
               )
