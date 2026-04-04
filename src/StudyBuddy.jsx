@@ -7,38 +7,52 @@ import { Nav, Footer, ProgressBar, MaskReveal, Reveal } from './shared.jsx'
 // from-[#061528] via-[#0f2d52] to-[#1b4a8a]
 const C = {
   // Light page backgrounds
-  page:    '#F4F6FA',               // main page bg (slight cool-blue tint)
-  surface: '#EAECF2',               // alternate section bg
-  card:    '#F7F9FD',               // card bg for neumorphic
+  page:    '#F4F6FA',
+  surface: '#EAECF2',
+  card:    '#F7F9FD',
 
   // Neumorphic shadows
   neu:     '6px 6px 18px rgba(0,0,0,0.08), -4px -4px 12px rgba(255,255,255,0.88)',
   neuSm:   '4px 4px 10px rgba(0,0,0,0.07), -3px -3px 7px rgba(255,255,255,0.9)',
 
-  // Accent — from StudyBuddy gradient
-  accent:  '#1b4a8a',               // royal blue
-  accentMid: '#2D5FA3',
-  accentDim: 'rgba(27,74,138,0.08)',
-  accentBorder: 'rgba(27,74,138,0.14)',
+  // Documentation accent — black
+  accent:  '#1A1A1A',
+  accentMid: '#333',
+  accentDim: 'rgba(0,0,0,0.05)',
+  accentBorder: 'rgba(0,0,0,0.1)',
 
-  // Diagram node colours — pulled from gradient tones
-  blue:    '#1b4a8a',               // primary (was purple)
-  pink:    '#2D5FA3',               // secondary blue shade (was pink)
-  green:   '#1D6B58',               // complementary deep teal (was neon green)
-  yellow:  '#B07A12',               // warm amber (was neon yellow)
+  // Aliases (used throughout documentation)
+  blue:    '#1A1A1A',
+  pink:    '#1A1A1A',
+
+  // Diagram colours (used in ActorMap, SubsystemsMap, BehaviouralCycle)
+  diagramBlue:   '#90CAF9',   // FigJam blue
+  diagramPink:   '#F48FB1',   // FigJam pink
+  diagramGreen:  '#A5D6A7',   // FigJam green
+  diagramYellow: '#FFF176',   // FigJam yellow
+  diagramPurple: '#CE93D8',   // FigJam purple
+
+  // App design system colours (Study Buddy app)
+  appPink:    '#F06292',
+  appBlue:    '#64B5F6',
+  appGreen:   '#81C784',
+  appYellow:  '#FFD54F',
+  appPurple:  '#BA68C8',
+  appDark:    '#1A1A2E',
 
   // Dark sections (hero, reflections)
-  dark:    '#061528',               // from gradient start
+  dark:    '#061528',
   heroGrad: 'linear-gradient(145deg,#061528 0%,#0f2d52 55%,#1b4a8a 100%)',
-  surface_dark: '#0d0d0d',          // used for dark card surfaces
-  inkLight: '#F2EDE4',              // cream text on dark bg
-  white:   '#FFFFFF',               // for text on coloured elements
+  darkInk: '#F2EDE4',
+  darkMid: 'rgba(242,237,228,0.65)',
+  darkMuted: 'rgba(242,237,228,0.38)',
+  white:   '#FFFFFF',
 
   // Light-section typography
-  bg:      '#F4F6FA',               // alias → page
-  ink:     '#0B1A2E',               // near-black, deep navy tint
-  mid:     '#3E5270',               // secondary body text
-  muted:   '#7A8A9E',               // labels / placeholders
+  bg:      '#F4F6FA',
+  ink:     '#0B1A2E',
+  mid:     '#3E5270',
+  muted:   '#7A8A9E',
 
   // Borders
   border:  'rgba(0,0,0,0.08)',
@@ -264,7 +278,6 @@ function SidebarNav({ active }) {
                 height: isActive ? 32 : 24,
                 background: isActive ? C.accent : C.border,
                 borderRadius: 2,
-                boxShadow: isActive ? `0 0 8px 2px ${C.accent}60` : 'none',
               }}
               transition={{ duration: 0.3 }}
               style={{ flexShrink: 0 }}
@@ -277,7 +290,6 @@ function SidebarNav({ active }) {
               color: isActive ? C.accent : C.muted,
               transition: 'color 0.25s',
               whiteSpace: 'nowrap',
-              textShadow: isActive ? `0 0 10px ${C.accent}50` : 'none',
             }}>
               {sec.label}
             </span>
@@ -349,7 +361,7 @@ function ActorMap() {
 
   return (
     <div ref={ref} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-      <svg viewBox="0 0 600 600" style={{ width: '100%', maxWidth: 520, overflow: 'visible' }}>
+      <svg viewBox="0 0 600 600" style={{ width: '100%', overflow: 'visible' }}>
         {/* Guide rings */}
         {[110, 190, 258].map(r => (
           <circle key={r} cx={300} cy={300} r={r}
@@ -361,7 +373,7 @@ function ActorMap() {
           const p = toXY(a.angle, 110)
           return (
             <motion.line key={i} x1={300} y1={300} x2={p.x} y2={p.y}
-              stroke={C.pink} strokeWidth={1.2} opacity={0.35}
+              stroke={C.diagramYellow} strokeWidth={1.5} opacity={0.5}
               initial={{ pathLength: 0 }} animate={inView ? { pathLength: 1 } : {}}
               transition={{ duration: 0.6, delay: 0.2 + i * 0.05, ease: EASE }}
             />
@@ -373,7 +385,7 @@ function ActorMap() {
           const p = toXY(a.angle, 190)
           return (
             <motion.line key={i} x1={300} y1={300} x2={p.x} y2={p.y}
-              stroke={C.green} strokeWidth={1} opacity={0.22}
+              stroke={C.diagramPink} strokeWidth={1} opacity={0.35}
               initial={{ pathLength: 0 }} animate={inView ? { pathLength: 1 } : {}}
               transition={{ duration: 0.6, delay: 0.3 + i * 0.04, ease: EASE }}
             />
@@ -385,14 +397,14 @@ function ActorMap() {
           const p = toXY(a.angle, 258)
           return (
             <motion.line key={i} x1={300} y1={300} x2={p.x} y2={p.y}
-              stroke={C.muted} strokeWidth={0.8} opacity={0.18}
+              stroke={C.diagramGreen} strokeWidth={0.8} opacity={0.3}
               initial={{ pathLength: 0 }} animate={inView ? { pathLength: 1 } : {}}
               transition={{ duration: 0.6, delay: 0.4 + i * 0.03, ease: EASE }}
             />
           )
         })}
 
-        {/* Tertiary nodes — yellow fill */}
+        {/* Tertiary nodes — FigJam green */}
         {tertiaryActors.map((a, i) => {
           const p = toXY(a.angle, 258)
           return (
@@ -400,18 +412,18 @@ function ActorMap() {
               initial={{ opacity: 0, scale: 0 }} animate={inView ? { opacity: 1, scale: 1 } : {}}
               transition={{ duration: 0.45, delay: 0.5 + i * 0.04, ease: EASE }}
             >
-              <circle cx={p.x} cy={p.y} r={22} fill={C.yellow} stroke={C.green} strokeWidth={1} />
+              <circle cx={p.x} cy={p.y} r={26} fill={C.diagramGreen} />
               {a.label.split('\n').map((line, li) => (
                 <text key={li} x={p.x} y={p.y + (li - (a.label.split('\n').length - 1) / 2) * 10}
                   textAnchor="middle" dominantBaseline="middle"
-                  fontSize={7} fill={C.ink} fontFamily="'Space Mono', monospace"
+                  fontSize={8} fill={C.ink} fontFamily="'Space Mono', monospace"
                 >{line}</text>
               ))}
             </motion.g>
           )
         })}
 
-        {/* Secondary nodes — green fill */}
+        {/* Secondary nodes — FigJam pink */}
         {secondaryActors.map((a, i) => {
           const p = toXY(a.angle, 190)
           return (
@@ -419,18 +431,18 @@ function ActorMap() {
               initial={{ opacity: 0, scale: 0 }} animate={inView ? { opacity: 1, scale: 1 } : {}}
               transition={{ duration: 0.45, delay: 0.35 + i * 0.05, ease: EASE }}
             >
-              <circle cx={p.x} cy={p.y} r={26} fill={C.green} stroke={C.green} strokeWidth={1} />
+              <circle cx={p.x} cy={p.y} r={30} fill={C.diagramPink} />
               {a.label.split('\n').map((line, li) => (
                 <text key={li} x={p.x} y={p.y + (li - (a.label.split('\n').length - 1) / 2) * 10}
                   textAnchor="middle" dominantBaseline="middle"
-                  fontSize={7} fill={C.dark} fontFamily="'Space Mono', monospace"
+                  fontSize={8} fill={C.ink} fontFamily="'Space Mono', monospace"
                 >{line}</text>
               ))}
             </motion.g>
           )
         })}
 
-        {/* Primary nodes — pink fill */}
+        {/* Primary nodes — FigJam yellow */}
         {primaryActors.map((a, i) => {
           const p = toXY(a.angle, 110)
           return (
@@ -438,28 +450,28 @@ function ActorMap() {
               initial={{ opacity: 0, scale: 0 }} animate={inView ? { opacity: 1, scale: 1 } : {}}
               transition={{ duration: 0.5, delay: 0.2 + i * 0.06, ease: EASE }}
             >
-              <circle cx={p.x} cy={p.y} r={32} fill={C.pink} />
+              <circle cx={p.x} cy={p.y} r={38} fill={C.diagramYellow} />
               {a.label.split('\n').map((line, li) => (
                 <text key={li} x={p.x} y={p.y + (li - (a.label.split('\n').length - 1) / 2) * 11}
                   textAnchor="middle" dominantBaseline="middle"
-                  fontSize={8} fill="white" fontFamily="'Space Mono', monospace" fontWeight="500"
+                  fontSize={9} fill={C.ink} fontFamily="'Space Mono', monospace" fontWeight="500"
                 >{line}</text>
               ))}
             </motion.g>
           )
         })}
 
-        {/* Center node — blue fill */}
+        {/* Center node — FigJam blue */}
         <motion.g initial={{ opacity: 0, scale: 0 }} animate={inView ? { opacity: 1, scale: 1 } : {}}
           transition={{ duration: 0.6, delay: 0.1, ease: EASE }}
           style={{ transformBox: 'fill-box', transformOrigin: 'center' }}
         >
-          <circle cx={300} cy={300} r={52} fill={C.blue} />
+          <circle cx={300} cy={300} r={56} fill={C.diagramBlue} />
           <text x={300} y={295} textAnchor="middle" dominantBaseline="middle"
-            fontSize={7.5} fill="white" fontFamily="'Space Mono', monospace" fontWeight="500"
+            fontSize={8.5} fill={C.ink} fontFamily="'Space Mono', monospace" fontWeight="500"
           >EDUCATION</text>
-          <text x={300} y={308} textAnchor="middle" dominantBaseline="middle"
-            fontSize={7.5} fill="white" fontFamily="'Space Mono', monospace" fontWeight="500"
+          <text x={300} y={309} textAnchor="middle" dominantBaseline="middle"
+            fontSize={8.5} fill={C.ink} fontFamily="'Space Mono', monospace" fontWeight="500"
           >SYSTEM</text>
         </motion.g>
       </svg>
@@ -467,13 +479,13 @@ function ActorMap() {
       {/* Legend */}
       <div style={{ display: 'flex', gap: '1.5rem', flexWrap: 'wrap', justifyContent: 'center', marginTop: '1rem' }}>
         {[
-          { color: C.pink,   label: 'Primary' },
-          { color: C.green,  label: 'Secondary' },
-          { color: C.yellow, label: 'Tertiary', outline: true },
-          { color: C.blue,   label: 'Center' },
+          { color: C.diagramYellow, label: 'Primary' },
+          { color: C.diagramPink,   label: 'Secondary' },
+          { color: C.diagramGreen,  label: 'Tertiary' },
+          { color: C.diagramBlue,   label: 'Center' },
         ].map(l => (
           <div key={l.label} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-            <div style={{ width: 10, height: 10, borderRadius: '50%', background: l.color, border: l.outline ? `1px solid ${C.muted}` : 'none' }} />
+            <div style={{ width: 10, height: 10, borderRadius: '50%', background: l.color }} />
             <span style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.58rem', letterSpacing: '0.1em', color: C.mid }}>{l.label}</span>
           </div>
         ))}
@@ -505,7 +517,7 @@ function SubsystemsMap() {
 
   return (
     <div ref={ref} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-      <svg viewBox="0 0 600 600" style={{ width: '100%', maxWidth: 520, overflow: 'visible' }}>
+      <svg viewBox="0 0 600 600" style={{ width: '100%', overflow: 'visible' }}>
         <circle cx={300} cy={300} r={215}
           fill="none" stroke={C.border} strokeWidth={1.2} strokeDasharray="6 8" opacity={0.5} />
 
@@ -513,7 +525,7 @@ function SubsystemsMap() {
           const p = toXY(s.angle, 215)
           return (
             <motion.line key={i} x1={300} y1={300} x2={p.x} y2={p.y}
-              stroke={C.blue} strokeWidth={1} opacity={0.22}
+              stroke={C.diagramBlue} strokeWidth={1} opacity={0.4}
               initial={{ pathLength: 0 }} animate={inView ? { pathLength: 1 } : {}}
               transition={{ duration: 0.5, delay: 0.2 + i * 0.06, ease: EASE }}
             />
@@ -527,15 +539,15 @@ function SubsystemsMap() {
               initial={{ opacity: 0, scale: 0 }} animate={inView ? { opacity: 1, scale: 1 } : {}}
               transition={{ duration: 0.45, delay: 0.3 + i * 0.07, ease: EASE }}
             >
-              <circle cx={p.x} cy={p.y} r={44} fill="transparent" stroke={C.blue} strokeWidth={1.5} />
+              <circle cx={p.x} cy={p.y} r={46} fill={C.diagramBlue} />
               {s.label.split('\n').map((line, li) => (
-                <text key={li} x={p.x} y={p.y - 6 + (li - (s.label.split('\n').length - 1) / 2) * 11}
+                <text key={li} x={p.x} y={p.y - 7 + (li - (s.label.split('\n').length - 1) / 2) * 12}
                   textAnchor="middle" dominantBaseline="middle"
-                  fontSize={7.5} fill={C.blue} fontFamily="'Space Mono', monospace" fontWeight="500"
+                  fontSize={8.5} fill={C.ink} fontFamily="'Space Mono', monospace" fontWeight="500"
                 >{line}</text>
               ))}
-              <text x={p.x} y={p.y + 16} textAnchor="middle" dominantBaseline="middle"
-                fontSize={6.5} fill={C.muted} fontFamily="'Space Mono', monospace"
+              <text x={p.x} y={p.y + 18} textAnchor="middle" dominantBaseline="middle"
+                fontSize={7} fill={C.mid} fontFamily="'Space Mono', monospace"
               >{s.sub}</text>
             </motion.g>
           )
@@ -545,12 +557,12 @@ function SubsystemsMap() {
           transition={{ duration: 0.6, delay: 0.1, ease: EASE }}
           style={{ transformBox: 'fill-box', transformOrigin: 'center' }}
         >
-          <circle cx={300} cy={300} r={60} fill={C.blue} />
-          <text x={300} y={293} textAnchor="middle" fontSize={7.5} fill="white"
+          <circle cx={300} cy={300} r={62} fill={C.ink} />
+          <text x={300} y={293} textAnchor="middle" fontSize={8} fill="white"
             fontFamily="'Space Mono', monospace" fontWeight="500">FORMAL</text>
-          <text x={300} y={305} textAnchor="middle" fontSize={7.5} fill="white"
+          <text x={300} y={306} textAnchor="middle" fontSize={8} fill="white"
             fontFamily="'Space Mono', monospace" fontWeight="500">EDUCATION</text>
-          <text x={300} y={317} textAnchor="middle" fontSize={7.5} fill="rgba(255,255,255,0.6)"
+          <text x={300} y={319} textAnchor="middle" fontSize={7.5} fill="rgba(255,255,255,0.65)"
             fontFamily="'Space Mono', monospace">SYSTEM</text>
         </motion.g>
       </svg>
@@ -561,7 +573,7 @@ function SubsystemsMap() {
 // ─── 3. Empathy Map ───────────────────────────────────────
 const EMPATHY_DATA = [
   {
-    key: 'says', label: 'Says', color: C.blue, pale: 'rgba(124,58,237,0.06)', textColor: C.blue,
+    key: 'says', label: 'Says', color: '#1A5276', pale: 'rgba(26,82,118,0.06)', textColor: '#1A5276',
     icon: (
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
         <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" />
@@ -575,7 +587,7 @@ const EMPATHY_DATA = [
     ],
   },
   {
-    key: 'does', label: 'Does', color: C.pink, pale: C.accentDim, textColor: C.accent,
+    key: 'does', label: 'Does', color: '#1A5276', pale: 'rgba(26,82,118,0.04)', textColor: '#1A5276',
     icon: (
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
         <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" />
@@ -592,11 +604,11 @@ const EMPATHY_DATA = [
     ],
   },
   {
-    key: 'thinks', label: 'Thinks', color: C.green, pale: 'rgba(0,255,135,0.06)', textColor: C.ink,
+    key: 'thinks', label: 'Thinks', color: '#1A5276', pale: 'rgba(26,82,118,0.06)', textColor: '#1A5276',
     icon: (
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-        <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="1.8" />
-        <path d="M12 8v4l3 3" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+        <path d="M12 2a6 6 0 016 6c0 1.5-.5 2.9-1.4 4A5 5 0 0117 16v1a2 2 0 01-2 2h-1v1a2 2 0 01-4 0v-1H9a2 2 0 01-2-2v-1a5 5 0 01-.6-4A6 6 0 0112 2z" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" />
+        <path d="M9 16h6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
       </svg>
     ),
     items: [
@@ -607,7 +619,7 @@ const EMPATHY_DATA = [
     ],
   },
   {
-    key: 'feels', label: 'Feels', color: C.yellow, pale: 'rgba(0,255,135,0.06)', textColor: C.ink,
+    key: 'feels', label: 'Feels', color: '#1A5276', pale: 'rgba(26,82,118,0.04)', textColor: '#1A5276',
     icon: (
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
         <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" />
@@ -691,7 +703,7 @@ const IA_TREE = [
     children: ['Pomodoro Timer', 'Focus Settings', 'Break Mode', 'Session Log'],
   },
   {
-    label: 'Memorization', color: C.green,
+    label: 'Scan &\nMemory', color: C.green,
     children: ['Scan Notes', 'AI Video', 'Mnemonics', 'Review Queue'],
   },
   {
@@ -948,9 +960,9 @@ function BehaviouralCycle() {
           lineHeight: 1.65,
           color: C.mid,
         }}>
-          <span style={{ color: C.pink }}>Behavioural Activation</span> is a means by which one can{' '}
-          <span style={{ color: C.pink }}>prevent</span> themselves from falling into this{' '}
-          <span style={{ color: C.blue }}>vicious cycle</span>.
+          <strong style={{ color: C.ink }}>Behavioural Activation</strong> is a means by which one can{' '}
+          <strong style={{ color: C.ink }}>prevent</strong> themselves from falling into this{' '}
+          <em style={{ color: C.ink }}>vicious cycle</em>.
         </p>
       </div>
     </div>
@@ -964,133 +976,51 @@ function BehaviouralCycle() {
 // ─── Hero / Overview ──────────────────────────────────────
 function HeroSection() {
   return (
-    <section id="overview" style={{ background: C.dark, minHeight: '100vh', position: 'relative', overflow: 'hidden' }}>
-      {/* Subtle grid */}
-      <div style={{
-        position: 'absolute', inset: 0,
-        backgroundImage: `linear-gradient(${C.pink}08 1px, transparent 1px), linear-gradient(90deg, ${C.pink}08 1px, transparent 1px)`,
-        backgroundSize: '60px 60px',
-        opacity: 0.5,
-      }} />
-
-      {/* Pink accent blob */}
-      <motion.div
-        animate={{ scale: [1, 1.06, 1], opacity: [0.1, 0.16, 0.1] }}
-        transition={{ duration: 9, repeat: Infinity, ease: 'easeInOut' }}
-        style={{
-          position: 'absolute', top: '5%', right: '-6%',
-          width: 480, height: 480, borderRadius: '50%',
-          background: `radial-gradient(circle, ${C.pink}55, transparent 70%)`,
-        }}
-      />
-      {/* Blue blob */}
-      <motion.div
-        animate={{ scale: [1, 1.08, 1], opacity: [0.08, 0.13, 0.08] }}
-        transition={{ duration: 11, repeat: Infinity, ease: 'easeInOut', delay: 3 }}
-        style={{
-          position: 'absolute', bottom: '10%', left: '-4%',
-          width: 360, height: 360, borderRadius: '50%',
-          background: `radial-gradient(circle, ${C.blue}50, transparent 70%)`,
-        }}
-      />
-
+    <section id="overview" style={{ background: C.heroGrad, paddingTop: 'clamp(7rem,12vw,11rem)', paddingBottom: 'clamp(5rem,8vw,8rem)' }}>
       <Wrap>
-        <div style={{ paddingTop: 'clamp(7rem,14vw,10rem)', paddingBottom: 'clamp(4rem,6vw,6rem)' }}>
-          <MaskReveal delay={0.1}>
-            <span style={{
-              fontFamily: "'Space Mono', monospace",
-              fontSize: '0.6rem',
-              letterSpacing: '0.25em',
-              textTransform: 'uppercase',
-              color: C.pink,
-            }}>NID · Mobile App · 2 Weeks</span>
-          </MaskReveal>
-
-          <MaskReveal delay={0.2}>
-            <h1 style={{
-              fontFamily: "'Syne', sans-serif",
-              fontWeight: 500,
-              fontSize: 'clamp(3.5rem, 7vw, 6.5rem)',
-              lineHeight: 0.95,
-              letterSpacing: '-0.03em',
-              color: C.white,
-              margin: '1.25rem 0 0',
-            }}>Study<br />Buddy</h1>
-          </MaskReveal>
-
-          <Reveal delay={0.35}>
-            <p style={{
-              fontFamily: "'Cormorant Garamond', serif",
-              fontSize: 'clamp(1.1rem,2.5vw,1.5rem)',
-              color: 'rgba(255,255,255,0.55)',
-              maxWidth: 560,
-              lineHeight: 1.6,
-              marginTop: '1.5rem',
-            }}>
-              An AI-powered learning companion that helps students study smarter — transforming notes into videos, optimising focus with Pomodoro, and boosting memory through science-backed mnemonics.
-            </p>
-          </Reveal>
-
-          <Reveal delay={0.5}>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginTop: '2rem' }}>
-              {['Systems Thinking', 'UX Research', 'UI Design', 'Education in India'].map(t => (
-                <span key={t} style={{
-                  fontFamily: "'Space Mono', monospace",
-                  fontSize: '0.6rem',
-                  letterSpacing: '0.12em',
-                  textTransform: 'uppercase',
-                  color: 'rgba(255,255,255,0.45)',
-                  border: '1px solid rgba(255,255,255,0.15)',
-                  padding: '5px 12px',
-                  borderRadius: '99px',
-                }}>{t}</span>
-              ))}
+        <MaskReveal delay={0}>
+          <span style={{
+            display: 'inline-block',
+            fontFamily: "'Space Mono', monospace",
+            fontSize: '0.6rem', letterSpacing: '0.18em', textTransform: 'uppercase',
+            color: C.darkMuted,
+            border: '1px solid rgba(255,255,255,0.12)',
+            padding: '4px 10px', borderRadius: '99px', marginBottom: '1.25rem',
+          }}>Mobile App · UX Design · Systems Thinking</span>
+        </MaskReveal>
+        <MaskReveal delay={0.1}>
+          <h1 style={{
+            fontFamily: "'Syne', sans-serif", fontWeight: 500,
+            fontSize: 'clamp(2.4rem,5.5vw,4.2rem)', lineHeight: 1.08,
+            color: C.darkInk, margin: '0 0 1.75rem', maxWidth: '18ch',
+          }}>
+            Study Buddy
+          </h1>
+        </MaskReveal>
+        <MaskReveal delay={0.2}>
+          <p style={{
+            fontFamily: "'Syne', sans-serif", fontSize: 'clamp(1rem,2vw,1.15rem)',
+            lineHeight: 1.75, color: C.darkMid, maxWidth: '55ch', margin: '0 0 3rem',
+          }}>
+            An AI-powered learning companion that helps students study smarter, transforming notes into engaging videos, optimising focus through personalised Pomodoro sessions, and enhancing memory through science-backed mnemonics.
+          </p>
+        </MaskReveal>
+        <div style={{ display: 'flex', gap: '3rem', flexWrap: 'wrap' }}>
+          {[
+            { l: 'Timeline',      v: '2 Weeks' },
+            { l: 'Institution',   v: 'NID Bangalore' },
+            { l: 'Team',          v: 'Manali Boudh · Sravan P' },
+            { l: 'Mentors',       v: 'Jagriti Galphade · Athul Dinesh' },
+            { l: 'Tools',         v: 'Figma · Miro' },
+            { l: 'Output',        v: 'Mobile App Prototype' },
+          ].map(m => (
+            <div key={m.l}>
+              <p style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.55rem', letterSpacing: '0.18em', color: C.darkMuted, textTransform: 'uppercase', margin: '0 0 0.3rem' }}>{m.l}</p>
+              <p style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: '0.9rem', color: C.darkInk, margin: 0 }}>{m.v}</p>
             </div>
-          </Reveal>
+          ))}
         </div>
       </Wrap>
-
-      {/* Metadata strip */}
-      <div style={{ background: C.surface, borderTop: `1px solid ${C.border}` }}>
-        <Wrap>
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))',
-            gap: '1px',
-            paddingTop: '2rem', paddingBottom: '2rem',
-          }}>
-            {[
-              { label: 'Timeline',       value: '2 Weeks' },
-              { label: 'Institution',    value: 'NID — National Institute of Design' },
-              { label: 'Collaborators',  value: 'Manali Boudh · Sravan P' },
-              { label: 'Mentors',        value: 'Jagriti Galphade · Athul Dinesh' },
-              { label: 'Tools',          value: 'Figma · Miro' },
-              { label: 'Output',         value: 'Mobile App Prototype' },
-            ].map((m, i) => (
-              <Reveal key={m.label} delay={0.1 + i * 0.05}>
-                <div style={{ paddingRight: '1.5rem' }}>
-                  <span style={{
-                    fontFamily: "'Space Mono', monospace",
-                    fontSize: '0.55rem',
-                    letterSpacing: '0.18em',
-                    textTransform: 'uppercase',
-                    color: C.muted,
-                    display: 'block',
-                    marginBottom: '4px',
-                  }}>{m.label}</span>
-                  <span style={{
-                    fontFamily: "'Syne', sans-serif",
-                    fontSize: '0.82rem',
-                    fontWeight: 500,
-                    color: C.ink,
-                    lineHeight: 1.4,
-                  }}>{m.value}</span>
-                </div>
-              </Reveal>
-            ))}
-          </div>
-        </Wrap>
-      </div>
     </section>
   )
 }
@@ -1119,7 +1049,7 @@ function WhySection() {
               color: C.mid,
               lineHeight: 1.75,
             }}>
-              Education in India is a complex, deeply layered system that offers rich opportunities for applying systems thinking and design. It's an interconnected system with visible gaps that can foster real impact. Evolving technological integration, along with our personal relevance and familiarity, pushed us to pursue this topic.
+              Education in India is a <strong style={{ color: C.ink, fontWeight: 600 }}>complex, deeply layered system</strong> that offers rich opportunities for applying systems thinking and design. It's an interconnected system with <strong style={{ color: C.ink, fontWeight: 600 }}>visible gaps that can foster real impact</strong>. Evolving technological integration, along with our personal relevance and familiarity, pushed us to pursue this topic.
             </p>
           </Reveal>
         </div>
@@ -1147,16 +1077,16 @@ function SystemsSection() {
         }}>
           {[
             {
-              num: '01', title: 'Discovery & Define',
+              num: '01', title: 'Discover & Define',
               steps: ['Systems Actor Map', 'Knowledge Graph', 'Identification of Subsystems', 'Initial System Mapping', 'Feedback Loops', 'Gap Identification', 'Research & Insight Analysis'],
             },
             {
-              num: '02', title: 'Applied',
+              num: '02', title: 'Design & Deliver',
               steps: ['Built on research insights to redesign products', 'Focused on user experience & screen-based interfaces', 'Applied systems approach to understand ecosystems', 'Defined focused design briefs'],
             },
           ].map((stage, i) => (
             <Reveal key={stage.num} delay={i * 0.1}>
-              <div style={{ background: C.surface, padding: 'clamp(1.5rem,3vw,2.5rem)' }}>
+              <div style={{ background: C.card, padding: 'clamp(1.5rem,3vw,2.5rem)', boxShadow: C.neuSm }}>
                 <div style={{
                   fontFamily: "'Space Mono', monospace",
                   fontSize: '0.58rem',
@@ -1201,7 +1131,7 @@ function SystemsSection() {
             </Reveal>
             <Reveal delay={0.1}>
               <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.9rem', color: C.mid, lineHeight: 1.7, margin: 0 }}>
-                Three concentric layers of stakeholders — primary actors at the core (pink), supported by secondary bodies (green) and influenced by tertiary forces (yellow) in the outer ring.
+                Three concentric layers of stakeholders: primary actors at the core, supported by secondary bodies and influenced by tertiary forces in the outer ring.
               </p>
             </Reveal>
             <Reveal delay={0.15}>
@@ -1209,7 +1139,7 @@ function SystemsSection() {
             </Reveal>
           </div>
           <Reveal delay={0.1}>
-            <div style={{ background: C.card, borderRadius: '14px', padding: 'clamp(1.5rem,3vw,3rem)', boxShadow: C.neu }}>
+            <div style={{ background: C.card, borderRadius: '14px', padding: 'clamp(1rem,1.5vw,1.5rem)', boxShadow: C.neu }}>
               <ActorMap />
             </div>
           </Reveal>
@@ -1269,7 +1199,7 @@ function SystemsSection() {
             </Reveal>
           </div>
           <Reveal delay={0.1}>
-            <div style={{ background: C.card, borderRadius: '14px', padding: 'clamp(1.5rem,3vw,3rem)', boxShadow: C.neu }}>
+            <div style={{ background: C.card, borderRadius: '14px', padding: 'clamp(1rem,1.5vw,1.5rem)', boxShadow: C.neu }}>
               <SubsystemsMap />
             </div>
           </Reveal>
@@ -1299,11 +1229,11 @@ function SystemsSection() {
             </Reveal>
             <Reveal delay={0.1}>
               <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.9rem', color: C.mid, lineHeight: 1.7, margin: 0 }}>
-                Highlights dynamic interdependencies — influence of technology, career pressure, policy reforms, and awareness on student motivation and outcomes.
+                Highlights dynamic interdependencies: influence of technology, career pressure, policy reforms, and awareness on student motivation and outcomes.
               </p>
             </Reveal>
             <Reveal delay={0.15}>
-              <HowHelpful text="Identifying reinforcing and balancing loops helps uncover leverage points for systemic change — where a small intervention creates large ripple effects." />
+              <HowHelpful text="Identifying reinforcing and balancing loops helps uncover leverage points for systemic change, where a small intervention creates large ripple effects." />
             </Reveal>
           </div>
           <Reveal delay={0.1}>
@@ -1346,12 +1276,12 @@ function SystemsSection() {
 // ─── Research Section ─────────────────────────────────────
 function ResearchSection() {
   const insights = [
-    { text: 'Motivation fluctuates with exam stress; autonomy boosts recovery.', keyword: 'Motivation fluctuates', color: C.pink },
-    { text: 'Students prefer flexible, self-paced, and interactive learning.', keyword: 'flexible, self-paced, and interactive', color: C.blue },
-    { text: 'Teacher appreciation motivates more than grades.', keyword: 'appreciation motivates', color: C.green },
-    { text: 'Burnout and pressure are common.', keyword: 'Burnout and pressure', color: C.yellow },
-    { text: 'Learning lacks personalization, relevance, & real-world connection.', keyword: 'lacks personalization', color: C.blue },
-    { text: 'Support systems are uneven; reliance on textbooks & external help persists.', keyword: 'reliance on', color: C.pink },
+    { text: 'More than demotivation, it\'s procrastination that holds students back.', keyword: 'procrastination', color: C.ink },
+    { text: 'Distraction and procrastination are the leading barriers to consistent study.', keyword: 'Distraction', color: C.mid },
+    { text: 'Studying without meaning is just memorising without understanding.', keyword: 'memorising without understanding', color: C.ink },
+    { text: 'Fear of bad grades motivates many students more than genuine interest.', keyword: 'Fear of bad grades', color: C.mid },
+    { text: 'If I had managed to put every effort, I would have definitely scored more.', keyword: 'put every effort', color: C.ink },
+    { text: 'Students need something to keep them going, not just remind them.', keyword: 'keep them going', color: C.mid },
   ]
 
   function HighlightText({ text, keyword, color }) {
@@ -1437,42 +1367,26 @@ function ResearchSection() {
         <Reveal delay={0.1}>
           <div style={{
             background: C.dark,
-            border: `1.5px solid ${C.pink}30`,
             borderRadius: '16px',
             padding: 'clamp(1.75rem,3vw,2.75rem)',
-            display: 'flex', alignItems: 'flex-start', gap: '1.25rem',
           }}>
             <div style={{
-              background: C.pink,
-              borderRadius: '10px',
-              padding: '10px',
-              flexShrink: 0,
+              fontFamily: "'Space Mono', monospace",
+              fontSize: '0.58rem',
+              letterSpacing: '0.18em',
+              textTransform: 'uppercase',
+              color: C.darkMuted,
+              marginBottom: '0.75rem',
+            }}>Target Audience</div>
+            <p style={{
+              fontFamily: "'Syne', sans-serif",
+              fontWeight: 500,
+              fontSize: 'clamp(1rem,2vw,1.35rem)',
+              color: C.darkInk,
+              margin: 0,
             }}>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-                <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" stroke="white" strokeWidth="1.8" strokeLinecap="round" />
-                <circle cx="9" cy="7" r="4" stroke="white" strokeWidth="1.8" />
-                <path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75" stroke="white" strokeWidth="1.8" strokeLinecap="round" />
-              </svg>
-            </div>
-            <div>
-              <div style={{
-                fontFamily: "'Space Mono', monospace",
-                fontSize: '0.58rem',
-                letterSpacing: '0.18em',
-                textTransform: 'uppercase',
-                color: C.pink,
-                marginBottom: '0.5rem',
-              }}>Target Audience</div>
-              <p style={{
-                fontFamily: "'Syne', sans-serif",
-                fontWeight: 500,
-                fontSize: 'clamp(1rem,2vw,1.35rem)',
-                color: C.white,
-                margin: 0,
-              }}>
-                Students 13+ years of age, primarily from upper-middle class income groups
-              </p>
-            </div>
+              Students 13+ years of age, primarily from upper-middle class income groups
+            </p>
           </div>
         </Reveal>
       </Wrap>
@@ -1483,10 +1397,10 @@ function ResearchSection() {
 // ─── Define Section ───────────────────────────────────────
 function DefineSection() {
   const quotes = [
-    '"She didn\'t just teach from textbooks — she told stories, connected events to real life, and encouraged discussions that made us think critically."',
+    '"She didn\'t just teach from textbooks. She told stories, connected events to real life, and encouraged discussions that made us think critically."',
     '"More than demotivation, it\'s procrastination."',
     '"If I had managed to put every effort I would have definitely scored more."',
-    '"The fear of getting bad grades made me highly motivated — so that my parents would let my passion come over."',
+    '"The fear of getting bad grades made me highly motivated, so that my parents would let my passion come over."',
     '"Distraction and procrastination issue."',
     '"Studying without meaning is just memorising without understanding."',
   ]
@@ -1510,7 +1424,7 @@ function DefineSection() {
               maxWidth: 780,
               marginTop: '0.5rem',
             }}>
-              Study Buddy is an AI-powered learning companion that helps students study smarter by transforming notes into engaging video explanations, optimising focus through personalised Pomodoro sessions, and enhancing memory retention using science-backed mnemonics — all while tracking progress to show real learning gains. This all-in-one app combines cognitive psychology with smart technology to make studying more effective, efficient, and enjoyable.
+              Study Buddy is an <strong style={{ color: C.ink }}>AI-powered learning companion</strong> that helps students study smarter by transforming notes into engaging video explanations, optimising focus through personalised Pomodoro sessions, and enhancing memory retention using <strong style={{ color: C.ink }}>science-backed mnemonics</strong>, all while tracking progress to show real learning gains. This all-in-one app combines <em>cognitive psychology with smart technology</em> to make studying more effective, efficient, and enjoyable.
             </p>
           </Reveal>
         </div>
@@ -1701,7 +1615,7 @@ function PersonasSection() {
             Empathy Map
           </h3>
           <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.9rem', color: C.mid, lineHeight: 1.7, marginBottom: '2rem', maxWidth: 560 }}>
-            What our primary user says, does, thinks, and feels — capturing the emotional landscape of a student who wants to do better.
+            What our primary user says, does, thinks, and feels, capturing the emotional landscape of a student who wants to do better.
           </p>
         </Reveal>
         <Reveal delay={0.1}>
@@ -1790,14 +1704,14 @@ function PersonasSection() {
 // ─── Design System Section ────────────────────────────────
 function DesignSystemSection() {
   const colors = [
-    { name: 'Hot Pink',    hex: C.pink,   role: 'Primary Accent · CTA' },
-    { name: 'Periwinkle',  hex: C.blue,   role: 'Secondary · Highlights' },
-    { name: 'Electric Yellow', hex: C.yellow, role: 'Emphasis · Danger' },
-    { name: 'Lime Green',  hex: C.green,  role: 'Success · Streaks' },
-    { name: 'Near-Black',  hex: C.dark,   role: 'Body Bg · Dark sections' },
-    { name: 'Ink',         hex: C.ink,    role: 'Primary Text' },
-    { name: 'Mid',         hex: C.mid,    role: 'Supporting Text' },
-    { name: 'Muted',       hex: C.muted,  role: 'Captions · Labels' },
+    { name: 'Energetic Pink',  hex: C.appPink,   role: 'Primary CTA · Streaks · Badges' },
+    { name: 'Sky Blue',        hex: C.appBlue,   role: 'Focus Timer · Session UI' },
+    { name: 'Fresh Green',     hex: C.appGreen,  role: 'Success · Progress Indicators' },
+    { name: 'Warm Yellow',     hex: C.appYellow, role: 'Achievements · Highlights' },
+    { name: 'Soft Purple',     hex: C.appPurple, role: 'Mnemonics · Memory Cards' },
+    { name: 'Deep Dark',       hex: C.appDark,   role: 'App Background · Navigation' },
+    { name: 'Ink',             hex: C.ink,       role: 'Primary Text' },
+    { name: 'Subtle',          hex: C.muted,     role: 'Captions · Labels' },
   ]
 
   return (
@@ -1847,7 +1761,7 @@ function DesignSystemSection() {
               <div style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.58rem', letterSpacing: '0.2em', color: C.green, marginBottom: '0.75rem' }}>TARGET ENERGY</div>
               <h4 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: '1.1rem', color: C.ink, marginBottom: '0.75rem' }}>Fresh · Youthful · Focused</h4>
               <p style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '1rem', color: C.mid, lineHeight: 1.65, margin: 0 }}>
-                Palette chosen to resonate with 13+ age group — vibrant enough to feel energetic, restrained enough to aid focus during long study sessions.
+                Palette chosen to resonate with 13+ age group: vibrant enough to feel energetic, restrained enough to aid focus during long study sessions.
               </p>
             </div>
           </StaggerItem>
@@ -1908,7 +1822,7 @@ function FeaturesSection() {
           </Reveal>
           <Reveal delay={0.1}>
             <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.9rem', color: C.mid, lineHeight: 1.7, maxWidth: 560, marginBottom: '2rem' }}>
-              Centralised overview — today's plan, quick-start shortcuts, and streak status at a glance.
+              Centralised overview: today's plan, quick-start shortcuts, and streak status at a glance.
             </p>
           </Reveal>
           <Reveal delay={0.15}>
@@ -1936,7 +1850,7 @@ function FeaturesSection() {
             </Reveal>
             <Reveal delay={0.1}>
               <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.9rem', color: 'rgba(255,255,255,0.6)', lineHeight: 1.7, maxWidth: 560, marginBottom: '2rem' }}>
-                Pomodoro timer with quirky localisation, micro-interactions, dynamic motivating stickers, and contextually relevant illustrations. 25 min work → 5 min break → 4 cycles → longer break.
+                Pomodoro timer with quirky localisation, micro-interactions, dynamic motivating stickers, and contextually relevant illustrations. 25 min work, 5 min break, 4 cycles, then a longer break.
               </p>
             </Reveal>
             <Reveal delay={0.15}>
@@ -2103,7 +2017,7 @@ function FeaturesSection() {
                 marginBottom: '1.5rem',
                 letterSpacing: '-0.02em',
               }}>
-                Scan to Video — 3-Step Flow
+                Scan to Video: 3-Step Flow
               </h3>
             </Reveal>
             <StaggerGrid style={{
@@ -2143,49 +2057,27 @@ function FeaturesSection() {
 function AccessibilitySection() {
   const pour = [
     {
-      letter: 'P', title: 'Perceivable', color: C.blue, pale: 'rgba(124,58,237,0.06)',
-      icon: (
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-          <circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="1.8" />
-          <path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z" stroke="currentColor" strokeWidth="1.8" />
-        </svg>
-      ),
+      letter: 'P', title: 'Perceivable',
       items: ['High-contrast, youthful colour palette with clear hierarchy', 'Typography system (Perfect Fifth / 8pt grid) ensures legibility', 'Visual cues (stickers, avatars, streak icons) provide multi-sensory feedback'],
     },
     {
-      letter: 'O', title: 'Operable', color: C.pink, pale: 'rgba(255,75,143,0.06)',
-      icon: (
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-          <path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-        </svg>
-      ),
-      items: ['Simple, tap-based interaction model with minimal scroll depth', 'Micro-interactions add meaningful haptic + visual feedback', 'Consistent navigation structure across all sections'],
+      letter: 'O', title: 'Operable',
+      items: ['Simple, tap-based interaction model with minimal scroll depth', 'Micro-interactions add meaningful haptic and visual feedback', 'Consistent navigation structure across all sections'],
     },
     {
-      letter: 'U', title: 'Understandable', color: C.green, pale: 'rgba(0,255,135,0.06)',
-      icon: (
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" />
-        </svg>
-      ),
-      items: ['Gamified flow and mascot feedback simplify complex functions', 'Onboarding uses familiar metaphors — streaks, tasks, achievements', 'Progress visualisation reinforces sense of control and ownership'],
+      letter: 'U', title: 'Understandable',
+      items: ['Gamified flow and mascot feedback simplify complex functions', 'Onboarding uses familiar metaphors: streaks, tasks, achievements', 'Progress visualisation reinforces sense of control and ownership'],
     },
     {
-      letter: 'R', title: 'Robust', color: C.pink, pale: 'rgba(255,75,143,0.06)',
-      icon: (
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-          <rect x="2" y="3" width="20" height="14" rx="2" stroke="currentColor" strokeWidth="1.8" />
-          <path d="M8 21h8M12 17v4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-        </svg>
-      ),
-      items: ['Built on standard mobile design frameworks (Figma prototype)', 'Structure supports integration with LMS & AI-based assistant', 'Scalable architecture for future platform expansion'],
+      letter: 'R', title: 'Robust',
+      items: ['Built on standard mobile design frameworks (Figma prototype)', 'Structure supports integration with LMS and AI-based assistant', 'Scalable architecture for future platform expansion'],
     },
   ]
 
   return (
     <section id="accessibility" style={{ background: C.bg, ...PAD }}>
       <Wrap>
-        <Reveal><Label>Accessibility — POUR Framework</Label></Reveal>
+        <Reveal><Label>Accessibility: POUR Framework</Label></Reveal>
         <Reveal>
           <h2 style={{
             fontFamily: "'Syne', sans-serif",
@@ -2198,41 +2090,37 @@ function AccessibilitySection() {
             Designed for every learner
           </h2>
           <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.9rem', color: C.mid, lineHeight: 1.7, marginBottom: '2.5rem', maxWidth: 560 }}>
-            Study Buddy is evaluated against the POUR principles — ensuring the app works for students with diverse abilities and contexts.
+            Study Buddy is evaluated against the POUR principles, ensuring the app works for students with diverse abilities and contexts.
           </p>
         </Reveal>
         <StaggerGrid style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
+          gridTemplateColumns: '1fr 1fr',
           gap: '1rem',
         }}>
           {pour.map(p => (
             <StaggerItem key={p.letter}>
               <div style={{
-                background: p.pale,
-                border: `1px solid ${p.color}25`,
+                background: C.card,
                 borderRadius: '16px',
                 padding: '1.75rem',
+                boxShadow: C.neu,
                 height: '100%',
               }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '1.25rem', color: p.color }}>
-                  <div style={{
-                    width: 42, height: 42, borderRadius: '10px',
-                    background: p.color,
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    color: 'white', flexShrink: 0,
-                  }}>
-                    {p.icon}
-                  </div>
-                  <div>
-                    <div style={{ fontFamily: "'Space Mono', monospace", fontSize: '1rem', fontWeight: 500, color: p.color, lineHeight: 1 }}>{p.letter}</div>
-                    <div style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: '0.95rem', color: C.ink }}>{p.title}</div>
-                  </div>
+                <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.75rem', marginBottom: '1.25rem' }}>
+                  <span style={{
+                    fontFamily: "'Space Mono', monospace",
+                    fontSize: '2.5rem',
+                    fontWeight: 500,
+                    color: C.ink,
+                    lineHeight: 1,
+                  }}>{p.letter}</span>
+                  <span style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: '1.05rem', color: C.ink }}>{p.title}</span>
                 </div>
                 <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '8px' }}>
                   {p.items.map((item, i) => (
                     <li key={i} style={{ display: 'flex', gap: '8px', alignItems: 'flex-start' }}>
-                      <div style={{ width: 5, height: 5, borderRadius: '50%', background: p.color, marginTop: '0.45em', flexShrink: 0 }} />
+                      <div style={{ width: 5, height: 5, borderRadius: '50%', background: C.border, marginTop: '0.45em', flexShrink: 0, border: `1px solid ${C.muted}` }} />
                       <span style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '1rem', color: C.mid, lineHeight: 1.55 }}>{item}</span>
                     </li>
                   ))}
@@ -2250,23 +2138,27 @@ function AccessibilitySection() {
 function ReflectionsSection() {
   const reflections = [
     { n: '01', text: '"Motivation is systemic. It grows when systems reinforce small wins, not just grades."' },
-    { n: '02', text: '"Progress isn\'t about pace, but about presence — for us and students alike."' },
+    { n: '02', text: '"Progress is not about pace, but about presence, for us and students alike."' },
     { n: '03', text: '"Productivity follows when learning feels rewarding."' },
-    { n: '04', text: '"We can leverage technology as a mirror — reflecting back progress and building belief."' },
+    { n: '04', text: '"We can leverage technology as a mirror, reflecting back progress and building belief."' },
   ]
 
   return (
-    <section id="reflections" style={{ background: C.dark, ...PAD }}>
+    <section id="reflections" style={{ background: C.heroGrad, ...PAD }}>
       <Wrap>
         <Reveal>
-          <Label light>Project Reflections</Label>
+          <span style={{
+            fontFamily: "'Space Mono', monospace",
+            fontSize: '0.58rem', letterSpacing: '0.18em', textTransform: 'uppercase',
+            color: C.darkMuted, display: 'block', marginBottom: '1.25rem',
+          }}>My Takeaway</span>
         </Reveal>
         <Reveal delay={0.1}>
           <h2 style={{
             fontFamily: "'Syne', sans-serif",
             fontWeight: 500,
             fontSize: 'clamp(1.75rem, 3.5vw, 2.75rem)',
-            color: C.white,
+            color: C.darkInk,
             letterSpacing: '-0.02em',
             marginBottom: 'clamp(2rem,4vw,3.5rem)',
           }}>What we took away</h2>
@@ -2274,28 +2166,31 @@ function ReflectionsSection() {
 
         <StaggerGrid style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
-          gap: '1px',
-          background: 'rgba(255,255,255,0.06)',
-          borderRadius: '16px',
-          overflow: 'hidden',
+          gridTemplateColumns: '1fr 1fr',
+          gap: '1rem',
           marginBottom: 'clamp(3rem,5vw,5rem)',
         }}>
           {reflections.map((r) => (
             <StaggerItem key={r.n}>
-              <div style={{ background: C.surface, padding: '2.25rem', height: '100%' }}>
+              <div style={{
+                background: 'rgba(255,255,255,0.07)',
+                border: '1px solid rgba(255,255,255,0.1)',
+                borderRadius: '14px',
+                padding: '2.25rem',
+                height: '100%',
+              }}>
                 <div style={{
                   fontFamily: "'Space Mono', monospace",
                   fontSize: '0.58rem',
                   letterSpacing: '0.22em',
-                  color: C.pink,
+                  color: C.darkMuted,
                   marginBottom: '1.25rem',
                 }}>{r.n}</div>
                 <p style={{
                   fontFamily: "'Cormorant Garamond', serif",
                   fontStyle: 'italic',
                   fontSize: 'clamp(1.05rem,2vw,1.25rem)',
-                  color: 'rgba(255,255,255,0.82)',
+                  color: C.darkInk,
                   lineHeight: 1.65,
                   margin: 0,
                 }}>{r.text}</p>
@@ -2305,21 +2200,16 @@ function ReflectionsSection() {
         </StaggerGrid>
 
         <Reveal delay={0.2}>
-          <div style={{
-            display: 'flex', flexDirection: 'column', alignItems: 'center',
-            textAlign: 'center', gap: '1.25rem',
+          <p style={{
+            fontFamily: "'Cormorant Garamond', serif",
+            fontSize: 'clamp(1rem,2vw,1.2rem)',
+            color: C.darkMid,
+            maxWidth: 560,
+            lineHeight: 1.75,
+            margin: 0,
           }}>
-            <p style={{
-              fontFamily: "'Cormorant Garamond', serif",
-              fontSize: 'clamp(1rem,2vw,1.2rem)',
-              color: 'rgba(255,255,255,0.45)',
-              maxWidth: 560,
-              lineHeight: 1.75,
-              margin: 0,
-            }}>
-              Study Buddy began as a systems exercise and evolved into a genuine attempt to make learning feel worth showing up for.
-            </p>
-          </div>
+            Study Buddy began as a systems exercise and evolved into a genuine attempt to make learning feel worth showing up for.
+          </p>
         </Reveal>
       </Wrap>
     </section>
