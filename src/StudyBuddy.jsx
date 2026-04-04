@@ -21,24 +21,20 @@ const C = {
   accentDim: 'rgba(0,0,0,0.05)',
   accentBorder: 'rgba(0,0,0,0.1)',
 
-  // Aliases (used throughout documentation)
+  // Documentation accent — black
   blue:    '#1A1A1A',
   pink:    '#1A1A1A',
 
-  // Diagram colours (used in ActorMap, SubsystemsMap, BehaviouralCycle)
-  diagramBlue:   '#90CAF9',   // FigJam blue
-  diagramPink:   '#F48FB1',   // FigJam pink
-  diagramGreen:  '#A5D6A7',   // FigJam green
-  diagramYellow: '#FFF176',   // FigJam yellow
-  diagramPurple: '#CE93D8',   // FigJam purple
+  // FigJam / App diagram colours
+  diagramBlue:   '#90CAF9',
+  diagramPink:   '#F48FB1',
+  diagramGreen:  '#A5D6A7',
+  diagramYellow: '#FFF176',
+  diagramPurple: '#CE93D8',
 
-  // App design system colours (Study Buddy app)
-  appPink:    '#F06292',
-  appBlue:    '#64B5F6',
-  appGreen:   '#81C784',
-  appYellow:  '#FFD54F',
-  appPurple:  '#BA68C8',
-  appDark:    '#1A1A2E',
+  // Aliases for diagram code that still references C.green / C.yellow
+  green:   '#A5D6A7',
+  yellow:  '#FFF176',
 
   // Dark sections (hero, reflections)
   dark:    '#061528',
@@ -607,8 +603,8 @@ const EMPATHY_DATA = [
     key: 'thinks', label: 'Thinks', color: '#1A5276', pale: 'rgba(26,82,118,0.06)', textColor: '#1A5276',
     icon: (
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-        <path d="M12 2a6 6 0 016 6c0 1.5-.5 2.9-1.4 4A5 5 0 0117 16v1a2 2 0 01-2 2h-1v1a2 2 0 01-4 0v-1H9a2 2 0 01-2-2v-1a5 5 0 01-.6-4A6 6 0 0112 2z" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" />
-        <path d="M9 16h6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+        <path d="M9.5 2C7 2 5 4 5 6.5c0 .8.2 1.6.6 2.2C4.2 9.4 3 10.9 3 12.7c0 1.5.8 2.8 2 3.5v.3A2.5 2.5 0 007.5 19H9v1.5a1.5 1.5 0 003 0V19h2.5a2.5 2.5 0 002.5-2.5v-.3c1.2-.7 2-2 2-3.5 0-1.8-1.2-3.3-2.6-4C16.8 8.1 17 7.3 17 6.5 17 4 15 2 12.5 2c-.8 0-1.6.2-2.3.6A4.6 4.6 0 009.5 2z" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
+        <path d="M12 7v5M9.5 9.5c0-1.4 1.1-2.5 2.5-2.5s2.5 1.1 2.5 2.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
       </svg>
     ),
     items: [
@@ -703,7 +699,7 @@ const IA_TREE = [
     children: ['Pomodoro Timer', 'Focus Settings', 'Break Mode', 'Session Log'],
   },
   {
-    label: 'Scan &\nMemory', color: C.green,
+    label: 'Scan and\nMemorise', color: C.ink,
     children: ['Scan Notes', 'AI Video', 'Mnemonics', 'Review Queue'],
   },
   {
@@ -827,35 +823,35 @@ function BehaviouralCycle() {
       <svg viewBox="0 0 420 480" style={{ width: '100%', maxWidth: 360, overflow: 'visible' }}>
         <defs>
           <marker id="arrowPink" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
-            <path d="M0,0 L8,3 L0,6 Z" fill={C.pink} />
+            <path d="M0,0 L8,3 L0,6 Z" fill={C.ink} />
           </marker>
         </defs>
 
         {/* Petals — pink ellipses at N/E/S/W */}
         {/* Top petal */}
         <motion.ellipse cx={cx} cy={cy - 74} rx={52} ry={72}
-          fill={C.pink} opacity={0.85}
+          fill={C.diagramPink} opacity={0.9}
           initial={{ opacity: 0, scaleY: 0 }} animate={inView ? { opacity: 0.85, scaleY: 1 } : {}}
           transition={{ duration: 0.6, delay: 0.15, ease: EASE }}
           style={{ transformBox: 'fill-box', transformOrigin: 'center bottom' }}
         />
         {/* Right petal */}
         <motion.ellipse cx={cx + 74} cy={cy} rx={72} ry={52}
-          fill={C.pink} opacity={0.85}
+          fill={C.diagramPink} opacity={0.9}
           initial={{ opacity: 0, scaleX: 0 }} animate={inView ? { opacity: 0.85, scaleX: 1 } : {}}
           transition={{ duration: 0.6, delay: 0.25, ease: EASE }}
           style={{ transformBox: 'fill-box', transformOrigin: 'left center' }}
         />
         {/* Bottom petal */}
         <motion.ellipse cx={cx} cy={cy + 74} rx={52} ry={72}
-          fill={C.pink} opacity={0.85}
+          fill={C.diagramPink} opacity={0.9}
           initial={{ opacity: 0, scaleY: 0 }} animate={inView ? { opacity: 0.85, scaleY: 1 } : {}}
           transition={{ duration: 0.6, delay: 0.35, ease: EASE }}
           style={{ transformBox: 'fill-box', transformOrigin: 'center top' }}
         />
         {/* Left petal */}
         <motion.ellipse cx={cx - 74} cy={cy} rx={72} ry={52}
-          fill={C.pink} opacity={0.85}
+          fill={C.diagramPink} opacity={0.9}
           initial={{ opacity: 0, scaleX: 0 }} animate={inView ? { opacity: 0.85, scaleX: 1 } : {}}
           transition={{ duration: 0.6, delay: 0.45, ease: EASE }}
           style={{ transformBox: 'fill-box', transformOrigin: 'right center' }}
@@ -948,7 +944,7 @@ function BehaviouralCycle() {
           fontFamily: "'Cormorant Garamond', serif",
           fontStyle: 'italic',
           fontSize: 'clamp(1.5rem, 3vw, 2.25rem)',
-          color: C.green,
+          color: C.ink,
           lineHeight: 1.2,
           marginBottom: '1rem',
         }}>
@@ -1069,11 +1065,9 @@ function SystemsSection() {
         <div style={{
           display: 'grid',
           gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-          gap: '1px',
-          background: C.border,
-          borderRadius: '16px',
-          overflow: 'hidden',
+          gap: '1rem',
           marginBottom: 'clamp(3rem,5vw,5rem)',
+          alignItems: 'stretch',
         }}>
           {[
             {
@@ -1085,8 +1079,8 @@ function SystemsSection() {
               steps: ['Built on research insights to redesign products', 'Focused on user experience & screen-based interfaces', 'Applied systems approach to understand ecosystems', 'Defined focused design briefs'],
             },
           ].map((stage, i) => (
-            <Reveal key={stage.num} delay={i * 0.1}>
-              <div style={{ background: C.card, padding: 'clamp(1.5rem,3vw,2.5rem)', boxShadow: C.neuSm }}>
+            <Reveal key={stage.num} delay={i * 0.1} style={{ height: '100%' }}>
+              <div style={{ background: C.card, padding: 'clamp(1.5rem,3vw,2.5rem)', boxShadow: C.neuSm, borderRadius: '14px', height: '100%', display: 'flex', flexDirection: 'column' }}>
                 <div style={{
                   fontFamily: "'Space Mono', monospace",
                   fontSize: '0.58rem',
@@ -1178,7 +1172,7 @@ function SystemsSection() {
         {/* Sub-systems — split layout */}
         <div style={{ display: 'grid', gridTemplateColumns: '40% 60%', gap: '4rem', alignItems: 'center', marginBottom: 'clamp(3rem,5vw,5rem)' }}>
           <div>
-            <Reveal><SectionTag color={C.green}>Sub-systems</SectionTag></Reveal>
+            <Reveal><SectionTag>Sub-systems</SectionTag></Reveal>
             <Reveal delay={0.05}>
               <h2 style={{
                 fontFamily: "'Syne', sans-serif",
@@ -1250,19 +1244,28 @@ function SystemsSection() {
           }}>
             <span style={{
               fontFamily: "'Space Mono', monospace",
-              fontSize: '0.58rem',
+              fontSize: '0.55rem',
               letterSpacing: '0.2em',
-              color: C.pink,
+              color: C.darkMuted,
               display: 'block',
-              marginBottom: '1.25rem',
+              marginBottom: '0.5rem',
             }}>HOW MIGHT WE</span>
+            <h3 style={{
+              fontFamily: "'Syne', sans-serif",
+              fontWeight: 500,
+              fontSize: 'clamp(1rem,1.8vw,1.2rem)',
+              color: C.darkInk,
+              marginBottom: '1.5rem',
+              letterSpacing: '-0.01em',
+            }}>Motivation & Real-Time Achievement</h3>
             <p style={{
               fontFamily: "'Cormorant Garamond', serif",
               fontStyle: 'italic',
               fontSize: 'clamp(1.3rem,3vw,2rem)',
-              color: C.white,
+              color: 'rgba(242,237,228,0.75)',
               lineHeight: 1.55,
               maxWidth: 680,
+              margin: 0,
             }}>
               "How might we design systems that provide real-time motivation and track small achievements to boost confidence for students?"
             </p>
@@ -1514,19 +1517,28 @@ function DefineSection() {
           }}>
             <span style={{
               fontFamily: "'Space Mono', monospace",
-              fontSize: '0.58rem',
+              fontSize: '0.55rem',
               letterSpacing: '0.2em',
-              color: C.blue,
+              color: C.darkMuted,
               display: 'block',
-              marginBottom: '1.25rem',
+              marginBottom: '0.5rem',
             }}>HOW MIGHT WE</span>
+            <h3 style={{
+              fontFamily: "'Syne', sans-serif",
+              fontWeight: 500,
+              fontSize: 'clamp(1rem,1.8vw,1.2rem)',
+              color: C.darkInk,
+              marginBottom: '1.5rem',
+              letterSpacing: '-0.01em',
+            }}>Interface Design & Study Experience</h3>
             <p style={{
               fontFamily: "'Cormorant Garamond', serif",
               fontStyle: 'italic',
               fontSize: 'clamp(1.2rem,2.8vw,1.85rem)',
-              color: C.white,
+              color: 'rgba(242,237,228,0.75)',
               lineHeight: 1.55,
               maxWidth: 700,
+              margin: 0,
             }}>
               "How might we create an interface that keeps students motivated by combining structured focus techniques with an engaging means to solve the approach of rote memorisation, giving them more time for their goals and interests?"
             </p>
@@ -1704,14 +1716,11 @@ function PersonasSection() {
 // ─── Design System Section ────────────────────────────────
 function DesignSystemSection() {
   const colors = [
-    { name: 'Energetic Pink',  hex: C.appPink,   role: 'Primary CTA · Streaks · Badges' },
-    { name: 'Sky Blue',        hex: C.appBlue,   role: 'Focus Timer · Session UI' },
-    { name: 'Fresh Green',     hex: C.appGreen,  role: 'Success · Progress Indicators' },
-    { name: 'Warm Yellow',     hex: C.appYellow, role: 'Achievements · Highlights' },
-    { name: 'Soft Purple',     hex: C.appPurple, role: 'Mnemonics · Memory Cards' },
-    { name: 'Deep Dark',       hex: C.appDark,   role: 'App Background · Navigation' },
-    { name: 'Ink',             hex: C.ink,       role: 'Primary Text' },
-    { name: 'Subtle',          hex: C.muted,     role: 'Captions · Labels' },
+    { name: 'Yellow',  hex: '#FFF176', role: 'Highlights · Achievements' },
+    { name: 'Pink',    hex: '#F48FB1', role: 'Primary CTA · Streaks' },
+    { name: 'Green',   hex: '#A5D6A7', role: 'Success · Progress' },
+    { name: 'Blue',    hex: '#90CAF9', role: 'Focus Timer · Sessions' },
+    { name: 'Purple',  hex: '#CE93D8', role: 'Mnemonics · Memory' },
   ]
 
   return (
@@ -1758,7 +1767,7 @@ function DesignSystemSection() {
 
           <StaggerItem>
             <div style={{ background: C.card, borderRadius: '14px', padding: '1.75rem', height: '100%', boxShadow: C.neu }}>
-              <div style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.58rem', letterSpacing: '0.2em', color: C.green, marginBottom: '0.75rem' }}>TARGET ENERGY</div>
+              <div style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.58rem', letterSpacing: '0.2em', color: C.muted, marginBottom: '0.75rem' }}>TARGET ENERGY</div>
               <h4 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: '1.1rem', color: C.ink, marginBottom: '0.75rem' }}>Fresh · Youthful · Focused</h4>
               <p style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '1rem', color: C.mid, lineHeight: 1.65, margin: 0 }}>
                 Palette chosen to resonate with 13+ age group: vibrant enough to feel energetic, restrained enough to aid focus during long study sessions.
@@ -1906,38 +1915,30 @@ function FeaturesSection() {
         </div>
 
         {/* Behavioural Activation */}
-        <div style={{ marginBottom: 'clamp(3rem,5vw,5rem)', position: 'relative', overflow: 'hidden' }}>
-          <div style={{ position: 'absolute', width: 320, height: 320, borderRadius: '50%', background: C.yellow, top: -80, right: -80, opacity: 0.18, zIndex: 0, pointerEvents: 'none' }} />
-          <div style={{ position: 'absolute', width: 240, height: 240, borderRadius: '50%', background: C.green, bottom: -60, left: -60, opacity: 0.14, zIndex: 0, pointerEvents: 'none' }} />
-          <div style={{ position: 'relative', zIndex: 1 }}>
-            <Reveal>
-              <SectionTag color={C.green}>04</SectionTag>
-            </Reveal>
-            <Reveal delay={0.05}>
-              <h2 style={{
-                fontFamily: "'Syne', sans-serif",
-                fontWeight: 500,
-                fontSize: 'clamp(1.75rem, 3.5vw, 2.75rem)',
-                letterSpacing: '-0.02em',
-                color: C.ink,
-                marginBottom: '1rem',
-              }}>Behavioural Activation</h2>
-            </Reveal>
-            <Reveal delay={0.1}>
-              <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.9rem', color: C.mid, lineHeight: 1.7, maxWidth: 560, marginBottom: '2.5rem' }}>
-                Effective planning through draggable routine tags, customisable logs, and activity ratings. Breaks the vicious cycle of demotivation → procrastination → decreased activity → guilt.
-              </p>
-            </Reveal>
-            {/* Flower diagram */}
-            <Reveal delay={0.15}>
-              <div style={{ background: C.card, borderRadius: '14px', padding: 'clamp(1.5rem,3vw,3rem)', marginBottom: '2rem', boxShadow: C.neu }}>
-                <BehaviouralCycle />
-              </div>
-            </Reveal>
-            <Reveal delay={0.2}>
-              <ImgBox label="Plan My Day — Routine Builder UI" aspect="50%" />
-            </Reveal>
-          </div>
+        <div style={{ marginBottom: 'clamp(3rem,5vw,5rem)' }}>
+          <Reveal>
+            <SectionTag>04</SectionTag>
+          </Reveal>
+          <Reveal delay={0.05}>
+            <h2 style={{
+              fontFamily: "'Syne', sans-serif",
+              fontWeight: 500,
+              fontSize: 'clamp(1.75rem, 3.5vw, 2.75rem)',
+              letterSpacing: '-0.02em',
+              color: C.ink,
+              marginBottom: '0.75rem',
+            }}>Behavioural Activation</h2>
+          </Reveal>
+          <Reveal delay={0.08}>
+            <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.9rem', color: C.mid, lineHeight: 1.7, maxWidth: 560, marginBottom: '2rem' }}>
+              Effective planning through draggable routine tags, customisable logs, and activity ratings. Breaks the vicious cycle of demotivation, procrastination, decreased activity, and guilt.
+            </p>
+          </Reveal>
+          <Reveal delay={0.12}>
+            <div style={{ background: C.card, borderRadius: '14px', padding: 'clamp(1.25rem,2.5vw,2rem)', boxShadow: C.neu }}>
+              <BehaviouralCycle />
+            </div>
+          </Reveal>
         </div>
 
         {/* Stats & Profile — dark bg */}
@@ -2028,7 +2029,7 @@ function FeaturesSection() {
               {[
                 { num: '01', label: 'Begin Scanning Notes',                   color: C.blue },
                 { num: '02', label: 'Play Video',                             color: C.dark },
-                { num: '03', label: 'Video Automatically Saved in Profile',   color: C.green },
+                { num: '03', label: 'Video Automatically Saved in Profile',   color: C.mid },
               ].map(s => (
                 <StaggerItem key={s.num}>
                   <div>
@@ -2144,7 +2145,7 @@ function ReflectionsSection() {
   ]
 
   return (
-    <section id="reflections" style={{ background: C.heroGrad, ...PAD }}>
+    <section id="reflections" style={{ background: 'linear-gradient(145deg,#0a0a0a 0%,#161616 55%,#0f0f0f 100%)', ...PAD }}>
       <Wrap>
         <Reveal>
           <span style={{
