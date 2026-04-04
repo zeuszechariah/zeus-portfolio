@@ -1061,53 +1061,87 @@ function SystemsSection() {
       <Wrap>
         <Reveal><Label>Systems Thinking Process</Label></Reveal>
 
-        {/* Two-stage process */}
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-          gap: '1rem',
-          marginBottom: 'clamp(3rem,5vw,5rem)',
-          alignItems: 'stretch',
-        }}>
-          {[
-            {
-              num: '01', title: 'Discover & Define',
-              steps: ['Systems Actor Map', 'Knowledge Graph', 'Identification of Subsystems', 'Initial System Mapping', 'Feedback Loops', 'Gap Identification', 'Research & Insight Analysis'],
-            },
-            {
-              num: '02', title: 'Design & Deliver',
-              steps: ['Built on research insights to redesign products', 'Focused on user experience & screen-based interfaces', 'Applied systems approach to understand ecosystems', 'Defined focused design briefs'],
-            },
-          ].map((stage, i) => (
-            <Reveal key={stage.num} delay={i * 0.1} style={{ height: '100%' }}>
-              <div style={{ background: C.card, padding: 'clamp(1.5rem,3vw,2.5rem)', boxShadow: C.neuSm, borderRadius: '14px', height: '100%', display: 'flex', flexDirection: 'column' }}>
-                <div style={{
-                  fontFamily: "'Space Mono', monospace",
-                  fontSize: '0.58rem',
-                  letterSpacing: '0.2em',
-                  color: C.blue,
-                  marginBottom: '0.75rem',
-                }}>STAGE {stage.num}</div>
-                <h3 style={{
-                  fontFamily: "'Syne', sans-serif",
-                  fontWeight: 500,
-                  fontSize: 'clamp(1.1rem, 2vw, 1.4rem)',
-                  color: C.ink,
-                  marginBottom: '1.25rem',
-                  letterSpacing: '-0.02em',
-                }}>{stage.title}</h3>
-                <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                  {stage.steps.map((step, j) => (
-                    <li key={j} style={{ display: 'flex', gap: '10px', alignItems: 'flex-start' }}>
-                      <div style={{ width: 5, height: 5, borderRadius: '50%', background: C.pink, marginTop: '0.45em', flexShrink: 0 }} />
-                      <span style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.72rem', color: C.mid, lineHeight: 1.5 }}>{step}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </Reveal>
-          ))}
-        </div>
+        {/* Double Diamond */}
+        <Reveal>
+          <div style={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            gap: 0,
+            marginBottom: 'clamp(3rem,5vw,5rem)',
+            overflowX: 'auto',
+            paddingTop: '1rem',
+            paddingBottom: '1rem',
+          }}>
+            {[
+              {
+                num: '01', title: 'Discover\n& Define',
+                steps: ['Actor Map', 'Knowledge Graph', 'Sub-systems', 'System Mapping', 'Feedback Loops', 'Gap Analysis', 'Research'],
+              },
+              {
+                num: '02', title: 'Design\n& Deliver',
+                steps: ['Research-led Redesign', 'UX & Screen Design', 'Systems Approach', 'Design Briefs'],
+              },
+            ].map((stage, i) => {
+              const size = 'clamp(260px, 38vw, 380px)'
+              return (
+                <div key={stage.num} style={{
+                  filter: 'drop-shadow(5px 5px 14px rgba(0,0,0,0.09)) drop-shadow(-3px -3px 10px rgba(255,255,255,0.9))',
+                  flexShrink: 0,
+                  width: size,
+                  height: size,
+                }}>
+                  <div style={{
+                    width: '100%',
+                    height: '100%',
+                    clipPath: 'polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%)',
+                    background: C.card,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}>
+                    <div style={{
+                      textAlign: 'center',
+                      maxWidth: '52%',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                      gap: '0.5rem',
+                    }}>
+                      <span style={{
+                        fontFamily: "'Space Mono', monospace",
+                        fontSize: '0.5rem',
+                        letterSpacing: '0.22em',
+                        color: C.muted,
+                      }}>{stage.num}</span>
+                      <h3 style={{
+                        fontFamily: "'Syne', sans-serif",
+                        fontWeight: 500,
+                        fontSize: 'clamp(0.75rem, 1.4vw, 0.95rem)',
+                        color: C.ink,
+                        letterSpacing: '-0.01em',
+                        lineHeight: 1.25,
+                        whiteSpace: 'pre-line',
+                        margin: 0,
+                      }}>{stage.title}</h3>
+                      <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '4px', width: '100%' }}>
+                        {stage.steps.map((step, j) => (
+                          <li key={j} style={{
+                            fontFamily: "'Space Mono', monospace",
+                            fontSize: 'clamp(0.42rem, 0.7vw, 0.52rem)',
+                            color: C.mid,
+                            lineHeight: 1.4,
+                            letterSpacing: '0.03em',
+                          }}>{step}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+        </Reveal>
 
         {/* Actor Map — split layout */}
         <div style={{ display: 'grid', gridTemplateColumns: '40% 60%', gap: '4rem', alignItems: 'center', marginBottom: 'clamp(3rem,5vw,5rem)' }}>
