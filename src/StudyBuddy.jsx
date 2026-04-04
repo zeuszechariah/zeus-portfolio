@@ -1045,7 +1045,7 @@ function WhySection() {
   return (
     <section style={{ background: C.surface, ...PAD }}>
       <Wrap>
-        <div style={{ maxWidth: 720, margin: '0 auto', textAlign: 'center' }}>
+        <div style={{ maxWidth: 720, margin: '0 auto', textAlign: 'center', marginBottom: 'clamp(2.5rem,4vw,4rem)' }}>
           <Reveal><SectionTag>Why This Topic</SectionTag></Reveal>
           <MaskReveal delay={0.1}>
             <h2 style={{
@@ -1068,6 +1068,17 @@ function WhySection() {
             </p>
           </Reveal>
         </div>
+
+        {/* Editorial photo — math notes, illustrating the student struggle */}
+        <Reveal delay={0.25}>
+          <div style={{ borderRadius: '16px', overflow: 'hidden', lineHeight: 0 }}>
+            <img
+              src="/study-math-notes.jpg"
+              alt="Handwritten math notes with pink marker equations and a pencil — representing the complexity of student study"
+              style={{ width: '100%', height: 'clamp(220px,28vw,380px)', objectFit: 'cover', objectPosition: 'center 55%', display: 'block' }}
+            />
+          </div>
+        </Reveal>
       </Wrap>
     </section>
   )
@@ -1419,30 +1430,52 @@ function ResearchSection() {
           ))}
         </StaggerGrid>
 
-        {/* Target Audience */}
+        {/* Target Audience — photo split */}
         <Reveal delay={0.1}>
-          <div style={{
-            background: C.dark,
-            borderRadius: '16px',
-            padding: 'clamp(1.75rem,3vw,2.75rem)',
-          }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', borderRadius: '16px', overflow: 'hidden', minHeight: 280 }}>
+            {/* Photo — Indian schoolgirls in classroom */}
+            <div style={{ position: 'relative', minHeight: 220 }}>
+              <img
+                src="/study-classroom.jpg"
+                alt="Indian schoolgirls seated in a classroom, attentive — the primary target audience for Study Buddy"
+                style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center 30%', display: 'block' }}
+              />
+            </div>
+            {/* Dark text panel */}
             <div style={{
-              fontFamily: "'Space Mono', monospace",
-              fontSize: '0.58rem',
-              letterSpacing: '0.18em',
-              textTransform: 'uppercase',
-              color: C.darkMuted,
-              marginBottom: '0.75rem',
-            }}>Target Audience</div>
-            <p style={{
-              fontFamily: "'Syne', sans-serif",
-              fontWeight: 500,
-              fontSize: 'clamp(1rem,2vw,1.35rem)',
-              color: C.darkInk,
-              margin: 0,
+              background: C.dark,
+              padding: 'clamp(2rem,3.5vw,3rem)',
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'center',
             }}>
-              Students 13+ years of age, primarily from upper-middle class income groups
-            </p>
+              <div style={{
+                fontFamily: "'Space Mono', monospace",
+                fontSize: '0.58rem',
+                letterSpacing: '0.18em',
+                textTransform: 'uppercase',
+                color: C.darkMuted,
+                marginBottom: '0.75rem',
+              }}>Target Audience</div>
+              <p style={{
+                fontFamily: "'Syne', sans-serif",
+                fontWeight: 500,
+                fontSize: 'clamp(1rem,2vw,1.35rem)',
+                color: C.darkInk,
+                margin: '0 0 1rem',
+              }}>
+                Students 13+ years of age, primarily from upper-middle class income groups
+              </p>
+              <p style={{
+                fontFamily: "'Syne', sans-serif",
+                fontSize: '0.85rem',
+                color: C.darkMid,
+                margin: 0,
+                lineHeight: 1.65,
+              }}>
+                School and college students navigating high-stakes curriculum, balancing academic pressure with a desire for meaningful, self-directed learning.
+              </p>
+            </div>
           </div>
         </Reveal>
       </Wrap>
