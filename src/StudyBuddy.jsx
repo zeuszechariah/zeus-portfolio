@@ -1,6 +1,11 @@
 import { useRef, useState, useEffect } from 'react'
 import { motion, useInView, AnimatePresence } from 'framer-motion'
 import { Nav, Footer, ProgressBar, MaskReveal, Reveal } from './shared.jsx'
+import ActorMap    from './components/diagrams/study-buddy/ActorMap.jsx'
+import SubSystems  from './components/diagrams/study-buddy/SubSystems.jsx'
+import FeedbackLoops from './components/diagrams/study-buddy/FeedbackLoops.jsx'
+import SystemMap   from './components/diagrams/study-buddy/SystemMap.jsx'
+import SystemMapII from './components/diagrams/study-buddy/SystemMapII.jsx'
 
 // ─── Design Tokens ──────────────────────────────────────
 // Accent colours derived from Study Buddy project card gradient:
@@ -317,11 +322,12 @@ function useActiveSection(ids) {
 }
 
 // ═══════════════════════════════════════════════════════════
-// DIAGRAMS
+// DIAGRAMS  (ActorMap, SubSystems, FeedbackLoops, SystemMap,
+//            SystemMapII imported from components/diagrams/)
 // ═══════════════════════════════════════════════════════════
 
-// ─── 1. Actor Map ─────────────────────────────────────────
-function ActorMap() {
+// ─── LEGACY inline ActorMap (kept as reference, not rendered) ─
+function _ActorMapLegacy() {
   const ref = useRef(null)
   const inView = useInView(ref, { once: true, amount: 0.3 })
 
@@ -490,8 +496,8 @@ function ActorMap() {
   )
 }
 
-// ─── 2. Subsystems Map ────────────────────────────────────
-function SubsystemsMap() {
+// ─── LEGACY inline SubsystemsMap (kept as reference, not rendered) ─
+function _SubsystemsMapLegacy() {
   const ref = useRef(null)
   const inView = useInView(ref, { once: true, amount: 0.3 })
 
@@ -1173,9 +1179,7 @@ function SystemsSection() {
             </Reveal>
           </div>
           <Reveal delay={0.1}>
-            <div style={{ background: C.card, borderRadius: '14px', padding: 'clamp(1rem,1.5vw,1.5rem)', boxShadow: C.neu }}>
-              <ActorMap />
-            </div>
+            <ActorMap />
           </Reveal>
         </div>
 
@@ -1203,9 +1207,7 @@ function SystemsSection() {
             </Reveal>
           </div>
           <Reveal delay={0.1}>
-            <div>
-              <ImgBox label="Knowledge Graph — Stakeholder Relationship Network" aspect="60%" />
-            </div>
+            <SystemMap />
           </Reveal>
         </div>
 
@@ -1233,9 +1235,7 @@ function SystemsSection() {
             </Reveal>
           </div>
           <Reveal delay={0.1}>
-            <div style={{ background: C.card, borderRadius: '14px', padding: 'clamp(1rem,1.5vw,1.5rem)', boxShadow: C.neu }}>
-              <SubsystemsMap />
-            </div>
+            <SubSystems />
           </Reveal>
         </div>
 
@@ -1271,7 +1271,7 @@ function SystemsSection() {
             </Reveal>
           </div>
           <Reveal delay={0.1}>
-            <ImgBox label="Feedback Loops — Reinforcing & Balancing Dynamics" aspect="75%" />
+            <FeedbackLoops />
           </Reveal>
         </div>
 
@@ -1362,7 +1362,7 @@ function ResearchSection() {
             <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.9rem', color: C.mid, lineHeight: 1.7, marginBottom: '1.5rem', maxWidth: 560 }}>
               Diverging on more factors with the emerging idea of student motivation as a central leverage point.
             </p>
-            <ImgBox label="System Map II — Student Motivation Focus" aspect="48%" />
+            <SystemMapII />
           </div>
         </Reveal>
 
