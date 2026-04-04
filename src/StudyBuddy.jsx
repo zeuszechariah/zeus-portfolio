@@ -978,8 +978,21 @@ function BehaviouralCycle() {
 // ─── Hero / Overview ──────────────────────────────────────
 function HeroSection() {
   return (
-    <section id="overview" style={{ background: C.heroGrad, paddingTop: 'clamp(7rem,12vw,11rem)', paddingBottom: 'clamp(5rem,8vw,8rem)' }}>
-      <Wrap>
+    <section id="overview" style={{
+      position: 'relative',
+      backgroundImage: 'url(/hero-studybuddy.jpg)',
+      backgroundSize: 'cover',
+      backgroundPosition: 'center 30%',
+      paddingTop: 'clamp(7rem,12vw,11rem)',
+      paddingBottom: 'clamp(5rem,8vw,8rem)',
+    }}>
+      {/* Dark gradient overlay — heavy on left for text, opens on right to show the photo */}
+      <div style={{
+        position: 'absolute', inset: 0, zIndex: 0,
+        background: 'linear-gradient(to right, rgba(6,21,40,0.93) 0%, rgba(6,21,40,0.88) 38%, rgba(6,21,40,0.55) 65%, rgba(6,21,40,0.25) 100%)',
+      }} />
+
+      <Wrap style={{ position: 'relative', zIndex: 1 }}>
         <MaskReveal delay={0}>
           <span style={{
             display: 'inline-block',
@@ -1002,7 +1015,7 @@ function HeroSection() {
         <MaskReveal delay={0.2}>
           <p style={{
             fontFamily: "'Syne', sans-serif", fontSize: 'clamp(1rem,2vw,1.15rem)',
-            lineHeight: 1.75, color: C.darkMid, maxWidth: '55ch', margin: '0 0 3rem',
+            lineHeight: 1.75, color: C.darkMid, maxWidth: '52ch', margin: '0 0 3rem',
           }}>
             An AI-powered learning companion that helps students study smarter, transforming notes into engaging videos, optimising focus through personalised Pomodoro sessions, and enhancing memory through science-backed mnemonics.
           </p>
