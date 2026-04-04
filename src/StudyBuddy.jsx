@@ -1716,11 +1716,12 @@ function PersonasSection() {
 // ─── Design System Section ────────────────────────────────
 function DesignSystemSection() {
   const colors = [
-    { name: 'Yellow',  hex: '#FFF176', role: 'Highlights · Achievements' },
-    { name: 'Pink',    hex: '#F48FB1', role: 'Primary CTA · Streaks' },
-    { name: 'Green',   hex: '#A5D6A7', role: 'Success · Progress' },
-    { name: 'Blue',    hex: '#90CAF9', role: 'Focus Timer · Sessions' },
-    { name: 'Purple',  hex: '#CE93D8', role: 'Mnemonics · Memory' },
+    { name: 'Black',   hex: '#1A1919', role: 'Background · Dark UI' },
+    { name: 'Pink',    hex: '#FE60AC', role: 'Primary CTA · Streaks · Badges' },
+    { name: 'Blue',    hex: '#4A5DE2', role: 'Focus Timer · Sessions' },
+    { name: 'Yellow',  hex: '#FAFF38', role: 'Highlights · Achievements' },
+    { name: 'Green',   hex: '#A6CA00', role: 'Success · Progress' },
+    { name: 'White',   hex: '#FFFFFF', role: 'Background · Light surfaces' },
   ]
 
   return (
@@ -1793,7 +1794,7 @@ function DesignSystemSection() {
                   borderRadius: '10px',
                   height: '72px',
                   marginBottom: '8px',
-                  border: col.hex === C.bg ? `1px solid ${C.border}` : 'none',
+                  border: col.hex === '#FFFFFF' ? `1px solid ${C.border}` : 'none',
                 }} />
                 <div style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: '0.72rem', color: C.ink, marginBottom: '2px' }}>{col.name}</div>
                 <div style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.58rem', color: C.muted, marginBottom: '2px' }}>{col.hex}</div>
