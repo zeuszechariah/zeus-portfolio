@@ -1,8 +1,10 @@
 import { Analytics } from '@vercel/analytics/react'
 import { useRef, useEffect, useState, lazy, Suspense } from 'react'
-import { motion, useMotionValue, useTransform, useSpring, useInView } from 'framer-motion'
+import { motion, useMotionValue, useTransform, useSpring, useInView, useScroll } from 'framer-motion'
 import { BrowserRouter, Routes, Route, Link } from 'react-router-dom'
 import { EASE, SPRING_STIFF, Bolt, ProgressBar, Nav, Footer, MaskReveal, Reveal, CookieBanner, SectionExit } from './shared.jsx'
+import WhatIDo from './WhatIDo.jsx'
+import PersonalGallery from './PersonalGallery.jsx'
 const About        = lazy(() => import('./About.jsx'))
 const Imprint      = lazy(() => import('./Imprint.jsx'))
 const PrivacyPolicy = lazy(() => import('./PrivacyPolicy.jsx'))
@@ -13,17 +15,11 @@ const Finance      = lazy(() => import('./Finance.jsx'))
 
 const PROJECTS = [
   { id:1, name:'Study Buddy',     tags:'UX Research · Mobile',   desc:'Rethinking how Indian students study & building habits that actually stick.', color:'from-[#061528] via-[#0f2d52] to-[#1b4a8a]', pitch:'https://pitch.com/v/study-buddy-pqwx5j', thumb:'/thumnail-1-opt.gif', slug:'/work/study-buddy' },
-  { id:2, name:'Get Set Globe',   tags:'EdTech · Product Design', desc:'Making Earth science something children feel, not just memorise.', color:'from-[#050f08] via-[#0b2e16] to-[#135728]', pitch:'https://pitch.com/v/get-set-globe-hefqux', thumb:'/thumb-getsetglobe.jpg', thumbPos:'50% 0%' },
+  { id:2, name:'Get Set Globe',   tags:'EdTech · Product Design', desc:'Making Earth science something children feel, not just memorise.', color:'from-[#050f08] via-[#0b2e16] to-[#135728]', thumb:'/thumb-getsetglobe.jpg', thumbPos:'50% 0%', slug:'/work/get-set-globe' },
   { id:3, name:'Spectra',         tags:'Data Viz · Experience',   desc:'Two invisible threats, one shared sky. Mapping the overlap of air and light pollution across urban India.', color:'from-[#0d0702] via-[#2e1606] to-[#7a430e]', pitch:'https://pitch.com/v/spectra-2vnqiq', thumb:'/thumb-spectra-opt.jpg', thumbPos:'50% 15%', thumbFilter:'saturate(0.75)' },
   { id:4, name:'Finance for semi/less literate', tags:'Research · Social Design', desc:'Researching financial literacy through scam resilience and financial literacy.', color:'from-[#040409] via-[#0e0e30] to-[#1a1060]', pitch:'https://canva.link/ryd4ojcrh70b9qq', thumb:'/thumb-finance.jpg', thumbBg:'#EEF3DF', slug:'/work/finance' },
 ]
 
-const SERVICES = [
-  'UX Design',
-  'Visual Design & Branding',
-  'Systems & Service Design',
-  'Creative Direction & Strategy',
-]
 
 const VITALS = [
   { stat:'06+',  label:'Years in Design',         desc:'Academic + Professional\njourney' },
@@ -95,12 +91,12 @@ function HeroCanvas() {
     if (!canvas) return
     const ctx = canvas.getContext('2d')
 
-    const N = 130
+    const N = 55
     const HOVER_RADIUS = 90
-    const BASE_OPACITY = 0.055
+    const BASE_OPACITY = 0.045
     let W, H, points, restPoints, triangles, retriFrame
     const smoothGlow = new Float32Array(N)
-    const triGlow = new Float32Array(2000)
+    const triGlow = new Float32Array(500)
     const mouse = { x: -9999, y: -9999, active: false }
     let mouseTimer
 
@@ -219,15 +215,22 @@ function HeroCanvas() {
         ctx.beginPath(); ctx.moveTo(a.x,a.y); ctx.lineTo(b.x,b.y); ctx.lineTo(c.x,c.y); ctx.closePath(); ctx.stroke()
       }
 
-      // ── Vertices (cream dots on dark bg) ──
-      ctx.beginPath()
+      // ── Vertices (star points — bright with glow) ──
       for (let i=0;i<N;i++) {
         const p=points[i], g=smoothGlow[i]
-        ctx.globalAlpha=0.18+g*0.7
-        ctx.fillStyle=`rgba(242,237,228,${0.5+g*0.5})`
-        ctx.arc(p.x,p.y,1.0+g*2,0,Math.PI*2); ctx.closePath()
+        const baseAlpha = 0.72 + g * 0.28
+        const r = 0.8 + g * 1.2
+        // Outer glow halo
+        ctx.shadowBlur = 5 + g * 10
+        ctx.shadowColor = `rgba(242,237,228,${0.55 + g * 0.45})`
+        ctx.globalAlpha = baseAlpha
+        ctx.fillStyle = '#F2EDE4'
+        ctx.beginPath()
+        ctx.arc(p.x, p.y, r, 0, Math.PI * 2)
+        ctx.fill()
       }
-      ctx.fill()
+      ctx.shadowBlur = 0
+      ctx.shadowColor = 'transparent'
 
       ctx.globalAlpha=1
       rafId=requestAnimationFrame(loop)
@@ -300,7 +303,7 @@ function VideoIntro({ onComplete }) {
     <div className="pointer-events-none"
       style={{
         position: 'fixed', inset: 0, zIndex: 200,
-        background: '#060606',
+        background: '#000000',
         opacity: fading ? 0 : 1,
         transition: 'opacity 1.4s cubic-bezier(0.16,1,0.3,1)',
       }}
@@ -317,10 +320,10 @@ function VideoIntro({ onComplete }) {
           src="/headervideo.mp4" />
         <div className="absolute inset-0" style={{
           background: [
-            'linear-gradient(to bottom, #060606 0%, transparent 18%)',
-            'linear-gradient(to top,    #060606 0%, transparent 18%)',
-            'linear-gradient(to right,  #060606 0%, transparent 14%)',
-            'linear-gradient(to left,   #060606 0%, transparent 14%)',
+            'linear-gradient(to bottom, #000000 0%, transparent 18%)',
+            'linear-gradient(to top,    #000000 0%, transparent 18%)',
+            'linear-gradient(to right,  #000000 0%, transparent 14%)',
+            'linear-gradient(to left,   #000000 0%, transparent 14%)',
           ].join(', ')
         }} />
       </div>
@@ -339,223 +342,468 @@ function VideoIntro({ onComplete }) {
   )
 }
 
-// ─── Hero ─────────────────────────────────────────────
-function Hero() {
-  const heroRef = useRef(null)
+// ─── Enneagram SVG ────────────────────────────────────
+// Outer nonagon (9-sided polygon) + triangle (3-6-9) + hexad (1-4-2-8-5-7-1).
+// Stroke uses a diagonal gradient: mid-grey → white → mid-grey.
+function Enneagram({ size = 700 }) {
+  const cx = size / 2
+  const cy = size / 2
+  const r  = size * 0.44
+  const sw = 0.5
 
-  const lines = [
-    { text: "I'm an Indian designer,",          cls: 'font-sans font-semibold tracking-[-0.04em]', italic: false },
-    { text: 'global in practice, focused',      cls: 'font-sans font-semibold tracking-[-0.04em]', italic: false },
-    { text: 'on structure, sensation, & more.', cls: 'font-display',                                italic: true  },
-  ]
+  const pts = Array.from({ length: 9 }, (_, i) => {
+    const a = ((i * 40) - 90) * (Math.PI / 180)
+    return [cx + r * Math.cos(a), cy + r * Math.sin(a)]
+  })
+  const p = (n) => pts[n === 9 ? 0 : n]
+
+  const poly = (nodes) =>
+    nodes.map(([x, y], i) => `${i ? 'L' : 'M'}${x},${y}`).join(' ') + 'Z'
+
+  const nonagon  = poly([p(9), p(1), p(2), p(3), p(4), p(5), p(6), p(7), p(8)])
+  const triangle = poly([p(9), p(3), p(6)])
+  const hexad    = poly([p(1), p(4), p(2), p(8), p(5), p(7)])
+
+  const [x6, y6] = p(6)
+  const [x7, y7] = p(7)
+
+  const BOLT_H = 54
+  const BOLT_W = BOLT_H * (10 / 16)
+  const bScale = BOLT_H / 16
+
+  // Timing (seconds)
+  const T_NONAGON  = { delay: 0.2,  duration: 1.8 }
+  const T_TRIANGLE = { delay: 1.6,  duration: 1.4 }
+  const T_HEXAD    = { delay: 2.4,  duration: 1.8 }
+  const T_DOTS     = { delay: 4.0 }
+  const T_LABELS   = { delay: 4.4 }
+  const T_BOLT     = { delay: 4.2 }
+
+  const pathProps = (timing) => ({
+    stroke:          'url(#ennea-sg)',
+    strokeWidth:     sw,
+    strokeLinejoin:  'miter',
+    fill:            'none',
+    initial:         { pathLength: 0, opacity: 0 },
+    animate:         { pathLength: 1, opacity: 1 },
+    transition: {
+      pathLength: { delay: timing.delay, duration: timing.duration, ease: 'easeInOut' },
+      opacity:    { delay: timing.delay, duration: 0.01 },
+    },
+  })
+
+  const LABEL_STYLE = {
+    fontFamily:    "'Space Mono', monospace",
+    fontSize:      '9px',
+    letterSpacing: '0.12em',
+  }
 
   return (
-    <section ref={heroRef} id="main-content"
-      className="relative flex flex-col justify-end overflow-hidden"
-      style={{
-        minHeight: '100svh',
-        padding: '0 clamp(1.5rem,5vw,3.5rem) clamp(4rem,8vw,6rem)',
-      }}
+    <svg
+      className="ennea-glow"
+      width={size} height={size}
+      viewBox={`0 0 ${size} ${size}`}
+      fill="none"
+      style={{ overflow: 'visible' }}
     >
-      <HeroCanvas />
-      <div className="absolute pointer-events-none" style={{ width:'clamp(500px,60vw,820px)',height:'clamp(500px,60vw,820px)',borderRadius:'50%',top:'-25%',left:'-18%',zIndex:0,background:'radial-gradient(circle,rgba(124,58,237,0.14) 0%,transparent 65%)' }} />
-      <div className="absolute pointer-events-none" style={{ width:'clamp(350px,42vw,600px)',height:'clamp(350px,42vw,600px)',borderRadius:'50%',bottom:'-12%',right:'-10%',zIndex:0,background:'radial-gradient(circle,rgba(255,75,143,0.09) 0%,transparent 65%)' }} />
-      <div className="absolute inset-0 pointer-events-none" style={{ zIndex:1, background:'linear-gradient(to bottom,#060606 0%,transparent 22%),linear-gradient(to top,#060606 0%,transparent 22%),linear-gradient(to right,#060606 0%,transparent 18%),linear-gradient(to left,#060606 0%,transparent 18%)' }} />
+      <defs>
+        <linearGradient id="ennea-sg" x1="0" y1="0" x2={size} y2={size} gradientUnits="userSpaceOnUse">
+          <stop offset="0%"   stopColor="#8a8a8a" stopOpacity="0.55" />
+          <stop offset="40%"  stopColor="#F2EDE4" stopOpacity="0.90" />
+          <stop offset="70%"  stopColor="#ffffff" stopOpacity="1.00" />
+          <stop offset="100%" stopColor="#7a7a7a" stopOpacity="0.45" />
+        </linearGradient>
+        <filter id="dot-glow" x="-80%" y="-80%" width="260%" height="260%">
+          <feGaussianBlur stdDeviation="3.5" result="blur" />
+          <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
+        </filter>
+        <filter id="bolt-glow" x="-180%" y="-160%" width="460%" height="420%">
+          <feGaussianBlur in="SourceGraphic" stdDeviation="14" result="outerBloom" />
+          <feGaussianBlur in="SourceGraphic" stdDeviation="4"  result="innerGlow" />
+          <feMerge>
+            <feMergeNode in="outerBloom" />
+            <feMergeNode in="innerGlow" />
+            <feMergeNode in="SourceGraphic" />
+          </feMerge>
+        </filter>
+      </defs>
 
-      <div className="relative z-[3] w-full flex items-end justify-between gap-6">
-        <h1>
-          {lines.map(({ text, cls, italic }, i) => (
-            <MaskReveal key={text} delay={i * 0.13}>
-              <span
-                className={`block hero-glow ${cls}`}
-                style={{
-                  fontSize: 'clamp(1.575rem,3.85vw,3.675rem)',
-                  lineHeight: italic ? 1.22 : 1.1,
-                  color: 'rgba(242,237,228,1)',
-                  fontStyle: italic ? 'italic' : 'normal',
-                }}
-              >
-                {text}
-              </span>
-            </MaskReveal>
-          ))}
-        </h1>
-        <Reveal delay={0.45} className="flex-shrink-0 pb-[0.18em]">
-          <span className="flex items-center gap-2 font-mono text-[0.625rem] tracking-[0.16em] uppercase text-ink/40">
-            <span className="w-[7px] h-[7px] rounded-full bg-[#00FF87] availability-dot flex-shrink-0" />BLR, India
-          </span>
-        </Reveal>
-      </div>
+      {/* ── Phase 1: draw paths ── */}
+      <motion.path d={nonagon}  {...pathProps(T_NONAGON)} />
+      <motion.path d={triangle} {...pathProps(T_TRIANGLE)} />
+      <motion.path d={hexad}    {...pathProps(T_HEXAD)} />
 
-      <div className="absolute flex items-center gap-3 pointer-events-none select-none"
-        style={{ zIndex: 3, bottom: 'clamp(1.5rem,4vw,2.5rem)', left: 'clamp(1.5rem,5vw,3.5rem)', opacity: 0.55 }}
+      {/* ── Phase 2: dots bounce in ── */}
+      {/* Wrap in translated <g> so scale origin = circle centre */}
+      <motion.g
+        style={{ originX: x6, originY: y6 }}
+        initial={{ scale: 0.82, opacity: 0 }}
+        animate={{ scale: 1, opacity: 0.9 }}
+        transition={{ delay: T_DOTS.delay, duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
       >
-        <div className="w-[1px] h-7 relative overflow-hidden" style={{ background: 'rgba(242,237,228,0.08)' }}>
-          <div className="scroll-line-inner absolute inset-x-0 h-1/2" style={{ background: 'rgba(242,237,228,0.35)' }} />
-        </div>
-        <span className="font-mono text-[0.5rem] tracking-[0.22em] uppercase" style={{ color: 'rgba(242,237,228,0.22)' }}>Scroll</span>
-      </div>
-    </section>
+        <circle cx={x6} cy={y6} r={4} fill="#7C3AED" filter="url(#dot-glow)" />
+      </motion.g>
+
+      <motion.g
+        style={{ originX: x7, originY: y7 }}
+        initial={{ scale: 0.82, opacity: 0 }}
+        animate={{ scale: 1, opacity: 0.9 }}
+        transition={{ delay: T_DOTS.delay + 0.18, duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
+      >
+        <circle cx={x7} cy={y7} r={4} fill="#FF4B8F" filter="url(#dot-glow)" />
+      </motion.g>
+
+      {/* ── Phase 3: labels fade in ── */}
+      <motion.text
+        x={x6 - 12} y={y6 + 4} textAnchor="end"
+        fill="rgba(242,237,228,0.58)" {...LABEL_STYLE}
+        initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+        transition={{ delay: T_LABELS.delay, duration: 0.7 }}
+      >
+        The Troubleshooter
+      </motion.text>
+
+      <motion.text
+        x={x7 - 12} y={y7 + 4} textAnchor="end"
+        fill="rgba(242,237,228,0.58)" {...LABEL_STYLE}
+        initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+        transition={{ delay: T_LABELS.delay + 0.15, duration: 0.7 }}
+      >
+        The Enthusiast
+      </motion.text>
+
+      {/* ── Phase 3: bolt fades + scales in ── */}
+      <motion.g
+        style={{ originX: cx, originY: cy }}
+        initial={{ scale: 0.8, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        transition={{ delay: T_BOLT.delay, duration: 1.1, ease: [0.16, 1, 0.3, 1] }}
+        filter="url(#bolt-glow)"
+      >
+        <g transform={`translate(${cx - BOLT_W / 2}, ${cy - BOLT_H / 2}) scale(${bScale})`}>
+          <g transform="scale(-1,1) translate(-10,0)">
+            <path d="M7.5 0L0.5 9H5L2 16L9.5 7H5L7.5 0Z" fill="#F2EDE4" />
+          </g>
+        </g>
+      </motion.g>
+    </svg>
   )
 }
 
-// Clockwise grid positions: TL(grid 0) → TR(grid 1) → BR(grid 3) → BL(grid 2)
-const CW_TO_GRID = [0, 1, 3, 2]
-function getRotatedServices(offset) {
-  const result = new Array(4)
-  for (let cw = 0; cw < 4; cw++) result[CW_TO_GRID[cw]] = SERVICES[(cw + offset) % 4]
-  return result
-}
+// ─── Smoke Canvas ────────────────────────────────────
+// 9 independent plumes, each drawn in two passes (core + halo)
+// using ctx.createRadialGradient + ctx.filter blur.
+// globalCompositeOperation='lighter' makes overlapping plumes bloom.
+// Smoke anchored to right-centre; left ~28% stays pure black.
+function SmokeCanvas() {
+  const canvasRef = useRef(null)
 
-// ─── Services ─────────────────────────────────────────
-function Services() {
-  const wrapRef = useRef(null)
-  const [svgPath, setSvgPath] = useState('')
-  const [offset, setOffset]   = useState(0)
-  const inView  = useInView(wrapRef, { once: true, amount: 0.25 })
-
-  // SVG path — computed from wrapper geometry, never depends on dotRefs
   useEffect(() => {
-    const compute = () => {
-      const wrap = wrapRef.current
-      if (!wrap) return
-      const wr = wrap.getBoundingClientRect()
-      // Circle radius mirrors the CSS clamp(150px, 17vw, 230px)
-      const r = Math.min(Math.max(150, window.innerWidth * 0.17), 230) / 2
-      // 2×2 grid: cell centres at 25%/75% of wrapper width & height
-      const tl = { x: wr.width * 0.25, y: wr.height * 0.25 }
-      const tr = { x: wr.width * 0.75, y: wr.height * 0.25 }
-      const bl = { x: wr.width * 0.25, y: wr.height * 0.75 }
-      const br = { x: wr.width * 0.75, y: wr.height * 0.75 }
-      setSvgPath([
-        `M ${tl.x + r} ${tl.y} L ${tr.x - r} ${tr.y}`,
-        `M ${tr.x} ${tr.y + r} L ${br.x} ${br.y - r}`,
-        `M ${br.x - r} ${br.y} L ${bl.x + r} ${bl.y}`,
-        `M ${bl.x} ${bl.y - r} L ${tl.x} ${tl.y + r}`,
-      ].join(' '))
+    const canvas = canvasRef.current
+    if (!canvas) return
+    const ctx = canvas.getContext('2d')
+    let rafId = null, W = 0, H = 0
+
+    // rx/ry   — rest position as viewport fraction
+    // sxf/syf — ellipse size as viewport fraction
+    // alpha   — peak opacity
+    // speed   — animation rate (rad/ms)
+    // phase   — offset so no two plumes sync
+    // drift   — lateral oscillation amplitude
+    // cb/hb   — core blur px / halo blur px
+    const PLUMES = [
+      // Primary mass — right centre, large, brightest
+      { rx:0.72, ry:0.50, sxf:0.22, syf:0.58, alpha:0.42, speed:0.00027, phase:0.00, drift:0.036, cb:32, hb:134 },
+      // Upper lobe
+      { rx:0.80, ry:0.28, sxf:0.18, syf:0.46, alpha:0.34, speed:0.00035, phase:1.40, drift:0.030, cb:26, hb:116 },
+      // Lower lobe
+      { rx:0.78, ry:0.72, sxf:0.20, syf:0.52, alpha:0.36, speed:0.00031, phase:2.80, drift:0.033, cb:28, hb:122 },
+      // Far-right anchor (tall, soft)
+      { rx:0.91, ry:0.50, sxf:0.24, syf:0.68, alpha:0.38, speed:0.00024, phase:0.60, drift:0.024, cb:34, hb:142 },
+      // Mid-right filler
+      { rx:0.65, ry:0.55, sxf:0.15, syf:0.38, alpha:0.24, speed:0.00042, phase:3.50, drift:0.042, cb:22, hb: 98 },
+      // Top drift accent
+      { rx:0.76, ry:0.16, sxf:0.14, syf:0.30, alpha:0.20, speed:0.00050, phase:1.80, drift:0.036, cb:20, hb: 86 },
+    ]
+
+    function resize() {
+      W = canvas.width  = canvas.offsetWidth
+      H = canvas.height = canvas.offsetHeight
     }
-    compute()
-    window.addEventListener('resize', compute, { passive: true })
-    return () => window.removeEventListener('resize', compute)
+
+    function draw(T) {
+      ctx.clearRect(0, 0, W, H)
+      ctx.globalCompositeOperation = 'lighter'
+
+      for (const pl of PLUMES) {
+        const x  = W * (pl.rx + Math.sin(T * pl.speed + pl.phase)       * pl.drift)
+        const y  = H * (pl.ry + Math.cos(T * pl.speed * 0.7 + pl.phase) * pl.drift * 0.5)
+        const cW = W * pl.sxf
+        const cH = H * pl.syf
+
+        // Pass 1 — tight bright core
+        ctx.filter = `blur(${pl.cb}px)`
+        const cg = ctx.createRadialGradient(x, y, 0, x, y, cW * 0.55)
+        cg.addColorStop(0,    `rgba(255,255,255,${pl.alpha * 0.90})`)
+        cg.addColorStop(0.45, `rgba(255,255,255,${pl.alpha * 0.30})`)
+        cg.addColorStop(1,    'rgba(255,255,255,0)')
+        ctx.fillStyle = cg
+        ctx.beginPath()
+        ctx.ellipse(x, y, cW * 0.55, cH * 0.50, 0, 0, Math.PI * 2)
+        ctx.fill()
+
+        // Pass 2 — wide atmospheric halo
+        ctx.filter = `blur(${pl.hb}px)`
+        const hg = ctx.createRadialGradient(x, y, 0, x, y, cW * 2.0)
+        hg.addColorStop(0,    `rgba(255,255,255,${pl.alpha * 0.13})`)
+        hg.addColorStop(0.55, `rgba(255,255,255,${pl.alpha * 0.04})`)
+        hg.addColorStop(1,    'rgba(255,255,255,0)')
+        ctx.fillStyle = hg
+        ctx.beginPath()
+        ctx.ellipse(x, y, cW * 2.4, cH * 2.0, 0, 0, Math.PI * 2)
+        ctx.fill()
+      }
+
+      ctx.filter = 'none'
+      ctx.globalCompositeOperation = 'source-over'
+    }
+
+    let t0 = null
+    function loop(ts) {
+      if (t0 === null) t0 = ts
+      draw(ts - t0)
+      rafId = requestAnimationFrame(loop)
+    }
+
+    let visible = false
+    const observer = new IntersectionObserver(([e]) => {
+      visible = e.isIntersecting
+      if (visible && !rafId) rafId = requestAnimationFrame(loop)
+      else if (!visible && rafId) { cancelAnimationFrame(rafId); rafId = null }
+    }, { threshold: 0.01 })
+    observer.observe(canvas)
+
+    const onResize = () => resize()
+    window.addEventListener('resize', onResize, { passive: true })
+    resize()
+
+    return () => {
+      if (rafId) cancelAnimationFrame(rafId)
+      observer.disconnect()
+      window.removeEventListener('resize', onResize)
+    }
   }, [])
 
-  // Start rotating 1.2s after entrance (after entrance animation finishes)
-  useEffect(() => {
-    if (!inView) return
-    let intervalId
-    const timeoutId = setTimeout(() => {
-      intervalId = setInterval(() => setOffset(o => (o - 1 + 4) % 4), 3000)
-    }, 1200)
-    return () => { clearTimeout(timeoutId); clearInterval(intervalId) }
-  }, [inView])
+  return (
+    <canvas
+      ref={canvasRef}
+      style={{ position:'absolute', inset:0, width:'100%', height:'100%', pointerEvents:'none', zIndex:0 }}
+    />
+  )
+}
 
-  const displayed = getRotatedServices(offset)
+// ─── Hero Button ─────────────────────────────────────
+// Hyperrealistic dark glass pill. Single overhead light source:
+// intense highlight concentrated at the top-left rim only —
+// not a uniform inset glow, but a hot-spot radial overlay.
+function HeroButton({ children, onClick, href }) {
+  const [hover, setHover] = useState(false)
+  const [press, setPress] = useState(false)
+
+  const Tag = href ? 'a' : 'button'
+  return (
+    <Tag
+      href={href}
+      onClick={onClick}
+      style={{
+        position:       'relative',
+        display:        'inline-flex',
+        alignItems:     'center',
+        justifyContent: 'center',
+        borderRadius:   '100px',
+        border:         '1px solid rgba(255,255,255,0.12)',
+        fontFamily:     "'Syne', sans-serif",
+        fontWeight:     500,
+        fontSize:       '0.875rem',
+        letterSpacing:  '0.02em',
+        color:          '#ffffff',
+        padding:        '0.8rem 2rem',
+        cursor:         'pointer',
+        textDecoration: 'none',
+        overflow:       'hidden',
+        // Dark glass base — subtle top-to-bottom gradient
+        background:     'linear-gradient(175deg, rgba(36,36,36,0.94) 0%, rgba(8,8,8,0.98) 100%)',
+        // Shadow stack: outer glow + depth + inset base top rim + bottom shadow
+        boxShadow: hover
+          ? '0 12px 36px rgba(0,0,0,0.7), 0 3px 8px rgba(0,0,0,0.85), inset 0 1px 0 rgba(255,255,255,0.26), inset 0 -1px 0 rgba(0,0,0,0.55)'
+          : '0 12px 36px rgba(0,0,0,0.7), 0 3px 8px rgba(0,0,0,0.85), inset 0 1px 0 rgba(255,255,255,0.20), inset 0 -1px 0 rgba(0,0,0,0.55)',
+        transform:   press ? 'translateY(1px)' : hover ? 'translateY(-1px)' : 'translateY(0)',
+        transition:  'transform 0.16s cubic-bezier(0.16,1,0.3,1), box-shadow 0.20s ease',
+      }}
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => { setHover(false); setPress(false) }}
+      onMouseDown={() => setPress(true)}
+      onMouseUp={() => setPress(false)}
+    >
+      {/* Top-left rim hot-spot */}
+      <span aria-hidden="true" style={{
+        position:     'absolute',
+        inset:        0,
+        borderRadius: 'inherit',
+        background:   hover
+          ? 'radial-gradient(ellipse 38% 28% at 11% 0%, rgba(255,255,255,0.88) 0%, rgba(255,255,255,0.34) 22%, rgba(255,255,255,0.08) 48%, transparent 62%)'
+          : 'radial-gradient(ellipse 38% 28% at 11% 0%, rgba(255,255,255,0.72) 0%, rgba(255,255,255,0.28) 22%, rgba(255,255,255,0.06) 48%, transparent 62%)',
+        pointerEvents: 'none',
+        transition:   'background 0.18s ease',
+      }} />
+      <span style={{ position: 'relative', zIndex: 1 }}>
+        {children}
+        <span style={{
+          position:   'absolute',
+          bottom:     '-2px',
+          left:       0,
+          height:     '1px',
+          width:      hover ? '100%' : '0%',
+          background: '#ffffff',
+          transition: 'width 0.3s cubic-bezier(0.16,1,0.3,1)',
+          display:    'block',
+        }} />
+      </span>
+    </Tag>
+  )
+}
+
+// ─── Hero ─────────────────────────────────────────────
+function Hero() {
+  const heroRef = useRef(null)
+  const { scrollYProgress } = useScroll({ target: heroRef, offset: ['start start', 'end start'] })
+  const parallaxY = useTransform(scrollYProgress, [0, 1], ['0%', '-22%'])
 
   return (
-    <section style={{ background:'#060606' }} className="pt-[clamp(3.5rem,6vw,5rem)] pb-[clamp(3.5rem,5.5vw,5.5rem)] border-t border-white/[0.04] relative overflow-hidden">
-      <div className="absolute pointer-events-none" style={{ width:'clamp(400px,50vw,680px)',height:'clamp(400px,50vw,680px)',borderRadius:'50%',top:'-20%',right:'-8%',background:'radial-gradient(circle,rgba(124,58,237,0.077) 0%,transparent 65%)' }} />
-      <div className="absolute pointer-events-none" style={{ width:'clamp(280px,36vw,480px)',height:'clamp(280px,36vw,480px)',borderRadius:'50%',bottom:'-15%',left:'-5%',background:'radial-gradient(circle,rgba(255,75,143,0.055) 0%,transparent 65%)' }} />
-      <div className="max-w-[1200px] mx-auto px-[clamp(1.5rem,5vw,3.5rem)]">
+    <section ref={heroRef} id="main-content" className="hero" style={{ background:'#000000' }}>
 
-        <div className="mb-[clamp(3rem,5vw,4rem)]">
-          <Reveal>
-            <span className="flex items-center gap-2.5 font-mono text-[0.625rem] tracking-[0.16em] uppercase text-ink/32 mb-5">
-              <span className="inline-block w-4 h-[1px] bg-ink/18" />What I do
-            </span>
-          </Reveal>
-          <h2 className="font-sans font-semibold text-ink tracking-[-0.04em] leading-[0.92]"
-              style={{ fontSize:'clamp(2.5rem,6vw,5rem)' }}>
-            <MaskReveal>What I bring</MaskReveal>
-            <MaskReveal delay={0.1}>to the table.</MaskReveal>
-          </h2>
-        </div>
+      {/* Background image — parallax + gentle breathing zoom */}
+      <div style={{ position:'absolute', inset:0, zIndex:0, overflow:'hidden' }}>
+        <motion.img
+          src="/hero-bg.jpg"
+          alt=""
+          aria-hidden="true"
+          style={{
+            width:'100%', height:'112%',
+            objectFit:'cover', objectPosition:'50% 40%',
+            filter:'contrast(1.22) brightness(0.78) saturate(1.08)',
+            y: parallaxY,
+            top: '-6%',
+            position: 'absolute',
+          }}
+          animate={{ scale: [1, 1.06, 1] }}
+          transition={{ duration: 7, repeat: Infinity, ease: 'easeInOut' }}
+        />
+      </div>
 
-        {/* 2×2 grid */}
-        <div ref={wrapRef} className="relative grid grid-cols-2">
+      {/* Dark overlay */}
+      <div aria-hidden="true" style={{ position:'absolute', inset:0, zIndex:1, background:'rgba(0,0,0,0.30)', pointerEvents:'none' }} />
 
-          {/* Centre glow */}
-          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none" style={{ width:'clamp(380px,42vw,580px)',height:'clamp(380px,42vw,580px)',borderRadius:'50%',background:'radial-gradient(circle,rgba(149,80,255,0.22) 0%,rgba(140,60,240,0.16) 20%,rgba(120,48,200,0.09) 45%,rgba(100,40,160,0.03) 65%,transparent 80%)',filter:'blur(72px)',opacity:0.65,zIndex:0 }} />
+      {/* Edge fades — all 4 sides bleed into site BG #000000 */}
+      <div aria-hidden="true" style={{
+        position:'absolute', inset:0, zIndex:2, pointerEvents:'none',
+        background: [
+          'linear-gradient(to bottom, #000000 0%, transparent 20%)',
+          'linear-gradient(to top,    #000000 0%, transparent 32%)',
+          'linear-gradient(to right,  #000000 0%, transparent 24%)',
+          'linear-gradient(to left,   #000000 0%, transparent 24%)',
+        ].join(', '),
+      }} />
 
-          {/* Clockwise traveling runner */}
-          <svg className="absolute inset-0 w-full h-full pointer-events-none" style={{ zIndex: 0, overflow: 'visible' }}>
-            {svgPath && (
-              <motion.path
-                d={svgPath}
-                fill="none"
-                stroke="rgba(242,237,228,0.88)"
-                strokeWidth="2"
-                strokeLinecap="round"
-                initial={{ pathOffset: 0, pathLength: 0 }}
-                animate={inView ? {
-                  pathOffset: [0, 0, 0.82, 1],
-                  pathLength: [0, 0.20, 0.20, 0],
-                } : {}}
-                transition={{
-                  duration: 2.0,
-                  times: [0, 0.08, 0.88, 1],
-                  ease: ['easeOut', 'linear', 'easeOut'],
-                  repeat: Infinity,
-                  repeatDelay: 0.1,
-                }}
-              />
-            )}
-          </svg>
+      {/* Film grain */}
 
-          {/* Central bolt — fixed at the intersection of the four circles */}
-          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none" style={{ zIndex: 2 }}>
-            <span style={{ color: 'rgba(242,237,228,0.55)', filter: 'drop-shadow(0 0 12px rgba(242,237,228,0.3))' }}>
-              <Bolt size={38} />
-            </span>
-          </div>
+      {/* Content — centred column */}
+      <div style={{
+        position:'relative', zIndex:4,
+        display:'flex', flexDirection:'column',
+        alignItems:'center', justifyContent:'center',
+        textAlign:'center',
+        padding:'0 clamp(2rem, 8vw, 8rem)',
+        width:'100%',
+      }}>
 
-          {displayed.map((title, i) => (
-            <motion.div
-              key={title}
-              layout
-              className="flex items-center justify-center"
-              style={{ padding: 'clamp(1.75rem,4vw,4rem)', position: 'relative', zIndex: 1 }}
-              initial={{ opacity: 0 }}
-              animate={inView ? { opacity: 1 } : {}}
-              transition={{
-                layout: { type: 'spring', duration: 0.45, bounce: 0.18 },
-                opacity: { duration: 0.55, ease: EASE, delay: 0.1 + i * 0.09 },
-              }}
-            >
-              <div
-                className="relative flex items-center justify-center rounded-full border border-white/[0.10]"
-                style={{
-                  width:  'clamp(150px,17vw,230px)',
-                  height: 'clamp(150px,17vw,230px)',
-                  background: '#060606',
-                }}
-              >
-                <span
-                  className="relative font-sans font-semibold text-center leading-[1.45] select-none"
-                  style={{
-                    fontSize: 'clamp(0.9rem,1.2vw,1.1rem)',
-                    padding: '0 16%',
-                    color: 'rgba(242,237,228,0.82)',
-                    textShadow: '0 0 16px rgba(242,237,228,0.45), 0 0 40px rgba(242,237,228,0.18)',
-                  }}
-                >
-                  {title}
-                </span>
-              </div>
-            </motion.div>
-          ))}
-        </div>
-
-        {/* See Work hint */}
+        {/* Badge */}
         <motion.div
-          className="flex justify-end mt-5"
-          initial={{ opacity: 0 }}
-          animate={inView ? { opacity: 1 } : {}}
-          transition={{ duration: 0.5, ease: EASE, delay: 0.9 }}
+          initial={{ opacity:0, y:14 }}
+          animate={{ opacity:1, y:0 }}
+          transition={{ duration:0.55, delay:0.20, ease:EASE }}
+          style={{
+            display:'inline-flex', alignItems:'center', gap:'8px',
+            borderRadius:'100px',
+            border:'1px solid rgba(255,255,255,0.13)',
+            background:'rgba(6,6,6,0.60)',
+            backdropFilter:'blur(16px)',
+            WebkitBackdropFilter:'blur(16px)',
+            padding:'5px 14px',
+            marginBottom:'clamp(1.25rem, 3vw, 2.25rem)',
+          }}
         >
-          <a href="/#work"
-             className="flex items-center gap-2 font-mono text-[0.58rem] tracking-[0.14em] uppercase text-ink/28 hover:text-ink/55 transition-colors duration-300">
-            See Work <span style={{ fontSize: '0.65rem' }}>↘</span>
-          </a>
+          <span className="availability-dot" style={{ width:'6px', height:'6px', borderRadius:'50%', background:'#22c55e', flexShrink:0 }} />
+          <span style={{ fontFamily:"'Space Mono', monospace", fontSize:'9.5px', letterSpacing:'0.20em', textTransform:'uppercase', color:'rgba(255,255,255,0.58)' }}>
+            BLR, India
+          </span>
+        </motion.div>
+
+        {/* Headline — Syne 300 body, EB Garamond for "structure, sensation & more" */}
+        <motion.h1
+          initial={{ opacity:0, y:22 }}
+          animate={{ opacity:1, y:0 }}
+          transition={{ duration:0.80, delay:0.40, ease:EASE }}
+          style={{
+            fontFamily:    "'Syne', sans-serif",
+            fontWeight:    300,
+            fontSize:      'clamp(30px, 4.0vw, 62px)',
+            color:         '#ffffff',
+            lineHeight:    1.08,
+            letterSpacing: '-0.03em',
+            textAlign:     'center',
+            margin:        0,
+            maxWidth:      'min(90vw, 900px)',
+            textShadow:    '0 0 60px rgba(255,255,255,0.22), 0 0 22px rgba(255,255,255,0.14), 0 0 8px rgba(255,255,255,0.08)',
+          }}
+        >
+          I'm an Indian designer,<br />
+          global in practice, focused on<br />
+          <span style={{ fontFamily:"'EB Garamond', Georgia, serif", fontWeight:400 }}>
+            structure, sensation{' '}
+            <em style={{ fontStyle:'italic' }}>&amp;</em>
+            {' '}more
+          </span>
+        </motion.h1>
+
+        {/* Subtext */}
+        <motion.p
+          initial={{ opacity:0, y:14 }}
+          animate={{ opacity:1, y:0 }}
+          transition={{ duration:0.60, delay:0.65, ease:EASE }}
+          style={{
+            fontFamily:    "'Syne', sans-serif",
+            fontWeight:    300,
+            fontSize:      'clamp(0.75rem, 1vw, 0.875rem)',
+            color:         'rgba(255,255,255,0.36)',
+            lineHeight:    1.6,
+            margin:        'clamp(1rem, 2.2vw, 1.75rem) 0 0',
+            letterSpacing: '0.01em',
+          }}
+        >
+          Interaction Designer
+        </motion.p>
+
+        {/* CTA */}
+        <motion.div
+          initial={{ opacity:0, y:12 }}
+          animate={{ opacity:1, y:0 }}
+          transition={{ duration:0.55, delay:0.85, ease:EASE }}
+          style={{ marginTop:'clamp(5rem, 9vw, 8rem)' }}
+        >
+          <HeroButton href="mailto:zeusbatkhar.2000@gmail.com">
+            Get in touch
+          </HeroButton>
         </motion.div>
 
       </div>
@@ -682,7 +930,7 @@ function VitalStatCell({ v, index }) {
 // ─── Vital Signs ──────────────────────────────────────
 function VitalSigns() {
   return (
-    <section style={{ background:'#060606' }} className="py-[clamp(3.5rem,5.5vw,5rem)] border-t border-white/[0.04] relative overflow-hidden">
+    <section style={{ background:'#000000' }} className="py-[clamp(3.5rem,5.5vw,5rem)] border-t border-white/[0.04] relative overflow-hidden">
       <div className="absolute pointer-events-none" style={{ width:'clamp(350px,44vw,600px)',height:'clamp(350px,44vw,600px)',borderRadius:'50%',bottom:'-25%',right:'-6%',background:'radial-gradient(circle,rgba(124,58,237,0.085) 0%,transparent 65%)' }} />
       <div className="absolute pointer-events-none" style={{ width:'clamp(260px,32vw,440px)',height:'clamp(260px,32vw,440px)',borderRadius:'50%',top:'-18%',left:'30%',background:'radial-gradient(circle,rgba(255,75,143,0.058) 0%,transparent 65%)' }} />
       <div className="max-w-[1200px] mx-auto px-[clamp(1.5rem,5vw,3.5rem)]">
@@ -710,7 +958,7 @@ function VitalSigns() {
 // ─── Professional Exposure ────────────────────────────
 function ProfessionalExposure() {
   return (
-    <section id="about" style={{ background:'#060606' }} className="py-[clamp(4rem,6.5vw,6rem)] border-t border-white/[0.04] relative overflow-hidden">
+    <section id="about" style={{ background:'#000000' }} className="py-[clamp(4rem,6.5vw,6rem)] border-t border-white/[0.04] relative overflow-hidden">
       <div className="absolute pointer-events-none" style={{ width:'clamp(460px,55vw,740px)',height:'clamp(460px,55vw,740px)',borderRadius:'50%',top:'-22%',left:'-12%',background:'radial-gradient(circle,rgba(124,58,237,0.085) 0%,transparent 65%)' }} />
       <div className="absolute pointer-events-none" style={{ width:'clamp(300px,38vw,520px)',height:'clamp(300px,38vw,520px)',borderRadius:'50%',bottom:'-18%',right:'-4%',background:'radial-gradient(circle,rgba(255,75,143,0.062) 0%,transparent 65%)' }} />
       <div className="max-w-[1200px] mx-auto px-[clamp(1.5rem,5vw,3.5rem)]">
@@ -735,7 +983,7 @@ function ProfessionalExposure() {
              style={{ background:'rgba(255,255,255,0.04)' }}>
           {BRANDS.map(({ id, name, src, label, year, hasBg, maxH }, i) => (
             <Reveal key={id} delay={i * 0.09}
-              className="flex flex-col items-center justify-center gap-4 bg-[#060606] p-[clamp(2rem,4vw,3rem)] cursor-default"
+              className="flex flex-col items-center justify-center gap-4 bg-[#000000] p-[clamp(2rem,4vw,3rem)] cursor-default"
             >
               <div className="w-full flex items-center justify-center" style={{ minHeight: 56 }}>
                 <img src={src} alt={name}
@@ -836,7 +1084,7 @@ function MarqueeGallery() {
     // and are covered by the tall top/bottom fades instead of hard-clipped.
     <section
       id="contact"
-      style={{ background:'#060606', overflowX:'clip' }}
+      style={{ background:'#000000', overflowX:'clip' }}
       className="relative border-t border-white/[0.04] pt-[clamp(4rem,7vw,6rem)]"
     >
       {/* Section header */}
@@ -856,14 +1104,14 @@ function MarqueeGallery() {
 
       {/* Left / right fades */}
       <div className="absolute inset-y-0 left-0 z-10 pointer-events-none"
-        style={{ width:'22vw', background:'linear-gradient(to right,#060606 15%,transparent 100%)' }} />
+        style={{ width:'22vw', background:'linear-gradient(to right,#000000 15%,transparent 100%)' }} />
       <div className="absolute inset-y-0 right-0 z-10 pointer-events-none"
-        style={{ width:'22vw', background:'linear-gradient(to left,#060606 15%,transparent 100%)' }} />
+        style={{ width:'22vw', background:'linear-gradient(to left,#000000 15%,transparent 100%)' }} />
       {/* Top / bottom fades */}
       <div className="absolute top-0 left-0 right-0 z-10 pointer-events-none"
-        style={{ height:'clamp(100px,14vw,180px)', background:'linear-gradient(to bottom,#060606 0%,transparent 100%)' }} />
+        style={{ height:'clamp(100px,14vw,180px)', background:'linear-gradient(to bottom,#000000 0%,transparent 100%)' }} />
       <div className="absolute bottom-0 left-0 right-0 z-10 pointer-events-none"
-        style={{ height:'clamp(100px,14vw,180px)', background:'linear-gradient(to top,#060606 0%,transparent 100%)' }} />
+        style={{ height:'clamp(100px,14vw,180px)', background:'linear-gradient(to top,#000000 0%,transparent 100%)' }} />
 
       {/* Perspective tilt */}
       <div style={{ perspective:'1100px', perspectiveOrigin:'50% 50%' }}>
@@ -916,7 +1164,7 @@ function MarqueeGallery() {
 let introPlayedThisLoad = false
 
 // ─── Home ─────────────────────────────────────────────
-// Flow: VideoIntro (once per page load) → Hero → Services → Work → VitalSigns → Professional Exposure → MarqueeGallery (+ CTA merged) → Footer
+// Flow: VideoIntro (once per page load) → Hero → WhatIDo → Work → VitalSigns → Professional Exposure → MarqueeGallery (+ CTA merged) → Footer
 function Home() {
   const [introComplete, setIntroComplete] = useState(introPlayedThisLoad)
 
@@ -926,14 +1174,15 @@ function Home() {
   }
 
   return (
-    <div style={{ background:'#060606' }} className="text-ink overflow-x-hidden">
+    <div style={{ background:'#000000' }} className="text-ink overflow-x-hidden">
       {!introComplete && <VideoIntro onComplete={handleIntroComplete} />}
       {introComplete && (
         <>
           <ProgressBar />
           <Nav />
           <SectionExit><Hero /></SectionExit>
-          <SectionExit><Services /></SectionExit>
+          <PersonalGallery />
+          <WhatIDo />
           <SectionExit><Work /></SectionExit>
           <SectionExit><VitalSigns /></SectionExit>
           <SectionExit><ProfessionalExposure /></SectionExit>
