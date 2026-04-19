@@ -5,7 +5,7 @@ const DIAG = {
   pink: '#FE60AC', blue: '#4A5DE2', green: '#A6CA00',
   figPink: '#F48FB1', figPurple: '#CE93D8', figBlue: '#90CAF9', figYellow: '#FFF176',
   ink: '#0B1A2E', mid: '#3E5270', muted: '#7A8A9E',
-  border: 'rgba(0,0,0,0.08)', surface: '#EAECF2',
+  border: 'rgba(0,0,0,0.10)',
 }
 const FM = "'Space Mono', monospace"
 const EASE = [0.22, 1, 0.36, 1]
@@ -20,39 +20,53 @@ const CAT = {
   impact:      { fill: DIAG.figYellow, text: DIAG.ink },
 }
 
+// Helper: quadratic bezier curve between two nodes (fluid, organic look)
+function curvePath(a, b) {
+  const mx = (a.cx + b.cx) / 2
+  const my = (a.cy + b.cy) / 2
+  const dx = b.cx - a.cx
+  const dy = b.cy - a.cy
+  const len = Math.sqrt(dx * dx + dy * dy) || 1
+  const bend = Math.min(len * 0.22, 55)
+  const qx = Math.round(mx - (dy / len) * bend)
+  const qy = Math.round(my + (dx / len) * bend)
+  return `M ${a.cx} ${a.cy} Q ${qx} ${qy} ${b.cx} ${b.cy}`
+}
+
+// Denser layout — left cluster shifted right, right cluster shifted left
 const NODES = [
-  // Core cluster
-  { id: 'students',     label: 'Students',              cx: 700, cy: 350, r: 16, cat: 'context' },
-  { id: 'teachers',     label: 'Teachers /\neducators', cx: 790, cy: 295, r: 16, cat: 'context' },
-  { id: 'institutions', label: 'Institutions',          cx: 840, cy: 390, r: 16, cat: 'context' },
-  { id: 'parents',      label: 'Parents /\nGuardians',  cx: 760, cy: 455, r: 16, cat: 'context' },
-  { id: 'ncert',        label: 'NCERT',                 cx: 645, cy: 420, r: 16, cat: 'context' },
-  { id: 'moe',          label: 'Ministry of\nEducation',cx: 600, cy: 350, r: 16, cat: 'context' },
-  { id: 'ugc',          label: 'UGC',                   cx: 660, cy: 275, r: 16, cat: 'context' },
-  { id: 'boards',       label: 'Exams /\nBoards',       cx: 755, cy: 500, r: 14, cat: 'context' },
-  { id: 'nta',          label: 'National\nTesting Agency', cx: 870, cy: 460, r: 12, cat: 'context' },
-  // Left cluster
-  { id: 'ngos',         label: 'NGOs',                  cx: 200, cy: 175, r: 14, cat: 'research' },
-  { id: 'journalists',  label: 'Journalists',           cx: 110, cy: 320, r: 14, cat: 'behaviour' },
-  { id: 'banks',        label: 'Banks &\nFinancial Inst.', cx: 240, cy: 465, r: 14, cat: 'outcome' },
-  { id: 'privateEmp',   label: 'Private Sector\nEmployers', cx: 390, cy: 545, r: 14, cat: 'outcome' },
-  { id: 'pses',         label: 'Public Sector\nEnterprises', cx: 200, cy: 575, r: 14, cat: 'outcome' },
-  { id: 'socialMedia',  label: 'Social\nmedia',         cx: 310, cy: 190, r: 16, cat: 'technology' },
-  { id: 'startups',     label: 'Startup\nEcosystem',    cx: 420, cy: 270, r: 12, cat: 'impact' },
-  { id: 'coaching',     label: 'Coaching\nCentres',     cx: 475, cy: 420, r: 16, cat: 'methodology' },
-  { id: 'itProviders',  label: 'IT\nProviders',         cx: 300, cy: 370, r: 14, cat: 'technology' },
-  { id: 'nightSchool',  label: 'Night\nSchools',        cx: 200, cy: 670, r: 14, cat: 'methodology' },
-  { id: 'activists',    label: 'Activists',             cx: 130, cy: 195, r: 14, cat: 'behaviour' },
-  // Right cluster
-  { id: 'edtech',        label: 'EdTech\nCompanies',    cx: 1010, cy: 230, r: 16, cat: 'technology' },
-  { id: 'csr',           label: 'CSR &\nPhilanthropic', cx: 1190, cy: 195, r: 14, cat: 'research' },
-  { id: 'olf',           label: 'Online Learning\nForums', cx: 1295, cy: 330, r: 14, cat: 'technology' },
-  { id: 'vocational',    label: 'Vocational & Skill\nTraining — NSDC', cx: 1090, cy: 375, r: 14, cat: 'methodology' },
-  { id: 'nios',          label: 'NIOS &\nDistance Learning', cx: 1230, cy: 460, r: 14, cat: 'methodology' },
-  { id: 'studentUnions', label: 'Student\nUnions',      cx: 985, cy: 495, r: 14, cat: 'behaviour' },
-  { id: 'socialImpact',  label: 'Social Impact\nOrgs',  cx: 1140, cy: 560, r: 12, cat: 'research' },
-  { id: 'dlp',           label: 'Distance Learning\nPlatforms', cx: 1325, cy: 530, r: 14, cat: 'technology' },
-  { id: 'internship',    label: 'Internship\nProviders', cx: 1090, cy: 640, r: 14, cat: 'outcome' },
+  // Core cluster — centre of the map
+  { id: 'students',     label: 'Students',              cx: 700, cy: 355, r: 23, cat: 'context' },
+  { id: 'teachers',     label: 'Teachers /\neducators', cx: 792, cy: 298, r: 23, cat: 'context' },
+  { id: 'institutions', label: 'Institutions',          cx: 844, cy: 395, r: 22, cat: 'context' },
+  { id: 'parents',      label: 'Parents /\nGuardians',  cx: 762, cy: 462, r: 22, cat: 'context' },
+  { id: 'ncert',        label: 'NCERT',                 cx: 645, cy: 425, r: 22, cat: 'context' },
+  { id: 'moe',          label: 'Ministry of\nEducation',cx: 598, cy: 352, r: 22, cat: 'context' },
+  { id: 'ugc',          label: 'UGC',                   cx: 660, cy: 276, r: 22, cat: 'context' },
+  { id: 'boards',       label: 'Exams /\nBoards',       cx: 756, cy: 508, r: 20, cat: 'context' },
+  { id: 'nta',          label: 'National Testing\nAgency', cx: 874, cy: 466, r: 18, cat: 'context' },
+  // Left cluster — tightened closer to core
+  { id: 'ngos',         label: 'NGOs',                  cx: 260, cy: 178, r: 20, cat: 'research' },
+  { id: 'journalists',  label: 'Journalists',           cx: 168, cy: 324, r: 20, cat: 'behaviour' },
+  { id: 'banks',        label: 'Banks &\nFinancial Inst.', cx: 298, cy: 470, r: 20, cat: 'outcome' },
+  { id: 'privateEmp',   label: 'Private Sector\nEmployers', cx: 452, cy: 550, r: 20, cat: 'outcome' },
+  { id: 'pses',         label: 'Public Sector\nEnterprises', cx: 258, cy: 578, r: 20, cat: 'outcome' },
+  { id: 'socialMedia',  label: 'Social\nMedia',         cx: 372, cy: 192, r: 22, cat: 'technology' },
+  { id: 'startups',     label: 'Startup\nEcosystem',    cx: 480, cy: 272, r: 18, cat: 'impact' },
+  { id: 'coaching',     label: 'Coaching\nCentres',     cx: 536, cy: 424, r: 22, cat: 'methodology' },
+  { id: 'itProviders',  label: 'IT\nProviders',         cx: 358, cy: 372, r: 20, cat: 'technology' },
+  { id: 'nightSchool',  label: 'Night\nSchools',        cx: 256, cy: 672, r: 20, cat: 'methodology' },
+  { id: 'activists',    label: 'Activists',             cx: 188, cy: 196, r: 20, cat: 'behaviour' },
+  // Right cluster — tightened closer to core
+  { id: 'edtech',        label: 'EdTech\nCompanies',    cx: 952, cy: 232, r: 22, cat: 'technology' },
+  { id: 'csr',           label: 'CSR &\nPhilanthropic', cx: 1132, cy: 196, r: 20, cat: 'research' },
+  { id: 'olf',           label: 'Online Learning\nForums', cx: 1238, cy: 332, r: 20, cat: 'technology' },
+  { id: 'vocational',    label: 'Vocational & Skill\nTraining — NSDC', cx: 1032, cy: 378, r: 20, cat: 'methodology' },
+  { id: 'nios',          label: 'NIOS &\nDistance Learning', cx: 1172, cy: 462, r: 20, cat: 'methodology' },
+  { id: 'studentUnions', label: 'Student\nUnions',      cx: 926, cy: 498, r: 20, cat: 'behaviour' },
+  { id: 'socialImpact',  label: 'Social Impact\nOrgs',  cx: 1082, cy: 562, r: 18, cat: 'research' },
+  { id: 'dlp',           label: 'Distance Learning\nPlatforms', cx: 1268, cy: 534, r: 20, cat: 'technology' },
+  { id: 'internship',    label: 'Internship\nProviders', cx: 1032, cy: 642, r: 20, cat: 'outcome' },
 ]
 
 const EDGES = [
@@ -98,25 +112,28 @@ function getNode(id) { return NODES.find(n => n.id === id) }
 
 export default function SystemMap() {
   const ref = useRef(null)
-  const inView = useInView(ref, { once: true, amount: 0.1 })
+  const inView = useInView(ref, { once: true, amount: 0.08 })
 
   return (
     <div ref={ref} style={{
-      background: '#fff', borderRadius: 12, overflow: 'hidden',
-      padding: '24px 16px', boxShadow: '0 2px 20px rgba(0,0,0,0.06)',
+      background: '#fff', borderRadius: 12,
+      padding: '28px 12px 20px', boxShadow: '0 2px 20px rgba(0,0,0,0.06)',
     }}>
-      <svg viewBox="0 0 1400 900" width="100%" style={{ overflow: 'visible' }}>
+      <svg viewBox="80 120 1260 620" width="100%" style={{ overflow: 'visible' }}>
         {/* Edges */}
         {EDGES.map((e, i) => {
           const a = getNode(e.a)
           const b = getNode(e.b)
           if (!a || !b) return null
           return (
-            <motion.line key={i}
-              x1={a.cx} y1={a.cy} x2={b.cx} y2={b.cy}
-              stroke={DIAG.border} strokeWidth={e.strong ? 1.2 : 0.8}
-              strokeDasharray={e.strong ? undefined : '3 3'} opacity={0.6}
-              initial={{ opacity: 0 }} animate={inView ? { opacity: 0.6 } : {}}
+            <motion.path key={i}
+              d={curvePath(a, b)}
+              fill="none"
+              stroke={e.strong ? 'rgba(0,0,0,0.28)' : 'rgba(0,0,0,0.16)'}
+              strokeWidth={e.strong ? 2.2 : 1.3}
+              strokeDasharray={e.strong ? undefined : '4 3'}
+              initial={{ opacity: 0 }}
+              animate={inView ? { opacity: 1 } : {}}
               transition={{ duration: 0.6, delay: 0.1 + i * 0.015 }}
             />
           )
@@ -124,11 +141,11 @@ export default function SystemMap() {
 
         {/* Nodes */}
         {NODES.map((n, i) => {
-          const { fill, text } = CAT[n.cat]
+          const { fill } = CAT[n.cat]
           const lines = n.label.split('\n')
-          const lh = 8.5
+          const lh = 10.5
           const totalH = (lines.length - 1) * lh
-          const labelY = n.cy + n.r + 8
+          const labelY = n.cy + n.r + 10
           return (
             <motion.g key={n.id}
               initial={{ opacity: 0, scale: 0 }}
@@ -136,37 +153,44 @@ export default function SystemMap() {
               transition={{ duration: 0.35, delay: 0.3 + i * 0.02, ease: EASE }}
               style={{ transformBox: 'fill-box', transformOrigin: 'center' }}>
               <circle cx={n.cx} cy={n.cy} r={n.r} fill={fill} />
-              {/* External label below */}
               {lines.map((l, li) => (
                 <text key={li} x={n.cx} y={labelY + li * lh}
                   textAnchor="middle" dominantBaseline="hanging"
-                  fontSize={7} fill={DIAG.ink} fontFamily={FM}>
+                  fontSize={9.5} fill={DIAG.ink} fontFamily={FM} fontWeight="500">
                   {l}
                 </text>
               ))}
             </motion.g>
           )
         })}
-
-        {/* Legend panel — bottom right */}
-        <g transform="translate(1120, 680)">
-          <rect width={250} height={182} rx={8} fill="white"
-            stroke={DIAG.border} strokeWidth={1} />
-          <text x={12} y={18} fontSize={7} fontFamily={FM} fontWeight="500"
-            fill={DIAG.ink} letterSpacing="1">LEGEND</text>
-          {Object.entries(CAT).map(([cat, { fill }], i) => (
-            <g key={cat} transform={`translate(12, ${30 + i * 20})`}>
-              <circle r={5} cx={5} cy={4} fill={fill} />
-              <text x={16} y={8} fontSize={7.5} fontFamily={FM} fill={DIAG.mid}>{cat}</text>
-            </g>
-          ))}
-          {/* Line types */}
-          <line x1={12} y1={172} x2={40} y2={172} stroke={DIAG.mid} strokeWidth={1.2} />
-          <text x={46} y={176} fontSize={7} fontFamily={FM} fill={DIAG.muted}>strong connection</text>
-          <line x1={130} y1={172} x2={158} y2={172} stroke={DIAG.mid} strokeWidth={0.8} strokeDasharray="3 3" />
-          <text x={164} y={176} fontSize={7} fontFamily={FM} fill={DIAG.muted}>indirect</text>
-        </g>
       </svg>
+
+      {/* Legend — outside SVG, no overlap */}
+      <div style={{
+        display: 'flex', flexWrap: 'wrap', gap: '10px 22px',
+        justifyContent: 'center', alignItems: 'center',
+        marginTop: '1.5rem', paddingTop: '1.25rem',
+        borderTop: '1px solid rgba(0,0,0,0.07)',
+      }}>
+        {Object.entries(CAT).map(([cat, { fill }]) => (
+          <div key={cat} style={{ display: 'flex', alignItems: 'center', gap: 7 }}>
+            <div style={{ width: 11, height: 11, borderRadius: '50%', background: fill, flexShrink: 0 }} />
+            <span style={{ fontFamily: FM, fontSize: '0.62rem', letterSpacing: '0.05em', color: DIAG.mid, textTransform: 'capitalize' }}>{cat}</span>
+          </div>
+        ))}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <svg width="30" height="10" style={{ flexShrink: 0 }}>
+            <line x1="0" y1="5" x2="30" y2="5" stroke="rgba(0,0,0,0.28)" strokeWidth="2.2" />
+          </svg>
+          <span style={{ fontFamily: FM, fontSize: '0.62rem', color: DIAG.mid }}>strong</span>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <svg width="30" height="10" style={{ flexShrink: 0 }}>
+            <line x1="0" y1="5" x2="30" y2="5" stroke="rgba(0,0,0,0.16)" strokeWidth="1.3" strokeDasharray="4 3" />
+          </svg>
+          <span style={{ fontFamily: FM, fontSize: '0.62rem', color: DIAG.mid }}>indirect</span>
+        </div>
+      </div>
 
       <p style={{
         fontFamily: FM, fontSize: '0.55rem', letterSpacing: '0.15em',

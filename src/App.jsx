@@ -1,8 +1,8 @@
 import { Analytics } from '@vercel/analytics/react'
 import { useRef, useEffect, useState, lazy, Suspense } from 'react'
-import { motion, useMotionValue, useTransform, useSpring, useInView, useScroll } from 'framer-motion'
+import { motion, AnimatePresence, useMotionValue, useTransform, useSpring, useInView, useScroll } from 'framer-motion'
 import { BrowserRouter, Routes, Route, Link } from 'react-router-dom'
-import { EASE, SPRING_STIFF, Bolt, ProgressBar, Nav, Footer, MaskReveal, Reveal, CookieBanner, SectionExit } from './shared.jsx'
+import { EASE, SPRING_STIFF, Bolt, ProgressBar, Nav, Footer, MaskReveal, Reveal, CookieBanner, SectionExit, HeroButton } from './shared.jsx'
 import WhatIDo from './WhatIDo.jsx'
 import PersonalGallery from './PersonalGallery.jsx'
 const About        = lazy(() => import('./About.jsx'))
@@ -12,12 +12,24 @@ const Press        = lazy(() => import('./Press.jsx'))
 const GetSetGlobe  = lazy(() => import('./GetSetGlobe.jsx'))
 const StudyBuddy   = lazy(() => import('./StudyBuddy.jsx'))
 const Finance      = lazy(() => import('./Finance.jsx'))
+const Aadhaar      = lazy(() => import('./Aadhaar.jsx'))
+const CloutCart    = lazy(() => import('./CloutCart.jsx'))
 
 const PROJECTS = [
-  { id:1, name:'Study Buddy',     tags:'UX Research · Mobile',   desc:'Rethinking how Indian students study & building habits that actually stick.', color:'from-[#061528] via-[#0f2d52] to-[#1b4a8a]', pitch:'https://pitch.com/v/study-buddy-pqwx5j', thumb:'/thumnail-1-opt.gif', slug:'/work/study-buddy' },
-  { id:2, name:'Get Set Globe',   tags:'EdTech · Product Design', desc:'Making Earth science something children feel, not just memorise.', color:'from-[#050f08] via-[#0b2e16] to-[#135728]', thumb:'/thumb-getsetglobe.jpg', thumbPos:'50% 0%', slug:'/work/get-set-globe' },
-  { id:3, name:'Spectra',         tags:'Data Viz · Experience',   desc:'Two invisible threats, one shared sky. Mapping the overlap of air and light pollution across urban India.', color:'from-[#0d0702] via-[#2e1606] to-[#7a430e]', pitch:'https://pitch.com/v/spectra-2vnqiq', thumb:'/thumb-spectra-opt.jpg', thumbPos:'50% 15%', thumbFilter:'saturate(0.75)' },
-  { id:4, name:'Finance for semi/less literate', tags:'Research · Social Design', desc:'Researching financial literacy through scam resilience and financial literacy.', color:'from-[#040409] via-[#0e0e30] to-[#1a1060]', pitch:'https://canva.link/ryd4ojcrh70b9qq', thumb:'/thumb-finance.jpg', thumbBg:'#EEF3DF', slug:'/work/finance' },
+  { id:1, name:'Study Buddy',     tags:'UX Research · Mobile',   desc:'Rethinking how Indian students study & building habits that actually stick.', color:'from-[#061528] via-[#0f2d52] to-[#1b4a8a]', pitch:'https://pitch.com/v/study-buddy-pqwx5j', thumb:'/thumnail-1-opt.gif', slug:'/work/study-buddy',   filterKeys:['ux','research'] },
+  { id:2, name:'Get Set Globe',   tags:'EdTech · Product Design', desc:'Making Earth science something children feel, not just memorise.', color:'from-[#050f08] via-[#0b2e16] to-[#135728]', thumb:'/thumb-getsetglobe.jpg', thumbPos:'50% 0%', slug:'/work/get-set-globe',  filterKeys:['ux','system']   },
+  { id:3, name:'Spectra',         tags:'Data Viz · Experience',   desc:'Two invisible threats, one shared sky. Mapping the overlap of air and light pollution across urban India.', color:'from-[#0d0702] via-[#2e1606] to-[#7a430e]', pitch:'https://pitch.com/v/spectra-2vnqiq', thumb:'/thumb-spectra-opt.jpg', thumbPos:'50% 15%', thumbFilter:'saturate(0.75)', filterKeys:['branding','ux'] },
+  { id:4, name:'Finance for semi/less literate', tags:'Research · Social Design', desc:'Researching financial literacy through scam resilience and financial literacy.', color:'from-[#040409] via-[#0e0e30] to-[#1a1060]', pitch:'https://canva.link/ryd4ojcrh70b9qq', thumb:'/thumb-finance.jpg', thumbBg:'#EEF3DF', slug:'/work/finance', filterKeys:['research']       },
+  { id:5, name:'Aadhaar Research', tags:'UX Research · Social Design', desc:'Mapping the invisible friction elderly citizens face when Aadhaar fails them in moments of urgency.', color:'from-[#0A1E1E] via-[#075959] to-[#0D7878]', slug:'/work/aadhaar', filterKeys:['research','ux']  },
+  { id:6, name:'CloutCart', tags:'Product Strategy · Creator Economy', desc:'Where brands cart their next collab. A vibe-led influencer-enterprise matchmaking platform.', color:'from-[#1A0A2E] via-[#3B0764] to-[#6D28D9]', slug:'/work/cloutcart', filterKeys:['system','ux']    },
+]
+
+const FILTER_TABS = [
+  { key: 'all',      label: 'All' },
+  { key: 'ux',       label: 'UX' },
+  { key: 'research', label: 'Research Case Study' },
+  { key: 'system',   label: 'System & Service' },
+  { key: 'branding', label: 'Branding' },
 ]
 
 
@@ -602,77 +614,6 @@ function SmokeCanvas() {
   )
 }
 
-// ─── Hero Button ─────────────────────────────────────
-// Hyperrealistic dark glass pill. Single overhead light source:
-// intense highlight concentrated at the top-left rim only —
-// not a uniform inset glow, but a hot-spot radial overlay.
-function HeroButton({ children, onClick, href }) {
-  const [hover, setHover] = useState(false)
-  const [press, setPress] = useState(false)
-
-  const Tag = href ? 'a' : 'button'
-  return (
-    <Tag
-      href={href}
-      onClick={onClick}
-      style={{
-        position:       'relative',
-        display:        'inline-flex',
-        alignItems:     'center',
-        justifyContent: 'center',
-        borderRadius:   '100px',
-        border:         '1px solid rgba(255,255,255,0.12)',
-        fontFamily:     "'Syne', sans-serif",
-        fontWeight:     500,
-        fontSize:       '0.875rem',
-        letterSpacing:  '0.02em',
-        color:          '#ffffff',
-        padding:        '0.8rem 2rem',
-        cursor:         'pointer',
-        textDecoration: 'none',
-        overflow:       'hidden',
-        // Dark glass base — subtle top-to-bottom gradient
-        background:     'linear-gradient(175deg, rgba(36,36,36,0.94) 0%, rgba(8,8,8,0.98) 100%)',
-        // Shadow stack: outer glow + depth + inset base top rim + bottom shadow
-        boxShadow: hover
-          ? '0 12px 36px rgba(0,0,0,0.7), 0 3px 8px rgba(0,0,0,0.85), inset 0 1px 0 rgba(255,255,255,0.26), inset 0 -1px 0 rgba(0,0,0,0.55)'
-          : '0 12px 36px rgba(0,0,0,0.7), 0 3px 8px rgba(0,0,0,0.85), inset 0 1px 0 rgba(255,255,255,0.20), inset 0 -1px 0 rgba(0,0,0,0.55)',
-        transform:   press ? 'translateY(1px)' : hover ? 'translateY(-1px)' : 'translateY(0)',
-        transition:  'transform 0.16s cubic-bezier(0.16,1,0.3,1), box-shadow 0.20s ease',
-      }}
-      onMouseEnter={() => setHover(true)}
-      onMouseLeave={() => { setHover(false); setPress(false) }}
-      onMouseDown={() => setPress(true)}
-      onMouseUp={() => setPress(false)}
-    >
-      {/* Top-left rim hot-spot */}
-      <span aria-hidden="true" style={{
-        position:     'absolute',
-        inset:        0,
-        borderRadius: 'inherit',
-        background:   hover
-          ? 'radial-gradient(ellipse 38% 28% at 11% 0%, rgba(255,255,255,0.88) 0%, rgba(255,255,255,0.34) 22%, rgba(255,255,255,0.08) 48%, transparent 62%)'
-          : 'radial-gradient(ellipse 38% 28% at 11% 0%, rgba(255,255,255,0.72) 0%, rgba(255,255,255,0.28) 22%, rgba(255,255,255,0.06) 48%, transparent 62%)',
-        pointerEvents: 'none',
-        transition:   'background 0.18s ease',
-      }} />
-      <span style={{ position: 'relative', zIndex: 1 }}>
-        {children}
-        <span style={{
-          position:   'absolute',
-          bottom:     '-2px',
-          left:       0,
-          height:     '1px',
-          width:      hover ? '100%' : '0%',
-          background: '#ffffff',
-          transition: 'width 0.3s cubic-bezier(0.16,1,0.3,1)',
-          display:    'block',
-        }} />
-      </span>
-    </Tag>
-  )
-}
-
 // ─── Hero ─────────────────────────────────────────────
 function Hero() {
   const heroRef = useRef(null)
@@ -876,12 +817,194 @@ function ProjectCard({ project, delay = 0 }) {
   )
 }
 
+// ─── Work Canvas (Delaunay — dark ink on cream) ───────
+function WorkCanvas() {
+  const canvasRef = useRef(null)
+
+  useEffect(() => {
+    const canvas = canvasRef.current
+    if (!canvas) return
+    const ctx = canvas.getContext('2d')
+
+    const N = 55
+    const HOVER_RADIUS = 90
+    const BASE_OPACITY = 0.032
+    let W, H, points, restPoints, triangles, retriFrame
+    const smoothGlow = new Float32Array(N)
+    const triGlow    = new Float32Array(500)
+    const mouse = { x: -9999, y: -9999, active: false }
+    let mouseTimer
+
+    function getGlowColor(x, y) {
+      const nx = x / W, ny = y / H
+      return [
+        Math.round(120*(1-nx)*(1-ny) + 160*nx*(1-ny) + 80*(1-nx)*ny  + 140*nx*ny),
+        Math.round( 55*(1-nx)*(1-ny) +  90*nx*(1-ny) + 35*(1-nx)*ny  +  70*nx*ny),
+        Math.round(  5*(1-nx)*(1-ny) +  18*nx*(1-ny) +  2*(1-nx)*ny  +  10*nx*ny),
+      ]
+    }
+
+    function circumcircle(a, b, c) {
+      const D = 2*(a.x*(b.y-c.y)+b.x*(c.y-a.y)+c.x*(a.y-b.y))
+      if (Math.abs(D) < 1e-10) return null
+      const ax2=a.x*a.x+a.y*a.y, bx2=b.x*b.x+b.y*b.y, cx2=c.x*c.x+c.y*c.y
+      const ux=(ax2*(b.y-c.y)+bx2*(c.y-a.y)+cx2*(a.y-b.y))/D
+      const uy=(ax2*(c.x-b.x)+bx2*(a.x-c.x)+cx2*(b.x-a.x))/D
+      return { x:ux, y:uy, r:Math.hypot(a.x-ux,a.y-uy) }
+    }
+    function triangulate() {
+      const n=points.length, s1=n-3, s2=n-2, s3=n-1
+      let tris=[{a:s1,b:s2,c:s3}]
+      for (let i=0;i<N;i++) {
+        const p=points[i]; const edges=[]
+        tris=tris.filter(t=>{
+          const cc=circumcircle(points[t.a],points[t.b],points[t.c])
+          if(cc&&Math.hypot(p.x-cc.x,p.y-cc.y)<cc.r){edges.push([t.a,t.b],[t.b,t.c],[t.c,t.a]);return false}
+          return true
+        })
+        edges.filter((e,i)=>!edges.some((f,j)=>j!==i&&((f[0]===e[0]&&f[1]===e[1])||(f[0]===e[1]&&f[1]===e[0]))))
+          .forEach(e=>tris.push({a:e[0],b:e[1],c:i}))
+      }
+      triangles=tris.filter(t=>t.a<N&&t.b<N&&t.c<N)
+    }
+    function init() {
+      W=canvas.width=canvas.offsetWidth; H=canvas.height=canvas.offsetHeight
+      points=[]; restPoints=[]; retriFrame=0
+      const cols=Math.ceil(Math.sqrt(N*W/H)), rows=Math.ceil(N/cols)
+      let idx=0
+      for (let r=0;r<rows&&idx<N;r++)
+        for (let c=0;c<cols&&idx<N;c++) {
+          const x=(c+0.5+(Math.random()-0.5)*0.8)/cols*W
+          const y=(r+0.5+(Math.random()-0.5)*0.8)/rows*H
+          points.push({x,y,vx:0,vy:0}); restPoints.push({x,y}); idx++
+        }
+      points.push({x:-W*2,y:-H},{x:W*3,y:-H},{x:W/2,y:H*3})
+      triangulate()
+    }
+
+    let rafId = null
+    ctx.lineJoin='miter'; ctx.miterLimit=6; ctx.lineCap='butt'
+
+    function loop() {
+      ctx.clearRect(0,0,W,H)
+      retriFrame++
+
+      let totalMov = 0
+      for (let i=0;i<N;i++) {
+        const p=points[i], rx=restPoints[i].x, ry=restPoints[i].y
+        if (mouse.active) {
+          const dx=mouse.x-p.x, dy=mouse.y-p.y, d=Math.hypot(dx,dy)
+          if (d<HOVER_RADIUS*2&&d>1) { const f=1-d/(HOVER_RADIUS*2); p.vx+=dx/d*f*4; p.vy+=dy/d*f*4 }
+        }
+        p.vx+=(rx-p.x)*0.30; p.vy+=(ry-p.y)*0.30; p.vx*=0.52; p.vy*=0.52
+        p.x+=p.vx; p.y+=p.vy
+        totalMov+=Math.abs(p.vx)+Math.abs(p.vy)
+        const pd=mouse.active?Math.hypot(p.x-mouse.x,p.y-mouse.y):9999
+        const tgt=Math.max(0,1-pd/HOVER_RADIUS)
+        smoothGlow[i]+=(tgt-smoothGlow[i])*(tgt>smoothGlow[i]?0.5:0.15)
+      }
+      if (totalMov>2.5&&retriFrame%20===0) triangulate()
+
+      const len = triangles.length
+      for (let k=0;k<len;k++) {
+        const t=triangles[k]
+        const a=points[t.a],b=points[t.b],c=points[t.c]
+        const mx=(a.x+b.x+c.x)/3, my=(a.y+b.y+c.y)/3
+        const d=Math.hypot(mx-mouse.x,my-mouse.y)
+        const hotspot=mouse.active?Math.max(0,1-d/HOVER_RADIUS):0
+        const soft=mouse.active?Math.max(0,1-d/(HOVER_RADIUS*3.5))*0.28:0
+        const va=(smoothGlow[t.a]+smoothGlow[t.b]+smoothGlow[t.c])/3
+        triGlow[k]=Math.max(hotspot,soft,va*0.55)
+      }
+
+      // Pass 1 — base hairline triangles
+      ctx.globalAlpha = BASE_OPACITY
+      ctx.strokeStyle = 'rgba(26,14,4,0.80)'
+      ctx.lineWidth   = 0.4
+      ctx.beginPath()
+      for (let k=0;k<len;k++) {
+        if (triGlow[k]<0.04) {
+          const t=triangles[k],a=points[t.a],b=points[t.b],c=points[t.c]
+          ctx.moveTo(a.x,a.y); ctx.lineTo(b.x,b.y); ctx.lineTo(c.x,c.y); ctx.closePath()
+        }
+      }
+      ctx.stroke()
+
+      // Pass 2 — glowing triangles (warm amber)
+      for (let k=0;k<len;k++) {
+        const g=triGlow[k]
+        if (g<0.04) continue
+        const t=triangles[k],a=points[t.a],b=points[t.b],c=points[t.c]
+        const mx=(a.x+b.x+c.x)/3,my=(a.y+b.y+c.y)/3
+        const [cr,cg,cb]=getGlowColor(mx,my)
+        const inv=1-g
+        ctx.globalAlpha=Math.min(1, BASE_OPACITY+g*1.1)
+        ctx.lineWidth=0.4+g*0.7
+        ctx.strokeStyle=`rgb(${Math.round(26*inv+cr*g)},${Math.round(14*inv+cg*g)},${Math.round(4*inv+cb*g)})`
+        ctx.beginPath(); ctx.moveTo(a.x,a.y); ctx.lineTo(b.x,b.y); ctx.lineTo(c.x,c.y); ctx.closePath(); ctx.stroke()
+      }
+
+      // Vertices
+      for (let i=0;i<N;i++) {
+        const p=points[i], g=smoothGlow[i]
+        ctx.shadowBlur  = g>0.05 ? 4+g*8 : 0
+        ctx.shadowColor = `rgba(140,70,10,${0.4+g*0.6})`
+        ctx.globalAlpha = 0.22+g*0.55
+        ctx.fillStyle   = g>0.05 ? `rgb(${Math.round(100+g*60)},${Math.round(50+g*30)},${Math.round(5+g*10)})` : 'rgba(26,14,4,0.9)'
+        ctx.beginPath(); ctx.arc(p.x,p.y,0.7+g*1.0,0,Math.PI*2); ctx.fill()
+      }
+      ctx.shadowBlur=0; ctx.shadowColor='transparent'; ctx.globalAlpha=1
+      rafId=requestAnimationFrame(loop)
+    }
+
+    const onMouse = e => {
+      const rect=canvas.getBoundingClientRect()
+      mouse.x=e.clientX-rect.left; mouse.y=e.clientY-rect.top
+      mouse.active=true; clearTimeout(mouseTimer)
+      mouseTimer=setTimeout(()=>{ mouse.active=false },160)
+    }
+    window.addEventListener('mousemove', onMouse, { passive:true })
+    const onResize = () => init()
+    window.addEventListener('resize', onResize, { passive:true })
+
+    let visible=false
+    const observer=new IntersectionObserver(([e])=>{
+      visible=e.isIntersecting
+      if (visible&&!rafId) rafId=requestAnimationFrame(loop)
+      else if (!visible&&rafId) { cancelAnimationFrame(rafId); rafId=null }
+    },{ threshold:0.01 })
+    observer.observe(canvas)
+
+    const onVis=()=>{
+      if (document.hidden) { if (rafId) { cancelAnimationFrame(rafId); rafId=null } }
+      else if (visible&&!rafId) rafId=requestAnimationFrame(loop)
+    }
+    document.addEventListener('visibilitychange', onVis)
+    init()
+
+    return () => {
+      cancelAnimationFrame(rafId); observer.disconnect(); clearTimeout(mouseTimer)
+      window.removeEventListener('mousemove', onMouse)
+      window.removeEventListener('resize', onResize)
+      document.removeEventListener('visibilitychange', onVis)
+    }
+  }, [])
+
+  return <canvas ref={canvasRef} style={{ position:'absolute', inset:0, width:'100%', height:'100%', pointerEvents:'none', zIndex:0 }} />
+}
+
 // ─── Work ─────────────────────────────────────────────
 function Work() {
+  const [activeFilter, setActiveFilter] = useState('all')
+  const filtered = activeFilter === 'all'
+    ? PROJECTS
+    : PROJECTS.filter(p => p.filterKeys.includes(activeFilter))
+
   return (
     <section id="work" style={{ background:'#F2EDE4', boxShadow:'inset 0 0 160px rgba(6,6,6,0.22), inset 0 60px 80px -20px rgba(6,6,6,0.14), inset 0 -60px 80px -20px rgba(6,6,6,0.14)' }} className="relative overflow-hidden py-[clamp(4rem,6.5vw,6rem)]">
+      <WorkCanvas />
       <div className="relative z-[1] max-w-[1200px] mx-auto px-[clamp(1.5rem,5vw,3.5rem)]">
-        <div className="flex items-end justify-between mb-[clamp(3rem,5.5vw,4.5rem)] gap-6 flex-wrap">
+        <div className="flex items-end justify-between mb-[clamp(2rem,4vw,3rem)] gap-6 flex-wrap">
           <div>
             <Reveal>
               <span className="flex items-center gap-2.5 font-mono text-[0.625rem] tracking-[0.16em] uppercase text-black/30 mb-5">
@@ -892,9 +1015,53 @@ function Work() {
               <MaskReveal>Select Projects</MaskReveal>
             </h2>
           </div>
+
+          {/* Filter pills */}
+          <div style={{ display:'flex', gap:'6px', flexWrap:'wrap', alignItems:'center', paddingBottom:'4px' }}>
+            {FILTER_TABS.map(tab => {
+              const active = activeFilter === tab.key
+              return (
+                <button
+                  key={tab.key}
+                  onClick={() => setActiveFilter(tab.key)}
+                  style={{
+                    fontFamily:    "'Space Mono', monospace",
+                    fontSize:      '0.575rem',
+                    letterSpacing: '0.10em',
+                    textTransform: 'uppercase',
+                    padding:       '0.45rem 1rem',
+                    borderRadius:  '100px',
+                    border:        active ? '1px solid transparent' : '1px solid rgba(0,0,0,0.13)',
+                    background:    active ? '#111111' : 'transparent',
+                    color:         active ? '#F2EDE4' : 'rgba(0,0,0,0.42)',
+                    cursor:        'pointer',
+                    transition:    'background 0.18s ease, color 0.18s ease, border-color 0.18s ease',
+                    whiteSpace:    'nowrap',
+                  }}
+                >
+                  {tab.label}
+                </button>
+              )
+            })}
+          </div>
         </div>
+
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-[clamp(0.625rem,1vw,0.875rem)] items-stretch">
-          {PROJECTS.map((p,i) => <ProjectCard key={p.id} project={p} delay={i*0.07} />)}
+          <AnimatePresence mode="popLayout">
+            {filtered.map((p, i) => (
+              <motion.div
+                key={p.id}
+                layout
+                initial={{ opacity: 0, scale: 0.94 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.94 }}
+                transition={{ duration: 0.28, ease: EASE, delay: i * 0.04 }}
+                className="h-full"
+              >
+                <ProjectCard project={p} delay={0} />
+              </motion.div>
+            ))}
+          </AnimatePresence>
         </div>
       </div>
     </section>
@@ -1144,15 +1311,8 @@ function MarqueeGallery() {
             <MaskReveal delay={0.1}><em className="font-display not-italic" style={{ fontStyle:'italic', fontFamily:'"Cormorant Garamond", Georgia, serif', fontSize:'1.08em' }}>Let's talk.</em></MaskReveal>
           </h2>
           <Reveal delay={0.12} className="flex items-center justify-center gap-3 flex-wrap">
-            <a href="mailto:zeusbatkhar.2000@gmail.com"
-               className="relative overflow-hidden group/cta inline-flex items-center font-sans font-semibold text-bg bg-ink rounded-full tracking-[0.01em] transition-[transform,box-shadow] duration-300 hover:-translate-y-[2px] hover:shadow-[0_8px_32px_rgba(242,237,228,0.15)]"
-               style={{ fontSize:'0.8125rem', padding:'0.8125rem 1.75rem' }}>
-              <span className="relative z-10">Get in touch ↗</span>
-              <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/[0.12] to-transparent -translate-x-full group-hover/cta:translate-x-full transition-transform duration-700 ease-in-out" />
-            </a>
-            <a href="https://www.linkedin.com/in/zeusbatkhar" target="_blank" rel="noopener noreferrer"
-               className="inline-flex items-center font-sans font-medium text-ink rounded-full tracking-[0.01em] border border-white/[0.14] transition-[background,border-color,transform,box-shadow] duration-300 hover:bg-white/[0.06] hover:border-white/[0.26] hover:-translate-y-[2px] hover:shadow-[0_8px_24px_rgba(0,0,0,0.3)]"
-               style={{ fontSize:'0.8125rem', padding:'0.8125rem 1.75rem' }}>LinkedIn ↗</a>
+            <HeroButton href="mailto:zeusbatkhar.2000@gmail.com">Get in touch ↗</HeroButton>
+            <HeroButton href="https://www.linkedin.com/in/zeusbatkhar" target="_blank" rel="noopener noreferrer">LinkedIn ↗</HeroButton>
           </Reveal>
         </div>
       </div>
@@ -1210,6 +1370,8 @@ export default function App() {
             <Route path="/work/get-set-globe" element={<GetSetGlobe />} />
             <Route path="/work/study-buddy" element={<StudyBuddy />} />
             <Route path="/work/finance" element={<Finance />} />
+            <Route path="/work/aadhaar" element={<Suspense fallback={null}><Aadhaar /></Suspense>} />
+            <Route path="/work/cloutcart" element={<Suspense fallback={null}><CloutCart /></Suspense>} />
           </Routes>
         </Suspense>
       </BrowserRouter>

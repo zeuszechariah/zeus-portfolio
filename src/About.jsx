@@ -1,6 +1,6 @@
 import { useRef, useState, useEffect } from 'react'
 import { motion, useInView } from 'framer-motion'
-import { EASE, ProgressBar, Nav, Footer, MaskReveal, Reveal } from './shared.jsx'
+import { EASE, ProgressBar, Nav, Footer, MaskReveal, Reveal, HeroButton } from './shared.jsx'
 
 // ─── DNA Canvas ───────────────────────────────────────
 function DNACanvas() {
@@ -40,7 +40,7 @@ function DNACanvas() {
       highlightTimer += 1
 
       const CX     = W / 2
-      const RADIUS = Math.min(W * 0.17, 155)  // wider horizontal spread
+      const RADIUS = Math.min(W * 0.32, 210)  // zoomed in for narrower column
       const ROW_H  = 28
       const TURNS  = 0.5
       const STEP   = (Math.PI * 2 * TURNS) / (H / ROW_H)
@@ -137,125 +137,162 @@ function DNACanvas() {
 function AboutIntro() {
   return (
     <section className="relative flex flex-col overflow-hidden"
-      style={{ minHeight:'100svh', background:'#060606' }}>
+      style={{ minHeight:'100svh', background:'#000000' }}>
 
-      {/* DNA — full-bleed background, desktop only */}
-      <div className="hidden md:block absolute inset-0 pointer-events-none z-0">
-        <DNACanvas />
-      </div>
-
-      {/* Ambient glow — bottom-right, below nav About label */}
-      <div className="absolute pointer-events-none" style={{ width:'clamp(320px,38vw,520px)', height:'clamp(320px,38vw,520px)', borderRadius:'50%', bottom:'-8%', right:'-4%', background:'radial-gradient(circle,rgba(124,58,237,0.11) 0%,rgba(255,75,143,0.06) 45%,transparent 70%)', filter:'blur(48px)', zIndex:0 }} />
-      {/* Ambient glow — top-left, beside synopsis quote */}
+      {/* Ambient glow — top-left */}
       <div className="absolute pointer-events-none" style={{ width:'clamp(260px,30vw,420px)', height:'clamp(260px,30vw,420px)', borderRadius:'50%', top:'6%', left:'-6%', background:'radial-gradient(circle,rgba(255,75,143,0.085) 0%,rgba(124,58,237,0.07) 50%,transparent 70%)', filter:'blur(48px)', zIndex:0 }} />
 
-      {/* Content — same max-width container as Resume / Contact */}
       <div className="relative z-[1] flex-1 flex flex-col w-full max-w-[1200px] mx-auto
                       px-[clamp(1.5rem,5vw,3.5rem)]">
 
-        {/* ── main grid: 3 text | 5 DNA space | 4 photo+edu ── */}
+        {/* ── main grid: 7 content | 5 DNA ── */}
         <div className="grid grid-cols-12 flex-1">
 
-          {/* Left — label + quote at top, body at bottom */}
-          <div className="col-span-12 md:col-span-3 flex flex-col justify-between pr-6
-                          pt-[clamp(5rem,9vw,7rem)] pb-[clamp(2rem,3.5vw,3rem)]">
+          {/* LEFT — all content */}
+          <div className="col-span-12 md:col-span-7 flex flex-col
+                          pt-[clamp(5rem,9vw,7rem)] pb-[clamp(2rem,3.5vw,3rem)] pr-0 md:pr-16">
 
-            <div>
-              <Reveal>
-                <span className="font-mono text-[0.58rem] tracking-[0.16em]
-                                 uppercase text-ink/28 mb-8 block">
-                  Synopsis
-                </span>
-              </Reveal>
-              <Reveal delay={0.06}>
-                <blockquote className="font-display italic text-ink leading-[1.4]"
-                  style={{ fontSize:'clamp(1.1rem,1.6vw,1.45rem)' }}>
-                  "The world is full of creative challenges, both big &amp; small, and
-                  every individual is an invitation to imagine something better."
-                </blockquote>
-              </Reveal>
-            </div>
+            {/* Synopsis label */}
+            <Reveal>
+              <span className="font-mono text-[0.58rem] tracking-[0.16em] uppercase text-ink/28 mb-5 block">
+                Synopsis
+              </span>
+            </Reveal>
 
-            <div className="flex flex-col gap-4">
-              <Reveal delay={0.12}>
-                <p className="font-sans text-ink/48 leading-[1.85]"
-                  style={{ fontSize:'clamp(0.75rem,0.88vw,0.825rem)' }}>
-                  For me, vision, craft, systems, instinct and art are the forces behind
-                  everything I make. My focus, hunger and desire for wisdom are what drive
-                  me forward and keep me fulfilled.
-                </p>
-              </Reveal>
+            {/* About heading — left-aligned */}
+            <h1 className="font-sans font-semibold text-ink tracking-[-0.04em] leading-[0.92] mb-8"
+                style={{ fontSize:'clamp(2.25rem,5vw,4rem)' }}>
+              <MaskReveal>About</MaskReveal>
+            </h1>
 
-              {/* Awards & Accolades */}
-              <Reveal delay={0.24}>
-                <div className="flex flex-col gap-[1.1rem] items-start text-left mt-10">
-                  {[
-                    ["India's Best Design Student Awards", 'Winner · 2025'],
-                    ['Taiwan Intl. Student Design Competition', 'Finalist · 2022'],
-                    ['Red Bull Doodle Art', 'Finalist · 2022'],
-                  ].map(([award, result]) => (
-                    <div key={award} className="flex flex-col gap-[0.2rem]">
-                      <p className="font-mono uppercase text-ink/32 tracking-[0.08em] leading-none"
-                        style={{ fontSize:'clamp(0.5rem,0.62vw,0.6rem)' }}>
-                        {award}
-                      </p>
-                      <p className="font-mono uppercase tracking-[0.08em] leading-none font-bold text-ink/55"
-                        style={{ fontSize:'clamp(0.5rem,0.62vw,0.6rem)' }}>
-                        {result}
-                      </p>
+            {/* Quote — below About heading */}
+            <Reveal delay={0.06}>
+              <blockquote
+                style={{
+                  fontFamily: "'Syne', sans-serif",
+                  fontWeight: 400,
+                  fontStyle: 'normal',
+                  fontSize: 'clamp(0.75rem,0.88vw,0.825rem)',
+                  color: 'rgba(242,237,228,0.88)',
+                  lineHeight: 1.4,
+                  margin: '0 0 2rem',
+                }}>
+                "The world is full of creative challenges, both big &amp; small, and
+                every individual is an invitation to imagine something better."
+              </blockquote>
+            </Reveal>
+
+            {/* Body */}
+            <Reveal delay={0.12}>
+              <p className="font-sans text-ink/55 leading-[1.85] mb-10"
+                style={{ fontSize:'clamp(0.75rem,0.88vw,0.825rem)' }}>
+                For me, vision, craft, systems, instinct and art are the forces behind
+                everything I make. My focus, hunger and desire for wisdom are what drive
+                me forward and keep me fulfilled.
+              </p>
+            </Reveal>
+
+            {/* Accolades + Education — side-by-side glass cards */}
+            <Reveal delay={0.18} className="mt-auto pt-[clamp(2rem,4vw,3rem)]">
+              <div className="grid grid-cols-2 gap-4 mb-8">
+                {[
+                  {
+                    label: 'Accolades',
+                    rows: [
+                      ["India's Best Design Student Award", 'Winner · 2025'],
+                      ['Srishti Graduation Project Commendation', 'Dept. Recipient · 2023'],
+                      ['Taiwan Intl. Student Design Competition', 'Finalist · 2022'],
+                    ],
+                  },
+                  {
+                    label: 'Education',
+                    rows: [
+                      ['M.Des Interaction Design', 'National Institute of Design Bangalore'],
+                      ['International Exchange',   'Hochschule für Technik und Wirtschaft Berlin'],
+                      ['B.Des Visual Comm. & Brand Strategy', 'Srishti Institute of Art, Design & Technology, Bangalore'],
+                    ],
+                  },
+                ].map(({ label, rows }) => (
+                  <div key={label} style={{
+                    position: 'relative',
+                    background: 'linear-gradient(145deg, rgba(14,14,18,0.72) 0%, rgba(8,8,12,0.80) 100%)',
+                    backdropFilter: 'blur(24px) saturate(140%)',
+                    WebkitBackdropFilter: 'blur(24px) saturate(140%)',
+                    borderRadius: '16px',
+                    padding: '26px 24px 22px',
+                    overflow: 'hidden',
+                    boxShadow: [
+                      'inset 0 0 0 1px rgba(255,255,255,0.09)',
+                      '0 24px 64px rgba(0,0,0,0.55)',
+                      '0 8px 24px rgba(0,0,0,0.35)',
+                    ].join(', '),
+                  }}>
+                    {/* Top-left corner rim highlight */}
+                    <div style={{
+                      position: 'absolute', inset: 0, borderRadius: 'inherit',
+                      background: 'radial-gradient(circle 55px at 0% 0%, rgba(255,255,255,0.50) 0%, transparent 100%)',
+                      pointerEvents: 'none', zIndex: 3,
+                    }} />
+                    <span className="font-mono text-[0.58rem] tracking-[0.16em] uppercase text-ink/28 block"
+                      style={{ position: 'relative', zIndex: 4, marginBottom: '16px' }}>
+                      {label}
+                    </span>
+                    <div style={{ position: 'relative', zIndex: 4 }}>
+                      {rows.map(([a, b], i, arr) => (
+                        <div key={a} style={{
+                          padding: '16px 0',
+                          borderBottom: i < arr.length - 1 ? '1px solid rgba(242,237,228,0.10)' : 'none',
+                        }}>
+                          <p className="font-mono text-ink/32 tracking-[0.04em]"
+                            style={{ fontSize:'clamp(0.5rem,0.62vw,0.6rem)', lineHeight: 1.45, marginBottom: '4px' }}>{a}</p>
+                          <p className="font-mono font-bold text-ink/55 tracking-[0.04em]"
+                            style={{ fontSize:'clamp(0.5rem,0.62vw,0.6rem)', lineHeight: 1.2 }}>{b}</p>
+                        </div>
+                      ))}
                     </div>
-                  ))}
-                </div>
-              </Reveal>
-            </div>
+                  </div>
+                ))}
+              </div>
+            </Reveal>
+
+            {/* Exam ranks — single horizontal row */}
+            <Reveal delay={0.26} className="mt-auto pt-[clamp(3rem,6vw,5rem)]">
+              <div className="flex items-center gap-8">
+                {[
+                  ['NID DAT', 'AIR 8 · 2024', 'Interaction Design / Strategic Design Management'],
+                  ['IIT Bombay CEED', 'AIR 8 · 2024', 'Visual Design'],
+                ].map(([inst, rank, disc], i, arr) => (
+                  <div key={inst} className="flex items-center gap-8">
+                    <div className="flex flex-col gap-[0.18rem]">
+                      <p className="font-mono uppercase tracking-[0.1em] leading-none font-bold text-ink/50"
+                        style={{ fontSize:'clamp(0.52rem,0.6vw,0.6rem)' }}>
+                        {inst}&nbsp;&nbsp;<span className="text-ink/35 font-normal">{rank}</span>
+                      </p>
+                      <p className="font-mono uppercase tracking-[0.08em] leading-none text-ink/22"
+                        style={{ fontSize:'clamp(0.46rem,0.52vw,0.52rem)' }}>{disc}</p>
+                    </div>
+                    {i < arr.length - 1 && (
+                      <div style={{ width:'1px', height:'28px', background:'rgba(242,237,228,0.12)', flexShrink:0 }} />
+                    )}
+                  </div>
+                ))}
+              </div>
+            </Reveal>
+
           </div>
 
-          {/* Centre — wide open space, DNA breathes freely */}
-          <div className="hidden md:block md:col-span-5" />
-
-          {/* Right — photo at top, education at bottom */}
-          <div className="col-span-12 md:col-span-4 flex flex-col justify-between items-end
-                          pt-[clamp(5rem,9vw,7rem)] pb-[clamp(2rem,3.5vw,3rem)]">
-
-            {/* Pill photo */}
-            <div className="relative overflow-hidden border border-white/[0.06] flex-shrink-0"
-              style={{ width:'160px', height:'272px', borderRadius:'9999px', background:'#0d0d0d' }}>
-              <img src="/zeus-portrait.jpg" alt="Zeus Batkhar"
-                style={{ width:'100%', height:'100%', objectFit:'cover', objectPosition:'center top', display:'block' }} />
-              <div className="absolute bottom-0 left-0 right-0 h-1/3 pointer-events-none"
-                style={{ background:'linear-gradient(to top,rgba(6,6,6,0.4),transparent)' }} />
-            </div>
-
-            {/* Education — sits at the same level as the body text on the left */}
-            <div className="flex flex-col gap-[1.1rem] items-end text-right">
-              {[
-                ['M.Des Interaction Design', 'NID Bangalore'],
-                ['International Exchange',   'HTW Berlin'],
-                ['B.Des Visual Comm. & Brand Strategy', 'Srishti Bangalore'],
-              ].map(([program, school]) => (
-                <div key={school} className="flex flex-col gap-[0.2rem]">
-                  <p className="font-mono uppercase text-ink/32 tracking-[0.08em] leading-none"
-                    style={{ fontSize:'clamp(0.5rem,0.62vw,0.6rem)' }}>
-                    {program}
-                  </p>
-                  <p className="font-mono uppercase tracking-[0.08em] leading-none font-bold text-ink/55"
-                    style={{ fontSize:'clamp(0.5rem,0.62vw,0.6rem)' }}>
-                    {school}
-                  </p>
-                </div>
-              ))}
-            </div>
+          {/* RIGHT — DNA canvas only, fades at bottom */}
+          <div className="hidden md:flex md:col-span-5 relative">
+            <DNACanvas />
+            {/* Bottom fade into page BG */}
+            <div className="absolute bottom-0 left-0 right-0 pointer-events-none"
+              style={{ height:'35%', background:'linear-gradient(to top, #000000 0%, transparent 100%)' }} />
+            {/* Left edge fade — blends into content col */}
+            <div className="absolute top-0 bottom-0 left-0 pointer-events-none"
+              style={{ width:'18%', background:'linear-gradient(to right, #000000 0%, transparent 100%)' }} />
           </div>
-        </div>
 
-        {/* ── bottom bar: About Zeus. flush right ── */}
-        <div className="flex justify-end pt-[clamp(0.5rem,1.5vw,1rem)] pb-[clamp(1rem,2vw,1.75rem)]">
-          <h1 className="font-sans font-semibold text-ink tracking-[-0.04em] leading-[0.92]"
-              style={{ fontSize:'clamp(2.25rem,5vw,4rem)' }}>
-            <MaskReveal >About</MaskReveal>
-          </h1>
         </div>
-
       </div>
     </section>
   )
@@ -265,7 +302,7 @@ function AboutIntro() {
 function Resume() {
   return (
     <section className="py-[clamp(4rem,7vw,6rem)]"
-      style={{ background:'#060606' }}>
+      style={{ background:'#000000' }}>
       <div className="max-w-[1200px] mx-auto px-[clamp(1.5rem,5vw,3.5rem)]">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-[clamp(3rem,6vw,6rem)] items-center">
 
@@ -289,18 +326,13 @@ function Resume() {
           </div>
 
           <Reveal delay={0.12} className="flex flex-col items-start md:items-end gap-6">
-            <a href="https://drive.google.com/file/d/1KhxDpLdW_BUqVGeiBflXHNzng0GcKWKd/view?usp=sharing"
-               target="_blank" rel="noopener noreferrer"
-               className="relative group/link inline-flex items-center gap-3 font-sans font-semibold text-bg bg-ink
-                          rounded-full tracking-[0.01em] transition-[opacity,transform] duration-300
-                          hover:opacity-88 hover:-translate-y-[1px]"
-               style={{ fontSize:'0.875rem', padding:'0.9375rem 2rem' }}>
-              <span className="relative">
-                View / Download Resumè ↗
-                <span className="absolute -bottom-[2px] left-0 h-[1px] w-0 transition-all duration-300 group-hover/link:w-full"
-                  style={{ background:'#ffffff', mixBlendMode:'difference', transitionTimingFunction:'cubic-bezier(0.16,1,0.3,1)' }} />
-              </span>
-            </a>
+            <HeroButton
+              href="https://drive.google.com/file/d/1KhxDpLdW_BUqVGeiBflXHNzng0GcKWKd/view?usp=sharing"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              View / Download Resumè ↗
+            </HeroButton>
           </Reveal>
         </div>
       </div>
@@ -323,7 +355,7 @@ function ContactForm() {
 
   return (
     <section className="py-[clamp(4rem,7vw,6rem)] border-t border-white/[0.04] relative overflow-hidden"
-      style={{ background:'#060606' }}>
+      style={{ background:'#000000' }}>
       <div className="absolute left-1/2 top-1/3 -translate-x-1/2 -translate-y-1/2 pointer-events-none"
         style={{ width:600, height:400,
                  background:'radial-gradient(ellipse,rgba(124,58,237,0.06) 0%,transparent 65%)' }} />
@@ -405,17 +437,7 @@ function ContactForm() {
             <motion.div className="md:col-span-2 flex justify-end" initial={{ opacity:0, y:20 }}
               animate={inView ? { opacity:1, y:0 } : {}}
               transition={{ duration:0.7, ease:EASE, delay:0.3 }}>
-              <button type="submit"
-                className="relative group/link inline-flex items-center font-sans font-semibold text-bg bg-ink
-                           rounded-full tracking-[0.01em] transition-[opacity,transform]
-                           duration-300 hover:opacity-88 hover:-translate-y-[1px]"
-                style={{ fontSize:'0.875rem', padding:'0.9375rem 2.5rem' }}>
-                <span className="relative">
-                  Submit
-                  <span className="absolute -bottom-[2px] left-0 h-[1px] w-0 transition-all duration-300 group-hover/link:w-full"
-                    style={{ background:'#ffffff', mixBlendMode:'difference', transitionTimingFunction:'cubic-bezier(0.16,1,0.3,1)' }} />
-                </span>
-              </button>
+              <HeroButton type="submit">Submit</HeroButton>
             </motion.div>
           </form>
         )}
@@ -427,7 +449,7 @@ function ContactForm() {
 // ─── About Page ───────────────────────────────────────
 export default function About() {
   return (
-    <div style={{ background:'#060606' }} className="text-ink overflow-x-hidden">
+    <div style={{ background:'#000000' }} className="text-ink overflow-x-hidden">
       <ProgressBar />
       <Nav />
       <AboutIntro />

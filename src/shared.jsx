@@ -6,6 +6,75 @@ import { motion, useSpring, useScroll, useTransform, useInView, AnimatePresence,
 export const EASE = [0.16, 1, 0.3, 1]
 export const SPRING_STIFF = { stiffness: 280, damping: 30 }
 
+// ─── HeroButton — hyperrealistic dark glass pill ──────
+export function HeroButton({ children, onClick, href, target, rel, type }) {
+  const [hover, setHover] = useState(false)
+  const [press, setPress] = useState(false)
+
+  const Tag = href ? 'a' : 'button'
+  return (
+    <Tag
+      href={href}
+      target={target}
+      rel={rel}
+      type={type}
+      onClick={onClick}
+      style={{
+        position:       'relative',
+        display:        'inline-flex',
+        alignItems:     'center',
+        justifyContent: 'center',
+        borderRadius:   '100px',
+        border:         '1px solid rgba(255,255,255,0.12)',
+        fontFamily:     "'Syne', sans-serif",
+        fontWeight:     500,
+        fontSize:       '0.875rem',
+        letterSpacing:  '0.02em',
+        color:          '#ffffff',
+        padding:        '0.8rem 2rem',
+        cursor:         'pointer',
+        textDecoration: 'none',
+        overflow:       'hidden',
+        background:     'linear-gradient(175deg, rgba(36,36,36,0.94) 0%, rgba(8,8,8,0.98) 100%)',
+        boxShadow: hover
+          ? '0 12px 36px rgba(0,0,0,0.7), 0 3px 8px rgba(0,0,0,0.85), inset 0 1px 0 rgba(255,255,255,0.26), inset 0 -1px 0 rgba(0,0,0,0.55)'
+          : '0 12px 36px rgba(0,0,0,0.7), 0 3px 8px rgba(0,0,0,0.85), inset 0 1px 0 rgba(255,255,255,0.20), inset 0 -1px 0 rgba(0,0,0,0.55)',
+        transform:  press ? 'translateY(1px)' : hover ? 'translateY(-1px)' : 'translateY(0)',
+        transition: 'transform 0.16s cubic-bezier(0.16,1,0.3,1), box-shadow 0.20s ease',
+      }}
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => { setHover(false); setPress(false) }}
+      onMouseDown={() => setPress(true)}
+      onMouseUp={() => setPress(false)}
+    >
+      {/* Top-left rim hot-spot */}
+      <span aria-hidden="true" style={{
+        position:     'absolute',
+        inset:        0,
+        borderRadius: 'inherit',
+        background:   hover
+          ? 'radial-gradient(ellipse 38% 28% at 11% 0%, rgba(255,255,255,0.88) 0%, rgba(255,255,255,0.34) 22%, rgba(255,255,255,0.08) 48%, transparent 62%)'
+          : 'radial-gradient(ellipse 38% 28% at 11% 0%, rgba(255,255,255,0.72) 0%, rgba(255,255,255,0.28) 22%, rgba(255,255,255,0.06) 48%, transparent 62%)',
+        pointerEvents: 'none',
+        transition:   'background 0.18s ease',
+      }} />
+      <span style={{ position: 'relative', zIndex: 1 }}>
+        {children}
+        <span style={{
+          position:   'absolute',
+          bottom:     '-2px',
+          left:       0,
+          height:     '1px',
+          width:      hover ? '100%' : '0%',
+          background: '#ffffff',
+          transition: 'width 0.3s cubic-bezier(0.16,1,0.3,1)',
+          display:    'block',
+        }} />
+      </span>
+    </Tag>
+  )
+}
+
 // ─── Thunderbolt SVG (flipped horizontally = Z shape) ─
 export function Bolt({ size = 14, nudge = 0 }) {
   return (
@@ -153,7 +222,7 @@ export function Nav({ light = false, photoHero = false, scrollThreshold = 60 }) 
 // ─── Footer ───────────────────────────────────────────
 export function Footer() {
   return (
-    <footer style={{ background:'#060606' }} className="border-t border-white/[0.04] relative overflow-hidden">
+    <footer style={{ background:'#000000' }} className="border-t border-white/[0.04] relative overflow-hidden">
       <div className="absolute pointer-events-none" style={{ width:'clamp(300px,38vw,520px)',height:'clamp(300px,38vw,520px)',borderRadius:'50%',top:'-30%',right:'10%',background:'radial-gradient(circle,rgba(124,58,237,0.075) 0%,transparent 65%)' }} />
       <div className="absolute pointer-events-none" style={{ width:'clamp(220px,28vw,380px)',height:'clamp(220px,28vw,380px)',borderRadius:'50%',bottom:'-20%',left:'-5%',background:'radial-gradient(circle,rgba(255,75,143,0.052) 0%,transparent 65%)' }} />
       <div className="max-w-[1200px] mx-auto px-[clamp(1.5rem,5vw,3.5rem)] pt-[clamp(3rem,6vw,5rem)] pb-[clamp(2rem,4vw,3rem)]">
@@ -282,7 +351,7 @@ export function CookieBanner() {
               </button>
               <button
                 onClick={() => respond(true)}
-                className="font-mono text-[0.65rem] tracking-[0.1em] uppercase text-[#060606] px-5 py-2 rounded-lg cursor-pointer transition-all duration-200 hover:-translate-y-[1px] active:scale-[0.97]"
+                className="font-mono text-[0.65rem] tracking-[0.1em] uppercase text-[#000000] px-5 py-2 rounded-lg cursor-pointer transition-all duration-200 hover:-translate-y-[1px] active:scale-[0.97]"
                 style={{
                   background: '#F2EDE4',
                 }}

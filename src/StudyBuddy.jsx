@@ -1017,7 +1017,7 @@ function HeroSection() {
             fontFamily: "'Syne', sans-serif", fontSize: 'clamp(1rem,2vw,1.15rem)',
             lineHeight: 1.75, color: 'rgba(255,255,255,0.78)', maxWidth: '52ch', margin: '0 0 3rem',
           }}>
-            An AI-powered learning companion that helps students study smarter, transforming notes into engaging videos, optimising focus through personalised Pomodoro sessions, and enhancing memory through science-backed mnemonics.
+            Millions of students know exactly what they want to achieve, but they just can't seem to get there consistently. Study Buddy is a mobile app I co-designed with a team at NID to give students a system that actually works.
           </p>
         </MaskReveal>
         <div style={{ display: 'flex', gap: '3rem', flexWrap: 'wrap' }}>
@@ -1045,7 +1045,7 @@ function WhySection() {
   return (
     <section style={{ background: C.surface, ...PAD }}>
       <Wrap>
-        <div style={{ maxWidth: 720, margin: '0 auto', textAlign: 'center', marginBottom: 'clamp(2.5rem,4vw,4rem)' }}>
+        <div style={{ maxWidth: 720, margin: '0 auto', textAlign: 'center' }}>
           <Reveal><SectionTag>Why This Topic</SectionTag></Reveal>
           <MaskReveal delay={0.1}>
             <h2 style={{
@@ -1055,7 +1055,7 @@ function WhySection() {
               letterSpacing: '-0.02em',
               color: C.ink,
               marginBottom: '1.5rem',
-            }}>Education in India is a system worth designing for</h2>
+            }}>We started with a question that felt personal</h2>
           </MaskReveal>
           <Reveal delay={0.2}>
             <p style={{
@@ -1064,21 +1064,10 @@ function WhySection() {
               color: C.mid,
               lineHeight: 1.75,
             }}>
-              Education in India is a <strong style={{ color: C.ink, fontWeight: 600 }}>complex, deeply layered system</strong> that offers rich opportunities for applying systems thinking and design. It's an interconnected system with <strong style={{ color: C.ink, fontWeight: 600 }}>visible gaps that can foster real impact</strong>. Evolving technological integration, along with our personal relevance and familiarity, pushed us to pursue this topic.
+              I grew up watching students, myself included, grind through subjects they didn't understand, for exams that valued recall over meaning. That frustration brought our team to Indian education as a design space. It's a <strong style={{ color: C.ink, fontWeight: 600 }}>deeply layered system with visible failures</strong>, and those failures compound: students who disengage, lose confidence, and stop believing they can get better at learning. We chose to start where the problem felt most immediate: <strong style={{ color: C.ink, fontWeight: 600 }}>the student trying to get through tomorrow</strong>.
             </p>
           </Reveal>
         </div>
-
-        {/* Editorial photo — math notes, illustrating the student struggle */}
-        <Reveal delay={0.25}>
-          <div style={{ borderRadius: '16px', overflow: 'hidden', lineHeight: 0 }}>
-            <img
-              src="/study-math-notes.jpg"
-              alt="Handwritten math notes with pink marker equations and a pencil — representing the complexity of student study"
-              style={{ width: '100%', height: 'clamp(220px,28vw,380px)', objectFit: 'cover', objectPosition: 'center 55%', display: 'block' }}
-            />
-          </div>
-        </Reveal>
       </Wrap>
     </section>
   )
@@ -1090,6 +1079,11 @@ function SystemsSection() {
     <section id="systems" style={{ background: C.bg, ...PAD }}>
       <Wrap>
         <Reveal><Label>Systems Thinking Process</Label></Reveal>
+        <Reveal delay={0.05}>
+          <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.95rem', color: C.mid, lineHeight: 1.75, maxWidth: 640, marginBottom: 'clamp(2rem,3.5vw,3rem)' }}>
+            Before designing anything, I needed to understand the system I was stepping into. We used systems thinking not as a formality, but as a way to test whether our instincts about the problem were correct, and to find where design could actually create change.
+          </p>
+        </Reveal>
 
         {/* Double Diamond */}
         <Reveal>
@@ -1179,9 +1173,9 @@ function SystemsSection() {
           </div>
         </Reveal>
 
-        {/* Actor Map — split layout */}
-        <div style={{ display: 'grid', gridTemplateColumns: '40% 60%', gap: '4rem', alignItems: 'center', marginBottom: 'clamp(3rem,5vw,5rem)' }}>
-          <div>
+        {/* Actor Map — stacked layout */}
+        <div style={{ marginBottom: 'clamp(3rem,5vw,5rem)' }}>
+          <div style={{ maxWidth: 640, marginBottom: 'clamp(1.5rem,2.5vw,2.5rem)' }}>
             <Reveal><SectionTag color={C.pink}>Actor Map</SectionTag></Reveal>
             <Reveal delay={0.05}>
               <h2 style={{
@@ -1195,7 +1189,7 @@ function SystemsSection() {
             </Reveal>
             <Reveal delay={0.1}>
               <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.9rem', color: C.mid, lineHeight: 1.7, margin: 0 }}>
-                Three concentric layers of stakeholders: primary actors at the core, supported by secondary bodies and influenced by tertiary forces in the outer ring.
+                We mapped everyone who touches a student's learning journey: students and teachers at the core, parents and institutions in the middle, policy and technology at the edges. What became clear: the students we were designing for sit at the centre of a system they have the least control over.
               </p>
             </Reveal>
             <Reveal delay={0.15}>
@@ -1207,9 +1201,9 @@ function SystemsSection() {
           </Reveal>
         </div>
 
-        {/* Knowledge Graph */}
-        <div style={{ display: 'grid', gridTemplateColumns: '40% 60%', gap: '4rem', alignItems: 'center', marginBottom: 'clamp(3rem,5vw,5rem)' }}>
-          <div>
+        {/* Knowledge Graph — stacked layout */}
+        <div style={{ marginBottom: 'clamp(3rem,5vw,5rem)' }}>
+          <div style={{ maxWidth: 640, marginBottom: 'clamp(1.5rem,2.5vw,2.5rem)' }}>
             <Reveal><SectionTag color={C.blue}>Knowledge Graph</SectionTag></Reveal>
             <Reveal delay={0.05}>
               <h2 style={{
@@ -1223,7 +1217,7 @@ function SystemsSection() {
             </Reveal>
             <Reveal delay={0.1}>
               <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.9rem', color: C.mid, lineHeight: 1.7, margin: 0 }}>
-                A network map of relationships between concepts, actors, and systemic forces shaping education in India.
+                The actor map told us who was involved. This told us why. Mapping the relationships between forces revealed where tensions compound and where a small shift could create a real ripple.
               </p>
             </Reveal>
             <Reveal delay={0.15}>
@@ -1235,9 +1229,9 @@ function SystemsSection() {
           </Reveal>
         </div>
 
-        {/* Sub-systems — split layout */}
-        <div style={{ display: 'grid', gridTemplateColumns: '40% 60%', gap: '4rem', alignItems: 'center', marginBottom: 'clamp(3rem,5vw,5rem)' }}>
-          <div>
+        {/* Sub-systems — stacked layout */}
+        <div style={{ marginBottom: 'clamp(3rem,5vw,5rem)' }}>
+          <div style={{ maxWidth: 640, marginBottom: 'clamp(1.5rem,2.5vw,2.5rem)' }}>
             <Reveal><SectionTag>Sub-systems</SectionTag></Reveal>
             <Reveal delay={0.05}>
               <h2 style={{
@@ -1251,7 +1245,7 @@ function SystemsSection() {
             </Reveal>
             <Reveal delay={0.1}>
               <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.9rem', color: C.mid, lineHeight: 1.7, margin: 0 }}>
-                Mapping the surrounding systems that shape, constrain, and enable formal education in India.
+                Formal education doesn't exist in isolation. We identified eight surrounding systems: family, infrastructure, exam culture, peers, technology, policy, economy, and aspiration. Understanding what constrains and enables learning came before we ever touched the product brief.
               </p>
             </Reveal>
             <Reveal delay={0.15}>
@@ -1271,9 +1265,9 @@ function SystemsSection() {
           </div>
         </Reveal>
 
-        {/* Feedback Loops — split layout */}
-        <div style={{ display: 'grid', gridTemplateColumns: '40% 60%', gap: '4rem', alignItems: 'center', marginBottom: 'clamp(3rem,5vw,5rem)' }}>
-          <div>
+        {/* Feedback Loops — stacked layout */}
+        <div style={{ marginBottom: 'clamp(3rem,5vw,5rem)' }}>
+          <div style={{ maxWidth: 640, marginBottom: 'clamp(1.5rem,2.5vw,2.5rem)' }}>
             <Reveal><SectionTag color={C.pink}>Feedback Loops</SectionTag></Reveal>
             <Reveal delay={0.05}>
               <h2 style={{
@@ -1287,7 +1281,7 @@ function SystemsSection() {
             </Reveal>
             <Reveal delay={0.1}>
               <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.9rem', color: C.mid, lineHeight: 1.7, margin: 0 }}>
-                Highlights dynamic interdependencies: influence of technology, career pressure, policy reforms, and awareness on student motivation and outcomes.
+                This is where the systems work crystallised. Mapping the reinforcing and balancing loops, examining how career pressure feeds exam anxiety, how small wins build habit, and how peer environment shapes consistency, gave us the leverage points worth designing for.
               </p>
             </Reveal>
             <Reveal delay={0.15}>
@@ -1369,6 +1363,11 @@ function ResearchSection() {
     <section id="research" style={{ background: C.surface, ...PAD }}>
       <Wrap>
         <Reveal><Label>Primary Research</Label></Reveal>
+        <Reveal delay={0.05}>
+          <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.95rem', color: C.mid, lineHeight: 1.75, maxWidth: 640, marginBottom: 'clamp(2rem,3.5vw,3rem)' }}>
+            The systems maps pointed toward student motivation as a central leverage point. We went into primary research to test whether that held, and to hear what students actually had to say about how they study.
+          </p>
+        </Reveal>
 
         {/* System Map II */}
         <Reveal delay={0.05}>
@@ -1384,7 +1383,7 @@ function ResearchSection() {
               System Map II — Student Motivation Focus
             </h3>
             <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.9rem', color: C.mid, lineHeight: 1.7, marginBottom: '1.5rem', maxWidth: 560 }}>
-              Diverging on more factors with the emerging idea of student motivation as a central leverage point.
+              As interviews progressed, motivation kept surfacing, not as one issue among many, but as the thread connecting almost everything else. This map zoomed in: what is motivation actually connected to, and where does it consistently break down?
             </p>
             <SystemMapII />
           </div>
@@ -1400,7 +1399,7 @@ function ResearchSection() {
             marginBottom: '2rem',
             letterSpacing: '-0.02em',
           }}>
-            6 Research Insights
+            What students actually told us
           </h3>
         </Reveal>
         <StaggerGrid style={{
@@ -1430,52 +1429,30 @@ function ResearchSection() {
           ))}
         </StaggerGrid>
 
-        {/* Target Audience — photo split */}
+        {/* Target Audience */}
         <Reveal delay={0.1}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', borderRadius: '16px', overflow: 'hidden', minHeight: 280 }}>
-            {/* Photo — Indian schoolgirls in classroom */}
-            <div style={{ position: 'relative', minHeight: 220 }}>
-              <img
-                src="/study-classroom.jpg"
-                alt="Indian schoolgirls seated in a classroom, attentive — the primary target audience for Study Buddy"
-                style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center 30%', display: 'block' }}
-              />
-            </div>
-            {/* Dark text panel */}
+          <div style={{
+            background: C.dark,
+            borderRadius: '16px',
+            padding: 'clamp(1.75rem,3vw,2.75rem)',
+          }}>
             <div style={{
-              background: C.dark,
-              padding: 'clamp(2rem,3.5vw,3rem)',
-              display: 'flex',
-              flexDirection: 'column',
-              justifyContent: 'center',
+              fontFamily: "'Space Mono', monospace",
+              fontSize: '0.58rem',
+              letterSpacing: '0.18em',
+              textTransform: 'uppercase',
+              color: C.darkMuted,
+              marginBottom: '0.75rem',
+            }}>Target Audience</div>
+            <p style={{
+              fontFamily: "'Syne', sans-serif",
+              fontWeight: 500,
+              fontSize: 'clamp(1rem,2vw,1.35rem)',
+              color: C.darkInk,
+              margin: 0,
             }}>
-              <div style={{
-                fontFamily: "'Space Mono', monospace",
-                fontSize: '0.58rem',
-                letterSpacing: '0.18em',
-                textTransform: 'uppercase',
-                color: C.darkMuted,
-                marginBottom: '0.75rem',
-              }}>Target Audience</div>
-              <p style={{
-                fontFamily: "'Syne', sans-serif",
-                fontWeight: 500,
-                fontSize: 'clamp(1rem,2vw,1.35rem)',
-                color: C.darkInk,
-                margin: '0 0 1rem',
-              }}>
-                Students 13+ years of age, primarily from upper-middle class income groups
-              </p>
-              <p style={{
-                fontFamily: "'Syne', sans-serif",
-                fontSize: '0.85rem',
-                color: C.darkMid,
-                margin: 0,
-                lineHeight: 1.65,
-              }}>
-                School and college students navigating high-stakes curriculum, balancing academic pressure with a desire for meaningful, self-directed learning.
-              </p>
-            </div>
+              Students 13+ years of age, primarily from upper-middle class income groups
+            </p>
           </div>
         </Reveal>
       </Wrap>
@@ -1498,6 +1475,11 @@ function DefineSection() {
     <section id="define" style={{ background: C.bg, ...PAD }}>
       <Wrap>
         <Reveal><Label>Define</Label></Reveal>
+        <Reveal delay={0.05}>
+          <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.95rem', color: C.mid, lineHeight: 1.75, maxWidth: 640, marginBottom: 'clamp(2rem,3.5vw,3rem)' }}>
+            The research was clear about the problem. Now I had to define what we were actually building, making sure every feature had a reason rooted in what we heard, not what seemed like a good idea.
+          </p>
+        </Reveal>
 
         {/* Product Definition */}
         <div style={{ marginBottom: 'clamp(3rem,5vw,5rem)' }}>
@@ -1579,7 +1561,7 @@ function DefineSection() {
             Information Architecture
           </h3>
           <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.9rem', color: C.mid, lineHeight: 1.7, marginBottom: '2rem', maxWidth: 560 }}>
-            App structure across five primary sections, each with 3–4 focused sub-screens.
+            Every feature had to earn its place. The IA reflects that: five core sections, each mapped directly to a problem we heard in research.
           </p>
         </Reveal>
         <Reveal delay={0.1}>
@@ -2249,7 +2231,7 @@ function ReflectionsSection() {
             color: C.darkInk,
             letterSpacing: '-0.02em',
             marginBottom: 'clamp(2rem,4vw,3.5rem)',
-          }}>What we took away</h2>
+          }}>What stayed with me</h2>
         </Reveal>
 
         <StaggerGrid style={{
@@ -2296,7 +2278,7 @@ function ReflectionsSection() {
             lineHeight: 1.75,
             margin: 0,
           }}>
-            Study Buddy began as a systems exercise and evolved into a genuine attempt to make learning feel worth showing up for.
+            Study Buddy started as a systems exercise. It ended as something I actually wanted students to use. By the time we finished, I understood, in a way I hadn't before, how much the right tools can change whether learning feels possible at all.
           </p>
         </Reveal>
       </Wrap>

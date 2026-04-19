@@ -9,7 +9,7 @@ export default {
         sans:    ['Syne', '"Helvetica Neue"', 'sans-serif'],
       },
       colors: {
-        bg:     '#060606',
+        bg:     '#000000',
         surface:'#0d0d0d',
         ink:    '#F2EDE4',
         muted:  'rgba(242,237,228,0.4)',

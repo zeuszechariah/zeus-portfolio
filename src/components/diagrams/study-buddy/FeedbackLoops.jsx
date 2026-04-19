@@ -12,34 +12,40 @@ const EASE = [0.22, 1, 0.36, 1]
 
 // Rounded rect nodes — cx/cy = centre, w/h = dimensions
 const NODES = [
-  { id: 1, cx: 400, cy: 80,  w: 150, h: 50, lines: ['Motivation &', 'Self Confidence'] },
-  { id: 2, cx: 650, cy: 220, w: 162, h: 50, lines: ['More Risk-Taking &', 'Skill Development'] },
-  { id: 3, cx: 580, cy: 390, w: 150, h: 50, lines: ['Bigger Successes', '& Recognition'] },
-  { id: 4, cx: 220, cy: 390, w: 150, h: 50, lines: ['Higher Motivation', '& Learning'] },
-  { id: 5, cx: 95,  cy: 220, w: 132, h: 50, lines: ['Early Small', 'Successes'] },
+  { id: 1, cx: 400, cy: 90,  w: 180, h: 60, lines: ['Motivation &', 'Self Confidence'] },
+  { id: 2, cx: 652, cy: 235, w: 180, h: 60, lines: ['More Risk-Taking &', 'Skill Development'] },
+  { id: 3, cx: 578, cy: 405, w: 175, h: 60, lines: ['Bigger Successes', '& Recognition'] },
+  { id: 4, cx: 222, cy: 405, w: 175, h: 60, lines: ['Higher Motivation', '& Learning'] },
+  { id: 5, cx: 96,  cy: 235, w: 155, h: 60, lines: ['Early Small', 'Successes'] },
 ]
 
-// Curved arrows: M start Q control end, plus label text + position
+// Neat curved arrows flowing around the outside of the pentagon
+// Control points are placed OUTSIDE the pentagon for clean arcs
 const ARROWS = [
   {
-    path: 'M 475,80 Q 565,95 569,220',
-    label: 'ENCOURAGES', lx: 540, ly: 118,
+    // 1 → 2: top to top-right, arc curving up-right
+    path: 'M 490,90 Q 625,22 652,205',
+    label: 'ENCOURAGES', lx: 614, ly: 34,
   },
   {
-    path: 'M 650,245 Q 668,322 580,365',
-    label: 'LEADS TO', lx: 644, ly: 308,
+    // 2 → 3: top-right to bottom-right, arc curving right
+    path: 'M 652,265 Q 764,338 653,405',
+    label: 'LEADS TO', lx: 756, ly: 322,
   },
   {
-    path: 'M 505,390 Q 400,445 295,390',
-    label: 'REINFORCES', lx: 400, ly: 435,
+    // 3 → 4: bottom-right to bottom-left, arc curving below
+    path: 'M 490,405 Q 400,480 309,405',
+    label: 'REINFORCES', lx: 400, ly: 485,
   },
   {
-    path: 'M 145,390 Q 82,348 95,245',
-    label: 'EFFECT', lx: 58, ly: 338,
+    // 4 → 5: bottom-left to left, arc curving left
+    path: 'M 145,405 Q 16,334 96,265',
+    label: 'EFFECT', lx: 18, ly: 322,
   },
   {
-    path: 'M 95,195 Q 205,44 325,80',
-    label: 'INCREASE', lx: 196, ly: 76,
+    // 5 → 1: left to top, arc curving up-left
+    path: 'M 96,205 Q 152,18 310,90',
+    label: 'INCREASE', lx: 160, ly: 22,
   },
 ]
 
@@ -54,18 +60,18 @@ const HIGHLIGHTED = new Set(['Interest in learning', 'Lifelong learning'])
 
 export default function FeedbackLoops() {
   const ref = useRef(null)
-  const inView = useInView(ref, { once: true, amount: 0.2 })
+  const inView = useInView(ref, { once: true, amount: 0.15 })
 
   return (
     <div ref={ref} style={{
-      background: '#fff', borderRadius: 12, overflow: 'hidden',
+      background: '#fff', borderRadius: 12,
       padding: 32, boxShadow: '0 2px 20px rgba(0,0,0,0.06)',
     }}>
       {/* Causal loop SVG */}
-      <svg viewBox="0 0 780 470" width="100%" style={{ overflow: 'visible' }}>
+      <svg viewBox="-20 -30 820 560" width="100%" style={{ overflow: 'visible' }}>
         <defs>
-          <marker id="arrFb" markerWidth="7" markerHeight="5" refX="7" refY="2.5" orient="auto">
-            <polygon points="0 0, 7 2.5, 0 5" fill={DIAG.mid} />
+          <marker id="arrFb" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+            <polygon points="0 0, 10 3.5, 0 7" fill={DIAG.mid} />
           </marker>
         </defs>
 
@@ -73,11 +79,11 @@ export default function FeedbackLoops() {
         {ARROWS.map((a, i) => (
           <motion.g key={i}
             initial={{ opacity: 0 }} animate={inView ? { opacity: 1 } : {}}
-            transition={{ duration: 0.5, delay: 0.8 + i * 0.1 }}>
-            <path d={a.path} fill="none" stroke={DIAG.mid} strokeWidth={1.4}
+            transition={{ duration: 0.55, delay: 0.8 + i * 0.12 }}>
+            <path d={a.path} fill="none" stroke={DIAG.mid} strokeWidth={2.2}
               markerEnd="url(#arrFb)" />
-            <text x={a.lx} y={a.ly} textAnchor="middle" fontSize={8} fill={DIAG.muted}
-              fontFamily={FM} letterSpacing="1">{a.label}</text>
+            <text x={a.lx} y={a.ly} textAnchor="middle" fontSize={9} fill={DIAG.muted}
+              fontFamily={FM} letterSpacing="1.2">{a.label}</text>
           </motion.g>
         ))}
 
@@ -85,14 +91,14 @@ export default function FeedbackLoops() {
         {NODES.map((n, i) => {
           const x = n.cx - n.w / 2
           const y = n.cy - n.h / 2
-          const lh = 14
+          const lh = 16
           const totalH = (n.lines.length - 1) * lh
           return (
             <motion.g key={n.id}
-              initial={{ opacity: 0, y: 12 }} animate={inView ? { opacity: 1, y: 0 } : {}}
+              initial={{ opacity: 0, y: 14 }} animate={inView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.45, delay: 0.15 + i * 0.1, ease: EASE }}>
-              <rect x={x} y={y} width={n.w} height={n.h} rx={8}
-                fill={DIAG.surface} stroke={DIAG.border} strokeWidth={1} />
+              <rect x={x} y={y} width={n.w} height={n.h} rx={10}
+                fill={DIAG.surface} stroke={DIAG.border} strokeWidth={1.2} />
               {n.lines.map((line, li) => (
                 <text key={li} x={n.cx} y={n.cy - totalH / 2 + li * lh}
                   textAnchor="middle" dominantBaseline="middle"
@@ -105,31 +111,31 @@ export default function FeedbackLoops() {
         })}
 
         {/* Centre loop label */}
-        <text x={380} y={235} textAnchor="middle" fontSize={7.5} fill={DIAG.muted}
-          fontFamily={FM} letterSpacing="1.5">MOTIVATION REINFORCING LOOP</text>
+        <text x={380} y={252} textAnchor="middle" fontSize={9} fill={DIAG.muted}
+          fontFamily={FM} letterSpacing="2">MOTIVATION REINFORCING LOOP</text>
       </svg>
 
       {/* Concept tags grid */}
       <div style={{ marginTop: '2rem', borderTop: `1px solid ${DIAG.border}`, paddingTop: '1.5rem' }}>
         <p style={{
-          fontFamily: FM, fontSize: '0.55rem', letterSpacing: '0.18em',
+          fontFamily: FM, fontSize: '0.58rem', letterSpacing: '0.18em',
           textTransform: 'uppercase', color: DIAG.muted, marginBottom: '1rem',
         }}>Related Concepts</p>
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '7px' }}>
           {TAG_ROWS.flat().map((tag, i) => {
             const hl = HIGHLIGHTED.has(tag)
             return (
               <span key={`${tag}-${i}`} style={{
                 display: 'inline-block',
-                padding: '4px 10px',
+                padding: '5px 13px',
                 borderRadius: '99px',
                 fontFamily: FM,
-                fontSize: '0.52rem',
+                fontSize: '0.6rem',
                 letterSpacing: '0.04em',
                 background: hl ? DIAG.pink : DIAG.surface,
                 color: hl ? '#fff' : DIAG.ink,
                 border: hl ? 'none' : `1px solid ${DIAG.border}`,
-                fontWeight: hl ? '500' : '400',
+                fontWeight: hl ? '600' : '400',
               }}>
                 {tag}
               </span>

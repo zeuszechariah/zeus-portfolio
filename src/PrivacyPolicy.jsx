@@ -34,7 +34,7 @@ const rows = [
 
 export default function PrivacyPolicy() {
   return (
-    <div style={{ background:'#060606' }} className="text-ink overflow-x-hidden">
+    <div style={{ background:'#000000' }} className="text-ink overflow-x-hidden">
       <ProgressBar />
       <Nav />
 

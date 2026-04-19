@@ -196,9 +196,8 @@ function SidebarNav({ active }) {
           >
             <motion.div
               animate={{
-                width: isActive ? 3 : 1.5, height: isActive ? 32 : 22,
+                width: isActive ? 3 : 1.5, height: isActive ? 32 : 24,
                 background: isActive ? C.accent : C.border, borderRadius: 2,
-                boxShadow: isActive ? `0 0 8px 2px ${C.accent}60` : 'none',
               }}
               transition={{ duration: 0.3 }} style={{ flexShrink: 0 }}
             />
@@ -207,7 +206,6 @@ function SidebarNav({ active }) {
               letterSpacing: '0.14em', textTransform: 'uppercase',
               color: isActive ? C.accent : C.muted,
               transition: 'color 0.25s', whiteSpace: 'nowrap',
-              textShadow: isActive ? `0 0 10px ${C.accent}50` : 'none',
             }}>{sec.label}</span>
           </button>
         )
@@ -531,8 +529,7 @@ export default function Finance() {
               fontFamily: "'Syne', sans-serif", fontSize: 'clamp(1rem,2vw,1.15rem)',
               lineHeight: 1.75, color: C.darkMid, maxWidth: '55ch', margin: '0 0 3rem',
             }}>
-              A design research project investigating how semi-literate individuals in urban Bangalore
-              navigate financial systems — and how they can be better equipped to recognise and avoid financial scams.
+              In 2024, I spent weeks sitting with security guards, vegetable sellers, and auto drivers across Bangalore, asking a question that had been bothering me: why are the people most reliant on the financial system also the most exposed to its failures? This is what I found.
             </p>
           </MaskReveal>
           <div style={{ display: 'flex', gap: '3rem', flexWrap: 'wrap' }}>
@@ -556,16 +553,14 @@ export default function Finance() {
         <Wrap>
           <Reveal>
             <SectionTag>01 — Overview</SectionTag>
-            <h2 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: 'clamp(1.8rem,3.5vw,2.6rem)', color: C.ink, margin: '0 0 1.25rem', lineHeight: 1.2 }}>
-              The Problem Space
+            <h2 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: 'clamp(1.75rem,3.5vw,2.75rem)', letterSpacing: '-0.02em', color: C.ink, margin: '0 0 1.25rem', lineHeight: 1.2 }}>
+              A gap that keeps getting wider
             </h2>
           </Reveal>
           <Reveal delay={0.1}>
-            <p style={{ fontFamily: "'Syne', sans-serif", fontSize: 'clamp(0.9rem,1.5vw,1.05rem)', lineHeight: 1.8, color: C.mid, maxWidth: '70ch', margin: '0 0 2.5rem' }}>
-              India is in the midst of a digital financial revolution — yet a significant portion of its population
-              remains financially vulnerable. Despite rapid adoption of UPI and digital payments, only{' '}
-              <strong style={{ color: C.ink }}>27% of Indians are financially literate</strong>. Among semi-literate populations,
-              the gap between digital tool availability and the ability to use them safely creates acute vulnerability.
+            <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.9rem', lineHeight: 1.7, color: C.mid, maxWidth: '70ch', margin: '0 0 2.5rem' }}>
+              When I started this project, I expected to find people who simply hadn't learned how to use digital tools. What I found was different: a financial system that had never been designed to include them at all. India's digital revolution is real, but only{' '}
+              <strong style={{ color: C.ink }}>27% of Indians are financially literate</strong>. Among semi-literate populations, this isn't a knowledge gap. It's a design failure that keeps compounding into real financial harm.
             </p>
           </Reveal>
 
@@ -586,12 +581,11 @@ export default function Finance() {
         <Wrap>
           <Reveal>
             <SectionTag>02 — Problem Context</SectionTag>
-            <h2 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: 'clamp(1.8rem,3.5vw,2.6rem)', color: C.ink, margin: '0 0 1.25rem', lineHeight: 1.2 }}>
-              Literature Review
+            <h2 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: 'clamp(1.75rem,3.5vw,2.75rem)', letterSpacing: '-0.02em', color: C.ink, margin: '0 0 1.25rem', lineHeight: 1.2 }}>
+              What we knew before going in
             </h2>
-            <p style={{ fontFamily: "'Syne', sans-serif", fontSize: 'clamp(0.9rem,1.5vw,1rem)', lineHeight: 1.8, color: C.mid, maxWidth: '70ch', margin: '0 0 2.5rem' }}>
-              Secondary research surfaced several intersecting structural and behavioural barriers — each compounding
-              the vulnerability of semi-literate populations in urban India.
+            <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.9rem', lineHeight: 1.7, color: C.mid, maxWidth: '70ch', margin: '0 0 2.5rem' }}>
+              Before going into the field, our team read everything we could find on financial vulnerability in India. The picture that emerged wasn't a knowledge problem. It was a systems problem: structural, linguistic, and deeply gendered. Each barrier we found made the next one worse.
             </p>
           </Reveal>
 
@@ -635,12 +629,11 @@ export default function Finance() {
         <Wrap>
           <Reveal>
             <SectionTag>03 — Research Methods</SectionTag>
-            <h2 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: 'clamp(1.8rem,3.5vw,2.6rem)', color: C.ink, margin: '0 0 1.25rem', lineHeight: 1.2 }}>
+            <h2 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: 'clamp(1.75rem,3.5vw,2.75rem)', letterSpacing: '-0.02em', color: C.ink, margin: '0 0 1.25rem', lineHeight: 1.2 }}>
               POEMS Framework
             </h2>
-            <p style={{ fontFamily: "'Syne', sans-serif", fontSize: 'clamp(0.9rem,1.5vw,1rem)', lineHeight: 1.8, color: C.mid, maxWidth: '68ch', margin: '0 0 2.5rem' }}>
-              POEMS provided an observational framework to understand People, Objects, Environments, Messages and Services
-              both independently and as an interrelated system.
+            <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.9rem', lineHeight: 1.7, color: C.mid, maxWidth: '68ch', margin: '0 0 2.5rem' }}>
+              We needed a framework that would keep us observing rather than assuming. POEMS helped us look at the full context of someone's financial life: not just the app or the transaction, but the environment around them, the objects they carry, the messages they receive and can't always read. It kept us grounded in their world rather than our own.
             </p>
           </Reveal>
           <Reveal delay={0.1}><POEMSDiagram /></Reveal>
@@ -649,8 +642,8 @@ export default function Finance() {
           <div style={{ marginTop: '3.5rem' }}>
             <Reveal>
               <Label>Evolution of Research Questions</Label>
-              <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.95rem', lineHeight: 1.8, color: C.mid, maxWidth: '68ch', margin: '0 0 1.75rem' }}>
-                The team began with eight exploratory questions before distilling them into a single focused inquiry post field interviews.
+              <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.9rem', lineHeight: 1.7, color: C.mid, maxWidth: '68ch', margin: '0 0 1.75rem' }}>
+                We started wide and got specific through immersion. Eight questions went into the field. One came back out, sharpened by what we actually heard.
               </p>
             </Reveal>
             <StaggerGrid style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '0.75rem', marginBottom: '2rem' }}>
@@ -699,15 +692,14 @@ export default function Finance() {
         <Wrap>
           <Reveal>
             <SectionTag>04 — On-Ground Research</SectionTag>
-            <h2 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: 'clamp(1.8rem,3.5vw,2.6rem)', color: C.ink, margin: '0 0 1.25rem', lineHeight: 1.2 }}>
+            <h2 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: 'clamp(1.75rem,3.5vw,2.75rem)', letterSpacing: '-0.02em', color: C.ink, margin: '0 0 1.25rem', lineHeight: 1.2 }}>
               Field Interviews
             </h2>
-            <p style={{ fontFamily: "'Syne', sans-serif", fontSize: 'clamp(0.9rem,1.5vw,1rem)', lineHeight: 1.8, color: C.mid, maxWidth: '68ch', margin: '0 0 0.75rem' }}>
-              The team interviewed <strong style={{ color: C.ink }}>12 individuals in total</strong> across Bangalore — engaging directly
-              with security guards, vegetable sellers, auto drivers, craftspersons, and small business owners.
+            <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.9rem', lineHeight: 1.7, color: C.mid, maxWidth: '68ch', margin: '0 0 0.75rem' }}>
+              We didn't want to stay in the classroom with the data. We went out. <strong style={{ color: C.ink }}>12 conversations across Bangalore</strong>: security guards, vegetable sellers, auto drivers, craftspersons, small business owners. Each one taught us something we couldn't have read in a paper.
             </p>
             <p style={{ fontFamily: "'Cormorant Garamond', serif", fontStyle: 'italic', fontSize: '1.1rem', color: C.mid, margin: '0 0 2rem' }}>
-              "On-ground research was very heartwarming — we got to interact with diverse people and gathered many important insights."
+              "There's a moment when research stops feeling like coursework and starts feeling like responsibility. Sitting beside Parvati at her stall, watching her explain why she avoids digital payments because she's afraid of 'losing the money in the phone', that was it."
             </p>
           </Reveal>
 
@@ -766,11 +758,11 @@ export default function Finance() {
         <Wrap>
           <Reveal>
             <SectionTag>05 — Insights</SectionTag>
-            <h2 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: 'clamp(1.8rem,3.5vw,2.6rem)', color: C.ink, margin: '0 0 1.25rem', lineHeight: 1.2 }}>
-              12 Interesting Findings
+            <h2 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: 'clamp(1.75rem,3.5vw,2.75rem)', letterSpacing: '-0.02em', color: C.ink, margin: '0 0 1.25rem', lineHeight: 1.2 }}>
+              What 12 conversations revealed
             </h2>
-            <p style={{ fontFamily: "'Syne', sans-serif", fontSize: 'clamp(0.9rem,1.5vw,1rem)', lineHeight: 1.8, color: C.mid, maxWidth: '68ch', margin: '0 0 2.5rem' }}>
-              A consistent pattern across 12 interviews: barriers to financial safety are not cognitive but structural —
+            <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.9rem', lineHeight: 1.7, color: C.mid, maxWidth: '68ch', margin: '0 0 2.5rem' }}>
+              A consistent pattern across 12 interviews: barriers to financial safety are not cognitive but structural,
               rooted in language, trust, access, and design failure.
             </p>
           </Reveal>
@@ -795,8 +787,8 @@ export default function Finance() {
           <StaggerGrid style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(270px, 1fr))', gap: '1rem' }}>
             {[
               { ctx: 'Demographic Context',    points: ['Security guards, cleaning staff, small business owners', 'Age range: 18–50 years', 'Less or semi-literate with limited formal education'] },
-              { ctx: 'Psychological Context',  points: ['Fear of technology — hesitation using digital financial tools', 'Fear of scams — constant worry about being cheated', 'Distrust of formal banking systems and institutions'] },
-              { ctx: 'Behavioral Context',     points: ['Reliance on third parties (family, friends, intermediaries)', 'Language barrier — struggles with non-vernacular financial content', 'Resistance to change driven more by communication gaps than adaptability'] },
+              { ctx: 'Psychological Context',  points: ['Fear of technology: hesitation using digital financial tools', 'Fear of scams: constant worry about being cheated', 'Distrust of formal banking systems and institutions'] },
+              { ctx: 'Behavioral Context',     points: ['Reliance on third parties (family, friends, intermediaries)', 'Language barrier: struggles with non-vernacular financial content', 'Resistance to change driven more by communication gaps than adaptability'] },
               { ctx: 'Educational Context',    points: ['Limited understanding of savings, investments, interest rates', 'Difficulty interpreting jargon makes systems feel inaccessible', 'Formal education fails to bridge the literacy–financial literacy gap'] },
               { ctx: 'Communication Context',  points: ['Difficulty understanding financial materials in technical language', 'Preference for visual aids, vernacular language, easy instructions', 'Simplified, contextually relevant content is critical'] },
               { ctx: 'Socio-Cultural Context', points: ['Financial behavior shaped by community norms and social networks', 'Sense of financial exclusion from mainstream systems', 'Community-endorsed intermediaries are trusted over formal institutions'] },
@@ -824,12 +816,11 @@ export default function Finance() {
         <Wrap>
           <Reveal>
             <SectionTag dark>06 — Participatory Workshop</SectionTag>
-            <h2 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: 'clamp(1.8rem,3.5vw,2.6rem)', color: C.darkInk, margin: '0 0 1.25rem', lineHeight: 1.2 }}>
-              Workshop Design
+            <h2 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: 'clamp(1.75rem,3.5vw,2.75rem)', letterSpacing: '-0.02em', color: C.darkInk, margin: '0 0 1.25rem', lineHeight: 1.2 }}>
+              Taking the research back to the people
             </h2>
-            <p style={{ fontFamily: "'Syne', sans-serif", fontSize: 'clamp(0.9rem,1.5vw,1rem)', lineHeight: 1.8, color: C.darkMid, maxWidth: '68ch', margin: '0 0 2.5rem' }}>
-              A participatory design research workshop was conducted with NID cleaning and gardening staff.
-              The session combined Likert-scale assessments, scam identification activities, and curated educational content.
+            <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.9rem', lineHeight: 1.7, color: C.darkMid, maxWidth: '68ch', margin: '0 0 2.5rem' }}>
+              The interviews gave us understanding. But I didn't want this research to end with us. We ran a participatory workshop with NID's cleaning and gardening staff, people with similar profiles to those we'd been speaking with. The question driving it: could a single session meaningfully shift someone's ability to recognise a financial scam?
             </p>
           </Reveal>
 
@@ -837,7 +828,7 @@ export default function Finance() {
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1rem', marginBottom: '2.5rem' }}>
             {[
               { label: 'Mission', body: 'To empower semi-literate individuals in urban Bangalore to protect themselves from financial scams through practical, accessible, and actionable knowledge tailored to their needs.', pts: ['Recognise common financial scams', 'Verify financial information', 'Build habits to avoid scams', 'Strengthen budgeting and saving'] },
-              { label: 'Vision', body: 'A financially aware and resilient community where every individual — regardless of literacy level — has the skills and confidence to make informed financial choices and protect themselves from exploitation.', pts: [] },
+              { label: 'Vision', body: 'A financially aware and resilient community where every individual, regardless of literacy level, has the skills and confidence to make informed financial choices and protect themselves from exploitation.', pts: [] },
             ].map(s => (
               <Reveal key={s.label}>
                 <NeuCard dark style={{ padding: '1.75rem', height: '100%' }}>
@@ -940,11 +931,11 @@ export default function Finance() {
         <Wrap>
           <Reveal>
             <SectionTag>07 — Analysis</SectionTag>
-            <h2 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: 'clamp(1.8rem,3.5vw,2.6rem)', color: C.ink, margin: '0 0 1.25rem', lineHeight: 1.2 }}>
+            <h2 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: 'clamp(1.75rem,3.5vw,2.75rem)', letterSpacing: '-0.02em', color: C.ink, margin: '0 0 1.25rem', lineHeight: 1.2 }}>
               Pre & Post Workshop Results
             </h2>
-            <p style={{ fontFamily: "'Syne', sans-serif", fontSize: 'clamp(0.9rem,1.5vw,1rem)', lineHeight: 1.8, color: C.mid, maxWidth: '68ch', margin: '0 0 2.5rem' }}>
-              A Likert-scale methodology (1–5) assessed 4 parameters before and after the workshop across 10 participants.
+            <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.9rem', lineHeight: 1.7, color: C.mid, maxWidth: '68ch', margin: '0 0 2.5rem' }}>
+              We measured awareness across 4 parameters before and after the session. The results were honest: observable improvement in most areas, but not statistically significant with 10 participants. That null result was as informative as anything else in this project.
             </p>
           </Reveal>
 
@@ -957,9 +948,9 @@ export default function Finance() {
               <Reveal delay={0.1}><Label>Statistical Analysis</Label></Reveal>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                 {[
-                  { title: 'Shapiro-Wilk Normality Test', col: C.accent, body: 'Both pre and post-test scores had p-values >0.05, confirming data does not significantly deviate from normality — validating parametric tests.', stats: [['Pre-Test','W = 0.887, p = 0.368'],['Post-Test','W = 0.983, p = 0.920']] },
-                  { title: 'Paired T-Test Result', col: '#B03030', body: 'The p-value (0.162) exceeds the 0.05 threshold — the null hypothesis holds. The workshop did not produce statistically significant improvement. However, observed percentage changes are real at a descriptive level.', stat: 'p = 0.162' },
-                  { title: 'Possible Reasons for Null Hypothesis', col: C.muted, pts: ['Sample size constraint — pilot with 10 participants','Workshop kept short to respect time constraints','External factors — peer influence during responses'] },
+                  { title: 'Shapiro-Wilk Normality Test', col: C.accent, body: 'Both pre and post-test scores had p-values >0.05, confirming data does not significantly deviate from normality, which validates parametric tests.', stats: [['Pre-Test','W = 0.887, p = 0.368'],['Post-Test','W = 0.983, p = 0.920']] },
+                  { title: 'Paired T-Test Result', col: '#B03030', body: 'The p-value (0.162) exceeds the 0.05 threshold; the null hypothesis holds. The workshop did not produce statistically significant improvement. However, observed percentage changes are real at a descriptive level.', stat: 'p = 0.162' },
+                  { title: 'Possible Reasons for Null Hypothesis', col: C.muted, pts: ['Sample size constraint: pilot with 10 participants','Workshop kept short to respect time constraints','External factors: peer influence during responses'] },
                 ].map((card, i) => (
                   <Reveal key={i} delay={0.1 + i * 0.08}>
                     <NeuCard style={{ padding: '1.4rem' }}>
@@ -992,13 +983,13 @@ export default function Finance() {
           <Reveal>
             <NeuCard style={{ padding: '1.75rem 2rem', borderLeft: `3px solid ${C.accentBorder}` }}>
               <Label>Inferential vs. Descriptive Statistics</Label>
-              <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.9rem', lineHeight: 1.8, color: C.mid, margin: '0 0 0.85rem', maxWidth: '70ch' }}>
+              <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.9rem', lineHeight: 1.7, color: C.mid, margin: '0 0 0.85rem', maxWidth: '70ch' }}>
                 While participants showed an observed increase in scores, the changes may not be large or consistent enough
-                to reach statistical significance. The data provides strong descriptive evidence — but insufficient inferential
+                to reach statistical significance. The data provides strong descriptive evidence, but insufficient inferential
                 evidence to attribute changes solely to the workshop rather than chance.
               </p>
               <p style={{ fontFamily: "'Cormorant Garamond', serif", fontStyle: 'italic', fontSize: '1.1rem', color: C.ink, margin: 0 }}>
-                "This does not imply the workshop was ineffective — it implies we need a larger sample
+                "This does not imply the workshop was ineffective; it implies we need a larger sample
                 and more sessions to generate statistical confidence."
               </p>
             </NeuCard>
@@ -1011,18 +1002,21 @@ export default function Finance() {
         <Wrap>
           <Reveal>
             <SectionTag>08 — Recommendations</SectionTag>
-            <h2 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: 'clamp(1.8rem,3.5vw,2.6rem)', color: C.ink, margin: '0 0 1.25rem', lineHeight: 1.2 }}>
+            <h2 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: 'clamp(1.75rem,3.5vw,2.75rem)', letterSpacing: '-0.02em', color: C.ink, margin: '0 0 1.25rem', lineHeight: 1.2 }}>
               5 Design & Policy Recommendations
             </h2>
+            <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.9rem', lineHeight: 1.7, color: C.mid, maxWidth: '68ch', margin: '0 0 2.5rem' }}>
+              These didn't come from a brief or a benchmark. They came directly from those twelve conversations, and from what the workshop made visible.
+            </p>
           </Reveal>
 
           <StaggerGrid style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
             {[
               { num: '01', title: 'Community Ambassadors & Peer Educators', body: 'Train community leaders and trusted figures to act as financial safety ambassadors. Peer-to-peer learning builds trust. Leverage short-format social media (Reels, YouTube Shorts) to reach audiences where they already are.' },
               { num: '02', title: 'Government & NGO Collaboration', body: 'Formation of NGOs that act as intermediaries between scam victims and enforcement bodies (police, RBI) can significantly lower the barrier to reporting. Fear is why people don\'t approach cyber cells.' },
-              { num: '03', title: 'Stricter App Store Regulations', body: 'Stricter regulations must govern what financial data apps can request during onboarding. Transparency around data usage should be mandated — not optional — before any financial app reaches the market.' },
+              { num: '03', title: 'Stricter App Store Regulations', body: 'Stricter regulations must govern what financial data apps can request during onboarding. Transparency around data usage should be mandated, not optional, before any financial app reaches the market.' },
               { num: '04', title: 'More Accessible Content on Financial Scams', body: 'Content like RBI\'s "Raju and the 40 Thieves" must be localised and vernacularly inclusive. Financial literacy content should be designed for oral and visual consumption to reach semi-literate populations effectively.' },
-              { num: '05', title: 'Centralised Scam Database & Reward-Based Reporting', body: 'A user-friendly database of known scams, fake apps, and phishing sites with real-time updates — paired with a reward-based reporting system offering monetary or community recognition. Anonymity must be guaranteed.' },
+              { num: '05', title: 'Centralised Scam Database & Reward-Based Reporting', body: 'A user-friendly database of known scams, fake apps, and phishing sites with real-time updates, paired with a reward-based reporting system offering monetary or community recognition. Anonymity must be guaranteed.' },
             ].map((rec, i) => (
               <StaggerItem key={i}>
                 <NeuCard style={{ padding: '1.5rem 1.75rem', display: 'flex', gap: '1.25rem', alignItems: 'flex-start' }}>
@@ -1045,17 +1039,17 @@ export default function Finance() {
         <Wrap>
           <Reveal>
             <SectionTag dark>09 — Reflections</SectionTag>
-            <h2 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: 'clamp(1.8rem,3.5vw,2.6rem)', color: C.darkInk, margin: '0 0 1.5rem', lineHeight: 1.2 }}>
+            <h2 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: 'clamp(1.75rem,3.5vw,2.75rem)', letterSpacing: '-0.02em', color: C.darkInk, margin: '0 0 1.5rem', lineHeight: 1.2 }}>
               What the Research Taught Us
             </h2>
           </Reveal>
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(290px, 1fr))', gap: '1.5rem', marginBottom: '3rem' }}>
             {[
-              { title: 'The gap is structural, not cognitive', body: 'Our participants were intelligent, experienced, and resourceful. Their vulnerability to financial fraud is not a cognitive failing — it is the result of systems never designed for them. Every interface, financial term, and UPI error message assumes literacy they simply don\'t have.' },
-              { title: 'Trust is the real design material', body: 'Mandachalam uses GPay because he trusts it. Parvati trusts only her husband. Prakash trusts a diary over an app. Trust — not features or UX patterns — is the primary driver of adoption in this population. Any intervention that ignores this will fail.' },
-              { title: 'Participatory methods are non-negotiable', body: 'The POEMS framework, on-ground interviews, and the workshop revealed insights no desk research could. Co-presence — sitting beside Parvati at her stall — produced empathy that directly shaped our research question and recommendations.' },
-              { title: 'Statistical limits are research lessons', body: 'The null hypothesis result was humbling and informative. A 12.59% overall improvement across 4 parameters in a single session is meaningful — but not statistically significant with 10 participants. Longitudinal, community-embedded programs are needed.' },
+              { title: 'The gap is structural, not cognitive', body: 'Our participants were intelligent, experienced, and resourceful. Their vulnerability to financial fraud is not a cognitive failing; it is the result of systems never designed for them. Every interface, financial term, and UPI error message assumes literacy they simply don\'t have.' },
+              { title: 'Trust is the real design material', body: 'Mandachalam uses GPay because he trusts it. Parvati trusts only her husband. Prakash trusts a diary over an app. Trust, not features or UX patterns, is the primary driver of adoption in this population. Any intervention that ignores this will fail.' },
+              { title: 'Participatory methods are non-negotiable', body: 'The POEMS framework, on-ground interviews, and the workshop revealed insights no desk research could. Co-presence, sitting beside Parvati at her stall, produced empathy that directly shaped our research question and recommendations.' },
+              { title: 'Statistical limits are research lessons', body: 'The null hypothesis result was humbling and informative. A 12.59% overall improvement across 4 parameters in a single session is meaningful, but not statistically significant with 10 participants. Longitudinal, community-embedded programs are needed.' },
             ].map((r, i) => (
               <Reveal key={i} delay={i * 0.08}>
                 <NeuCard dark style={{ padding: '1.5rem' }}>
@@ -1073,7 +1067,7 @@ export default function Finance() {
                 fontSize: 'clamp(1.4rem,2.8vw,2rem)', fontStyle: 'italic',
                 lineHeight: 1.55, color: C.darkInk, margin: '0 0 1.25rem', maxWidth: '28ch',
               }}>
-                "Designing for the margins doesn't mean designing differently — it means designing more honestly."
+                "Designing for the margins doesn't mean designing differently. It means designing more honestly."
               </blockquote>
               <p style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.58rem', letterSpacing: '0.18em', color: C.darkMuted }}>
                 Finance for Semi/Less Literate — Group 2 · NID Bangalore
