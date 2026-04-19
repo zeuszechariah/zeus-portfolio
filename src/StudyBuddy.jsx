@@ -1,11 +1,6 @@
 import { useRef, useState, useEffect } from 'react'
 import { motion, useInView, AnimatePresence } from 'framer-motion'
 import { Nav, Footer, ProgressBar, MaskReveal, Reveal } from './shared.jsx'
-import ActorMap    from './components/diagrams/study-buddy/ActorMap.jsx'
-import SubSystems  from './components/diagrams/study-buddy/SubSystems.jsx'
-import FeedbackLoops from './components/diagrams/study-buddy/FeedbackLoops.jsx'
-import SystemMap   from './components/diagrams/study-buddy/SystemMap.jsx'
-import SystemMapII from './components/diagrams/study-buddy/SystemMapII.jsx'
 
 // ─── Design Tokens ──────────────────────────────────────
 // Accent colours derived from Study Buddy project card gradient:
@@ -321,12 +316,13 @@ function useActiveSection(ids) {
   return active
 }
 
-// ═══════════════════════════════════════════════════════════
-// DIAGRAMS  (ActorMap, SubSystems, FeedbackLoops, SystemMap,
-//            SystemMapII imported from components/diagrams/)
-// ═══════════════════════════════════════════════════════════
+import ActorMap    from './components/diagrams/study-buddy/ActorMap.jsx'
+import SubSystems  from './components/diagrams/study-buddy/SubSystems.jsx'
+import FeedbackLoops from './components/diagrams/study-buddy/FeedbackLoops.jsx'
+import SystemMap   from './components/diagrams/study-buddy/SystemMap.jsx'
+import SystemMapII from './components/diagrams/study-buddy/SystemMapII.jsx'
 
-// ─── LEGACY inline ActorMap (kept as reference, not rendered) ─
+// ─── LEGACY (not rendered) ────────────────────────────────
 function _ActorMapLegacy() {
   const ref = useRef(null)
   const inView = useInView(ref, { once: true, amount: 0.3 })
