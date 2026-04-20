@@ -26,6 +26,7 @@ const CARDS = [
     rimColor:   'rgba(255,255,255,0.55)',
     glowShadow: '0 0 48px rgba(70,110,255,0.22), 0 0 96px rgba(70,110,255,0.10)',
     title:      'UX & Product Design',
+    desc:       'I map systems before screens — flows, mental models, and edge cases first. Every interaction decision is grounded in research and stress-tested against real constraints.',
     initBR:     '20px 0 0 20px',
   },
   {
@@ -37,6 +38,7 @@ const CARDS = [
     rimColor:   'rgba(255,255,255,0.50)',
     glowShadow: '0 0 48px rgba(0,210,140,0.18), 0 0 96px rgba(0,210,140,0.08)',
     title:      'Visual Design\n& Branding',
+    desc:       'Craft-first, concept-driven. I build cohesive visual languages that hold across touchpoints — from type hierarchies to motion, every detail earns its place.',
     initBR:     '0',
   },
   {
@@ -48,6 +50,7 @@ const CARDS = [
     rimColor:   'rgba(255,255,255,0.52)',
     glowShadow: '0 0 48px rgba(160,70,255,0.22), 0 0 96px rgba(160,70,255,0.10)',
     title:      'Creative Strategy',
+    desc:       'I bridge research and output — translating cultural signals and user insight into sharp creative direction. The why always precedes the what.',
     initBR:     '0 20px 20px 0',
   },
 ]
@@ -333,19 +336,32 @@ export default function WhatIDo() {
                     pointerEvents: 'none',
                     zIndex:        3,
                   }} />
-                  <h3 style={{
-                    fontFamily:    "'Syne', sans-serif",
-                    fontSize:      '28px',
-                    fontWeight:    700,
-                    color:         '#F2EDE4',
-                    lineHeight:    1.12,
-                    margin:        0,
-                    letterSpacing: '-0.025em',
-                    whiteSpace:    'pre-line',
-                    textShadow:    '0 2px 12px rgba(0,0,0,0.55), 0 1px 3px rgba(0,0,0,0.35)',
-                  }}>
-                    {card.title}
-                  </h3>
+                  <div>
+                    <h3 style={{
+                      fontFamily:    "'Syne', sans-serif",
+                      fontSize:      '28px',
+                      fontWeight:    700,
+                      color:         '#F2EDE4',
+                      lineHeight:    1.12,
+                      margin:        '0 0 18px',
+                      letterSpacing: '-0.025em',
+                      whiteSpace:    'pre-line',
+                      textShadow:    '0 2px 12px rgba(0,0,0,0.55), 0 1px 3px rgba(0,0,0,0.35)',
+                    }}>
+                      {card.title}
+                    </h3>
+                    <p style={{
+                      fontFamily:  "'Syne', sans-serif",
+                      fontSize:    '12.5px',
+                      fontWeight:  400,
+                      color:       'rgba(242,237,228,0.58)',
+                      lineHeight:  1.65,
+                      margin:      0,
+                    }}>
+                      {card.desc}
+                    </p>
+                  </div>
+                  <Icon i={i} />
                 </div>
 
               </div>

@@ -308,7 +308,7 @@ function HeroSection() {
           </motion.h1>
 
           <motion.p initial={{ opacity: 0, y: 18 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.65, delay: 0.14, ease: EASE }}
-            style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontStyle: 'italic', fontSize: 'clamp(1.2rem,2.5vw,1.75rem)', color: C.darkMid, margin: '0 0 1rem' }}>
+            style={{ fontFamily: "'EB Garamond', Georgia, serif", fontStyle: 'italic', fontSize: 'clamp(1.2rem,2.5vw,1.75rem)', color: C.darkMid, margin: '0 0 1rem' }}>
             Where brands cart their next collab.
           </motion.p>
 
@@ -458,7 +458,7 @@ function ProblemSection() {
             </table>
           </div>
           <blockquote style={{ margin: '1.5rem 0 0', padding: '1.25rem 1.5rem', borderLeft: `3px solid ${C.accent}`, background: C.accentDim, borderRadius: '0 10px 10px 0' }}>
-            <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontStyle: 'italic', fontSize: 'clamp(1rem,1.8vw,1.2rem)', color: C.ink, margin: 0, lineHeight: 1.6 }}>
+            <p style={{ fontFamily: "'EB Garamond', Georgia, serif", fontStyle: 'italic', fontSize: 'clamp(1rem,1.8vw,1.2rem)', color: C.ink, margin: 0, lineHeight: 1.6 }}>
               "Most existing tools treat people like profiles, not partnerships."
             </p>
           </blockquote>
@@ -782,7 +782,7 @@ function ProductSection() {
         </StaggerGrid>
 
         <blockquote style={{ padding: '1.5rem 2rem', background: `linear-gradient(135deg, ${C.accentDim}, ${C.pinkDim})`, borderRadius: '14px', border: `1px solid ${C.accentBorder}` }}>
-          <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontStyle: 'italic', fontSize: 'clamp(1.05rem,2vw,1.3rem)', color: C.ink, margin: '0 0 0.5rem', lineHeight: 1.6 }}>
+          <p style={{ fontFamily: "'EB Garamond', Georgia, serif", fontStyle: 'italic', fontSize: 'clamp(1.05rem,2vw,1.3rem)', color: C.ink, margin: '0 0 0.5rem', lineHeight: 1.6 }}>
             "A place to grow together. Not just a deal — a creative journey."
           </p>
           <p style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.58rem', color: C.muted, margin: 0, letterSpacing: '0.1em' }}>THE CLOUTCART EDGE: Speed · Brand-fit assurance · Performance prediction · Creative control</p>
@@ -1090,7 +1090,7 @@ function JourneysSection() {
                         <tr key={ri} style={{ borderBottom: `1px solid ${C.border}`, background: ri % 2 === 0 ? C.card : C.bg }}>
                           <td style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.65rem', letterSpacing: '0.08em', color: jm.color, padding: '0.8rem 1rem', fontWeight: 600, whiteSpace: 'nowrap' }}>{row.stage}</td>
                           <td style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.82rem', color: C.mid, padding: '0.8rem 1rem', lineHeight: 1.6 }}>{row.touch}</td>
-                          <td style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontStyle: 'italic', fontSize: '0.9rem', color: C.ink, padding: '0.8rem 1rem', whiteSpace: 'nowrap' }}>{row.emotion}</td>
+                          <td style={{ fontFamily: "'EB Garamond', Georgia, serif", fontStyle: 'italic', fontSize: '0.9rem', color: C.ink, padding: '0.8rem 1rem', whiteSpace: 'nowrap' }}>{row.emotion}</td>
                         </tr>
                       ))}
                     </tbody>
@@ -1373,7 +1373,7 @@ function ReflectionsSection() {
             <StaggerItem key={r.n}>
               <NeuCard dark style={{ padding: '2rem' }}>
                 <p style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.58rem', letterSpacing: '0.18em', color: C.darkMuted, margin: '0 0 1rem' }}>{r.n}</p>
-                <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontStyle: 'italic', fontSize: 'clamp(1rem,2vw,1.2rem)', color: C.darkInk, lineHeight: 1.75, margin: 0 }}>{r.q}</p>
+                <p style={{ fontFamily: "'EB Garamond', Georgia, serif", fontStyle: 'italic', fontSize: 'clamp(1rem,2vw,1.2rem)', color: C.darkInk, lineHeight: 1.75, margin: 0 }}>{r.q}</p>
               </NeuCard>
             </StaggerItem>
           ))}

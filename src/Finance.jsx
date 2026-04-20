@@ -670,7 +670,7 @@ export default function Finance() {
               <NeuCard style={{ padding: '2rem 2.25rem', borderLeft: `3px solid ${C.accent}` }}>
                 <Label>Final Research Question</Label>
                 <blockquote style={{
-                  fontFamily: "'Cormorant Garamond', serif",
+                  fontFamily: "'EB Garamond', serif",
                   fontSize: 'clamp(1.15rem,2.2vw,1.5rem)', fontStyle: 'italic',
                   lineHeight: 1.6, color: C.ink, margin: 0,
                 }}>
@@ -698,7 +698,7 @@ export default function Finance() {
             <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.9rem', lineHeight: 1.7, color: C.mid, maxWidth: '68ch', margin: '0 0 0.75rem' }}>
               We didn't want to stay in the classroom with the data. We went out. <strong style={{ color: C.ink }}>12 conversations across Bangalore</strong>: security guards, vegetable sellers, auto drivers, craftspersons, small business owners. Each one taught us something we couldn't have read in a paper.
             </p>
-            <p style={{ fontFamily: "'Cormorant Garamond', serif", fontStyle: 'italic', fontSize: '1.1rem', color: C.mid, margin: '0 0 2rem' }}>
+            <p style={{ fontFamily: "'EB Garamond', serif", fontStyle: 'italic', fontSize: '1.1rem', color: C.mid, margin: '0 0 2rem' }}>
               "There's a moment when research stops feeling like coursework and starts feeling like responsibility. Sitting beside Parvati at her stall, watching her explain why she avoids digital payments because she's afraid of 'losing the money in the phone', that was it."
             </p>
           </Reveal>
@@ -988,7 +988,7 @@ export default function Finance() {
                 to reach statistical significance. The data provides strong descriptive evidence, but insufficient inferential
                 evidence to attribute changes solely to the workshop rather than chance.
               </p>
-              <p style={{ fontFamily: "'Cormorant Garamond', serif", fontStyle: 'italic', fontSize: '1.1rem', color: C.ink, margin: 0 }}>
+              <p style={{ fontFamily: "'EB Garamond', serif", fontStyle: 'italic', fontSize: '1.1rem', color: C.ink, margin: 0 }}>
                 "This does not imply the workshop was ineffective; it implies we need a larger sample
                 and more sessions to generate statistical confidence."
               </p>
@@ -1063,7 +1063,7 @@ export default function Finance() {
           <Reveal>
             <div style={{ borderTop: '1px solid rgba(255,255,255,0.08)', paddingTop: '2.5rem' }}>
               <blockquote style={{
-                fontFamily: "'Cormorant Garamond', serif",
+                fontFamily: "'EB Garamond', serif",
                 fontSize: 'clamp(1.4rem,2.8vw,2rem)', fontStyle: 'italic',
                 lineHeight: 1.55, color: C.darkInk, margin: '0 0 1.25rem', maxWidth: '28ch',
               }}>

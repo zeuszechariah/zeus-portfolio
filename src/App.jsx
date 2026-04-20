@@ -1002,7 +1002,6 @@ function Work() {
 
   return (
     <section id="work" style={{ background:'#F2EDE4', boxShadow:'inset 0 0 160px rgba(6,6,6,0.22), inset 0 60px 80px -20px rgba(6,6,6,0.14), inset 0 -60px 80px -20px rgba(6,6,6,0.14)' }} className="relative overflow-hidden py-[clamp(4rem,6.5vw,6rem)]">
-      <WorkCanvas />
       <div className="relative z-[1] max-w-[1200px] mx-auto px-[clamp(1.5rem,5vw,3.5rem)]">
         <div className="flex items-end justify-between mb-[clamp(2rem,4vw,3rem)] gap-6 flex-wrap">
           <div>
@@ -1308,7 +1307,7 @@ function MarqueeGallery() {
           </Reveal>
           <h2 className="font-sans font-semibold text-ink tracking-[-0.04em] leading-[0.95] mb-14" style={{ fontSize:'clamp(2.75rem,7vw,6.5rem)' }}>
             <MaskReveal>Got a project?</MaskReveal>
-            <MaskReveal delay={0.1}><em className="font-display not-italic" style={{ fontStyle:'italic', fontFamily:'"Cormorant Garamond", Georgia, serif', fontSize:'1.08em' }}>Let's talk.</em></MaskReveal>
+            <MaskReveal delay={0.1}><em className="font-display not-italic" style={{ fontStyle:'italic', fontFamily:'"EB Garamond", Georgia, serif', fontSize:'1.08em' }}>Let's talk.</em></MaskReveal>
           </h2>
           <Reveal delay={0.12} className="flex items-center justify-center gap-3 flex-wrap">
             <HeroButton href="mailto:zeusbatkhar.2000@gmail.com">Get in touch ↗</HeroButton>

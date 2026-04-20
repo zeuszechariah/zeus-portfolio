@@ -509,7 +509,7 @@ export default function GetSetGlobe() {
             </MaskReveal>
             <Reveal delay={0.2}>
               <p style={{
-                fontFamily: "'Cormorant Garamond', serif",
+                fontFamily: "'EB Garamond', serif",
                 fontSize: 'clamp(1.05rem,2vw,1.3rem)',
                 color: C.mid,
                 lineHeight: 1.75,
@@ -533,7 +533,7 @@ export default function GetSetGlobe() {
             <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.9rem', lineHeight: 1.7, color: C.mid, maxWidth: '68ch', margin: '0 0 0.75rem' }}>
               For centuries, maps and globes have helped us hold the vastness of Earth in our hands. But they're not the world itself, only windows into it. They shrink oceans into blue patches and mountains into lines.
             </p>
-            <p style={{ fontFamily: "'Cormorant Garamond', serif", fontStyle: 'italic', fontSize: '1.1rem', color: C.mid, margin: '0 0 2.5rem', lineHeight: 1.7 }}>
+            <p style={{ fontFamily: "'EB Garamond', serif", fontStyle: 'italic', fontSize: '1.1rem', color: C.mid, margin: '0 0 2.5rem', lineHeight: 1.7 }}>
               "Children take visuals at face value. Traditional teaching shows Earth as static, reducing dynamic phenomena to diagrams. But to truly understand Earth, children must go beyond vision, through experience."
             </p>
           </Reveal>
@@ -614,7 +614,7 @@ export default function GetSetGlobe() {
               <Label>The question that drove everything</Label>
               <NeuCard style={{ padding: '2rem 2.25rem', borderLeft: `3px solid ${C.accent}` }}>
                 <blockquote style={{
-                  fontFamily: "'Cormorant Garamond', serif",
+                  fontFamily: "'EB Garamond', serif",
                   fontSize: 'clamp(1.15rem,2.2vw,1.5rem)', fontStyle: 'italic',
                   lineHeight: 1.6, color: C.ink, margin: 0,
                 }}>
@@ -719,7 +719,7 @@ export default function GetSetGlobe() {
           <Reveal delay={0.12}>
             <NeuCard style={{ padding: '2rem 2.25rem', borderLeft: `3px solid ${C.accent}` }}>
               <Label>What I set out to build</Label>
-              <p style={{ fontFamily: "'Cormorant Garamond', serif", fontStyle: 'italic', fontSize: 'clamp(1.1rem,2vw,1.4rem)', lineHeight: 1.6, color: C.ink, margin: 0 }}>
+              <p style={{ fontFamily: "'EB Garamond', serif", fontStyle: 'italic', fontSize: 'clamp(1.1rem,2vw,1.4rem)', lineHeight: 1.6, color: C.ink, margin: 0 }}>
                 I wanted to build something that worked on a child's terms, not the curriculum's. An experience where learning Earth means acting on it: stepping back to watch Pangea drift, peeling back layers with your hands, colliding plates to feel the Himalayas form. Not passive. Not abstract. Something that earns its place in a classroom by making understanding feel inevitable.
               </p>
             </NeuCard>
@@ -941,7 +941,7 @@ export default function GetSetGlobe() {
             <h2 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: 'clamp(1.75rem,3.5vw,2.75rem)', letterSpacing: '-0.02em', color: C.ink, margin: '0 0 1.25rem', lineHeight: 1.2 }}>
               Trials & process
             </h2>
-            <p style={{ fontFamily: "'Cormorant Garamond', serif", fontStyle: 'italic', fontSize: '1.15rem', color: C.mid, margin: '0 0 2.5rem', lineHeight: 1.7 }}>
+            <p style={{ fontFamily: "'EB Garamond', serif", fontStyle: 'italic', fontSize: '1.15rem', color: C.mid, margin: '0 0 2.5rem', lineHeight: 1.7 }}>
               "This is where the system fought back. The idea was clear; getting it to work was a different problem entirely."
             </p>
           </Reveal>
@@ -1013,7 +1013,7 @@ export default function GetSetGlobe() {
           {/* Closing pull quote */}
           <Reveal delay={0.3}>
             <div style={{ borderTop: '1px solid rgba(255,255,255,0.1)', marginTop: 'clamp(4rem,8vw,7rem)', paddingTop: 'clamp(3rem,6vw,5rem)' }}>
-              <p style={{ fontFamily: "'Cormorant Garamond', serif", fontStyle: 'italic', fontSize: 'clamp(1.8rem,3.5vw,3.2rem)', color: C.darkInk, lineHeight: 1.25, maxWidth: '800px', margin: 0 }}>
+              <p style={{ fontFamily: "'EB Garamond', serif", fontStyle: 'italic', fontSize: 'clamp(1.8rem,3.5vw,3.2rem)', color: C.darkInk, lineHeight: 1.25, maxWidth: '800px', margin: 0 }}>
                 "The goal was never to explain tectonic plates. It was to make children feel the Earth move."
               </p>
             </div>

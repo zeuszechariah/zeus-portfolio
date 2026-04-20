@@ -316,7 +316,7 @@ function HeroSection() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.65, delay: 0.5, ease: EASE }}
             style={{
-              fontFamily: "'Cormorant Garamond', Georgia, serif",
+              fontFamily: "'EB Garamond', Georgia, serif",
               fontStyle: 'italic',
               fontSize: 'clamp(1.1rem, 1.8vw, 1.4rem)',
               color: C.darkMid,
@@ -392,7 +392,7 @@ function WhySection() {
             animate={inView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.65, delay: 0.2, ease: EASE }}
             style={{
-              fontFamily: "'Cormorant Garamond', Georgia, serif",
+              fontFamily: "'EB Garamond', Georgia, serif",
               fontSize: 'clamp(1.05rem, 1.5vw, 1.2rem)',
               color: C.mid,
               lineHeight: 1.75,
@@ -582,7 +582,7 @@ function ProblemSpaceSection() {
             borderLeft: `4px solid ${C.amber}`,
           }}
         >
-          <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontStyle: 'italic', fontSize: 'clamp(1rem,1.5vw,1.15rem)', color: C.darkInk, margin: 0, lineHeight: 1.65 }}>
+          <p style={{ fontFamily: "'EB Garamond', Georgia, serif", fontStyle: 'italic', fontSize: 'clamp(1rem,1.5vw,1.15rem)', color: C.darkInk, margin: 0, lineHeight: 1.65 }}>
             "We anchored on updation — the category with the richest, most painful user stories."
           </p>
         </motion.div>
@@ -704,7 +704,7 @@ function QuestionsSection() {
         >
           <p style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.58rem', letterSpacing: '0.16em', textTransform: 'uppercase', color: C.darkMuted, margin: '0 0 1rem' }}>Final Research Question</p>
           <p style={{
-            fontFamily: "'Cormorant Garamond', Georgia, serif",
+            fontFamily: "'EB Garamond', Georgia, serif",
             fontStyle: 'italic',
             fontSize: 'clamp(1.1rem,1.8vw,1.4rem)',
             color: C.darkInk,
@@ -855,7 +855,7 @@ function FindingsSection() {
             borderLeft: `4px solid ${C.accent}`,
           }}
         >
-          <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontStyle: 'italic', fontSize: 'clamp(1.1rem,1.8vw,1.35rem)', color: C.darkInk, margin: 0, lineHeight: 1.6 }}>
+          <p style={{ fontFamily: "'EB Garamond', Georgia, serif", fontStyle: 'italic', fontSize: 'clamp(1.1rem,1.8vw,1.35rem)', color: C.darkInk, margin: 0, lineHeight: 1.6 }}>
             "81% of users did not face an Aadhaar-related urgency. The absence of urgency was itself the story."
           </p>
         </motion.div>
@@ -1119,7 +1119,7 @@ function StoriesSection() {
                 borderRadius: '0 8px 8px 0',
               }}>
                 <p style={{
-                  fontFamily: "'Cormorant Garamond', Georgia, serif",
+                  fontFamily: "'EB Garamond', Georgia, serif",
                   fontStyle: 'italic',
                   fontSize: 'clamp(1rem,1.5vw,1.15rem)',
                   color: iv.dark ? C.darkMid : C.mid,
@@ -1342,7 +1342,7 @@ function SynthesisSection() {
             borderTop: `4px solid ${C.amber}`,
           }}
         >
-          <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontStyle: 'italic', fontSize: 'clamp(1rem,1.5vw,1.15rem)', color: C.darkInk, margin: '0 0 1rem', lineHeight: 1.65 }}>
+          <p style={{ fontFamily: "'EB Garamond', Georgia, serif", fontStyle: 'italic', fontSize: 'clamp(1rem,1.5vw,1.15rem)', color: C.darkInk, margin: '0 0 1rem', lineHeight: 1.65 }}>
             "Urgency is a situation where you get something done in a short period of time — if not done, there will be certain consequences. It can be subjective."
           </p>
           <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.82rem', color: C.darkMid, margin: 0, lineHeight: 1.65 }}>
@@ -1640,11 +1640,11 @@ function PivotSection() {
           style={{ marginBottom: '2rem', padding: 'clamp(1.5rem,3vw,2rem)', background: 'rgba(255,255,255,0.04)', borderRadius: '14px', border: '1px solid rgba(255,255,255,0.1)' }}
         >
           <p style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.58rem', letterSpacing: '0.16em', textTransform: 'uppercase', color: C.darkMuted, margin: '0 0 0.75rem' }}>Instead of asking:</p>
-          <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontStyle: 'italic', fontSize: 'clamp(0.9rem,1.4vw,1.05rem)', color: C.darkMuted, margin: '0 0 1.5rem', lineHeight: 1.6, textDecoration: 'line-through', opacity: 0.7 }}>
+          <p style={{ fontFamily: "'EB Garamond', Georgia, serif", fontStyle: 'italic', fontSize: 'clamp(0.9rem,1.4vw,1.05rem)', color: C.darkMuted, margin: '0 0 1.5rem', lineHeight: 1.6, textDecoration: 'line-through', opacity: 0.7 }}>
             "What are the primary challenges faced by individuals 60+ in accessing Aadhaar services during urgent situations?"
           </p>
           <p style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.58rem', letterSpacing: '0.16em', textTransform: 'uppercase', color: C.amber, margin: '0 0 0.75rem' }}>We asked:</p>
-          <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontStyle: 'italic', fontSize: 'clamp(1rem,1.6vw,1.2rem)', color: C.darkInk, margin: 0, lineHeight: 1.65 }}>
+          <p style={{ fontFamily: "'EB Garamond', Georgia, serif", fontStyle: 'italic', fontSize: 'clamp(1rem,1.6vw,1.2rem)', color: C.darkInk, margin: 0, lineHeight: 1.65 }}>
             "How can urgency be effectively communicated to elderly citizens to ensure proactive Aadhaar updates, reducing last-minute stress and dependency?"
           </p>
         </motion.div>
@@ -1739,9 +1739,9 @@ function ReflectionsSection() {
                 background: 'rgba(255,255,255,0.03)',
                 height: '100%',
               }}>
-                <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '2.5rem', color: C.amber, margin: '0 0 0.5rem', lineHeight: 1 }}>{m.icon}</p>
+                <p style={{ fontFamily: "'EB Garamond', Georgia, serif", fontSize: '2.5rem', color: C.amber, margin: '0 0 0.5rem', lineHeight: 1 }}>{m.icon}</p>
                 <h3 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: '1.1rem', color: C.darkInk, margin: '0 0 0.75rem' }}>{m.word}</h3>
-                <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontStyle: 'italic', fontSize: '0.95rem', color: C.darkMid, lineHeight: 1.7, margin: 0 }}>{m.desc}</p>
+                <p style={{ fontFamily: "'EB Garamond', Georgia, serif", fontStyle: 'italic', fontSize: '0.95rem', color: C.darkMid, lineHeight: 1.7, margin: 0 }}>{m.desc}</p>
               </div>
             </StaggerItem>
           ))}

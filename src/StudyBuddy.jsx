@@ -667,7 +667,7 @@ function EmpathyMap() {
           <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '10px' }}>
             {q.items.map((item, j) => (
               <li key={j} style={{
-                fontFamily: "'Cormorant Garamond', serif",
+                fontFamily: "'EB Garamond', serif",
                 fontSize: 'clamp(0.9rem, 1.5vw, 1rem)',
                 color: q.textColor,
                 lineHeight: 1.5,
@@ -943,7 +943,7 @@ function BehaviouralCycle() {
       {/* Right annotation */}
       <div style={{ maxWidth: 220 }}>
         <p style={{
-          fontFamily: "'Cormorant Garamond', serif",
+          fontFamily: "'EB Garamond', serif",
           fontStyle: 'italic',
           fontSize: 'clamp(1.5rem, 3vw, 2.25rem)',
           color: C.ink,
@@ -1055,7 +1055,7 @@ function WhySection() {
           </MaskReveal>
           <Reveal delay={0.2}>
             <p style={{
-              fontFamily: "'Cormorant Garamond', serif",
+              fontFamily: "'EB Garamond', serif",
               fontSize: 'clamp(1.05rem,2vw,1.3rem)',
               color: C.mid,
               lineHeight: 1.75,
@@ -1313,7 +1313,7 @@ function SystemsSection() {
               letterSpacing: '-0.01em',
             }}>Motivation & Real-Time Achievement</h3>
             <p style={{
-              fontFamily: "'Cormorant Garamond', serif",
+              fontFamily: "'EB Garamond', serif",
               fontStyle: 'italic',
               fontSize: 'clamp(1.3rem,3vw,2rem)',
               color: 'rgba(242,237,228,0.75)',
@@ -1484,7 +1484,7 @@ function DefineSection() {
           </Reveal>
           <Reveal delay={0.1}>
             <p style={{
-              fontFamily: "'Cormorant Garamond', serif",
+              fontFamily: "'EB Garamond', serif",
               fontSize: 'clamp(1.15rem,2.5vw,1.55rem)',
               color: C.ink,
               lineHeight: 1.7,
@@ -1525,14 +1525,14 @@ function DefineSection() {
                 height: '100%',
               }}>
                 <div style={{
-                  fontFamily: "'Cormorant Garamond', serif",
+                  fontFamily: "'EB Garamond', serif",
                   fontSize: '2rem',
                   color: C.pink,
                   lineHeight: 1,
                   marginBottom: '0.5rem',
                 }}>"</div>
                 <p style={{
-                  fontFamily: "'Cormorant Garamond', serif",
+                  fontFamily: "'EB Garamond', serif",
                   fontStyle: 'italic',
                   fontSize: '1.05rem',
                   color: C.mid,
@@ -1596,7 +1596,7 @@ function DefineSection() {
               letterSpacing: '-0.01em',
             }}>Interface Design & Study Experience</h3>
             <p style={{
-              fontFamily: "'Cormorant Garamond', serif",
+              fontFamily: "'EB Garamond', serif",
               fontStyle: 'italic',
               fontSize: 'clamp(1.2rem,2.8vw,1.85rem)',
               color: 'rgba(242,237,228,0.75)',
@@ -1617,7 +1617,7 @@ function DefineSection() {
           }}>
             <Label>User Story</Label>
             <p style={{
-              fontFamily: "'Cormorant Garamond', serif",
+              fontFamily: "'EB Garamond', serif",
               fontSize: 'clamp(1.05rem,2vw,1.3rem)',
               color: C.ink,
               lineHeight: 1.7,
@@ -1729,7 +1729,7 @@ function PersonasSection() {
 
                 <div style={{ padding: '1.75rem' }}>
                   <p style={{
-                    fontFamily: "'Cormorant Garamond', serif",
+                    fontFamily: "'EB Garamond', serif",
                     fontStyle: 'italic',
                     fontSize: '1.05rem',
                     color: C.mid,
@@ -1834,7 +1834,7 @@ function DesignSystemSection() {
             <div style={{ background: C.card, borderRadius: '14px', padding: '1.75rem', height: '100%', boxShadow: C.neu }}>
               <div style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.58rem', letterSpacing: '0.2em', color: C.muted, marginBottom: '0.75rem' }}>TARGET ENERGY</div>
               <h4 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: '1.1rem', color: C.ink, marginBottom: '0.75rem' }}>Fresh · Youthful · Focused</h4>
-              <p style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '1rem', color: C.mid, lineHeight: 1.65, margin: 0 }}>
+              <p style={{ fontFamily: "'EB Garamond', serif", fontSize: '1rem', color: C.mid, lineHeight: 1.65, margin: 0 }}>
                 Palette chosen to resonate with 13+ age group: vibrant enough to feel energetic, restrained enough to aid focus during long study sessions.
               </p>
             </div>
@@ -2187,7 +2187,7 @@ function AccessibilitySection() {
                   {p.items.map((item, i) => (
                     <li key={i} style={{ display: 'flex', gap: '8px', alignItems: 'flex-start' }}>
                       <div style={{ width: 5, height: 5, borderRadius: '50%', background: C.border, marginTop: '0.45em', flexShrink: 0, border: `1px solid ${C.muted}` }} />
-                      <span style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '1rem', color: C.mid, lineHeight: 1.55 }}>{item}</span>
+                      <span style={{ fontFamily: "'EB Garamond', serif", fontSize: '1rem', color: C.mid, lineHeight: 1.55 }}>{item}</span>
                     </li>
                   ))}
                 </ul>
@@ -2253,7 +2253,7 @@ function ReflectionsSection() {
                   marginBottom: '1.25rem',
                 }}>{r.n}</div>
                 <p style={{
-                  fontFamily: "'Cormorant Garamond', serif",
+                  fontFamily: "'EB Garamond', serif",
                   fontStyle: 'italic',
                   fontSize: 'clamp(1.05rem,2vw,1.25rem)',
                   color: C.darkInk,
@@ -2267,7 +2267,7 @@ function ReflectionsSection() {
 
         <Reveal delay={0.2}>
           <p style={{
-            fontFamily: "'Cormorant Garamond', serif",
+            fontFamily: "'EB Garamond', serif",
             fontSize: 'clamp(1rem,2vw,1.2rem)',
             color: C.darkMid,
             maxWidth: 560,

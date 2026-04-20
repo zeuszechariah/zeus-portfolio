@@ -192,71 +192,8 @@ function AboutIntro() {
               </p>
             </Reveal>
 
-            {/* Accolades + Education — side-by-side glass cards */}
-            <Reveal delay={0.18} className="mt-auto pt-[clamp(2rem,4vw,3rem)]">
-              <div className="grid grid-cols-2 gap-4 mb-8">
-                {[
-                  {
-                    label: 'Accolades',
-                    rows: [
-                      ["India's Best Design Student Award", 'Winner · 2025'],
-                      ['Srishti Graduation Project Commendation', 'Dept. Recipient · 2023'],
-                      ['Taiwan Intl. Student Design Competition', 'Finalist · 2022'],
-                    ],
-                  },
-                  {
-                    label: 'Education',
-                    rows: [
-                      ['M.Des Interaction Design', 'National Institute of Design Bangalore'],
-                      ['International Exchange',   'Hochschule für Technik und Wirtschaft Berlin'],
-                      ['B.Des Visual Comm. & Brand Strategy', 'Srishti Institute of Art, Design & Technology, Bangalore'],
-                    ],
-                  },
-                ].map(({ label, rows }) => (
-                  <div key={label} style={{
-                    position: 'relative',
-                    background: 'linear-gradient(145deg, rgba(14,14,18,0.72) 0%, rgba(8,8,12,0.80) 100%)',
-                    backdropFilter: 'blur(24px) saturate(140%)',
-                    WebkitBackdropFilter: 'blur(24px) saturate(140%)',
-                    borderRadius: '16px',
-                    padding: '26px 24px 22px',
-                    overflow: 'hidden',
-                    boxShadow: [
-                      'inset 0 0 0 1px rgba(255,255,255,0.09)',
-                      '0 24px 64px rgba(0,0,0,0.55)',
-                      '0 8px 24px rgba(0,0,0,0.35)',
-                    ].join(', '),
-                  }}>
-                    {/* Top-left corner rim highlight */}
-                    <div style={{
-                      position: 'absolute', inset: 0, borderRadius: 'inherit',
-                      background: 'radial-gradient(circle 55px at 0% 0%, rgba(255,255,255,0.50) 0%, transparent 100%)',
-                      pointerEvents: 'none', zIndex: 3,
-                    }} />
-                    <span className="font-mono text-[0.58rem] tracking-[0.16em] uppercase text-ink/28 block"
-                      style={{ position: 'relative', zIndex: 4, marginBottom: '16px' }}>
-                      {label}
-                    </span>
-                    <div style={{ position: 'relative', zIndex: 4 }}>
-                      {rows.map(([a, b], i, arr) => (
-                        <div key={a} style={{
-                          padding: '16px 0',
-                          borderBottom: i < arr.length - 1 ? '1px solid rgba(242,237,228,0.10)' : 'none',
-                        }}>
-                          <p className="font-mono text-ink/32 tracking-[0.04em]"
-                            style={{ fontSize:'clamp(0.5rem,0.62vw,0.6rem)', lineHeight: 1.45, marginBottom: '4px' }}>{a}</p>
-                          <p className="font-mono font-bold text-ink/55 tracking-[0.04em]"
-                            style={{ fontSize:'clamp(0.5rem,0.62vw,0.6rem)', lineHeight: 1.2 }}>{b}</p>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </Reveal>
-
             {/* Exam ranks — single horizontal row */}
-            <Reveal delay={0.26} className="mt-auto pt-[clamp(3rem,6vw,5rem)]">
+            <Reveal delay={0.18} className="mb-10">
               <div className="flex items-center gap-8">
                 {[
                   ['NID DAT', 'AIR 8 · 2024', 'Interaction Design / Strategic Design Management'],
@@ -278,6 +215,104 @@ function AboutIntro() {
                 ))}
               </div>
             </Reveal>
+
+            {/* Accolades + Education — side-by-side glass cards */}
+            <Reveal delay={0.26} className="mt-auto pt-[clamp(1rem,2vw,1.5rem)]">
+              <div className="grid grid-cols-2 gap-4 mb-8">
+                {[
+                  {
+                    label: 'Accolades',
+                    rows: [
+                      ["India's Best Design Student Award", 'Winner · 2025'],
+                      ['Srishti Graduation Project Commendation', 'Winner · 2023'],
+                      ['Taiwan Intl. Student Design Competition', 'Finalist · 2022'],
+                    ],
+                  },
+                  {
+                    label: 'Education',
+                    rows: [
+                      ['M.Des Interaction Design', 'National Institute of Design Bangalore'],
+                      ['International Exchange',   'Hochschule für Technik und Wirtschaft Berlin'],
+                      ['B.Des Visual Comm. & Brand Strategy', 'Srishti Institute of Art, Design & Technology, Bangalore'],
+                    ],
+                  },
+                ].map(({ label, rows }) => (
+                  <div key={label} style={{
+                    position:       'relative',
+                    background:     '#080808',
+                    backdropFilter: 'blur(8px)',
+                    WebkitBackdropFilter: 'blur(8px)',
+                    borderRadius:   '20px',
+                    border:         '1px solid rgba(255,255,255,0.04)',
+                    padding:        '26px 24px 22px',
+                    overflow:       'hidden',
+                    boxShadow:      '0 0 0 1px rgba(0,0,0,0.5), 0 20px 60px rgba(0,0,0,0.7), 0 4px 12px rgba(0,0,0,0.5)',
+                  }}>
+                    {/* Corner rim — follows the rounded arc, fades diagonally */}
+                    <div style={{
+                      position:      'absolute',
+                      inset:         0,
+                      borderRadius:  '20px',
+                      border:        '1px solid transparent',
+                      borderTop:     '1px solid rgba(255,255,255,0.55)',
+                      borderLeft:    '1px solid rgba(255,255,255,0.28)',
+                      WebkitMaskImage: 'linear-gradient(135deg, black 0%, black 18%, transparent 55%)',
+                      maskImage:       'linear-gradient(135deg, black 0%, black 18%, transparent 55%)',
+                      pointerEvents: 'none',
+                      zIndex:        5,
+                    }} />
+                    {/* Bottom-right face shadow */}
+                    <div style={{
+                      position:      'absolute',
+                      bottom:        '-10%',
+                      right:         '-10%',
+                      width:         '65%',
+                      height:        '60%',
+                      background:    'radial-gradient(ellipse at 60% 60%, rgba(0,0,0,0.88) 0%, rgba(0,0,0,0.50) 45%, transparent 72%)',
+                      borderRadius:  '50%',
+                      pointerEvents: 'none',
+                      zIndex:        3,
+                    }} />
+                    {/* Specular highlight */}
+                    <div style={{
+                      position:      'absolute',
+                      top:           '-30%',
+                      left:          '-15%',
+                      width:         '55%',
+                      height:        '50%',
+                      background:    'radial-gradient(ellipse at 40% 40%, rgba(255,255,255,0.09) 0%, rgba(255,255,255,0.04) 35%, transparent 65%)',
+                      borderRadius:  '50%',
+                      transform:     'rotate(-10deg)',
+                      pointerEvents: 'none',
+                      filter:        'blur(2px)',
+                      zIndex:        3,
+                    }} />
+                    <span className="font-mono text-[0.58rem] tracking-[0.16em] uppercase text-ink/28 block"
+                      style={{ position: 'relative', zIndex: 4, marginBottom: '16px' }}>
+                      {label}
+                    </span>
+                    <div style={{ position: 'relative', zIndex: 4 }}>
+                      {rows.map(([a, b], i, arr) => (
+                        <div key={a} style={{
+                          minHeight:    '64px',
+                          display:      'flex',
+                          flexDirection:'column',
+                          justifyContent:'center',
+                          padding:      '12px 0',
+                          borderBottom: i < arr.length - 1 ? '1px solid rgba(242,237,228,0.10)' : 'none',
+                        }}>
+                          <p className="text-ink/32"
+                            style={{ fontFamily:"'Syne', sans-serif", fontSize:'clamp(0.5rem,0.62vw,0.6rem)', lineHeight: 1.45, marginBottom: '4px' }}>{a}</p>
+                          <p className="font-bold text-ink/55"
+                            style={{ fontFamily:"'Syne', sans-serif", fontSize:'clamp(0.5rem,0.62vw,0.6rem)', lineHeight: 1.2 }}>{b}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </Reveal>
+
 
           </div>
 
