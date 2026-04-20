@@ -3,146 +3,144 @@ import { motion, useInView } from 'framer-motion'
 
 const DIAG = {
   pink: '#FE60AC', blue: '#4A5DE2', green: '#A6CA00',
-  ink: '#0B1A2E', mid: '#3E5270', muted: '#7A8A9E',
-  white: '#FFFFFF',
+  ink: '#0B1A2E', white: '#FFFFFF',
 }
-const FM = "'Space Mono', monospace"
+const FM = "'Syne', sans-serif"
 const EASE = [0.22, 1, 0.36, 1]
 
-const CX = 450, CY = 320
+const CX = 430, CY = 430
+const R1 = 120, R2 = 240, R3 = 380
+const R_PRIMARY = 48, R_SECONDARY = 44, R_TERTIARY = 40
 
 function polar(angleDeg, r) {
   const a = (angleDeg * Math.PI) / 180
   return { cx: Math.round(CX + r * Math.cos(a)), cy: Math.round(CY + r * Math.sin(a)) }
 }
 
-function NL({ lines, x, y, fill, fs = 9 }) {
-  const lh = fs * 1.3
-  const totalH = (lines.length - 1) * lh
+// Arc endpoint at given radius and angle (degrees)
+function ap(radius, deg) {
+  const a = (deg * Math.PI) / 180
+  return { x: Math.round(CX + radius * Math.cos(a)), y: Math.round(CY + radius * Math.sin(a)) }
+}
+
+function NodeText({ lines, x, y, fill }) {
+  if (lines.length === 1) {
+    return (
+      <text textAnchor="middle" x={x} y={y} fontSize={11} fill={fill}
+        fontFamily={FM} fontWeight="500" dominantBaseline="middle">
+        {lines[0]}
+      </text>
+    )
+  }
   return (
-    <text textAnchor="middle" fontSize={fs} fill={fill} fontFamily={FM} fontWeight="400">
-      {lines.map((l, i) => (
-        <tspan key={i} x={x} y={y - totalH / 2 + i * lh} dominantBaseline="middle">{l}</tspan>
-      ))}
+    <text textAnchor="middle" fontSize={11} fill={fill} fontFamily={FM} fontWeight="500">
+      <tspan x={x} y={y} dy="-0.6em">{lines[0]}</tspan>
+      <tspan x={x} dy="1.2em">{lines[1]}</tspan>
     </text>
   )
 }
 
-// 6 primary nodes — r=88, evenly spaced at 60° intervals
 const PRIMARY = [
-  { ...polar(-90, 88), r: 30, lines: ['Students'] },
-  { ...polar(-30, 88), r: 27, lines: ['Ministry', 'of Edu.'] },
-  { ...polar(30, 88),  r: 26, lines: ['Teachers'] },
-  { ...polar(90, 88),  r: 26, lines: ['Parents /','Guardians'] },
-  { ...polar(150, 88), r: 25, lines: ['Exam', 'Boards'] },
-  { ...polar(210, 88), r: 25, lines: ['NCERT'] },
+  { ...polar(-90, R1), lines: ['Students'] },
+  { ...polar(-30, R1), lines: ['Ministry', 'of Edu.'] },
+  { ...polar(30,  R1), lines: ['Teachers'] },
+  { ...polar(90,  R1), lines: ['Parents /', 'Guardians'] },
+  { ...polar(150, R1), lines: ['Exam', 'Boards'] },
+  { ...polar(210, R1), lines: ['NCERT'] },
 ]
 
-// 10 secondary nodes — r=182, evenly at 36°
 const SECONDARY = [
-  { ...polar(-90, 182), r: 24, lines: ['UGC'] },
-  { ...polar(-54, 182), r: 24, lines: ['EdTech', 'Companies'] },
-  { ...polar(-18, 182), r: 24, lines: ['Coaching', 'Centres'] },
-  { ...polar(18,  182), r: 24, lines: ['IT', 'Providers'] },
-  { ...polar(54,  182), r: 24, lines: ['Online', 'Learning'] },
-  { ...polar(90,  182), r: 24, lines: ['Private', 'Employers'] },
-  { ...polar(126, 182), r: 24, lines: ['Vocational', 'Institutes'] },
-  { ...polar(162, 182), r: 24, lines: ['Public Sector', 'Enterprises'] },
-  { ...polar(198, 182), r: 24, lines: ['Social', 'Media'] },
-  { ...polar(234, 182), r: 24, lines: ['Startup', 'Ecosystem'] },
+  { ...polar(-90, R2), lines: ['UGC'] },
+  { ...polar(-54, R2), lines: ['EdTech', 'Cos.'] },
+  { ...polar(-18, R2), lines: ['Coaching', 'Centres'] },
+  { ...polar(18,  R2), lines: ['IT', 'Providers'] },
+  { ...polar(54,  R2), lines: ['Online', 'Learning'] },
+  { ...polar(90,  R2), lines: ['Private', 'Employers'] },
+  { ...polar(126, R2), lines: ['Vocational', 'Institutes'] },
+  { ...polar(162, R2), lines: ['Public', 'Enterprises'] },
+  { ...polar(198, R2), lines: ['Social', 'Media'] },
+  { ...polar(234, R2), lines: ['Startup', 'Ecosystem'] },
 ]
 
-// 12 tertiary nodes — r=278, evenly at 30°
 const TERTIARY = [
-  { ...polar(-90,  278), r: 20, lines: ['NGOs'] },
-  { ...polar(-60,  278), r: 20, lines: ['High', 'Schools'] },
-  { ...polar(-30,  278), r: 20, lines: ['Banks &', 'Financial'] },
-  { ...polar(0,    278), r: 20, lines: ['Activists'] },
-  { ...polar(30,   278), r: 20, lines: ['Social Impact', 'Orgs'] },
-  { ...polar(60,   278), r: 20, lines: ['Community', 'Centers'] },
-  { ...polar(90,   278), r: 20, lines: ['Skill', 'Councils'] },
-  { ...polar(120,  278), r: 20, lines: ['Student', 'Unions'] },
-  { ...polar(150,  278), r: 20, lines: ['CSR &', 'Philanthropic'] },
-  { ...polar(180,  278), r: 20, lines: ['Political', 'Representatives'] },
-  { ...polar(210,  278), r: 20, lines: ['Journalists'] },
-  { ...polar(240,  278), r: 20, lines: ['Distance', 'Learning'] },
+  { ...polar(-90,  R3), lines: ['NGOs'] },
+  { ...polar(-60,  R3), lines: ['High', 'Schools'] },
+  { ...polar(-30,  R3), lines: ['Banks &', 'Financial'] },
+  { ...polar(0,    R3), lines: ['Activists'] },
+  { ...polar(30,   R3), lines: ['Social', 'Impact'] },
+  { ...polar(60,   R3), lines: ['Community', 'Centers'] },
+  { ...polar(90,   R3), lines: ['Skill', 'Councils'] },
+  { ...polar(120,  R3), lines: ['Student', 'Unions'] },
+  { ...polar(150,  R3), lines: ['CSR &', 'Philanth.'] },
+  { ...polar(180,  R3), lines: ['Political', 'Reps.'] },
+  { ...polar(210,  R3), lines: ['Journalists'] },
+  { ...polar(240,  R3), lines: ['Distance', 'Learning'] },
 ]
+
+// textPath arcs at 11 o'clock for each ring
+// PRIMARY: gap between 210° and 270° nodes → arc centered at 240°, radius 130 (just outside R1)
+// SECONDARY: gap between 234° and 270° nodes → arc centered at 252°, radius 252 (just outside R2)
+// TERTIARY: gap between 210° and 240° nodes → arc centered at 225°, radius 440 (clears R_TERTIARY=40 nodes)
+const r1s = ap(130, 215), r1e = ap(130, 265)
+const r2s = ap(252, 228), r2e = ap(252, 278)
+const r3s = ap(440, 200), r3e = ap(440, 250)
 
 export default function ActorMap() {
   const ref = useRef(null)
   const inView = useInView(ref, { once: true, amount: 0.12 })
 
   return (
-    <div ref={ref} style={{
-      background: '#fff', borderRadius: 12,
-      padding: '32px 24px 24px', boxShadow: '0 2px 20px rgba(0,0,0,0.06)',
-    }}>
-      <svg viewBox="110 -10 680 690" width="100%" style={{ overflow: 'visible' }}>
-        {/* Three concentric guide rings */}
-        <circle cx={CX} cy={CY} r={88}  fill="none" stroke="rgba(0,0,0,0.15)" strokeWidth={2} />
-        <circle cx={CX} cy={CY} r={182} fill="none" stroke="rgba(0,0,0,0.10)" strokeWidth={1.5} />
-        <circle cx={CX} cy={CY} r={278} fill="none" stroke="rgba(0,0,0,0.07)" strokeWidth={1.5} strokeDasharray="6 5" />
+    <div ref={ref}>
+      <svg viewBox="0 0 860 860" width="100%" style={{ overflow: 'visible' }}>
+        <defs>
+          <path id="r1arc" d={`M ${r1s.x},${r1s.y} A 130,130 0 0,1 ${r1e.x},${r1e.y}`} fill="none" />
+          <path id="r2arc" d={`M ${r2s.x},${r2s.y} A 252,252 0 0,1 ${r2e.x},${r2e.y}`} fill="none" />
+          <path id="r3arc" d={`M ${r3s.x},${r3s.y} A 440,440 0 0,1 ${r3e.x},${r3e.y}`} fill="none" />
+        </defs>
 
-        {/* Ring labels */}
-        <text x={CX} y={CY - 88 - 10} textAnchor="middle" fontSize={7.5} fill={DIAG.muted} fontFamily={FM} letterSpacing="2">PRIMARY</text>
-        <text x={CX} y={CY - 182 - 10} textAnchor="middle" fontSize={7.5} fill={DIAG.muted} fontFamily={FM} letterSpacing="2">SECONDARY</text>
-        <text x={CX} y={CY - 278 - 10} textAnchor="middle" fontSize={7.5} fill={DIAG.muted} fontFamily={FM} letterSpacing="2">TERTIARY</text>
+        {/* Concentric guide rings */}
+        <circle cx={CX} cy={CY} r={R1} fill="none" stroke="rgba(0,0,0,0.30)" strokeWidth={0.5} />
+        <circle cx={CX} cy={CY} r={R2} fill="none" stroke="rgba(0,0,0,0.22)" strokeWidth={0.5} />
+        <circle cx={CX} cy={CY} r={R3} fill="none" stroke="rgba(0,0,0,0.18)" strokeWidth={0.5} strokeDasharray="4 3" />
 
-        {/* Tertiary — green */}
+        {/* Curved ring labels */}
+        <text fontSize={10} fill="#999" fontFamily={FM} letterSpacing="0.12em">
+          <textPath href="#r1arc" startOffset="50%" textAnchor="middle">PRIMARY ACTORS</textPath>
+        </text>
+        <text fontSize={10} fill="#999" fontFamily={FM} letterSpacing="0.12em">
+          <textPath href="#r2arc" startOffset="50%" textAnchor="middle">SECONDARY ACTORS</textPath>
+        </text>
+        <text fontSize={10} fill="#999" fontFamily={FM} letterSpacing="0.12em">
+          <textPath href="#r3arc" startOffset="50%" textAnchor="middle">TERTIARY ACTORS</textPath>
+        </text>
+
         {TERTIARY.map((n, i) => (
           <motion.g key={i} style={{ transformBox: 'fill-box', transformOrigin: 'center' }}
             initial={{ opacity: 0, scale: 0 }} animate={inView ? { opacity: 1, scale: 1 } : {}}
             transition={{ duration: 0.35, delay: 0.55 + i * 0.035, ease: EASE }}>
-            <circle cx={n.cx} cy={n.cy} r={n.r} fill={DIAG.green} />
-            <NL lines={n.lines} x={n.cx} y={n.cy} fill={DIAG.ink} fs={6.5} />
+            <circle cx={n.cx} cy={n.cy} r={R_TERTIARY} fill={DIAG.green} />
+            <NodeText lines={n.lines} x={n.cx} y={n.cy} fill={DIAG.ink} />
           </motion.g>
         ))}
 
-        {/* Secondary — blue */}
         {SECONDARY.map((n, i) => (
           <motion.g key={i} style={{ transformBox: 'fill-box', transformOrigin: 'center' }}
             initial={{ opacity: 0, scale: 0 }} animate={inView ? { opacity: 1, scale: 1 } : {}}
             transition={{ duration: 0.38, delay: 0.3 + i * 0.045, ease: EASE }}>
-            <circle cx={n.cx} cy={n.cy} r={n.r} fill={DIAG.blue} />
-            <NL lines={n.lines} x={n.cx} y={n.cy} fill={DIAG.white} fs={7} />
+            <circle cx={n.cx} cy={n.cy} r={R_SECONDARY} fill={DIAG.blue} />
+            <NodeText lines={n.lines} x={n.cx} y={n.cy} fill={DIAG.white} />
           </motion.g>
         ))}
 
-        {/* Primary — pink */}
         {PRIMARY.map((n, i) => (
           <motion.g key={i} style={{ transformBox: 'fill-box', transformOrigin: 'center' }}
             initial={{ opacity: 0, scale: 0 }} animate={inView ? { opacity: 1, scale: 1 } : {}}
             transition={{ duration: 0.45, delay: 0.12 + i * 0.07, ease: EASE }}>
-            <circle cx={n.cx} cy={n.cy} r={n.r} fill={DIAG.pink} />
-            <NL lines={n.lines} x={n.cx} y={n.cy} fill={DIAG.white} fs={9} />
+            <circle cx={n.cx} cy={n.cy} r={R_PRIMARY} fill={DIAG.pink} />
+            <NodeText lines={n.lines} x={n.cx} y={n.cy} fill={DIAG.white} />
           </motion.g>
         ))}
       </svg>
-
-      <div style={{
-        display: 'flex', gap: '12px 28px', justifyContent: 'center', flexWrap: 'wrap',
-        marginTop: '1.25rem', paddingTop: '1.25rem',
-        borderTop: '1px solid rgba(0,0,0,0.06)',
-      }}>
-        {[
-          { c: DIAG.pink,  l: 'Primary stakeholders' },
-          { c: DIAG.blue,  l: 'Secondary stakeholders' },
-          { c: DIAG.green, l: 'Tertiary stakeholders' },
-        ].map(({ c, l }) => (
-          <div key={l} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <div style={{ width: 12, height: 12, borderRadius: '50%', background: c, flexShrink: 0 }} />
-            <span style={{ fontFamily: FM, fontSize: '0.65rem', letterSpacing: '0.08em', color: DIAG.mid }}>{l}</span>
-          </div>
-        ))}
-      </div>
-
-      <p style={{
-        fontFamily: FM, fontSize: '0.55rem', letterSpacing: '0.15em',
-        textTransform: 'uppercase', color: DIAG.muted,
-        textAlign: 'center', marginTop: '1rem', marginBottom: 0,
-      }}>
-        Stakeholder Map — Three concentric layers of actors in India's education ecosystem
-      </p>
     </div>
   )
 }
