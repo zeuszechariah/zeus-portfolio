@@ -39,12 +39,12 @@ export default function SubSystems() {
   const inView = useInView(ref, { once: true, amount: 0.15 })
 
   return (
-    <div ref={ref}>
-      <svg viewBox="140 110 152 148" width="100%">
+    <div ref={ref} style={{ maxWidth: '82%', margin: '0 auto' }}>
+      <svg viewBox="108 76 228 224" width="100%">
         {[...H_LINES, ...V_LINES].map((l, i) => (
           <motion.line key={i}
             x1={l.x1} y1={l.y1} x2={l.x2} y2={l.y2}
-            stroke={DIAG.border} strokeWidth={0.7} strokeDasharray="4 3"
+            stroke={DIAG.border} strokeWidth={0.35} strokeDasharray="2 4"
             initial={{ opacity: 0 }} animate={inView ? { opacity: 1 } : {}}
             transition={{ duration: 0.4, delay: 0.05 + i * 0.04 }}
           />

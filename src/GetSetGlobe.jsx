@@ -1,6 +1,9 @@
 import { useRef, useState, useEffect } from 'react'
 import { motion, useInView } from 'framer-motion'
-import { Nav, Footer, ProgressBar, MaskReveal, Reveal } from './shared.jsx'
+import { gsap } from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
+gsap.registerPlugin(ScrollTrigger)
+import { Nav, Footer, ProgressBar, MaskReveal, Reveal, BackToTop } from './shared.jsx'
 
 // ─── Design Tokens ──────────────────────────────────────
 // Accent colours derived from Get Set Globe project card gradient:
@@ -10,6 +13,7 @@ const C = {
   page:    '#F3F6F2',
   surface: '#E8EDE6',
   card:    '#F6FAF5',
+  cardAlt: '#E8F2E6',
 
   // Neumorphic shadows
   neu:     '6px 6px 18px rgba(0,0,0,0.08), -4px -4px 12px rgba(255,255,255,0.88)',
@@ -335,79 +339,59 @@ function PrototypeFlow() {
     {n:'04',label:'Topic of\nInterest'},{n:'05',label:'Learn'},{n:'06',label:'Complete'},{n:'07',label:'Menu'},
   ]
   return (
-    <NeuCard dark style={{ padding: '1.5rem 2rem', overflowX: 'auto' }}>
-      <div ref={ref} style={{ display: 'flex', alignItems: 'center', minWidth: 500 }}>
-        {steps.map((s, i) => (
-          <motion.div key={i} style={{ display: 'flex', alignItems: 'center', flex: 1 }}
-            initial={{ opacity: 0, y: 14 }}
-            animate={inView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.4, ease: EASE, delay: i * 0.07 }}
-          >
-            <div style={{ textAlign: 'center', flex: 1 }}>
-              <div style={{ width: 34, height: 34, borderRadius: '50%', margin: '0 auto 8px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: (i===0||i===6) ? C.accentDim : 'rgba(255,255,255,0.04)', border: `1px solid ${(i===0||i===6) ? C.accentBorder : 'rgba(255,255,255,0.1)'}` }}>
-                <span style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.48rem', color: (i===0||i===6) ? C.accent : 'rgba(255,255,255,0.4)', letterSpacing: '0.06em' }}>{s.n}</span>
-              </div>
-              <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.65rem', color: 'rgba(255,255,255,0.5)', lineHeight: 1.3, whiteSpace: 'pre-line', margin: 0 }}>{s.label}</p>
-            </div>
-            {i < steps.length-1 && <div style={{ width: 14, height: 1, flexShrink: 0, background: 'rgba(255,255,255,0.12)' }} />}
-          </motion.div>
-        ))}
+    <NeuCard style={{ padding: '2rem 2.5rem', overflowX: 'auto' }}>
+      <div ref={ref} style={{ minWidth: 560 }}>
+        {/* Row 1: circles centred in equal columns, connectors between */}
+        <div style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
+          {steps.flatMap((s, i) => {
+            const circle = (
+              <motion.div key={`c${i}`} style={{ flex: 1, display: 'flex', justifyContent: 'center' }}
+                initial={{ opacity: 0, y: 14 }}
+                animate={inView ? { opacity: 1, y: 0 } : {}}
+                transition={{ duration: 0.4, ease: EASE, delay: i * 0.07 }}
+              >
+                <div style={{ width: 42, height: 42, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: (i===0||i===6) ? C.accentDim : 'rgba(0,0,0,0.04)', border: `1px solid ${(i===0||i===6) ? C.accentBorder : C.border}` }}>
+                  <span style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.55rem', color: (i===0||i===6) ? C.accent : C.mid, letterSpacing: '0.06em' }}>{s.n}</span>
+                </div>
+              </motion.div>
+            )
+            return i < steps.length - 1
+              ? [circle, <div key={`l${i}`} style={{ width: 20, height: 1, flexShrink: 0, background: C.border }} />]
+              : [circle]
+          })}
+        </div>
+        {/* Row 2: labels in matching equal columns */}
+        <div style={{ display: 'flex' }}>
+          {steps.map((s, i) => (
+            <motion.div key={i} style={{ flex: 1, textAlign: 'center' }}
+              initial={{ opacity: 0 }}
+              animate={inView ? { opacity: 1 } : {}}
+              transition={{ duration: 0.4, ease: EASE, delay: i * 0.07 + 0.18 }}
+            >
+              <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.78rem', color: C.mid, lineHeight: 1.35, whiteSpace: 'pre-line', margin: 0 }}>{s.label}</p>
+            </motion.div>
+          ))}
+        </div>
       </div>
     </NeuCard>
   )
 }
 
-// ─── IA Nodes ─────────────────────────────────────────────
-function IANode({ label, sub, accent, small }) {
-  return (
-    <div style={{ minWidth: small?'120px':'160px', maxWidth: small?'160px':'200px', background: accent ? C.accentDim : 'rgba(0,0,0,0.025)', border: `1px solid ${accent ? C.accentBorder : C.border}`, borderRadius: '8px', padding: '10px 12px', textAlign: 'center' }}>
-      <p style={{ fontFamily: "'Syne', sans-serif", fontSize: small?'0.7rem':'0.775rem', fontWeight: accent?500:400, color: accent?C.ink:C.mid, lineHeight: 1.3, margin: 0 }}>{label}</p>
-      {sub && <p style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.48rem', letterSpacing: '0.06em', color: C.muted, marginTop: '3px', marginBottom: 0 }}>{sub}</p>}
-    </div>
-  )
-}
-function IAConnector() {
-  return (
-    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-      <div style={{ width: '1px', height: '16px', background: C.border }} />
-      <svg width="7" height="5" viewBox="0 0 7 5" fill={C.muted} opacity="0.5"><polygon points="0,0 7,0 3.5,5" /></svg>
-    </div>
-  )
-}
+// ─── IA Diagram ───────────────────────────────────────────
 function IADiagram() {
   return (
-    <div style={{ overflowX: 'auto' }}>
-      <div style={{ minWidth: '720px', padding: '16px 0' }}>
-        <div style={{ display: 'flex', justifyContent: 'center' }}><IANode label="Intro Video" sub="Entry point" /></div>
-        <IAConnector />
-        <div style={{ display: 'flex', justifyContent: 'center' }}><IANode label="Menu" sub="Topic Gallery" /></div>
-        <IAConnector />
-        <div style={{ display: 'flex', justifyContent: 'center' }}><IANode label="Tectonic Plates" sub="Selected topic" accent /></div>
-        <IAConnector />
-        <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'center', gap: '8px' }}>
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: 1, maxWidth: '320px' }}>
-            <IANode label="Current globe" sub="2024 tectonic config" small />
-            <IAConnector /><IANode label="Step back → Continental drift" sub="Proxemics: body steps back" small accent />
-            <IAConnector /><IANode label="Step further back → Pangaea" sub="Time reversal" small />
-            <IAConnector /><IANode label="Return to present" sub="Body steps forward" small accent />
-            <IAConnector /><IANode label="Peel Earth's layers" sub="Sagittal arm gesture" small accent />
-            <IAConnector /><IANode label="Tectonic map overlay" sub="Automatic reveal" small />
-          </div>
-          <div style={{ width: '1px', background: C.border, alignSelf: 'stretch', marginTop: '24px', marginLeft: '16px', marginRight: '16px' }} />
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: 1, maxWidth: '320px' }}>
-            <IANode label="Plate movement types" sub="Explore further" small />
-            <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'center', gap: '8px', marginTop: 0, width: '100%' }}>
-              {[{l:'Convergent',s:'Hands converge',hi:true},{l:'Divergent',s:'Hands separate'},{l:'Transformative',s:'Lateral slide'}].map(({l,s,hi}) => (
-                <div key={l} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: 1 }}>
-                  <IAConnector /><IANode label={l} sub={s} small accent={hi} />
-                  {hi && <><IAConnector /><IANode label="Himalayas formation" sub="Lithospheric collision" small /><IAConnector /><IANode label="Altitude changes" sub="Aftereffects visualised" small /></>}
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+    <iframe
+      src="/gsg-ia-flowchart.html"
+      title="Information Architecture — Tectonic Plates"
+      allowTransparency
+      style={{
+        width: '100%',
+        aspectRatio: '1680 / 770',
+        border: 'none',
+        background: 'transparent',
+        display: 'block',
+      }}
+    />
   )
 }
 
@@ -435,6 +419,108 @@ const CONCEPTS = [
   { label: 'Ocean Currents',                chosen: false },
 ]
 
+// ─── Sticky Notes Exploration ─────────────────────────
+const STICKIES = [
+  { id: 'earth-tilt',  label: "Earth's Tilt &\nSeasons",         color: '#68CBE8', dark: false, size: 148, left: 0,   top: 0,   rot: 0  },
+  { id: 'geo-time',    label: "Geological\nTime Scales",          color: '#B5CC30', dark: false, size: 154, left: 118, top: 54,  rot: 0,  keep: true },
+  { id: 'water-dist',  label: "Water\nDistribution\non Earth",    color: '#2A6B82', dark: true,  size: 156, left: 320, top: 0,   rot: 0  },
+  { id: 'weathering',  label: "Weathering vs.\nErosion",          color: '#B5CC30', dark: false, size: 138, left: 482, top: 44,  rot: -5 },
+  { id: 'lat-long',    label: "Latitude &\nLongitude",            color: '#68CBE8', dark: false, size: 148, left: 0,   top: 212, rot: -8 },
+  { id: 'ocean',       label: "Ocean Currents",                   color: '#E8D87A', dark: false, size: 134, left: 122, top: 246, rot: 7  },
+  { id: 'weather',     label: "Weather vs.\nClimate",             color: '#E8D87A', dark: false, size: 148, left: 320, top: 214, rot: 0  },
+  { id: 'sustain',     label: "Sustainability &\nHuman Impact",   color: '#2A6B82', dark: true,  size: 156, left: 480, top: 212, rot: 0  },
+]
+
+function StickyNotesExploration() {
+  const sectionRef = useRef(null)
+
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+      gsap.timeline({
+        scrollTrigger: {
+          trigger: sectionRef.current,
+          start:   'top top',
+          end:     '+=700',
+          scrub:   1.4,
+          pin:     true,
+          anticipatePin: 1,
+        },
+      }).to('.sticky-fade', {
+        scale:    0,
+        opacity:  0,
+        duration: 1,
+        stagger:  0.08,
+        ease:    'back.in(1.4)',
+      })
+    }, sectionRef)
+    return () => ctx.revert()
+  }, [])
+
+  return (
+    <div ref={sectionRef} style={{
+      minHeight: '100vh',
+      background: C.page,
+      display: 'flex',
+      alignItems: 'center',
+    }}>
+      <div className="max-w-[1120px] mx-auto px-[clamp(1.5rem,5vw,3rem)]"
+        style={{ display: 'flex', gap: '4rem', alignItems: 'center', width: '100%' }}>
+
+        <div style={{ flexShrink: 0, maxWidth: '270px' }}>
+          <SectionTag>05 — Concept</SectionTag>
+          <h2 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: 'clamp(1.5rem,3vw,2.4rem)', letterSpacing: '-0.02em', color: C.ink, margin: '0.5rem 0 1.25rem', lineHeight: 1.2 }}>
+            Concept exploration & what we set out to build
+          </h2>
+          <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.88rem', lineHeight: 1.75, color: C.mid, margin: 0 }}>
+            We mapped concepts of Earth &amp; Geography that children find difficult to understand due to{' '}
+            <span style={{ color: C.accent, fontWeight: 500 }}>limited depth</span>{' '}
+            in traditional teaching methods and the absence of multimodal engagement.
+          </p>
+        </div>
+
+        <div style={{ flex: 1, position: 'relative', height: '420px' }}>
+          {STICKIES.map(s => (
+            <div
+              key={s.id}
+              className={s.keep ? undefined : 'sticky-fade'}
+              style={{
+                position:       'absolute',
+                left:           s.left,
+                top:            s.top,
+                width:          s.size,
+                height:         s.size,
+                transform:      `rotate(${s.rot}deg)`,
+                transformOrigin: 'center center',
+                background:     s.color,
+                borderRadius:   '3px',
+                boxShadow:      '3px 5px 18px rgba(0,0,0,0.16)',
+                display:        'flex',
+                alignItems:     'center',
+                justifyContent: 'center',
+                padding:        '14px',
+              }}
+            >
+              <p style={{
+                fontFamily: "'Syne', sans-serif",
+                fontSize:   '0.9rem',
+                fontWeight: 500,
+                color:      s.dark ? 'rgba(255,255,255,0.92)' : '#1a3040',
+                lineHeight: 1.35,
+                textAlign:  'center',
+                margin:     0,
+                whiteSpace: 'pre-line',
+              }}>
+                {s.label}
+              </p>
+            </div>
+          ))}
+        </div>
+
+      </div>
+    </div>
+  )
+}
+
 // ═══════════════════════════════════════════════════════
 // MAIN COMPONENT
 // ═══════════════════════════════════════════════════════
@@ -454,8 +540,24 @@ export default function GetSetGlobe() {
       <SidebarNav active={active} />
 
       {/* ── HERO (dark) ── */}
-      <section style={{ background: C.heroGrad, paddingTop: 'clamp(7rem,12vw,11rem)', paddingBottom: 'clamp(5rem,8vw,8rem)' }}>
-        <Wrap>
+      <section style={{
+        position:      'relative',
+        paddingTop:    'clamp(7rem,12vw,11rem)',
+        paddingBottom: 'clamp(5rem,8vw,8rem)',
+      }}>
+        {/* Banner photo — absolutely positioned so filter doesn't bleed onto text */}
+        <img src="/gsg-banner.jpg" aria-hidden="true" style={{
+          position:      'absolute', inset: 0,
+          width:         '100%', height: '100%',
+          objectFit:     'cover', objectPosition: '50% 22%',
+          filter:        'contrast(1.18) saturate(1.1)',
+          zIndex:        0,
+        }} />
+        <div style={{
+          position: 'absolute', inset: 0, zIndex: 1,
+          background: 'linear-gradient(to right, rgba(5,15,8,0.88) 0%, rgba(5,15,8,0.78) 40%, rgba(5,15,8,0.50) 68%, rgba(5,15,8,0.20) 100%)',
+        }} />
+        <Wrap style={{ position: 'relative', zIndex: 2 }}>
           <MaskReveal delay={0}>
             <SectionTag dark>EdTech · Interaction Design · 2024</SectionTag>
           </MaskReveal>
@@ -473,7 +575,7 @@ export default function GetSetGlobe() {
               fontFamily: "'Syne', sans-serif", fontSize: 'clamp(1rem,2vw,1.15rem)',
               lineHeight: 1.75, color: C.darkMid, maxWidth: '55ch', margin: '0 0 3rem',
             }}>
-              I kept coming back to one memory: a geography class where the teacher drew a flat diagram of tectonic plates on a board, and I understood nothing. Get Set Globe is my attempt at the opposite: an experience where children don't just see Earth's forces, they feel them.
+              We kept coming back to one memory: a geography class where the teacher drew a flat diagram of tectonic plates on a board, and we understood nothing. Get Set Globe is our attempt at the opposite: an experience where children don't just see Earth's forces, they feel them.
             </p>
           </MaskReveal>
           <div style={{ display: 'flex', gap: '3rem', flexWrap: 'wrap' }}>
@@ -493,7 +595,7 @@ export default function GetSetGlobe() {
       </section>
 
       {/* ── WHY THIS PROJECT ── */}
-      <section id="overview" style={{ background: C.surface, ...PAD }}>
+      <section id="overview" style={{ background: C.surface, ...PAD, paddingBottom: 'clamp(2rem,3vw,2.5rem)' }}>
         <Wrap>
           <div style={{ maxWidth: 720, margin: '0 auto', textAlign: 'center' }}>
             <Reveal><SectionTag>Why This Project?</SectionTag></Reveal>
@@ -505,7 +607,7 @@ export default function GetSetGlobe() {
                 letterSpacing: '-0.02em',
                 color: C.ink,
                 marginBottom: '1.5rem',
-              }}>What Earth science class never gave us</h2>
+              }}>What <em style={{ fontFamily: "'EB Garamond', serif", fontStyle: 'italic', color: C.accent, fontWeight: 400 }}>Earth science</em> class<br />never gave us</h2>
             </MaskReveal>
             <Reveal delay={0.2}>
               <p style={{
@@ -514,7 +616,7 @@ export default function GetSetGlobe() {
                 color: C.mid,
                 lineHeight: 1.75,
               }}>
-                There's a geography class I can still picture clearly: a teacher drawing flat plates on a board, arrows pointing sideways, and me understanding none of it. The map said the world moved, but nothing in that room moved with it. Earth science has always been taught this way, as a diagram, a label, a list of terms to memorise. But the Earth isn't a diagram. It has{' '}
+                There's a geography class we can still picture clearly: a teacher drawing flat plates on a board, arrows pointing sideways, and none of it landing. The map said the world moved, but nothing in that room moved with it. Earth science has always been taught this way, as a diagram, a label, a list of terms to memorise. But the Earth isn't a diagram. It has{' '}
                 <strong style={{ color: C.ink, fontWeight: 600 }}>mass, heat, and violence</strong>, and children can feel the difference between being told that and experiencing it. That's what Get Set Globe was built around.
               </p>
             </Reveal>
@@ -530,38 +632,49 @@ export default function GetSetGlobe() {
             <h2 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: 'clamp(1.75rem,3.5vw,2.75rem)', letterSpacing: '-0.02em', color: C.ink, margin: '0 0 1.25rem', lineHeight: 1.2 }}>
               Seeing is believing, and that's the problem.
             </h2>
-            <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.9rem', lineHeight: 1.7, color: C.mid, maxWidth: '68ch', margin: '0 0 0.75rem' }}>
+            <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.9rem', lineHeight: 1.7, color: C.mid, margin: '0 0 0.75rem' }}>
               For centuries, maps and globes have helped us hold the vastness of Earth in our hands. But they're not the world itself, only windows into it. They shrink oceans into blue patches and mountains into lines.
             </p>
-            <p style={{ fontFamily: "'EB Garamond', serif", fontStyle: 'italic', fontSize: '1.1rem', color: C.mid, margin: '0 0 2.5rem', lineHeight: 1.7 }}>
+            <p style={{ fontFamily: "'EB Garamond', serif", fontStyle: 'italic', fontSize: 'clamp(1.15rem,2vw,1.45rem)', color: C.mid, margin: '0 0 2.5rem', lineHeight: 1.7 }}>
               "Children take visuals at face value. Traditional teaching shows Earth as static, reducing dynamic phenomena to diagrams. But to truly understand Earth, children must go beyond vision, through experience."
             </p>
           </Reveal>
 
-          <StaggerGrid style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '1rem', marginBottom: '2.5rem' }}>
+          <StaggerGrid style={{ display: 'flex', gap: '2.5rem', justifyContent: 'center', flexWrap: 'wrap', marginBottom: '2.5rem' }}>
             {[
               { title: 'Static teaching',     body: 'Diagrams flatten living, moving systems into flat images with no sense of scale or time.' },
               { title: 'Passive observation', body: 'Students watch but never interact, with no ownership over the experience or its meaning.' },
               { title: 'Abstract concepts',   body: "Tectonic forces, geological time, and Earth's interior remain intangible and forgettable." },
             ].map((card, i) => (
-              <StaggerItem key={i} style={{ flex: 1 }}>
-                <NeuCard style={{ flex: 1, padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
-                  <div style={{ width: 28, height: 2.5, borderRadius: 2, background: C.accent, opacity: 0.5 + i * 0.1, marginBottom: '0.2rem' }} />
-                  <p style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: '0.88rem', color: C.ink, margin: 0 }}>{card.title}</p>
-                  <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.78rem', lineHeight: 1.65, color: C.mid, margin: 0, flex: 1 }}>{card.body}</p>
-                </NeuCard>
+              <StaggerItem key={i} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 270, height: 270 }}>
+                {/* Outer rotated square → rounded diamond shape */}
+                <div style={{
+                  width: 190, height: 190,
+                  transform: 'rotate(45deg)',
+                  borderRadius: '24px',
+                  background: i % 2 === 1 ? C.cardAlt : C.card,
+                  boxShadow: C.neu,
+                  overflow: 'hidden',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  flexShrink: 0,
+                }}>
+                  {/* Counter-rotate content so it reads upright */}
+                  <div style={{
+                    width: 190, height: 190,
+                    transform: 'rotate(-45deg)',
+                    display: 'flex', flexDirection: 'column',
+                    alignItems: 'center', justifyContent: 'center',
+                    textAlign: 'center',
+                    padding: '0 0.75rem',
+                  }}>
+                    <div style={{ width: 20, height: 2, borderRadius: 2, background: C.accent, margin: '0 auto 0.6rem', opacity: 0.5 + i * 0.15 }} />
+                    <p style={{ fontFamily: "'Syne', sans-serif", fontWeight: 600, fontSize: '0.85rem', color: C.ink, margin: '0 0 0.45rem', lineHeight: 1.25 }}>{card.title}</p>
+                    <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.68rem', lineHeight: 1.5, color: C.mid, margin: 0 }}>{card.body}</p>
+                  </div>
+                </div>
               </StaggerItem>
             ))}
           </StaggerGrid>
-
-          <Reveal delay={0.1}>
-            <NeuCard style={{ padding: '1.5rem 2rem' }}>
-              <div style={{ marginBottom: '1rem' }}>
-                <TectonicMap />
-                <ScreenLabel>Major tectonic plates · convergent boundaries highlighted</ScreenLabel>
-              </div>
-            </NeuCard>
-          </Reveal>
         </Wrap>
       </section>
 
@@ -571,10 +684,10 @@ export default function GetSetGlobe() {
           <Reveal>
             <SectionTag>03 — Research</SectionTag>
             <h2 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: 'clamp(1.75rem,3.5vw,2.75rem)', letterSpacing: '-0.02em', color: C.ink, margin: '0 0 1.25rem', lineHeight: 1.2 }}>
-              I needed research to back an instinct I already had
+              We needed research to back an instinct we already had
             </h2>
-            <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.9rem', lineHeight: 1.7, color: C.mid, maxWidth: '68ch', margin: '0 0 2.5rem' }}>
-              My instinct was that learning through the body works better than learning through the page. It turns out there's solid research backing that. Meaning is made multimodally: through gesture, movement, gaze, posture, and speech working together, not just words on a board.
+            <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.9rem', lineHeight: 1.7, color: C.mid, margin: '0 0 2.5rem' }}>
+              Our instinct was that learning through the body works better than learning through the page. It turns out there's solid research backing that. Meaning is made multimodally: through gesture, movement, gaze, posture, and speech working together, not just words on a board.
             </p>
           </Reveal>
 
@@ -585,7 +698,7 @@ export default function GetSetGlobe() {
               { v: '2.5×', l: 'Sensorimotor-enriched modes',       s: 'Retention multiplier' },
             ].map(({ v, l, s }, i) => (
               <StaggerItem key={v} style={{ flex: 1 }}>
-                <NeuCard style={{ flex: 1, padding: '1.75rem 1.5rem', display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
+                <NeuCard style={{ flex: 1, padding: '1.75rem 1.5rem', display: 'flex', flexDirection: 'column', gap: '0.4rem', background: i % 2 === 1 ? C.cardAlt : C.card }}>
                   <p style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: 'clamp(1.8rem,3.5vw,2.8rem)', color: C.accent, margin: 0, lineHeight: 1 }}>{v}</p>
                   <p style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: '0.85rem', color: C.ink, margin: 0 }}>{l}</p>
                   <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.76rem', color: C.mid, margin: 0 }}>{s}</p>
@@ -604,7 +717,7 @@ export default function GetSetGlobe() {
                 <span style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: '0.9rem', color: C.accent }}>engaging learning experience</span>
               </div>
               <p style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.55rem', letterSpacing: '0.06em', color: C.muted, margin: 0 }}>
-                Source: Cook, Wagner, Mitchell & Goldin-Meadow (2008). "Gesturing Makes Learning Last." Psychological Science 19(11): 1047–53.
+                Source: Cook, Wagner, Mitchell &amp; Goldin-Meadow (2008). "Gesturing Makes Learning Last." Psychological Science 19(11): 1047–53.
               </p>
             </NeuCard>
           </Reveal>
@@ -632,25 +745,40 @@ export default function GetSetGlobe() {
           <Reveal>
             <SectionTag>04 — Audience</SectionTag>
             <h2 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: 'clamp(1.75rem,3.5vw,2.75rem)', letterSpacing: '-0.02em', color: C.ink, margin: '0 0 1.25rem', lineHeight: 1.2 }}>
-              Who I was designing for
+              Who we were designing for
             </h2>
             <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.9rem', lineHeight: 1.7, color: C.mid, maxWidth: '68ch', margin: '0 0 2.5rem' }}>
-              Old enough to understand cause and effect, young enough to still find Earth genuinely astonishing. Children aged 10 to 12 sit right at the edge of abstract thinking, which makes them the ideal test case for whether embodied interaction can bridge the gap that diagrams leave behind.
+              Old enough to understand cause and effect, young enough to still find Earth genuinely astonishing. <strong style={{ color: C.ink, fontWeight: 600 }}>Children aged 10 to 12</strong> sit right at the edge of abstract thinking, which makes them the ideal test case for whether embodied interaction can bridge the gap that diagrams leave behind.
             </p>
           </Reveal>
 
-          <StaggerGrid style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1rem', marginBottom: '1rem' }}>
+          <StaggerGrid style={{ display: 'flex', gap: '2.5rem', justifyContent: 'center', marginBottom: '2rem', flexWrap: 'wrap' }}>
             {[
-              { n: '01', t: 'Cognitive readiness', b: 'Can grasp cause-effect, sequence, and physical transformation.' },
-              { n: '02', t: 'Learning style',      b: 'Learn best through hands-on interaction and guided discovery.' },
-              { n: '03', t: 'Core challenge',      b: 'Struggle with visualising deep time and internal processes.' },
+              { n: '01', t: 'Cognitive\nreadiness', b: 'Can grasp cause-effect, sequence, and physical transformation.' },
+              { n: '02', t: 'Learning\nstyle',      b: 'Learn best through hands-on interaction and guided discovery.' },
+              { n: '03', t: 'Core\nchallenge',      b: 'Struggle with visualising deep time and internal processes.' },
             ].map((card, i) => (
-              <StaggerItem key={i} style={{ flex: 1 }}>
-                <NeuCard style={{ flex: 1, padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
-                  <span style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.55rem', letterSpacing: '0.18em', color: C.muted }}>{card.n}</span>
-                  <p style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: '0.88rem', color: C.ink, margin: 0 }}>{card.t}</p>
-                  <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.78rem', lineHeight: 1.65, color: C.mid, margin: 0, flex: 1 }}>{card.b}</p>
-                </NeuCard>
+              <StaggerItem key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem' }}>
+                {/* Circle */}
+                <div style={{ position: 'relative', width: 260, height: 260, borderRadius: '50%', overflow: 'hidden', flexShrink: 0 }}>
+                  <video
+                    src="/gsg-ta-bg.mp4"
+                    autoPlay loop muted playsInline
+                    style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }}
+                  />
+                  {/* Green overlay */}
+                  <div style={{ position: 'absolute', inset: 0, background: 'rgba(40,170,80,0.62)' }} />
+                  {/* Vignette */}
+                  <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse at 50% 50%, transparent 40%, rgba(0,0,0,0.45) 100%)' }} />
+                  {/* Text — fixed-height block so number is always at the same position */}
+                  <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1.5rem' }}>
+                    <div style={{ width: '100%', textAlign: 'center' }}>
+                      <span style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.52rem', letterSpacing: '0.2em', color: 'rgba(255,255,255,0.6)', display: 'block', marginBottom: '0.55rem' }}>{card.n}</span>
+                      <p style={{ fontFamily: "'Syne', sans-serif", fontWeight: 600, fontSize: '1.05rem', color: '#fff', lineHeight: 1.25, whiteSpace: 'pre-line', margin: '0 0 0.65rem', minHeight: '2.6em' }}>{card.t}</p>
+                      <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.7rem', color: 'rgba(255,255,255,0.7)', lineHeight: 1.5, margin: 0, minHeight: '3.15em' }}>{card.b}</p>
+                    </div>
+                  </div>
+                </div>
               </StaggerItem>
             ))}
           </StaggerGrid>
@@ -676,41 +804,46 @@ export default function GetSetGlobe() {
       </section>
 
       {/* ── CONCEPT (page) ── */}
-      <section id="concept" style={{ ...PAD, background: C.page }}>
+      <section id="concept" style={{ background: C.page }}>
+        <StickyNotesExploration />
+
+        {/* Concept chips — shown after animation completes */}
+        <Wrap>
+          <div style={{ paddingTop: '2rem', paddingBottom: '0.5rem', display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+            {CONCEPTS.map(({ label, chosen }) => (
+              <span key={label} style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.78rem', padding: '6px 14px', borderRadius: '8px', border: `1px solid ${chosen ? C.accentBorder : C.border}`, background: chosen ? C.accentDim : 'transparent', color: chosen ? C.accent : C.mid, fontWeight: chosen ? 500 : 400 }}>
+                {chosen && <span style={{ marginRight: '4px', fontSize: '0.6rem' }}>✓</span>}
+                {label}
+              </span>
+            ))}
+          </div>
+        </Wrap>
+
+        <div style={{ paddingBottom: PAD.paddingBottom }}>
         <Wrap>
           <Reveal>
-            <SectionTag>05 — Concept</SectionTag>
-            <h2 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: 'clamp(1.75rem,3.5vw,2.75rem)', letterSpacing: '-0.02em', color: C.ink, margin: '0 0 1.25rem', lineHeight: 1.2 }}>
-              What I set out to build
-            </h2>
-            <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.9rem', lineHeight: 1.7, color: C.mid, maxWidth: '68ch', margin: '0 0 1.5rem' }}>
+            <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.9rem', lineHeight: 1.7, color: C.mid, maxWidth: '68ch', margin: '2rem 0 1.5rem' }}>
               The research told us children struggle most with concepts that require imagining scale, time, and invisible forces. We mapped candidate topics and asked: which one would feel most different if you could experience it rather than be told about it?
             </p>
           </Reveal>
 
-          <Reveal delay={0.06}>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '2.5rem' }}>
-              {CONCEPTS.map(({ label, chosen }) => (
-                <span key={label} style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.78rem', padding: '6px 14px', borderRadius: '8px', border: `1px solid ${chosen ? C.accentBorder : C.border}`, background: chosen ? C.accentDim : 'transparent', color: chosen ? C.accent : C.mid, fontWeight: chosen ? 500 : 400 }}>
-                  {chosen && <span style={{ marginRight: '4px', fontSize: '0.6rem' }}>✓</span>}
-                  {label}
-                </span>
-              ))}
-            </div>
-          </Reveal>
-
           <Reveal delay={0.08}><Label>Three initial directions explored</Label></Reveal>
-          <StaggerGrid style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1rem', marginBottom: '3rem' }}>
+          <StaggerGrid style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem', marginBottom: '3rem' }}>
             {[
-              { n: 'Direction 01', t: 'Pangea narrative',  b: "Earth's shape imagined as anything but spherical; the story sparks curiosity and leads to why Earth has its present form, emphasising the role of tectonic plates." },
-              { n: 'Direction 02', t: 'Time travel',       b: "Travelling back in time to trace Earth's evolution helps learners grasp the dynamic tectonic forces that have sculpted the planet's current shape." },
-              { n: 'Direction 03', t: 'Scale first',       b: "Tectonic plates introduced by first helping children comprehend Earth's vast scale, then showing how its surface is split into constantly shifting sections." },
+              { n: 'Direction 01', t: 'Pangea narrative', b: "Earth's shape imagined as anything but spherical; the story sparks curiosity and leads to why Earth has its present form, emphasising the role of tectonic plates.", img: '/gsg-idea-1.png' },
+              { n: 'Direction 02', t: 'Time travel',      b: "Travelling back in time to trace Earth's evolution helps learners grasp the dynamic tectonic forces that have sculpted the planet's current shape.",        img: '/gsg-idea-2.png' },
+              { n: 'Direction 03', t: 'Scale first',      b: "Tectonic plates introduced by first helping children comprehend Earth's vast scale, then showing how its surface is split into constantly shifting sections.", img: '/gsg-idea-3.png' },
             ].map((card, i) => (
               <StaggerItem key={i} style={{ flex: 1 }}>
-                <NeuCard style={{ flex: 1, padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
-                  <span style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.55rem', letterSpacing: '0.12em', color: C.muted }}>{card.n}</span>
-                  <p style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: '0.88rem', color: C.ink, margin: 0 }}>{card.t}</p>
-                  <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.78rem', lineHeight: 1.65, color: C.mid, margin: 0, flex: 1 }}>{card.b}</p>
+                <NeuCard style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden', background: i % 2 === 1 ? C.cardAlt : C.card }}>
+                  <div style={{ overflow: 'hidden', borderBottom: `1px solid ${C.border}` }}>
+                    <img src={card.img} alt={`Initial direction ${i + 1}`} style={{ width: 'calc(100% + 12px)', marginLeft: '-12px', display: 'block', height: '140px', objectFit: 'cover', objectPosition: 'top', filter: 'brightness(0.96) contrast(1.48)' }} />
+                  </div>
+                  <div style={{ padding: '1.25rem', display: 'flex', flexDirection: 'column', gap: '0.5rem', flex: 1 }}>
+                    <span style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.55rem', letterSpacing: '0.12em', color: C.muted }}>{card.n}</span>
+                    <p style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: '0.88rem', color: C.ink, margin: 0 }}>{card.t}</p>
+                    <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.78rem', lineHeight: 1.65, color: C.mid, margin: 0, flex: 1 }}>{card.b}</p>
+                  </div>
                 </NeuCard>
               </StaggerItem>
             ))}
@@ -718,13 +851,14 @@ export default function GetSetGlobe() {
 
           <Reveal delay={0.12}>
             <NeuCard style={{ padding: '2rem 2.25rem', borderLeft: `3px solid ${C.accent}` }}>
-              <Label>What I set out to build</Label>
+              <Label>What we set out to build</Label>
               <p style={{ fontFamily: "'EB Garamond', serif", fontStyle: 'italic', fontSize: 'clamp(1.1rem,2vw,1.4rem)', lineHeight: 1.6, color: C.ink, margin: 0 }}>
-                I wanted to build something that worked on a child's terms, not the curriculum's. An experience where learning Earth means acting on it: stepping back to watch Pangea drift, peeling back layers with your hands, colliding plates to feel the Himalayas form. Not passive. Not abstract. Something that earns its place in a classroom by making understanding feel inevitable.
+                We wanted to build something that worked on a child's terms, not the curriculum's. An experience where learning Earth means acting on it: stepping back to watch Pangea drift, peeling back layers with your hands, colliding plates to feel the Himalayas form. Not passive. Not abstract. Something that earns its place in a classroom by making understanding feel inevitable.
               </p>
             </NeuCard>
           </Reveal>
         </Wrap>
+        </div>
       </section>
 
       {/* ── TECHNOLOGY (surface) ── */}
@@ -740,12 +874,18 @@ export default function GetSetGlobe() {
             </p>
           </Reveal>
 
-          <Reveal delay={0.08}><KinectDiagram /></Reveal>
+          <Reveal delay={0.08}>
+            <img
+              src="/gsg-how-it-works.png"
+              alt="How it works — Kinect to TouchDesigner pipeline"
+              style={{ width: '100%', display: 'block', borderRadius: '8px' }}
+            />
+          </Reveal>
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: '0.75rem', marginTop: '1rem', marginBottom: '3rem' }}>
-            {[['IR Sensor','Infrared object detection'],['IR Depth','Z-axis depth reading'],['Colour Camera','Visual context capture'],['LED Mic Array','Audio input cues']].map(([s, d]) => (
+            {[['IR Sensor','Infrared object detection'],['IR Depth','Z-axis depth reading'],['Colour Camera','Visual context capture'],['LED Mic Array','Audio input cues']].map(([s, d], i) => (
               <Reveal key={s}>
-                <NeuCard style={{ padding: '1rem 1.1rem' }}>
+                <NeuCard style={{ padding: '1rem 1.1rem', background: i % 2 === 1 ? C.cardAlt : C.card }}>
                   <p style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.55rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: C.muted, margin: '0 0 4px' }}>{s}</p>
                   <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.8rem', color: C.mid, margin: 0 }}>{d}</p>
                 </NeuCard>
@@ -768,7 +908,7 @@ export default function GetSetGlobe() {
               { n: 'Step 03', t: 'Pinch plates',    b: 'Create converging tectonic movement with a pinch gesture.' },
             ].map((card, i) => (
               <StaggerItem key={i} style={{ flex: 1 }}>
-                <NeuCard style={{ flex: 1, padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
+                <NeuCard style={{ flex: 1, padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '0.6rem', background: i % 2 === 1 ? C.cardAlt : C.card }}>
                   <span style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.55rem', letterSpacing: '0.12em', color: C.muted }}>{card.n}</span>
                   <p style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: '0.88rem', color: C.ink, margin: 0 }}>{card.t}</p>
                   <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.78rem', lineHeight: 1.65, color: C.mid, margin: 0, flex: 1 }}>{card.b}</p>
@@ -778,15 +918,27 @@ export default function GetSetGlobe() {
           </StaggerGrid>
 
           <Reveal delay={0.1}>
-            <NeuCard style={{ padding: '1.5rem 2rem', borderLeft: '3px solid rgba(200,80,80,0.4)', background: '#FFF7F7', boxShadow: 'none' }}>
-              <Label>Why we moved on: not using a physical globe</Label>
-              <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.875rem', color: C.mid, lineHeight: 1.7, margin: '0 0 0.75rem' }}>
-                We tested it and the engagement was real. Children responded immediately to motion-based interaction. But the globe as a fixed object felt like a constraint, and the gestures were too lesson-specific to carry meaning outside of one activity.
-              </p>
-              <p style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: '0.875rem', color: C.ink, margin: 0 }}>
-                The takeaway: gestures should feel universal and reusable, not one-off actions bound to a single lesson.
-              </p>
-            </NeuCard>
+            <div style={{ borderRadius: '14px', overflow: 'hidden', display: 'flex', alignItems: 'stretch', background: '#0a0a0a', boxShadow: C.neu }}>
+              {/* Image with overlay + vignette */}
+              <div style={{ width: '38%', flexShrink: 0, position: 'relative' }}>
+                <img src="/gsg-globe-physical.jpg" alt="Child touching a physical globe" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+                <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to right, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.18) 60%, rgba(0,0,0,0.42) 100%)' }} />
+                <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse at 50% 50%, transparent 38%, rgba(0,0,0,0.72) 100%)' }} />
+              </div>
+              {/* Text */}
+              <div style={{ padding: '2rem 2.25rem', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                <div>
+                  <p style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.55rem', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.4)', margin: '0 0 0.75rem' }}>Why we moved on</p>
+                  <p style={{ fontFamily: "'Syne', sans-serif", fontWeight: 600, fontSize: '1.05rem', color: '#fff', lineHeight: 1.3, margin: '0 0 1.25rem' }}>Not using a physical globe</p>
+                  <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '1rem', color: 'rgba(255,255,255,0.55)', lineHeight: 1.75, margin: 0 }}>
+                    We tested it and the engagement was real. Children responded immediately to motion-based interaction. But the globe as a fixed object felt like a constraint, and the gestures were too lesson-specific to carry meaning outside of one activity.
+                  </p>
+                </div>
+                <p style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: '1.05rem', color: 'rgba(255,255,255,0.88)', lineHeight: 1.5, margin: '1.75rem 0 0', borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '1.25rem' }}>
+                  Gestures should feel universal and reusable — not one-off actions bound to a single lesson.
+                </p>
+              </div>
+            </div>
           </Reveal>
 
           {/* Prototype flow */}
@@ -794,7 +946,7 @@ export default function GetSetGlobe() {
             <Reveal>
               <Label>7-step experience loop</Label>
               <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.9rem', lineHeight: 1.7, color: C.mid, maxWidth: '68ch', margin: '0 0 1.5rem' }}>
-                I mapped the full experience as a loop, from the moment the device connects to the moment a child finishes and wants to go again. Every transition had to feel earned, not just navigated.
+                We mapped the full experience as a loop, from the moment the device connects to the moment a child finishes and wants to go again. Every transition had to feel earned, not just navigated.
               </p>
             </Reveal>
             <Reveal delay={0.08}><PrototypeFlow /></Reveal>
@@ -803,6 +955,7 @@ export default function GetSetGlobe() {
       </section>
 
       {/* ── DESIGN (page) ── */}
+
       <section id="design" style={{ ...PAD, background: C.page }}>
         <Wrap>
           <Reveal>
@@ -816,22 +969,26 @@ export default function GetSetGlobe() {
           </Reveal>
 
           <Reveal delay={0.08}>
-            <NeuCard style={{ padding: '1.5rem 2rem', marginBottom: '1rem' }}>
-              <IADiagram />
+            <NeuCard style={{ padding: 0, overflow: 'hidden', marginBottom: '2rem' }}>
+              <iframe
+                src="/gsg-ia-flowchart.html"
+                title="Information Architecture — Tectonic Plates"
+                scrolling="no"
+                style={{
+                  width: '100%',
+                  aspectRatio: '1680 / 770',
+                  border: 'none',
+                  background: 'transparent',
+                  display: 'block',
+                }}
+              />
             </NeuCard>
           </Reveal>
+
           <Reveal delay={0.1}>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem', marginBottom: '3rem' }}>
-              {[
-                { accent: true,  label: 'Green nodes: user-triggered interactions' },
-                { accent: false, label: 'White nodes: system-driven transitions' },
-              ].map(({ accent, label }) => (
-                <NeuCard key={label} style={{ padding: '0.875rem 1rem', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                  <div style={{ width: 10, height: 10, borderRadius: '3px', flexShrink: 0, background: accent ? C.accentDim : 'rgba(0,0,0,0.03)', border: `1px solid ${accent ? C.accentBorder : C.border}` }} />
-                  <span style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.78rem', color: C.mid }}>{label}</span>
-                </NeuCard>
-              ))}
-            </div>
+            <NeuCard style={{ padding: '1.5rem', marginBottom: '1rem' }}>
+              <img src="/gsg-storyboard-sketch.png" alt="Get Set Globe storyboard" style={{ width: '60%', display: 'block', borderRadius: '4px', margin: '0 auto' }} />
+            </NeuCard>
           </Reveal>
 
           {/* Interactions table */}
@@ -863,9 +1020,15 @@ export default function GetSetGlobe() {
             </NeuCard>
           </Reveal>
 
+          <Reveal delay={0.08}>
+            <NeuCard style={{ padding: '1.5rem', marginBottom: '3rem' }}>
+              <img src="/gsg-gesture-sketch.png" alt="Core multimodal gesture interactions" style={{ width: '55%', display: 'block', borderRadius: '4px', margin: '0 auto' }} />
+            </NeuCard>
+          </Reveal>
+
           {/* Core 4 interactions */}
           <Reveal><Label>The four that defined the experience</Label></Reveal>
-          <StaggerGrid style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1rem', marginBottom: '3rem' }}>
+          <StaggerGrid style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '1rem', marginBottom: '3rem' }}>
             {[
               { n: '01', title: 'Proxemics → Continental Drift & Pangea',  detail: "Using proxemics and frontal arm movements to cause the continental drift and formation of Pangea, depending on the user's movement direction and speed.", sensor: 'Proximity · Body position', gesture: 'Step backward / forward', effect: 'Time reversal / continental drift', accent: true },
               { n: '02', title: "Sagittal Arm Movement → Earth's Interior", detail: "Sagittal arm movement reveals the inner layers of the Earth, exposing the crust, mantle and core, each layer's role in tectonic forces explained as you go.", sensor: 'Hand motion · Depth tracking', gesture: 'Arm sweep forward/back', effect: "Peels and rebuilds Earth's layers", accent: false },
@@ -873,7 +1036,7 @@ export default function GetSetGlobe() {
               { n: '04', title: 'Hover + Hold → Menu Selection',             detail: 'Simple UI inspired by Xbox Kinect games. Intuitive hand hover for navigation, with a steady hold to confirm a selection. Visual cue: completion of a circle stroke around the option.', sensor: 'Air gesture · Hand position', gesture: 'Hover + hold still', effect: 'Selection confirmed via circle', accent: false },
             ].map((card, i) => (
               <StaggerItem key={i} style={{ flex: 1 }}>
-                <NeuCard style={{ flex: 1, padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '0.6rem', borderLeft: card.accent ? `2px solid ${C.accent}` : 'none' }}>
+                <NeuCard style={{ flex: 1, padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '0.6rem', borderLeft: card.accent ? `2px solid ${C.accent}` : 'none', background: i % 2 === 1 ? C.cardAlt : C.card }}>
                   <span style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.55rem', letterSpacing: '0.12em', color: C.muted }}>Interaction {card.n}</span>
                   <p style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: '0.88rem', color: C.ink, margin: 0, lineHeight: 1.3 }}>{card.title}</p>
                   <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.78rem', lineHeight: 1.65, color: C.mid, margin: 0, flex: 1 }}>{card.detail}</p>
@@ -890,37 +1053,124 @@ export default function GetSetGlobe() {
             ))}
           </StaggerGrid>
 
-          {/* UI Design */}
+        </Wrap>
+      </section>
+
+      {/* ── TRIALS + PROTOTYPING (surface) ── */}
+      <section id="trials" style={{ ...PAD, background: C.surface }}>
+        <Wrap>
+          <Reveal>
+            <SectionTag>08 — Process & Prototyping</SectionTag>
+            <h2 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: 'clamp(1.75rem,3.5vw,2.75rem)', letterSpacing: '-0.02em', color: C.ink, margin: '0 0 1.25rem', lineHeight: 1.2 }}>
+              Trials & process
+            </h2>
+            <p style={{ fontFamily: "'EB Garamond', serif", fontStyle: 'italic', fontSize: '1.15rem', color: C.mid, margin: '0 0 2.5rem', lineHeight: 1.7 }}>
+              "This is where the system fought back. The idea was clear; getting it to work was a different problem entirely."
+            </p>
+          </Reveal>
+
+          <StaggerGrid style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '1rem', marginBottom: '3rem' }}>
+            {[
+              { n: '01', t: 'Proxemics calibration',     b: 'Getting the depth readings from the Kinect to correctly map to timeline progression required careful calibration of depth thresholds in TouchDesigner.' },
+              { n: '02', t: 'Gesture disambiguation',    b: 'Distinguishing intentional gestures from ambient body movement, preventing false triggers while keeping interaction feel instant and natural.' },
+              { n: '03', t: 'Layer peel timing',         b: "Tuning the sagittal sweep sensitivity so that Earth's layers reveal at a pace children can follow, not so fast it loses meaning." },
+              { n: '04', t: 'Haptic integration',        b: 'The Himalaya converging gesture needed haptic output to complete the sensory loop; sourcing and syncing this with the visual was a key challenge.' },
+            ].map((card, i) => (
+              <StaggerItem key={i} style={{ flex: 1 }}>
+                <NeuCard style={{ flex: 1, padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '0.6rem', background: i % 2 === 1 ? C.cardAlt : C.card }}>
+                  <span style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.55rem', letterSpacing: '0.12em', color: C.muted }}>Challenge {card.n}</span>
+                  <p style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: '0.88rem', color: C.ink, margin: 0 }}>{card.t}</p>
+                  <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.78rem', lineHeight: 1.65, color: C.mid, margin: 0, flex: 1 }}>{card.b}</p>
+                </NeuCard>
+              </StaggerItem>
+            ))}
+          </StaggerGrid>
+
+          <Reveal delay={0.08}>
+            <Label>Prototype in action</Label>
+          </Reveal>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 360px)', gap: '1.5rem' }}>
+            {[
+              {
+                src:     '/gsg-proto-1.mp4',
+                caption: 'Using PROXEMICS & frontal arm movements to cause the continental drift and formation of Pangea, depending on user\'s movement',
+              },
+              {
+                src:     '/gsg-proto-2.mp4',
+                caption: 'Sagittal arm movement of user to reveal inner layers of the Earth impacting tectonic forces',
+              },
+            ].map((v, i) => (
+              <NeuCard key={i} style={{ padding: 0, overflow: 'hidden' }}>
+                <video src={v.src} autoPlay loop muted playsInline style={{ width: '100%', display: 'block' }} />
+                <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.78rem', lineHeight: 1.65, color: C.mid, margin: 0, padding: '1rem 1.25rem', borderTop: `1px solid ${C.border}` }}>
+                  {v.caption}
+                </p>
+              </NeuCard>
+            ))}
+          </div>
+        </Wrap>
+      </section>
+
+      {/* ── FINAL UI DESIGN (page) ── */}
+      <section id="design-ui" style={{ ...PAD, background: C.page }}>
+        <Wrap>
           <Reveal>
             <Label>UI Design: Xbox Kinect-inspired, no touch required</Label>
             <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.9rem', lineHeight: 1.7, color: C.mid, maxWidth: '68ch', margin: '0 0 1.5rem' }}>
               The UI is inspired by Xbox Kinect games: simple, legible, and designed for full-body interaction from a distance.
             </p>
           </Reveal>
-          <StaggerGrid style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '1rem', marginBottom: '1.5rem' }}>
-            {[
-              { screen: 'Onboarding Screen 01', sub: 'Navigation Pattern', desc: "Intuitive hand movements for on-screen navigation, followed by a steady hold to confirm the selected choice. Visual cue: a circle stroke that fills to 100% on confirmation." },
-              { screen: 'Onboarding Screen 02', sub: 'Topic Selection', desc: "Selections of topics expand based on hand movements hovering over them. A steady pause of the hand movement confirms the intended selection, the visual cue being the completion of the circle's stroke." },
-            ].map(({ screen, sub, desc }) => (
-              <StaggerItem key={screen} style={{ flex: 1 }}>
-                <NeuCard style={{ flex: 1, padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
-                  <div>
-                    <p style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.54rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: C.muted, margin: 0 }}>{screen}</p>
-                    <p style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.5rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: C.muted, opacity: 0.6, margin: '2px 0 0' }}>{sub}</p>
-                  </div>
-                  <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.8rem', color: C.mid, lineHeight: 1.7, margin: 0, flex: 1 }}>{desc}</p>
-                </NeuCard>
-              </StaggerItem>
-            ))}
-          </StaggerGrid>
+
+          {/* Screen 01 — landing / hero */}
+          <Reveal delay={0.05}>
+            <NeuCard style={{ padding: 0, overflow: 'hidden', marginBottom: '1.25rem' }}>
+              <img src="/gsg-ui-01.jpg" alt="Get Set Globe landing screen"
+                style={{ width: '100%', display: 'block', aspectRatio: '16/9', objectFit: 'cover', objectPosition: 'top' }} />
+              <div style={{ padding: '1.1rem 1.5rem', display: 'flex', gap: '2rem', alignItems: 'baseline', flexWrap: 'wrap' }}>
+                <p style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.54rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: C.muted, margin: 0, flexShrink: 0 }}>Onboarding Screen 01 · Navigation Pattern</p>
+                <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.8rem', color: C.mid, lineHeight: 1.6, margin: 0 }}>Intuitive hand movements for on-screen navigation, followed by a steady hold to confirm the selected choice. Visual cue: a circle stroke that fills to 100% on confirmation.</p>
+              </div>
+            </NeuCard>
+          </Reveal>
+
+          {/* Screen 02 — topic browser with animated selection ring */}
+          <Reveal delay={0.1}>
+            <NeuCard style={{ padding: 0, overflow: 'hidden', marginBottom: '1.5rem' }}>
+              <div style={{ position: 'relative', background: '#0a0a0a' }}>
+                <img src="/gsg-ui-02.jpg" alt="Get Set Globe topic selection screen"
+                  style={{ width: '100%', display: 'block', aspectRatio: '16/9', objectFit: 'cover', objectPosition: 'top' }} />
+                <svg
+                  style={{ position: 'absolute', left: '53.5%', top: '60.5%', transform: 'translate(-50%,-50%)', width: 'clamp(44px,4.5vw,68px)', height: 'clamp(44px,4.5vw,68px)', overflow: 'visible', pointerEvents: 'none' }}
+                  viewBox="0 0 60 60"
+                >
+                  <motion.circle
+                    cx="30" cy="30" r="27"
+                    fill="none" stroke="white" strokeWidth="2.2" strokeLinecap="round"
+                    initial={{ pathLength: 0, opacity: 0 }}
+                    animate={{ pathLength: [0, 1, 1, 0], opacity: [0, 1, 1, 0] }}
+                    transition={{ duration: 3, times: [0, 0.55, 0.82, 1], ease: 'easeInOut', repeat: Infinity, repeatDelay: 0.6 }}
+                  />
+                </svg>
+              </div>
+              <div style={{ padding: '1.1rem 1.5rem', display: 'flex', gap: '2rem', alignItems: 'baseline', flexWrap: 'wrap' }}>
+                <p style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.54rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: C.muted, margin: 0, flexShrink: 0 }}>Onboarding Screen 02 · Topic Selection</p>
+                <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.8rem', color: C.mid, lineHeight: 1.6, margin: 0 }}>Selections expand on hand hover. A steady hold confirms — the animated circle stroke filling to 100% is the visual confirmation cue.</p>
+              </div>
+            </NeuCard>
+          </Reveal>
 
           <Reveal delay={0.1}>
             <NeuCard style={{ padding: '1.5rem 2rem' }}>
               <Label>Core interaction pattern: hover + hold</Label>
               <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>
-                {[['01','Hand hovers over option','✋'],['02','Hold still 1.5 seconds','⏱'],['03','Circle stroke fills 100%','◎'],['04','Selection confirmed','✓']].map(([step, action, icon]) => (
+                {[
+                  ['01', 'Hand hovers over option', <span className="material-symbols-outlined" style={{ fontSize: '15px', lineHeight: 1 }}>back_hand</span>],
+                  ['02', 'Hold still 1.5 seconds', '⏱'],
+                  ['03', 'Circle stroke fills 100%', '◎'],
+                  ['04', 'Selection confirmed', '✓'],
+                ].map(([step, action, icon]) => (
                   <div key={step} style={{ display: 'flex', alignItems: 'center', gap: '10px', flex: 1, minWidth: '130px' }}>
-                    <div style={{ width: 26, height: 26, borderRadius: '50%', background: C.accentDim, border: `1px solid ${C.accentBorder}`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontSize: '0.8rem' }}>{icon}</div>
+                    <div style={{ width: 26, height: 26, borderRadius: '50%', background: C.accentDim, border: `1px solid ${C.accentBorder}`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, color: C.ink }}>{icon}</div>
                     <div>
                       <p style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.48rem', color: C.muted, letterSpacing: '0.1em', margin: 0 }}>STEP {step}</p>
                       <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.76rem', color: C.mid, margin: 0 }}>{action}</p>
@@ -933,87 +1183,44 @@ export default function GetSetGlobe() {
         </Wrap>
       </section>
 
-      {/* ── TRIALS (surface) ── */}
-      <section id="trials" style={{ ...PAD, background: C.surface }}>
+      {/* ── REFLECTIONS (green) ── */}
+      <section id="reflections" style={{ ...PAD, background: C.page }}>
         <Wrap>
           <Reveal>
-            <SectionTag>08 — Process</SectionTag>
+            <SectionTag>09 — Reflections</SectionTag>
             <h2 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: 'clamp(1.75rem,3.5vw,2.75rem)', letterSpacing: '-0.02em', color: C.ink, margin: '0 0 1.25rem', lineHeight: 1.2 }}>
-              Trials & process
-            </h2>
-            <p style={{ fontFamily: "'EB Garamond', serif", fontStyle: 'italic', fontSize: '1.15rem', color: C.mid, margin: '0 0 2.5rem', lineHeight: 1.7 }}>
-              "This is where the system fought back. The idea was clear; getting it to work was a different problem entirely."
-            </p>
-          </Reveal>
-
-          <StaggerGrid style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1rem', marginBottom: '3rem' }}>
-            {[
-              { n: '01', t: 'Proxemics calibration',     b: 'Getting the depth readings from the Kinect to correctly map to timeline progression required careful calibration of depth thresholds in TouchDesigner.' },
-              { n: '02', t: 'Gesture disambiguation',    b: 'Distinguishing intentional gestures from ambient body movement, preventing false triggers while keeping interaction feel instant and natural.' },
-              { n: '03', t: 'Layer peel timing',         b: "Tuning the sagittal sweep sensitivity so that Earth's layers reveal at a pace children can follow, not so fast it loses meaning." },
-              { n: '04', t: 'Haptic integration',        b: 'The Himalaya converging gesture needed haptic output to complete the sensory loop; sourcing and syncing this with the visual was a key challenge.' },
-            ].map((card, i) => (
-              <StaggerItem key={i} style={{ flex: 1 }}>
-                <NeuCard style={{ flex: 1, padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
-                  <span style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.55rem', letterSpacing: '0.12em', color: C.muted }}>Challenge {card.n}</span>
-                  <p style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: '0.88rem', color: C.ink, margin: 0 }}>{card.t}</p>
-                  <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.78rem', lineHeight: 1.65, color: C.mid, margin: 0, flex: 1 }}>{card.b}</p>
-                </NeuCard>
-              </StaggerItem>
-            ))}
-          </StaggerGrid>
-
-          <Reveal delay={0.1}>
-            <Label>Storyboard</Label>
-            <NeuCard>
-              <ImgBox label="8-step storyboard: course selection → Pangea → Earth layers → convergent/divergent plates → Himalaya formation" aspect="40%" />
-              <ScreenLabel>Get Set Globe interaction storyboard</ScreenLabel>
-            </NeuCard>
-          </Reveal>
-        </Wrap>
-      </section>
-
-      {/* ── REFLECTIONS (dark) ── */}
-      <section id="reflections" style={{ background: C.heroGrad, ...PAD }}>
-        <Wrap>
-          <MaskReveal>
-            <SectionTag dark>09 — Reflections</SectionTag>
-          </MaskReveal>
-          <MaskReveal delay={0.08}>
-            <h2 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: 'clamp(1.75rem,3.5vw,2.75rem)', letterSpacing: '-0.02em', color: C.darkInk, margin: '0 0 1.25rem', lineHeight: 1.2 }}>
               What stayed with me
             </h2>
-          </MaskReveal>
-          <MaskReveal delay={0.12}>
-            <div style={{ display: 'inline-flex', alignItems: 'center', gap: '12px', padding: '8px 18px', border: '1px solid rgba(255,255,255,0.15)', borderRadius: '100px', background: 'rgba(255,255,255,0.06)', marginBottom: 'clamp(3rem,6vw,5rem)' }}>
-              <span style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.54rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: C.darkMuted }}>Presented at</span>
-              <span style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: '0.875rem', color: C.darkInk }}>SAP Impulse Showcase 2025</span>
+          </Reveal>
+          <Reveal delay={0.08}>
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: '12px', padding: '8px 18px', border: `1px solid ${C.border}`, borderRadius: '100px', background: C.surface, marginBottom: 'clamp(2.5rem,5vw,4rem)' }}>
+              <span style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.54rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: C.muted }}>Presented at</span>
+              <span style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: '0.875rem', color: C.ink }}>SAP Impulse Showcase 2025</span>
             </div>
-          </MaskReveal>
+          </Reveal>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 'clamp(2rem,5vw,4rem) clamp(2rem,4vw,3.5rem)' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '1.25rem', marginBottom: 'clamp(4rem,8vw,6rem)' }}>
             {[
-              { n: '01', t: 'Curiosity > Information',       b: "This project confirmed something I suspected: the moment a child is genuinely curious, everything else becomes easier. No amount of explanation replaces the feeling of encountering something surprising." },
+              { n: '01', t: 'Curiosity > Information',       b: "This project confirmed something we suspected: the moment a child is genuinely curious, everything else becomes easier. No amount of explanation replaces the feeling of encountering something surprising." },
               { n: '02', t: 'Intuitive gestures feel human', b: "The gestures that worked were the ones nobody had to teach. When an interaction matches how the body already wants to move, it disappears into the experience." },
               { n: '03', t: 'Learning is embodied',          b: "The most memorable moments in the prototype were physical ones: the peel, the collision, stepping back to watch Pangea form. The body remembers what the eye alone forgets." },
-              { n: '04', t: 'Evoke wonder',                  b: "The question that changed my design decisions wasn't \"will they understand this?\" but \"will they feel it?\" Those are different goals, and the second one is harder." },
+              { n: '04', t: 'Evoke wonder',                  b: "The question that changed our design decisions wasn't \"will they understand this?\" but \"will they feel it?\" Those are different goals, and the second one is harder." },
             ].map(({ n, t, b }, i) => (
               <Reveal key={n} delay={i * 0.08}>
-                <div style={{ position: 'relative' }}>
-                  <div style={{ position: 'absolute', top: 0, left: '-8px', fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: 'clamp(5rem,9vw,8rem)', color: 'rgba(255,255,255,0.04)', lineHeight: 1, pointerEvents: 'none', userSelect: 'none' }}>{n}</div>
-                  <div style={{ position: 'relative', paddingTop: 'clamp(2.5rem,4vw,3.5rem)' }}>
-                    <p style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: 'clamp(1rem,1.5vw,1.25rem)', color: C.darkInk, marginBottom: '10px', lineHeight: 1.25, margin: '0 0 10px' }}>{t}</p>
-                    <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.875rem', color: C.darkMid, lineHeight: 1.75, margin: 0 }}>{b}</p>
+                <NeuCard style={{ position: 'relative', overflow: 'hidden', padding: 'clamp(1.5rem,3vw,2rem)', background: i % 2 === 1 ? C.cardAlt : C.card }}>
+                  <div style={{ position: 'absolute', top: '-10px', right: '10px', fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: 'clamp(5rem,9vw,8rem)', color: 'rgba(0,0,0,0.04)', lineHeight: 1, pointerEvents: 'none', userSelect: 'none' }}>{n}</div>
+                  <div style={{ position: 'relative' }}>
+                    <p style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: 'clamp(0.95rem,1.5vw,1.1rem)', color: C.ink, margin: '0 0 10px', lineHeight: 1.25 }}>{t}</p>
+                    <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.875rem', color: C.mid, lineHeight: 1.75, margin: 0 }}>{b}</p>
                   </div>
-                </div>
+                </NeuCard>
               </Reveal>
             ))}
           </div>
 
-          {/* Closing pull quote */}
           <Reveal delay={0.3}>
-            <div style={{ borderTop: '1px solid rgba(255,255,255,0.1)', marginTop: 'clamp(4rem,8vw,7rem)', paddingTop: 'clamp(3rem,6vw,5rem)' }}>
-              <p style={{ fontFamily: "'EB Garamond', serif", fontStyle: 'italic', fontSize: 'clamp(1.8rem,3.5vw,3.2rem)', color: C.darkInk, lineHeight: 1.25, maxWidth: '800px', margin: 0 }}>
+            <div style={{ borderTop: `1px solid ${C.border}`, paddingTop: 'clamp(3rem,6vw,5rem)' }}>
+              <p style={{ fontFamily: "'EB Garamond', serif", fontStyle: 'italic', fontSize: 'clamp(1.8rem,3.5vw,3.2rem)', color: C.ink, lineHeight: 1.25, maxWidth: '800px', margin: 0 }}>
                 "The goal was never to explain tectonic plates. It was to make children feel the Earth move."
               </p>
             </div>
@@ -1022,6 +1229,7 @@ export default function GetSetGlobe() {
       </section>
 
       <div id="footer-sentinel" style={{ height: '1px' }} />
+      <BackToTop />
       <Footer />
     </div>
   )

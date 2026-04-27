@@ -103,17 +103,6 @@ export default function ActorMap() {
         <circle cx={CX} cy={CY} r={R2} fill="none" stroke="rgba(0,0,0,0.22)" strokeWidth={0.5} />
         <circle cx={CX} cy={CY} r={R3} fill="none" stroke="rgba(0,0,0,0.18)" strokeWidth={0.5} strokeDasharray="4 3" />
 
-        {/* Curved ring labels */}
-        <text fontSize={10} fill="#999" fontFamily={FM} letterSpacing="0.12em">
-          <textPath href="#r1arc" startOffset="50%" textAnchor="middle">PRIMARY ACTORS</textPath>
-        </text>
-        <text fontSize={10} fill="#999" fontFamily={FM} letterSpacing="0.12em">
-          <textPath href="#r2arc" startOffset="50%" textAnchor="middle">SECONDARY ACTORS</textPath>
-        </text>
-        <text fontSize={10} fill="#999" fontFamily={FM} letterSpacing="0.12em">
-          <textPath href="#r3arc" startOffset="50%" textAnchor="middle">TERTIARY ACTORS</textPath>
-        </text>
-
         {TERTIARY.map((n, i) => (
           <motion.g key={i} style={{ transformBox: 'fill-box', transformOrigin: 'center' }}
             initial={{ opacity: 0, scale: 0 }} animate={inView ? { opacity: 1, scale: 1 } : {}}
@@ -140,6 +129,14 @@ export default function ActorMap() {
             <NodeText lines={n.lines} x={n.cx} y={n.cy} fill={DIAG.white} />
           </motion.g>
         ))}
+
+        {/* Ring legend — top-left corner (x<180, y<180 is clear of all nodes) */}
+        <circle cx={32} cy={46} r={8} fill={DIAG.pink} />
+        <text x={48} y={50} fontSize={11} fill="#888" fontFamily={FM} letterSpacing="0.1em" dominantBaseline="middle">PRIMARY ACTORS</text>
+        <circle cx={32} cy={74} r={8} fill={DIAG.blue} />
+        <text x={48} y={78} fontSize={11} fill="#888" fontFamily={FM} letterSpacing="0.1em" dominantBaseline="middle">SECONDARY ACTORS</text>
+        <circle cx={32} cy={102} r={8} fill={DIAG.green} />
+        <text x={48} y={106} fontSize={11} fill="#888" fontFamily={FM} letterSpacing="0.1em" dominantBaseline="middle">TERTIARY ACTORS</text>
       </svg>
     </div>
   )

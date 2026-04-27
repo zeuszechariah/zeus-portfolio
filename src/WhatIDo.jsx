@@ -267,13 +267,13 @@ export default function WhatIDo() {
                   {/* Blurred bg — inset covers blur edge, position compensated */}
                   <div style={{
                     position:           'absolute',
-                    inset:              '-12px',
+                    inset:              0,
                     backgroundColor:    '#000',
                     backgroundImage:    'url(/card-front.jpg)',
                     backgroundSize:     `${CW * 3}px auto`,
-                    backgroundPosition: `${-i * CW + 12}px 50%`,
+                    backgroundPosition: `${-i * CW}px 50%`,
                     backgroundRepeat:   'no-repeat',
-                    filter:             'contrast(1.1) brightness(0.88) blur(2px)',
+                    filter:             'none',
                   }} />
                   {/* Grain */}
                   <div style={{

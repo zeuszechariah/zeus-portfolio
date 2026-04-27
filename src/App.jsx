@@ -1,10 +1,10 @@
 import { Analytics } from '@vercel/analytics/react'
 import { useRef, useEffect, useState, lazy, Suspense } from 'react'
 import { motion, AnimatePresence, useMotionValue, useTransform, useSpring, useInView, useScroll } from 'framer-motion'
-import { BrowserRouter, Routes, Route, Link } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, Link, useLocation } from 'react-router-dom'
 import { EASE, SPRING_STIFF, Bolt, ProgressBar, Nav, Footer, MaskReveal, Reveal, CookieBanner, SectionExit, HeroButton } from './shared.jsx'
-import WhatIDo from './WhatIDo.jsx'
 import PersonalGallery from './PersonalGallery.jsx'
+const WhatIDo       = lazy(() => import('./WhatIDo.jsx'))
 const About        = lazy(() => import('./About.jsx'))
 const Imprint      = lazy(() => import('./Imprint.jsx'))
 const PrivacyPolicy = lazy(() => import('./PrivacyPolicy.jsx'))
@@ -25,7 +25,7 @@ const PROJECTS = [
 ]
 
 const FILTER_TABS = [
-  { key: 'all',      label: 'All' },
+  { key: 'all',      label: 'See All' },
   { key: 'ux',       label: 'UX' },
   { key: 'research', label: 'Research Case Study' },
   { key: 'system',   label: 'System & Service' },
@@ -44,8 +44,8 @@ const VITALS = [
 // hasBg: true = PNG with white/light bg, needs mix-blend-mode:screen to kill it
 const BRANDS = [
   { id:1, name:'Fosite',     src: '/logos/fosite.png',                                                     label:'Fosite Co., Bengaluru',                       year:'2023–24', hasBg: false, maxH: 80 },
-  { id:2, name:'GIZ',        src: 'https://www.giz.de/themes/custom/dreist/build/giz-logo-with-claim.svg', label:'German International Co-Operation, New Delhi', year:'2023',    hasBg: false, maxH: 38 },
-  { id:3, name:'ADI',        src: '/logos/adi.svg',                                                        label:'Association of Designers BLR Chapter',         year:'2022',    hasBg: false, maxH: 38 },
+  { id:2, name:'GIZ',        src: 'https://www.giz.de/themes/custom/dreist/build/giz-logo-with-claim.svg', label:'German Intl. Cooperation, New Delhi', year:'2023',    hasBg: false, maxH: 38 },
+  { id:3, name:'ADI',        src: '/logos/adi.svg',                                                        label:'Association of Designers, BLR Chapter',        year:'2022',    hasBg: false, maxH: 38 },
   { id:4, name:'Tata Elxsi', src: '/logos/tata-elxsi.svg',                                                 label:'Tata Elxsi Ltd., Bengaluru',                   year:'2022',    hasBg: false, maxH: 38 },
 ]
 
@@ -94,200 +94,6 @@ function TiltCard({ children, className = '', style = {} }) {
 }
 
 
-// ─── Hero Canvas (Delaunay triangulation) ────────────
-function HeroCanvas() {
-  const canvasRef = useRef(null)
-
-  useEffect(() => {
-    const canvas = canvasRef.current
-    if (!canvas) return
-    const ctx = canvas.getContext('2d')
-
-    const N = 55
-    const HOVER_RADIUS = 90
-    const BASE_OPACITY = 0.045
-    let W, H, points, restPoints, triangles, retriFrame
-    const smoothGlow = new Float32Array(N)
-    const triGlow = new Float32Array(500)
-    const mouse = { x: -9999, y: -9999, active: false }
-    let mouseTimer
-
-    // ── Colour (warm amber glow on dark bg) ──
-    function getPositionalColor(x, y) {
-      const nx = x / W, ny = y / H
-      return [
-        Math.round(255*(1-nx)*(1-ny) + 255*nx*(1-ny) + 255*(1-nx)*ny + 255*nx*ny),
-        Math.round(110*(1-nx)*(1-ny) + 185*nx*(1-ny) +  85*(1-nx)*ny + 160*nx*ny),
-        Math.round(  0*(1-nx)*(1-ny) +  35*nx*(1-ny) +   0*(1-nx)*ny +  10*nx*ny),
-      ]
-    }
-
-    // ── Delaunay ──
-    function circumcircle(a,b,c) {
-      const D=2*(a.x*(b.y-c.y)+b.x*(c.y-a.y)+c.x*(a.y-b.y))
-      if (Math.abs(D)<1e-10) return null
-      const ax2=a.x*a.x+a.y*a.y, bx2=b.x*b.x+b.y*b.y, cx2=c.x*c.x+c.y*c.y
-      const ux=(ax2*(b.y-c.y)+bx2*(c.y-a.y)+cx2*(a.y-b.y))/D
-      const uy=(ax2*(c.x-b.x)+bx2*(a.x-c.x)+cx2*(b.x-a.x))/D
-      return { x:ux, y:uy, r:Math.hypot(a.x-ux,a.y-uy) }
-    }
-    function triangulate() {
-      const n=points.length, s1=n-3, s2=n-2, s3=n-1
-      let tris=[{a:s1,b:s2,c:s3}]
-      for (let i=0;i<N;i++) {
-        const p=points[i]; const edges=[]
-        tris=tris.filter(t=>{
-          const cc=circumcircle(points[t.a],points[t.b],points[t.c])
-          if(cc&&Math.hypot(p.x-cc.x,p.y-cc.y)<cc.r){edges.push([t.a,t.b],[t.b,t.c],[t.c,t.a]);return false}
-          return true
-        })
-        edges.filter((e,i)=>!edges.some((f,j)=>j!==i&&((f[0]===e[0]&&f[1]===e[1])||(f[0]===e[1]&&f[1]===e[0]))))
-          .forEach(e=>tris.push({a:e[0],b:e[1],c:i}))
-      }
-      triangles=tris.filter(t=>t.a<N&&t.b<N&&t.c<N)
-    }
-    function init() {
-      W=canvas.width=canvas.offsetWidth; H=canvas.height=canvas.offsetHeight
-      points=[]; restPoints=[]; retriFrame=0
-      const cols=Math.ceil(Math.sqrt(N*W/H)), rows=Math.ceil(N/cols)
-      let idx=0
-      for (let r=0;r<rows&&idx<N;r++)
-        for (let c=0;c<cols&&idx<N;c++) {
-          const x=(c+0.5+(Math.random()-0.5)*0.8)/cols*W
-          const y=(r+0.5+(Math.random()-0.5)*0.8)/rows*H
-          points.push({x,y,vx:0,vy:0}); restPoints.push({x,y}); idx++
-        }
-      points.push({x:-W*2,y:-H},{x:W*3,y:-H},{x:W/2,y:H*3})
-      triangulate()
-    }
-
-    // ── Render loop with batched draw calls ──
-    let rafId=null
-    ctx.lineJoin='miter'; ctx.miterLimit=6; ctx.lineCap='butt'
-
-    function loop() {
-      ctx.clearRect(0,0,W,H)
-      retriFrame++
-
-      // ── Physics + glow update ──
-      let totalMov=0
-      for (let i=0;i<N;i++) {
-        const p=points[i], rx=restPoints[i].x, ry=restPoints[i].y
-        if (mouse.active) {
-          const dx=mouse.x-p.x, dy=mouse.y-p.y, d=Math.hypot(dx,dy)
-          if (d<HOVER_RADIUS*2&&d>1) { const f=1-d/(HOVER_RADIUS*2); p.vx+=dx/d*f*4; p.vy+=dy/d*f*4 }
-        }
-        p.vx+=(rx-p.x)*0.30; p.vy+=(ry-p.y)*0.30; p.vx*=0.52; p.vy*=0.52
-        p.x+=p.vx; p.y+=p.vy
-        totalMov+=Math.abs(p.vx)+Math.abs(p.vy)
-        const pd=mouse.active?Math.hypot(p.x-mouse.x,p.y-mouse.y):9999
-        const tgt=Math.max(0,1-pd/HOVER_RADIUS)
-        smoothGlow[i]+=(tgt-smoothGlow[i])*(tgt>smoothGlow[i]?0.5:0.15)
-      }
-
-      if (totalMov>2.5&&retriFrame%20===0) triangulate()
-
-      // ── Pre-compute glow per triangle ──
-      const len=triangles.length
-      for (let k=0;k<len;k++) {
-        const t=triangles[k]
-        const a=points[t.a],b=points[t.b],c=points[t.c]
-        const mx=(a.x+b.x+c.x)/3, my=(a.y+b.y+c.y)/3
-        const d=Math.hypot(mx-mouse.x,my-mouse.y)
-        const hotspot=mouse.active?Math.max(0,1-d/HOVER_RADIUS):0
-        const soft=mouse.active?Math.max(0,1-d/(HOVER_RADIUS*3.5))*0.28:0
-        const va=(smoothGlow[t.a]+smoothGlow[t.b]+smoothGlow[t.c])/3
-        triGlow[k]=Math.max(hotspot,soft,va*0.55)
-      }
-
-      // ── Pass 1: batch all dark triangles (subtle cream on dark bg) ──
-      ctx.globalAlpha=BASE_OPACITY
-      ctx.strokeStyle='rgba(242,237,228,0.55)'
-      ctx.lineWidth=0.5
-      ctx.beginPath()
-      for (let k=0;k<len;k++) {
-        if (triGlow[k]<0.04) {
-          const t=triangles[k], a=points[t.a],b=points[t.b],c=points[t.c]
-          ctx.moveTo(a.x,a.y); ctx.lineTo(b.x,b.y); ctx.lineTo(c.x,c.y); ctx.closePath()
-        }
-      }
-      ctx.stroke()
-
-      // ── Pass 2: glowing triangles individually ──
-      for (let k=0;k<len;k++) {
-        const g=triGlow[k]
-        if (g<0.04) continue
-        const t=triangles[k], a=points[t.a],b=points[t.b],c=points[t.c]
-        const mx=(a.x+b.x+c.x)/3, my=(a.y+b.y+c.y)/3
-        const [cr,cg,cb]=getPositionalColor(mx,my)
-        const inv=1-g
-        ctx.globalAlpha=Math.min(1, BASE_OPACITY+g*1.3)
-        ctx.lineWidth=0.5+g*0.9
-        ctx.strokeStyle=`rgb(${Math.round(242*inv+cr*g)},${Math.round(237*inv+cg*g)},${Math.round(228*inv+cb*g)})`
-        ctx.beginPath(); ctx.moveTo(a.x,a.y); ctx.lineTo(b.x,b.y); ctx.lineTo(c.x,c.y); ctx.closePath(); ctx.stroke()
-      }
-
-      // ── Vertices (star points — bright with glow) ──
-      for (let i=0;i<N;i++) {
-        const p=points[i], g=smoothGlow[i]
-        const baseAlpha = 0.72 + g * 0.28
-        const r = 0.8 + g * 1.2
-        // Outer glow halo
-        ctx.shadowBlur = 5 + g * 10
-        ctx.shadowColor = `rgba(242,237,228,${0.55 + g * 0.45})`
-        ctx.globalAlpha = baseAlpha
-        ctx.fillStyle = '#F2EDE4'
-        ctx.beginPath()
-        ctx.arc(p.x, p.y, r, 0, Math.PI * 2)
-        ctx.fill()
-      }
-      ctx.shadowBlur = 0
-      ctx.shadowColor = 'transparent'
-
-      ctx.globalAlpha=1
-      rafId=requestAnimationFrame(loop)
-    }
-
-    // ── Mouse ──
-    const onMouse = e => {
-      const rect=canvas.getBoundingClientRect()
-      mouse.x=e.clientX-rect.left; mouse.y=e.clientY-rect.top
-      mouse.active=true; clearTimeout(mouseTimer)
-      mouseTimer=setTimeout(()=>{ mouse.active=false },160)
-    }
-    window.addEventListener('mousemove', onMouse, { passive:true })
-    const onResize = () => init()
-    window.addEventListener('resize', onResize, { passive:true })
-
-    // ── IntersectionObserver — pause when off-screen ──
-    let visible=false
-    const observer=new IntersectionObserver(([e])=>{
-      visible=e.isIntersecting
-      if (visible&&!rafId) rafId=requestAnimationFrame(loop)
-      else if (!visible&&rafId) { cancelAnimationFrame(rafId); rafId=null }
-    },{ threshold:0.01 })
-    observer.observe(canvas)
-
-    // ── Visibility API ──
-    const onVis=()=>{
-      if (document.hidden) { if (rafId) { cancelAnimationFrame(rafId); rafId=null } }
-      else if (visible&&!rafId) rafId=requestAnimationFrame(loop)
-    }
-    document.addEventListener('visibilitychange', onVis)
-
-    init()
-
-    return () => {
-      cancelAnimationFrame(rafId); observer.disconnect(); clearTimeout(mouseTimer)
-      window.removeEventListener('mousemove', onMouse)
-      window.removeEventListener('resize', onResize)
-      document.removeEventListener('visibilitychange', onVis)
-    }
-  }, [])
-
-  return <canvas ref={canvasRef} className="absolute inset-0 w-full h-full pointer-events-none" style={{ zIndex:0 }} />
-}
-
 // ─── Video Intro ──────────────────────────────────────
 // Autoplays fullscreen, shows "loading" label bottom-right,
 // then fades out — no scroll interaction.
@@ -327,7 +133,7 @@ function VideoIntro({ onComplete }) {
         transform: 'translate(-50%, -50%)',
         width: '75%', height: '75%', overflow: 'hidden',
       }}>
-        <video ref={videoRef} autoPlay muted playsInline preload="none"
+        <video ref={videoRef} autoPlay muted playsInline preload="auto"
           style={{ width: '100%', height: '100%', objectFit: 'cover' }}
           src="/headervideo.mp4" />
         <div className="absolute inset-0" style={{
@@ -502,118 +308,6 @@ function Enneagram({ size = 700 }) {
   )
 }
 
-// ─── Smoke Canvas ────────────────────────────────────
-// 9 independent plumes, each drawn in two passes (core + halo)
-// using ctx.createRadialGradient + ctx.filter blur.
-// globalCompositeOperation='lighter' makes overlapping plumes bloom.
-// Smoke anchored to right-centre; left ~28% stays pure black.
-function SmokeCanvas() {
-  const canvasRef = useRef(null)
-
-  useEffect(() => {
-    const canvas = canvasRef.current
-    if (!canvas) return
-    const ctx = canvas.getContext('2d')
-    let rafId = null, W = 0, H = 0
-
-    // rx/ry   — rest position as viewport fraction
-    // sxf/syf — ellipse size as viewport fraction
-    // alpha   — peak opacity
-    // speed   — animation rate (rad/ms)
-    // phase   — offset so no two plumes sync
-    // drift   — lateral oscillation amplitude
-    // cb/hb   — core blur px / halo blur px
-    const PLUMES = [
-      // Primary mass — right centre, large, brightest
-      { rx:0.72, ry:0.50, sxf:0.22, syf:0.58, alpha:0.42, speed:0.00027, phase:0.00, drift:0.036, cb:32, hb:134 },
-      // Upper lobe
-      { rx:0.80, ry:0.28, sxf:0.18, syf:0.46, alpha:0.34, speed:0.00035, phase:1.40, drift:0.030, cb:26, hb:116 },
-      // Lower lobe
-      { rx:0.78, ry:0.72, sxf:0.20, syf:0.52, alpha:0.36, speed:0.00031, phase:2.80, drift:0.033, cb:28, hb:122 },
-      // Far-right anchor (tall, soft)
-      { rx:0.91, ry:0.50, sxf:0.24, syf:0.68, alpha:0.38, speed:0.00024, phase:0.60, drift:0.024, cb:34, hb:142 },
-      // Mid-right filler
-      { rx:0.65, ry:0.55, sxf:0.15, syf:0.38, alpha:0.24, speed:0.00042, phase:3.50, drift:0.042, cb:22, hb: 98 },
-      // Top drift accent
-      { rx:0.76, ry:0.16, sxf:0.14, syf:0.30, alpha:0.20, speed:0.00050, phase:1.80, drift:0.036, cb:20, hb: 86 },
-    ]
-
-    function resize() {
-      W = canvas.width  = canvas.offsetWidth
-      H = canvas.height = canvas.offsetHeight
-    }
-
-    function draw(T) {
-      ctx.clearRect(0, 0, W, H)
-      ctx.globalCompositeOperation = 'lighter'
-
-      for (const pl of PLUMES) {
-        const x  = W * (pl.rx + Math.sin(T * pl.speed + pl.phase)       * pl.drift)
-        const y  = H * (pl.ry + Math.cos(T * pl.speed * 0.7 + pl.phase) * pl.drift * 0.5)
-        const cW = W * pl.sxf
-        const cH = H * pl.syf
-
-        // Pass 1 — tight bright core
-        ctx.filter = `blur(${pl.cb}px)`
-        const cg = ctx.createRadialGradient(x, y, 0, x, y, cW * 0.55)
-        cg.addColorStop(0,    `rgba(255,255,255,${pl.alpha * 0.90})`)
-        cg.addColorStop(0.45, `rgba(255,255,255,${pl.alpha * 0.30})`)
-        cg.addColorStop(1,    'rgba(255,255,255,0)')
-        ctx.fillStyle = cg
-        ctx.beginPath()
-        ctx.ellipse(x, y, cW * 0.55, cH * 0.50, 0, 0, Math.PI * 2)
-        ctx.fill()
-
-        // Pass 2 — wide atmospheric halo
-        ctx.filter = `blur(${pl.hb}px)`
-        const hg = ctx.createRadialGradient(x, y, 0, x, y, cW * 2.0)
-        hg.addColorStop(0,    `rgba(255,255,255,${pl.alpha * 0.13})`)
-        hg.addColorStop(0.55, `rgba(255,255,255,${pl.alpha * 0.04})`)
-        hg.addColorStop(1,    'rgba(255,255,255,0)')
-        ctx.fillStyle = hg
-        ctx.beginPath()
-        ctx.ellipse(x, y, cW * 2.4, cH * 2.0, 0, 0, Math.PI * 2)
-        ctx.fill()
-      }
-
-      ctx.filter = 'none'
-      ctx.globalCompositeOperation = 'source-over'
-    }
-
-    let t0 = null
-    function loop(ts) {
-      if (t0 === null) t0 = ts
-      draw(ts - t0)
-      rafId = requestAnimationFrame(loop)
-    }
-
-    let visible = false
-    const observer = new IntersectionObserver(([e]) => {
-      visible = e.isIntersecting
-      if (visible && !rafId) rafId = requestAnimationFrame(loop)
-      else if (!visible && rafId) { cancelAnimationFrame(rafId); rafId = null }
-    }, { threshold: 0.01 })
-    observer.observe(canvas)
-
-    const onResize = () => resize()
-    window.addEventListener('resize', onResize, { passive: true })
-    resize()
-
-    return () => {
-      if (rafId) cancelAnimationFrame(rafId)
-      observer.disconnect()
-      window.removeEventListener('resize', onResize)
-    }
-  }, [])
-
-  return (
-    <canvas
-      ref={canvasRef}
-      style={{ position:'absolute', inset:0, width:'100%', height:'100%', pointerEvents:'none', zIndex:0 }}
-    />
-  )
-}
-
 // ─── Hero ─────────────────────────────────────────────
 function Hero() {
   const heroRef = useRef(null)
@@ -629,6 +323,7 @@ function Hero() {
           src="/hero-bg.jpg"
           alt=""
           aria-hidden="true"
+          fetchPriority="high"
           style={{
             width:'100%', height:'112%',
             objectFit:'cover', objectPosition:'50% 40%',
@@ -636,6 +331,7 @@ function Hero() {
             y: parallaxY,
             top: '-6%',
             position: 'absolute',
+            willChange: 'transform',
           }}
           animate={{ scale: [1, 1.06, 1] }}
           transition={{ duration: 7, repeat: Infinity, ease: 'easeInOut' }}
@@ -690,14 +386,14 @@ function Hero() {
           </span>
         </motion.div>
 
-        {/* Headline — Syne 300 body, EB Garamond for "structure, sensation & more" */}
+        {/* Headline — Syne semibold body, EB Garamond for "structure, sensation & more" */}
         <motion.h1
           initial={{ opacity:0, y:22 }}
           animate={{ opacity:1, y:0 }}
           transition={{ duration:0.80, delay:0.40, ease:EASE }}
           style={{
             fontFamily:    "'Syne', sans-serif",
-            fontWeight:    300,
+            fontWeight:    600,
             fontSize:      'clamp(30px, 4.0vw, 62px)',
             color:         '#ffffff',
             lineHeight:    1.08,
@@ -732,7 +428,7 @@ function Hero() {
             letterSpacing: '0.01em',
           }}
         >
-          Interaction Designer
+          Welcome!
         </motion.p>
 
         {/* CTA */}
@@ -947,10 +643,15 @@ function WorkCanvas() {
       // Vertices
       for (let i=0;i<N;i++) {
         const p=points[i], g=smoothGlow[i]
-        ctx.shadowBlur  = g>0.05 ? 4+g*8 : 0
-        ctx.shadowColor = `rgba(140,70,10,${0.4+g*0.6})`
+        if (g>0.05) {
+          ctx.shadowBlur  = 4+g*8
+          ctx.shadowColor = `rgba(140,70,10,${0.4+g*0.6})`
+          ctx.fillStyle   = `rgb(${Math.round(100+g*60)},${Math.round(50+g*30)},${Math.round(5+g*10)})`
+        } else {
+          ctx.shadowBlur  = 0
+          ctx.fillStyle   = 'rgba(26,14,4,0.9)'
+        }
         ctx.globalAlpha = 0.22+g*0.55
-        ctx.fillStyle   = g>0.05 ? `rgb(${Math.round(100+g*60)},${Math.round(50+g*30)},${Math.round(5+g*10)})` : 'rgba(26,14,4,0.9)'
         ctx.beginPath(); ctx.arc(p.x,p.y,0.7+g*1.0,0,Math.PI*2); ctx.fill()
       }
       ctx.shadowBlur=0; ctx.shadowColor='transparent'; ctx.globalAlpha=1
@@ -1017,6 +718,7 @@ function Work() {
 
           {/* Filter pills */}
           <div style={{ display:'flex', gap:'6px', flexWrap:'wrap', alignItems:'center', paddingBottom:'4px' }}>
+            <span style={{ fontFamily:"'Space Mono', monospace", fontSize:'0.575rem', letterSpacing:'0.14em', textTransform:'uppercase', color:'rgba(0,0,0,0.30)', marginRight:'4px' }}>Filter:</span>
             {FILTER_TABS.map(tab => {
               const active = activeFilter === tab.key
               return (
@@ -1083,12 +785,54 @@ function VitalStatCell({ v, index }) {
     return ()=>cancelAnimationFrame(rafId)
   }, [inView, v.stat, index])
   return (
-    <div ref={ref} className="flex flex-col p-[clamp(1.75rem,3vw,2.5rem)]">
-      <div style={{ minHeight:'5.5rem',display:'flex',alignItems:'flex-end',paddingBottom:'0.625rem' }}>
-        <p className="font-sans font-semibold text-ink leading-none tracking-[-0.03em]" style={{ fontSize:'clamp(2.75rem,5vw,4.5rem)' }}>{display}</p>
-      </div>
-      <p className="font-display italic text-ink mb-2" style={{ fontSize:'clamp(1rem,1.4vw,1.1875rem)', lineHeight: 1.35 }}>{v.label}</p>
-      <p className="font-sans text-ink/38 leading-[1.65]" style={{ fontSize:'clamp(0.75rem,1vw,0.875rem)', whiteSpace:'pre-line' }}>{v.desc}</p>
+    <div ref={ref} style={{
+      position:        'relative',
+      background:      '#080808',
+      backdropFilter:  'blur(8px)',
+      WebkitBackdropFilter: 'blur(8px)',
+      borderRadius:    '50%',
+      aspectRatio:     '1',
+      border:          '1px solid rgba(255,255,255,0.04)',
+      overflow:        'hidden',
+      boxShadow:       '0 0 0 1px rgba(0,0,0,0.5), 0 20px 60px rgba(0,0,0,0.7), 0 4px 12px rgba(0,0,0,0.5)',
+      display:         'flex',
+      flexDirection:   'column',
+      alignItems:      'center',
+      justifyContent:  'center',
+      textAlign:       'center',
+      padding:         'clamp(1.5rem,3vw,2rem)',
+    }}>
+      {/* Corner rim — follows circle arc, fades diagonally */}
+      <div style={{
+        position:        'absolute', inset: 0, borderRadius: '50%',
+        border:          '1px solid transparent',
+        borderTop:       '1px solid rgba(255,255,255,0.55)',
+        borderLeft:      '1px solid rgba(255,255,255,0.28)',
+        WebkitMaskImage: 'linear-gradient(135deg, black 0%, black 22%, transparent 52%)',
+        maskImage:       'linear-gradient(135deg, black 0%, black 22%, transparent 52%)',
+        pointerEvents:   'none', zIndex: 5,
+      }} />
+      {/* Bottom-right face shadow */}
+      <div style={{
+        position:      'absolute', bottom: '-10%', right: '-10%',
+        width: '65%',  height: '60%',
+        background:    'radial-gradient(ellipse at 60% 60%, rgba(0,0,0,0.88) 0%, rgba(0,0,0,0.50) 45%, transparent 72%)',
+        borderRadius:  '50%', pointerEvents: 'none', zIndex: 3,
+      }} />
+      {/* Specular highlight */}
+      <div style={{
+        position:      'absolute', top: '-30%', left: '-15%',
+        width: '55%',  height: '50%',
+        background:    'radial-gradient(ellipse at 40% 40%, rgba(255,255,255,0.09) 0%, rgba(255,255,255,0.04) 35%, transparent 65%)',
+        borderRadius:  '50%', transform: 'rotate(-10deg)',
+        pointerEvents: 'none', filter: 'blur(2px)', zIndex: 3,
+      }} />
+      <p className="font-sans font-semibold text-ink leading-none tracking-[-0.03em]"
+        style={{ position:'relative', zIndex:4, fontSize:'clamp(2.2rem,4vw,3.5rem)', marginBottom:'0.4rem' }}>{display}</p>
+      <p className="font-display italic text-ink"
+        style={{ position:'relative', zIndex:4, fontSize:'clamp(0.75rem,1.1vw,0.95rem)', lineHeight:1.3, marginBottom:'0.3rem' }}>{v.label}</p>
+      <p className="font-sans text-ink/35"
+        style={{ position:'relative', zIndex:4, fontSize:'clamp(0.58rem,0.75vw,0.7rem)', lineHeight:1.55, whiteSpace:'pre-line' }}>{v.desc}</p>
     </div>
   )
 }
@@ -1112,8 +856,7 @@ function VitalSigns() {
             <MaskReveal delay={0.08}><em className="font-display" style={{ fontStyle:'italic', fontSize:'1.08em' }}>to digits.</em></MaskReveal>
           </h2>
         </div>
-        <div className="grid grid-cols-2 lg:grid-cols-4 rounded-[18px] overflow-hidden"
-             style={{ background:'#0d0d0d', boxShadow:'inset 0 1px 0 rgba(255,255,255,0.04), inset 0 0 0 1px rgba(255,255,255,0.05)' }}>
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           {VITALS.map((v,i) => <VitalStatCell key={v.label} v={v} index={i} />)}
         </div>
       </div>
@@ -1145,11 +888,10 @@ function ProfessionalExposure() {
           </Reveal>
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-[1px] rounded-[18px] overflow-hidden border border-white/[0.06]"
-             style={{ background:'rgba(255,255,255,0.04)' }}>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
           {BRANDS.map(({ id, name, src, label, year, hasBg, maxH }, i) => (
             <Reveal key={id} delay={i * 0.09}
-              className="flex flex-col items-center justify-center gap-4 bg-[#000000] p-[clamp(2rem,4vw,3rem)] cursor-default"
+              className="flex flex-col items-center justify-center gap-4 p-[clamp(1.5rem,3vw,2rem)] cursor-default"
             >
               <div className="w-full flex items-center justify-center" style={{ minHeight: 56 }}>
                 <img src={src} alt={name}
@@ -1161,7 +903,7 @@ function ProfessionalExposure() {
               <div className="flex flex-col items-center gap-[6px]">
                 <span className="font-mono text-[0.52rem] tracking-[0.08em] uppercase text-ink/14 text-center leading-[1.5]"
                   style={{ minHeight:'4.5em', display:'flex', alignItems:'flex-start', justifyContent:'center', flexDirection:'column' }}>
-                  {label.includes(', ') ? <>{label.slice(0, label.lastIndexOf(',') + 1)}<br />{label.slice(label.lastIndexOf(', ') + 2)}</> : label}
+                  {label.includes(', ') ? <>{label.slice(0, label.lastIndexOf(','))}<br />{label.slice(label.lastIndexOf(', ') + 2)}</> : label}
                 </span>
                 <span className="font-mono text-[0.52rem] tracking-[0.06em] text-ink/38">{year}</span>
               </div>
@@ -1212,7 +954,7 @@ function MarqueeCard({ item }) {
       style={{ width: CARD_SIZE, height: CARD_SIZE, background: item.bg || '#111' }}
     >
       <img
-        src={item.img} alt="" draggable={false}
+        src={item.img} alt="" draggable={false} loading="lazy" decoding="async"
         className="absolute inset-0 w-full h-full"
         style={{
           objectFit: contain ? 'contain' : 'cover',
@@ -1319,6 +1061,13 @@ function MarqueeGallery() {
   )
 }
 
+// ─── Scroll to top on route change ────────────────────
+function ScrollToTop() {
+  const { pathname } = useLocation()
+  useEffect(() => { window.scrollTo(0, 0) }, [pathname])
+  return null
+}
+
 // Module-level flag: resets on every page refresh, survives SPA navigation
 let introPlayedThisLoad = false
 
@@ -1331,6 +1080,15 @@ function Home() {
     introPlayedThisLoad = true
     setIntroComplete(true)
   }
+
+  // Consume pending work scroll (set by Nav when clicking Work from another page)
+  useEffect(() => {
+    if (!window.__pendingWorkScroll) return
+    window.__pendingWorkScroll = false
+    requestAnimationFrame(() => {
+      document.getElementById('work')?.scrollIntoView({ behavior: 'smooth' })
+    })
+  }, [])
 
   return (
     <div style={{ background:'#000000' }} className="text-ink overflow-x-hidden">
@@ -1353,26 +1111,42 @@ function Home() {
   )
 }
 
+// ─── Animated route container — fades in on every navigation ─
+function AppRoutes() {
+  const location = useLocation()
+  return (
+    <motion.div
+      key={location.pathname}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
+    >
+      <Suspense fallback={null}>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/imprint" element={<Imprint />} />
+          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+          <Route path="/press" element={<Press />} />
+          <Route path="/work/get-set-globe" element={<GetSetGlobe />} />
+          <Route path="/work/study-buddy" element={<StudyBuddy />} />
+          <Route path="/work/finance" element={<Finance />} />
+          <Route path="/work/aadhaar" element={<Aadhaar />} />
+          <Route path="/work/cloutcart" element={<CloutCart />} />
+        </Routes>
+      </Suspense>
+    </motion.div>
+  )
+}
+
 // ─── App (Router) ──────────────────────────────────────
 export default function App() {
   return (
     <>
       <BrowserRouter>
+        <ScrollToTop />
         <CookieBanner />
-        <Suspense fallback={null}>
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/imprint" element={<Imprint />} />
-            <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-            <Route path="/press" element={<Press />} />
-            <Route path="/work/get-set-globe" element={<GetSetGlobe />} />
-            <Route path="/work/study-buddy" element={<StudyBuddy />} />
-            <Route path="/work/finance" element={<Finance />} />
-            <Route path="/work/aadhaar" element={<Suspense fallback={null}><Aadhaar /></Suspense>} />
-            <Route path="/work/cloutcart" element={<Suspense fallback={null}><CloutCart /></Suspense>} />
-          </Routes>
-        </Suspense>
+        <AppRoutes />
       </BrowserRouter>
       <Analytics />
     </>

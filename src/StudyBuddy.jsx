@@ -1,6 +1,6 @@
 import { useRef, useState, useEffect } from 'react'
 import { motion, useInView, AnimatePresence } from 'framer-motion'
-import { Nav, Footer, ProgressBar, MaskReveal, Reveal } from './shared.jsx'
+import { Nav, Footer, ProgressBar, MaskReveal, Reveal, BackToTop } from './shared.jsx'
 
 // ─── Design Tokens ──────────────────────────────────────
 // Accent colours derived from Study Buddy project card gradient:
@@ -110,7 +110,10 @@ function Label({ children, light = false }) {
       color: light ? 'rgba(255,255,255,0.3)' : C.muted,
       display: 'block',
       marginBottom: '1.5rem',
-    }}>{children}</span>
+    }}>
+      <span style={{ color: light ? 'rgba(255,100,172,0.5)' : C.pink, marginRight: '0.5em', letterSpacing: 0 }}>|</span>
+      {children}
+    </span>
   )
 }
 
@@ -1049,9 +1052,10 @@ function WhySection() {
               fontWeight: 500,
               fontSize: 'clamp(1.75rem, 3.5vw, 2.75rem)',
               letterSpacing: '-0.02em',
+              lineHeight: 1.05,
               color: C.ink,
               marginBottom: '1.5rem',
-            }}>We started with a question that felt personal</h2>
+            }}>I started with a question that felt <em style={{ fontFamily: "'EB Garamond', serif", fontStyle: 'italic', color: C.diagramPurple }}>personal</em></h2>
           </MaskReveal>
           <Reveal delay={0.2}>
             <p style={{
@@ -1075,6 +1079,7 @@ function SystemsSection() {
     <section id="systems" style={{ background: C.bg, ...PAD }}>
       <Wrap>
         <Reveal><Label>Systems Thinking Process</Label></Reveal>
+
         <Reveal delay={0.05}>
           <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.95rem', color: C.mid, lineHeight: 1.75, maxWidth: 640, marginBottom: 'clamp(2rem,3.5vw,3rem)' }}>
             Before designing anything, I needed to understand the system I was stepping into. We used systems thinking not as a formality, but as a way to test whether our instincts about the problem were correct, and to find where design could actually create change.
@@ -1083,113 +1088,79 @@ function SystemsSection() {
 
         {/* Double Diamond */}
         <Reveal>
-          <div style={{
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            gap: 0,
-            marginBottom: 'clamp(3rem,5vw,5rem)',
-            overflowX: 'auto',
-            paddingTop: '1rem',
-            paddingBottom: '1rem',
-          }}>
-            {[
-              {
-                num: '01', title: 'Discover\n& Define',
-                steps: ['Actor Map', 'Knowledge Graph', 'Sub-systems', 'System Mapping', 'Feedback Loops', 'Gap Analysis', 'Research'],
-              },
-              {
-                num: '02', title: 'Design\n& Deliver',
-                steps: ['Research-led Redesign', 'UX & Screen Design', 'Systems Approach', 'Design Briefs'],
-              },
-            ].map((stage, i) => {
-              const outerSize = 'clamp(300px, 44vw, 460px)'
-              return (
-                <div key={stage.num} style={{
-                  flexShrink: 0,
-                  width: outerSize,
-                  height: outerSize,
-                  position: 'relative',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                }}>
-                  {/* Rotated rounded square = rounded diamond */}
-                  <div style={{
-                    position: 'absolute',
-                    width: '74%',
-                    height: '74%',
-                    background: C.card,
-                    borderRadius: '8%',
-                    transform: 'rotate(45deg)',
-                    boxShadow: C.neu,
-                  }} />
-                  {/* Content sits on top, unrotated */}
-                  <div style={{
-                    position: 'relative',
-                    zIndex: 1,
-                    textAlign: 'center',
-                    maxWidth: '54%',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    gap: '0.6rem',
-                  }}>
-                    <span style={{
-                      fontFamily: "'Space Mono', monospace",
-                      fontSize: '0.52rem',
-                      letterSpacing: '0.22em',
-                      color: C.muted,
-                    }}>{stage.num}</span>
-                    <h3 style={{
-                      fontFamily: "'Syne', sans-serif",
-                      fontWeight: 500,
-                      fontSize: 'clamp(0.9rem, 1.6vw, 1.1rem)',
-                      color: C.ink,
-                      letterSpacing: '-0.01em',
-                      lineHeight: 1.25,
-                      whiteSpace: 'pre-line',
-                      margin: 0,
-                    }}>{stage.title}</h3>
-                    <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '5px', width: '100%' }}>
-                      {stage.steps.map((step, j) => (
-                        <li key={j} style={{
-                          fontFamily: "'Space Mono', monospace",
-                          fontSize: 'clamp(0.52rem, 0.82vw, 0.62rem)',
-                          color: C.mid,
-                          lineHeight: 1.4,
-                          letterSpacing: '0.03em',
-                        }}>{step}</li>
-                      ))}
-                    </ul>
-                  </div>
-                </div>
-              )
-            })}
+          <div style={{ marginBottom: 'clamp(2rem,3vw,2.5rem)' }}>
+            <svg viewBox="0 0 840 220" style={{ width: '100%', display: 'block' }}>
+              {/* Diamond 1 */}
+              <polygon points="20,110 210,8 400,110 210,212"
+                fill={C.card} stroke="rgba(0,0,0,0.10)" strokeWidth="1" />
+              {/* Vertical divider D1 — pink */}
+              <line x1="210" y1="16" x2="210" y2="204"
+                stroke={C.pink} strokeWidth="0.7" strokeDasharray="3 3" strokeOpacity="0.45" />
+              {/* D1 number + title */}
+              <text x="210" y="95" textAnchor="middle" dominantBaseline="middle"
+                fontSize="6.5" fontFamily="'Space Mono', monospace" fill={C.muted} letterSpacing="0.2em">01</text>
+              <text x="210" y="112" textAnchor="middle" dominantBaseline="middle"
+                fontSize="11" fontFamily="'Syne', sans-serif" fill={C.ink} fontWeight="500">Discover &amp; Define</text>
+              {/* Diamond 2 — left vertex touches D1 right vertex at (400,110) */}
+              <polygon points="400,110 610,8 820,110 610,212"
+                fill={C.card} stroke="rgba(0,0,0,0.10)" strokeWidth="1" />
+              {/* Vertical divider D2 — blue */}
+              <line x1="610" y1="16" x2="610" y2="204"
+                stroke={C.blue} strokeWidth="0.7" strokeDasharray="3 3" strokeOpacity="0.45" />
+              {/* D2 number + title */}
+              <text x="610" y="95" textAnchor="middle" dominantBaseline="middle"
+                fontSize="6.5" fontFamily="'Space Mono', monospace" fill={C.muted} letterSpacing="0.2em">02</text>
+              <text x="610" y="112" textAnchor="middle" dominantBaseline="middle"
+                fontSize="11" fontFamily="'Syne', sans-serif" fill={C.ink} fontWeight="500">Design &amp; Deliver</text>
+            </svg>
+            {/* Step lists aligned to each diamond */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', marginTop: '0.75rem' }}>
+              <div style={{ paddingLeft: '2%', paddingRight: '4%' }}>
+                {['Actor Map', 'Knowledge Graph', 'Sub-systems', 'System Mapping', 'Feedback Loops', 'Gap Analysis', 'Research'].map((s, j, arr) => (
+                  <div key={s} style={{
+                    fontFamily: "'Syne', sans-serif", fontSize: '0.68rem', color: C.mid,
+                    padding: '4px 0', borderBottom: j < arr.length - 1 ? `1px solid ${C.border}` : 'none',
+                  }}>{s}</div>
+                ))}
+              </div>
+              <div style={{ paddingLeft: '4%', paddingRight: '2%' }}>
+                {['Research-led Redesign', 'UX & Screen Design', 'Systems Approach', 'Design Briefs'].map((s, j, arr) => (
+                  <div key={s} style={{
+                    fontFamily: "'Syne', sans-serif", fontSize: '0.68rem', color: C.mid,
+                    padding: '4px 0', borderBottom: j < arr.length - 1 ? `1px solid ${C.border}` : 'none',
+                  }}>{s}</div>
+                ))}
+              </div>
+            </div>
           </div>
         </Reveal>
 
-        {/* Actor Map — stacked layout */}
+        {/* Actor Map — editorial layout */}
         <div style={{ marginBottom: 'clamp(3rem,5vw,5rem)' }}>
-          <div style={{ maxWidth: 640, marginBottom: 'clamp(1.5rem,2.5vw,2.5rem)' }}>
-            <Reveal><SectionTag color={C.pink}>Actor Map</SectionTag></Reveal>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'clamp(2rem,5vw,5rem)', alignItems: 'start', marginBottom: 'clamp(1.5rem,2.5vw,2.5rem)' }}>
+            <div>
+              <Reveal><SectionTag color={C.pink}>Actor Map</SectionTag></Reveal>
+              <Reveal delay={0.05}>
+                <h2 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: 'clamp(1.75rem, 3.5vw, 2.75rem)', letterSpacing: '-0.02em', color: C.ink, marginBottom: '1rem' }}>Stakeholder Ecosystem</h2>
+              </Reveal>
+              <Reveal delay={0.1}>
+                <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.9rem', color: C.mid, lineHeight: 1.7, margin: 0 }}>
+                  We mapped everyone who touches a student's learning journey: <em>students and teachers at the core, parents and institutions in the middle, policy and technology at the edges.</em> What became clear: the students we were designing for sit at the centre of a system they have the least control over.
+                </p>
+              </Reveal>
+            </div>
             <Reveal delay={0.05}>
-              <h2 style={{
-                fontFamily: "'Syne', sans-serif",
-                fontWeight: 500,
-                fontSize: 'clamp(1.75rem, 3.5vw, 2.75rem)',
-                letterSpacing: '-0.02em',
-                color: C.ink,
-                marginBottom: '1rem',
-              }}>Stakeholder Ecosystem</h2>
-            </Reveal>
-            <Reveal delay={0.1}>
-              <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.9rem', color: C.mid, lineHeight: 1.7, margin: 0 }}>
-                We mapped everyone who touches a student's learning journey: students and teachers at the core, parents and institutions in the middle, policy and technology at the edges. What became clear: the students we were designing for sit at the centre of a system they have the least control over.
-              </p>
-            </Reveal>
-            <Reveal delay={0.15}>
-              <HowHelpful text="This layered view helps identify relationships and power dynamics between all stakeholders in the education ecosystem." />
+              <div style={{ background: C.card, borderRadius: '14px', padding: 'clamp(1.25rem,2.5vw,1.75rem)', boxShadow: '6px 6px 18px rgba(0,0,0,0.07), -4px -4px 12px rgba(255,255,255,0.85)' }}>
+                <p style={{ fontFamily: "'EB Garamond', serif", fontSize: 'clamp(1.1rem,2vw,1.35rem)', color: C.ink, margin: '0 0 0.9rem', lineHeight: 1.25 }}>
+                  <em style={{ fontStyle: 'italic' }}>How</em> was this helpful?
+                </p>
+                <div style={{ display: 'flex', gap: '10px', alignItems: 'flex-start' }}>
+                  <span style={{ color: C.ink, fontSize: '0.9rem', flexShrink: 0 }}>→</span>
+                  <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.9rem', lineHeight: 1.7, color: C.mid, margin: 0 }}>
+                    This layered view helps <strong style={{ color: C.ink }}>identify relationships and power dynamics between all stakeholders</strong> in the education ecosystem.
+                  </p>
+                </div>
+              </div>
             </Reveal>
           </div>
           <Reveal delay={0.1}>
@@ -1197,55 +1168,65 @@ function SystemsSection() {
           </Reveal>
         </div>
 
-        {/* Knowledge Graph — stacked layout */}
+        {/* Knowledge Graph — editorial layout */}
         <div style={{ marginBottom: 'clamp(3rem,5vw,5rem)' }}>
-          <div style={{ maxWidth: 640, marginBottom: 'clamp(1.5rem,2.5vw,2.5rem)' }}>
-            <Reveal><SectionTag color={C.blue}>Knowledge Graph</SectionTag></Reveal>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'clamp(2rem,5vw,5rem)', alignItems: 'start', marginBottom: 'clamp(1.5rem,2.5vw,2.5rem)' }}>
+            <div>
+              <Reveal><SectionTag color={C.blue}>Knowledge Graph</SectionTag></Reveal>
+              <Reveal delay={0.05}>
+                <h2 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: 'clamp(1.75rem, 3.5vw, 2.75rem)', letterSpacing: '-0.02em', color: C.ink, marginBottom: '1rem' }}>Connecting the Dots</h2>
+              </Reveal>
+              <Reveal delay={0.1}>
+                <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.9rem', color: C.mid, lineHeight: 1.7, margin: 0 }}>
+                  The actor map told us who was involved. <strong style={{ color: C.ink }}>This told us why.</strong> Mapping the relationships between forces revealed where tensions compound and where a small shift could create a real ripple.
+                </p>
+              </Reveal>
+            </div>
             <Reveal delay={0.05}>
-              <h2 style={{
-                fontFamily: "'Syne', sans-serif",
-                fontWeight: 500,
-                fontSize: 'clamp(1.75rem, 3.5vw, 2.75rem)',
-                letterSpacing: '-0.02em',
-                color: C.ink,
-                marginBottom: '1rem',
-              }}>Connecting the Dots</h2>
-            </Reveal>
-            <Reveal delay={0.1}>
-              <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.9rem', color: C.mid, lineHeight: 1.7, margin: 0 }}>
-                The actor map told us who was involved. This told us why. Mapping the relationships between forces revealed where tensions compound and where a small shift could create a real ripple.
-              </p>
-            </Reveal>
-            <Reveal delay={0.15}>
-              <HowHelpful text="This helped identify leverage points where design intervention could create maximum impact." />
+              <div style={{ background: C.card, borderRadius: '14px', padding: 'clamp(1.25rem,2.5vw,1.75rem)', boxShadow: '6px 6px 18px rgba(0,0,0,0.07), -4px -4px 12px rgba(255,255,255,0.85)' }}>
+                <p style={{ fontFamily: "'EB Garamond', serif", fontSize: 'clamp(1.1rem,2vw,1.35rem)', color: C.ink, margin: '0 0 0.9rem', lineHeight: 1.25 }}>
+                  <em style={{ fontStyle: 'italic' }}>How</em> was this helpful?
+                </p>
+                <div style={{ display: 'flex', gap: '10px', alignItems: 'flex-start' }}>
+                  <span style={{ color: C.ink, fontSize: '0.9rem', flexShrink: 0 }}>→</span>
+                  <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.9rem', lineHeight: 1.7, color: C.mid, margin: 0 }}>
+                    This helped <strong style={{ color: C.ink }}>identify leverage points</strong> where <em>design intervention could create maximum impact.</em>
+                  </p>
+                </div>
+              </div>
             </Reveal>
           </div>
           <Reveal delay={0.1}>
-            <SystemMap />
+            <ImgBox label="Knowledge Graph — to be uploaded" aspect="65%" />
           </Reveal>
         </div>
 
-        {/* Sub-systems — stacked layout */}
+        {/* Sub-systems — editorial layout */}
         <div style={{ marginBottom: 'clamp(3rem,5vw,5rem)' }}>
-          <div style={{ maxWidth: 640, marginBottom: 'clamp(1.5rem,2.5vw,2.5rem)' }}>
-            <Reveal><SectionTag>Sub-systems</SectionTag></Reveal>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'clamp(2rem,5vw,5rem)', alignItems: 'start', marginBottom: 'clamp(1.5rem,2.5vw,2.5rem)' }}>
+            <div>
+              <Reveal><SectionTag>Sub-systems</SectionTag></Reveal>
+              <Reveal delay={0.05}>
+                <h2 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: 'clamp(1.75rem, 3.5vw, 2.75rem)', letterSpacing: '-0.02em', color: C.ink, marginBottom: '1rem' }}>Sub-Systems of Formal Education</h2>
+              </Reveal>
+              <Reveal delay={0.1}>
+                <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.9rem', color: C.mid, lineHeight: 1.7, margin: 0 }}>
+                  <strong style={{ color: C.ink }}>Formal education doesn't exist in isolation.</strong> We identified eight surrounding systems: <em>family, infrastructure, exam culture, peers, technology, policy, economy, and aspiration.</em> Understanding what constrains and enables learning came before we ever touched the product brief.
+                </p>
+              </Reveal>
+            </div>
             <Reveal delay={0.05}>
-              <h2 style={{
-                fontFamily: "'Syne', sans-serif",
-                fontWeight: 500,
-                fontSize: 'clamp(1.75rem, 3.5vw, 2.75rem)',
-                letterSpacing: '-0.02em',
-                color: C.ink,
-                marginBottom: '1rem',
-              }}>8 Sub-Systems of Formal Education</h2>
-            </Reveal>
-            <Reveal delay={0.1}>
-              <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.9rem', color: C.mid, lineHeight: 1.7, margin: 0 }}>
-                Formal education doesn't exist in isolation. We identified eight surrounding systems: family, infrastructure, exam culture, peers, technology, policy, economy, and aspiration. Understanding what constrains and enables learning came before we ever touched the product brief.
-              </p>
-            </Reveal>
-            <Reveal delay={0.15}>
-              <HowHelpful text="Mapping these helps in understanding systemic complexity and focusing deeper in our system map." />
+              <div style={{ background: C.card, borderRadius: '14px', padding: 'clamp(1.25rem,2.5vw,1.75rem)', boxShadow: '6px 6px 18px rgba(0,0,0,0.07), -4px -4px 12px rgba(255,255,255,0.85)' }}>
+                <p style={{ fontFamily: "'EB Garamond', serif", fontSize: 'clamp(1.1rem,2vw,1.35rem)', color: C.ink, margin: '0 0 0.9rem', lineHeight: 1.25 }}>
+                  <em style={{ fontStyle: 'italic' }}>How</em> was this helpful?
+                </p>
+                <div style={{ display: 'flex', gap: '10px', alignItems: 'flex-start' }}>
+                  <span style={{ color: C.ink, fontSize: '0.9rem', flexShrink: 0 }}>→</span>
+                  <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.9rem', lineHeight: 1.7, color: C.mid, margin: 0 }}>
+                    Mapping these helps in <strong style={{ color: C.ink }}>understanding systemic complexity and focusing deeper into the system map</strong>.
+                  </p>
+                </div>
+              </div>
             </Reveal>
           </div>
           <Reveal delay={0.1}>
@@ -1256,32 +1237,37 @@ function SystemsSection() {
         {/* System Map I */}
         <Reveal delay={0.1}>
           <div style={{ marginBottom: 'clamp(2.5rem,4vw,4rem)' }}>
-            <Label>Figma Artefact</Label>
-            <ImgBox label="System Map I — Initial System Mapping" aspect="50%" />
+            <Label>System Map I</Label>
+            <SystemMap />
           </div>
         </Reveal>
 
-        {/* Feedback Loops — stacked layout */}
+        {/* Feedback Loops — editorial layout */}
         <div style={{ marginBottom: 'clamp(3rem,5vw,5rem)' }}>
-          <div style={{ maxWidth: 640, marginBottom: 'clamp(1.5rem,2.5vw,2.5rem)' }}>
-            <Reveal><SectionTag color={C.pink}>Feedback Loops</SectionTag></Reveal>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'clamp(2rem,5vw,5rem)', alignItems: 'start', marginBottom: 'clamp(1.5rem,2.5vw,2.5rem)' }}>
+            <div>
+              <Reveal><SectionTag color={C.pink}>Feedback Loops</SectionTag></Reveal>
+              <Reveal delay={0.05}>
+                <h2 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: 'clamp(1.75rem, 3.5vw, 2.75rem)', letterSpacing: '-0.02em', color: C.ink, marginBottom: '1rem' }}>Reinforcing & Balancing Loops</h2>
+              </Reveal>
+              <Reveal delay={0.1}>
+                <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.9rem', color: C.mid, lineHeight: 1.7, margin: 0 }}>
+                  This is where the <strong style={{ color: C.ink }}>systems work crystallised.</strong> Mapping the reinforcing and balancing loops, examining how career pressure feeds exam anxiety, how small wins build habit, and how peer environment shapes consistency, <em>gave us the leverage points worth designing for.</em>
+                </p>
+              </Reveal>
+            </div>
             <Reveal delay={0.05}>
-              <h2 style={{
-                fontFamily: "'Syne', sans-serif",
-                fontWeight: 500,
-                fontSize: 'clamp(1.75rem, 3.5vw, 2.75rem)',
-                letterSpacing: '-0.02em',
-                color: C.ink,
-                marginBottom: '1rem',
-              }}>Reinforcing & Balancing Loops</h2>
-            </Reveal>
-            <Reveal delay={0.1}>
-              <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.9rem', color: C.mid, lineHeight: 1.7, margin: 0 }}>
-                This is where the systems work crystallised. Mapping the reinforcing and balancing loops, examining how career pressure feeds exam anxiety, how small wins build habit, and how peer environment shapes consistency, gave us the leverage points worth designing for.
-              </p>
-            </Reveal>
-            <Reveal delay={0.15}>
-              <HowHelpful text="Identifying reinforcing and balancing loops helps uncover leverage points for systemic change, where a small intervention creates large ripple effects." />
+              <div style={{ background: C.card, borderRadius: '14px', padding: 'clamp(1.25rem,2.5vw,1.75rem)', boxShadow: '6px 6px 18px rgba(0,0,0,0.07), -4px -4px 12px rgba(255,255,255,0.85)' }}>
+                <p style={{ fontFamily: "'EB Garamond', serif", fontSize: 'clamp(1.1rem,2vw,1.35rem)', color: C.ink, margin: '0 0 0.9rem', lineHeight: 1.25 }}>
+                  <em style={{ fontStyle: 'italic' }}>How</em> was this helpful?
+                </p>
+                <div style={{ display: 'flex', gap: '10px', alignItems: 'flex-start' }}>
+                  <span style={{ color: C.ink, fontSize: '0.9rem', flexShrink: 0 }}>→</span>
+                  <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.9rem', lineHeight: 1.7, color: C.mid, margin: 0 }}>
+                    Identifying reinforcing and balancing loops helps uncover leverage points for systemic change, where <strong style={{ color: C.ink }}>a small intervention creates large ripple effects.</strong>
+                  </p>
+                </div>
+              </div>
             </Reveal>
           </div>
           <Reveal delay={0.1}>
@@ -1292,34 +1278,39 @@ function SystemsSection() {
         {/* HMW 1 */}
         <Reveal delay={0.1}>
           <div style={{
-            background: C.dark, borderRadius: '16px',
+            background: 'linear-gradient(145deg, #CC80DE 0%, #B555C5 45%, #8828A8 100%)',
+            borderRadius: '16px',
             padding: 'clamp(2rem,4vw,3.5rem)',
             marginTop: 'clamp(2rem,4vw,3.5rem)',
+            boxShadow: '10px 10px 28px rgba(120,40,160,0.38), -5px -5px 16px rgba(255,255,255,0.65)',
           }}>
             <span style={{
               fontFamily: "'Space Mono', monospace",
               fontSize: '0.55rem',
               letterSpacing: '0.2em',
-              color: C.darkMuted,
+              color: 'rgba(0,0,0,0.4)',
               display: 'block',
               marginBottom: '0.5rem',
+              textAlign: 'left',
             }}>HOW MIGHT WE</span>
             <h3 style={{
               fontFamily: "'Syne', sans-serif",
               fontWeight: 500,
               fontSize: 'clamp(1rem,1.8vw,1.2rem)',
-              color: C.darkInk,
+              color: C.ink,
               marginBottom: '1.5rem',
               letterSpacing: '-0.01em',
+              textAlign: 'left',
             }}>Motivation & Real-Time Achievement</h3>
             <p style={{
               fontFamily: "'EB Garamond', serif",
               fontStyle: 'italic',
               fontSize: 'clamp(1.3rem,3vw,2rem)',
-              color: 'rgba(242,237,228,0.75)',
+              color: 'rgba(0,0,0,0.68)',
               lineHeight: 1.55,
               maxWidth: 680,
-              margin: 0,
+              margin: '0 auto',
+              textAlign: 'left',
             }}>
               "How might we design systems that provide real-time motivation and track small achievements to boost confidence for students?"
             </p>
@@ -1330,15 +1321,187 @@ function SystemsSection() {
   )
 }
 
+// ─── Survey Insights ─────────────────────────────────────
+function SurveyInsights() {
+  // Project palette
+  const P = { pink: '#FE60AC', blue: '#4A5DE2', green: '#A6CA00', yellow: '#FAFF38' }
+
+  const challenges = [
+    { label: 'Lack of focus / distractions', pct: 71.6 },
+    { label: 'Stress & pressure from parents/exams', pct: 50.4 },
+    { label: 'Not understanding concepts clearly', pct: 41.8 },
+    { label: 'Lack of interest in subjects', pct: 22 },
+    { label: 'No proper study environment', pct: 14.9 },
+  ]
+  const enjoyable = [
+    { label: 'Real-world applications of concepts', pct: 68.1 },
+    { label: 'Personalised learning at my own pace', pct: 49.6 },
+    { label: 'Practical experiments', pct: 47.5 },
+    { label: 'Interactive classes', pct: 46.1 },
+    { label: 'Group activities & discussions', pct: 41.8 },
+    { label: 'Technology (videos, apps, games)', pct: 35.5 },
+  ]
+  // colour-coded: green = intrinsic/positive, blue = extrinsic, pink = fear-based
+  const motivators = [
+    { label: 'Personal interest in the subject', pct: 63.8, color: P.green },
+    { label: 'Good grades & academic recognition', pct: 46.8, color: P.blue },
+    { label: 'Future career goals', pct: 34,   color: P.blue },
+    { label: 'Competition with peers',          pct: 29.8, color: P.blue },
+    { label: 'Fear of failure',                 pct: 28.4, color: P.pink },
+    { label: "Teacher's encouragement",         pct: 6.4,  color: P.blue },
+  ]
+  const studyMethods = [
+    { label: 'Reading textbooks & notes',        pct: 73.8 },
+    { label: 'Attending in-person lectures',     pct: 62.4 },
+    { label: 'Watching online lectures/videos',  pct: 58.2 },
+    { label: 'Practising with problem sets',     pct: 43.9 },
+    { label: 'Group study discussions',          pct: 36.2 },
+    { label: 'Using AI tools for explanations',  pct: 20.6 },
+  ]
+  // bar colour signals motivation level: pink=low, blue=mid peak, green=high
+  const motivationScale = [
+    { n: '1', pct: 3.5,  color: P.pink },
+    { n: '2', pct: 7.1,  color: P.pink },
+    { n: '3', pct: 35.5, color: P.blue },
+    { n: '4', pct: 41.1, color: P.blue },
+    { n: '5', pct: 12.8, color: P.green },
+  ]
+  const scaleMax = 41.1
+
+  const pressureSegments = [
+    { label: 'Yes, a lot', pct: 40.4, color: P.pink },
+    { label: 'Sometimes',  pct: 41.1, color: P.blue },
+    { label: 'Not really', pct: 18.4, color: P.green },
+  ]
+
+  const DK = { bg: C.dark, border: '1px solid rgba(255,255,255,0.07)', ink: C.darkInk, mid: C.darkMid, muted: C.darkMuted, track: 'rgba(255,255,255,0.09)' }
+  function DarkCard({ children, style = {} }) {
+    return <div style={{ background: DK.bg, borderRadius: '14px', border: DK.border, padding: 'clamp(1.25rem,2.5vw,2rem)', boxShadow: '6px 6px 18px rgba(0,0,0,0.4), -3px -3px 10px rgba(255,255,255,0.04)', ...style }}>{children}</div>
+  }
+  function HBar({ label, pct, accent }) {
+    return (
+      <div style={{ marginBottom: '0.85rem' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '5px' }}>
+          <span style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.8rem', color: DK.ink, lineHeight: 1.3 }}>{label}</span>
+          <span style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.58rem', color: accent, letterSpacing: '0.05em', flexShrink: 0, marginLeft: '0.75rem', fontWeight: 700 }}>{pct}%</span>
+        </div>
+        <div style={{ height: 3, background: DK.track, borderRadius: 2 }}>
+          <div style={{ width: `${pct}%`, height: '100%', background: accent, borderRadius: 2 }} />
+        </div>
+      </div>
+    )
+  }
+
+  function CardLabel({ children }) {
+    return (
+      <div style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.52rem', letterSpacing: '0.18em', color: DK.muted, textTransform: 'uppercase', marginBottom: '1.25rem' }}>{children}</div>
+    )
+  }
+
+  return (
+    <div style={{ marginBottom: 'clamp(3rem,5vw,5rem)' }}>
+
+      {/* Stat strip */}
+      <Reveal>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: '1rem', marginBottom: 'clamp(1.5rem,3vw,2.5rem)' }}>
+          {[
+            { n: '141',   label: 'students surveyed across school & college', sub: 'Sample size',   color: P.yellow },
+            { n: '71.6%', label: 'cite lack of focus as their #1 challenge',  sub: 'Top challenge', color: P.pink },
+            { n: '81.5%', label: 'feel pressured by grades and exams',        sub: '"Yes, a lot" + "Sometimes"', color: P.pink },
+          ].map(s => (
+            <DarkCard key={s.n}>
+              <div style={{ fontFamily: "'Syne', sans-serif", fontWeight: 600, fontSize: 'clamp(1.9rem,4vw,2.8rem)', color: s.color, lineHeight: 1, marginBottom: '0.5rem' }}>{s.n}</div>
+              <div style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.78rem', color: DK.mid, lineHeight: 1.45, marginBottom: '0.75rem' }}>{s.label}</div>
+              <span style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.52rem', letterSpacing: '0.14em', color: DK.muted, textTransform: 'uppercase' }}>{s.sub}</span>
+            </DarkCard>
+          ))}
+        </div>
+      </Reveal>
+
+      {/* Challenges (pink) + What makes it enjoyable (green) */}
+      <Reveal delay={0.08}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem', marginBottom: 'clamp(1.5rem,3vw,2.5rem)' }}>
+          <DarkCard>
+            <CardLabel>Biggest challenges (select up to 2) · 141 responses</CardLabel>
+            {challenges.map(c => <HBar key={c.label} label={c.label} pct={c.pct} accent={P.pink} />)}
+          </DarkCard>
+          <DarkCard>
+            <CardLabel>What makes learning enjoyable · 141 responses</CardLabel>
+            {enjoyable.map(e => <HBar key={e.label} label={e.label} pct={e.pct} accent={P.green} />)}
+          </DarkCard>
+        </div>
+      </Reveal>
+
+      {/* Motivation scale */}
+      <Reveal delay={0.08}>
+        <DarkCard style={{ marginBottom: 'clamp(1.5rem,3vw,2.5rem)' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1.25rem', flexWrap: 'wrap', gap: '0.5rem' }}>
+            <div>
+              <CardLabel>How motivated are/were you to study? · 141 responses</CardLabel>
+              <div style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.8rem', color: DK.mid }}>Rated 1–5 &nbsp;·&nbsp; 1 = Not at all &nbsp;·&nbsp; 5 = Highly motivated</div>
+            </div>
+            <div style={{ fontFamily: "'EB Garamond', serif", fontStyle: 'italic', fontSize: '0.9rem', color: DK.muted, maxWidth: 260, textAlign: 'right', lineHeight: 1.5 }}>
+              <span style={{ color: P.yellow, fontStyle: 'normal', fontWeight: 600 }}>76.6%</span> rated themselves a 3 or 4 — willing but inconsistent.
+            </div>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'flex-end', gap: '0.6rem', height: 88 }}>
+            {motivationScale.map(m => (
+              <div key={m.n} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '5px', height: '100%', justifyContent: 'flex-end' }}>
+                <span style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.55rem', color: m.color, fontWeight: 700, whiteSpace: 'nowrap' }}>{m.pct}%</span>
+                <div style={{ width: '100%', height: `${(m.pct / scaleMax) * 60}px`, background: m.color, borderRadius: '3px 3px 0 0', opacity: m.pct < 10 ? 0.55 : 1 }} />
+                <span style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.62rem', color: m.color, fontWeight: 700 }}>{m.n}</span>
+              </div>
+            ))}
+          </div>
+        </DarkCard>
+      </Reveal>
+
+      {/* Motivators + Study methods — equal-height 2-col */}
+      <Reveal delay={0.08}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem', marginBottom: 'clamp(1.5rem,3vw,2.5rem)', alignItems: 'stretch' }}>
+          <DarkCard style={{ display: 'flex', flexDirection: 'column' }}>
+            <CardLabel>What motivates them most (select up to 3) · 141 responses</CardLabel>
+            {motivators.map(m => <HBar key={m.label} label={m.label} pct={m.pct} accent={m.color === P.blue ? P.yellow : m.color} />)}
+          </DarkCard>
+          <DarkCard style={{ display: 'flex', flexDirection: 'column' }}>
+            <CardLabel>How they usually study · 141 responses</CardLabel>
+            {studyMethods.map(s => <HBar key={s.label} label={s.label} pct={s.pct} accent={P.yellow} />)}
+          </DarkCard>
+        </div>
+      </Reveal>
+
+      {/* Grade pressure — full width */}
+      <Reveal delay={0.08}>
+        <DarkCard>
+          <CardLabel>Do you feel pressured by grades & exams?</CardLabel>
+          <div style={{ display: 'flex', gap: 2, marginBottom: '0.6rem', borderRadius: 4, overflow: 'hidden' }}>
+            {pressureSegments.map(g => (
+              <div key={g.label} style={{ flex: g.pct, height: 8, background: g.color }} />
+            ))}
+          </div>
+          <div style={{ display: 'flex', gap: 2 }}>
+            {pressureSegments.map(g => (
+              <div key={g.label} style={{ flex: g.pct, minWidth: 0 }}>
+                <div style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: '1.25rem', color: g.color, lineHeight: 1 }}>{g.pct}%</div>
+                <div style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.68rem', color: DK.muted, marginTop: '3px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{g.label}</div>
+              </div>
+            ))}
+          </div>
+        </DarkCard>
+      </Reveal>
+    </div>
+  )
+}
+
 // ─── Research Section ─────────────────────────────────────
 function ResearchSection() {
   const insights = [
-    { text: 'More than demotivation, it\'s procrastination that holds students back.', keyword: 'procrastination', color: C.ink },
+    { text: 'Procrastination more than demotivation, it\'s what holds students back.', keyword: 'Procrastination', color: C.ink },
     { text: 'Distraction and procrastination are the leading barriers to consistent study.', keyword: 'Distraction', color: C.mid },
-    { text: 'Studying without meaning is just memorising without understanding.', keyword: 'memorising without understanding', color: C.ink },
+    { text: 'Memorising without understanding — studying without meaning is just that.', keyword: 'Memorising without understanding', color: C.ink },
     { text: 'Fear of bad grades motivates many students more than genuine interest.', keyword: 'Fear of bad grades', color: C.mid },
-    { text: 'If I had managed to put every effort, I would have definitely scored more.', keyword: 'put every effort', color: C.ink },
-    { text: 'Students need something to keep them going, not just remind them.', keyword: 'keep them going', color: C.mid },
+    { text: 'Put every effort — I would have definitely scored more.', keyword: 'Put every effort', color: C.ink },
+    { text: 'Keep them going — students need something to, not just reminders.', keyword: 'Keep them going', color: C.mid },
   ]
 
   function HighlightText({ text, keyword, color }) {
@@ -1361,7 +1524,7 @@ function ResearchSection() {
         <Reveal><Label>Primary Research</Label></Reveal>
         <Reveal delay={0.05}>
           <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.95rem', color: C.mid, lineHeight: 1.75, maxWidth: 640, marginBottom: 'clamp(2rem,3.5vw,3rem)' }}>
-            The systems maps pointed toward student motivation as a central leverage point. We went into primary research to test whether that held, and to hear what students actually had to say about how they study.
+            The systems maps pointed toward student motivation as a central leverage point. We went into <em>primary research to test whether that held, and to hear what students actually had to say about how they study.</em>
           </p>
         </Reveal>
 
@@ -1379,7 +1542,7 @@ function ResearchSection() {
               System Map II — Student Motivation Focus
             </h3>
             <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.9rem', color: C.mid, lineHeight: 1.7, marginBottom: '1.5rem', maxWidth: 560 }}>
-              As interviews progressed, motivation kept surfacing, not as one issue among many, but as the thread connecting almost everything else. This map zoomed in: what is motivation actually connected to, and where does it consistently break down?
+              As interviews progressed, <strong style={{ color: C.ink }}>motivation kept surfacing, not as one issue among many, but as the thread connecting almost everything else.</strong> This map zoomed in: what is motivation actually connected to, and where does it consistently break down?
             </p>
             <SystemMapII />
           </div>
@@ -1428,23 +1591,24 @@ function ResearchSection() {
         {/* Target Audience */}
         <Reveal delay={0.1}>
           <div style={{
-            background: C.dark,
+            background: '#A6CA00',
             borderRadius: '16px',
             padding: 'clamp(1.75rem,3vw,2.75rem)',
+            textAlign: 'left',
           }}>
             <div style={{
               fontFamily: "'Space Mono', monospace",
               fontSize: '0.58rem',
               letterSpacing: '0.18em',
               textTransform: 'uppercase',
-              color: C.darkMuted,
+              color: 'rgba(0,0,0,0.45)',
               marginBottom: '0.75rem',
             }}>Target Audience</div>
             <p style={{
               fontFamily: "'Syne', sans-serif",
               fontWeight: 500,
               fontSize: 'clamp(1rem,2vw,1.35rem)',
-              color: C.darkInk,
+              color: '#000',
               margin: 0,
             }}>
               Students 13+ years of age, primarily from upper-middle class income groups
@@ -1485,11 +1649,14 @@ function DefineSection() {
           <Reveal delay={0.1}>
             <p style={{
               fontFamily: "'EB Garamond', serif",
-              fontSize: 'clamp(1.15rem,2.5vw,1.55rem)',
+              fontSize: 'clamp(1rem,2vw,1.3rem)',
               color: C.ink,
-              lineHeight: 1.7,
-              maxWidth: 780,
+              lineHeight: 1.5,
+              maxWidth: 680,
               marginTop: '0.5rem',
+              marginLeft: 'auto',
+              marginRight: 'auto',
+              textAlign: 'left',
             }}>
               Study Buddy is an <strong style={{ color: C.ink }}>AI-powered learning companion</strong> that helps students study smarter by transforming notes into engaging video explanations, optimising focus through personalised Pomodoro sessions, and enhancing memory retention using <strong style={{ color: C.ink }}>science-backed mnemonics</strong>, all while tracking progress to show real learning gains. This all-in-one app combines <em>cognitive psychology with smart technology</em> to make studying more effective, efficient, and enjoyable.
             </p>
@@ -1515,11 +1682,13 @@ function DefineSection() {
           gap: '1rem',
           marginBottom: 'clamp(3rem,5vw,5rem)',
         }}>
-          {quotes.map((q, i) => (
+          {quotes.map((q, i) => {
+            const voiceColors = ['#FE60AC', '#4A5DE2', '#A6CA00', '#CE93D8', '#FAFF38', '#FE60AC']
+            return (
             <StaggerItem key={i}>
               <div style={{
                 background: C.surface,
-                border: `1px solid ${C.border}`,
+                border: `1.5px solid ${voiceColors[i % voiceColors.length]}`,
                 borderRadius: '12px',
                 padding: '1.5rem',
                 height: '100%',
@@ -1533,16 +1702,35 @@ function DefineSection() {
                 }}>"</div>
                 <p style={{
                   fontFamily: "'EB Garamond', serif",
-                  fontStyle: 'italic',
-                  fontSize: '1.05rem',
+                  fontSize: '1.2rem',
                   color: C.mid,
                   lineHeight: 1.65,
                   margin: 0,
                 }}>{q.replace(/^"|"$/g, '')}</p>
               </div>
             </StaggerItem>
-          ))}
+          )})}
         </StaggerGrid>
+
+        {/* Survey Insights */}
+        <div style={{ marginTop: 'clamp(2.5rem,4vw,4rem)' }}>
+          <Reveal>
+            <h3 style={{
+              fontFamily: "'Syne', sans-serif",
+              fontWeight: 500,
+              fontSize: 'clamp(1.1rem, 2vw, 1.4rem)',
+              color: C.ink,
+              marginBottom: '0.5rem',
+              letterSpacing: '-0.02em',
+            }}>
+              Survey Data — 141 Students
+            </h3>
+            <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.9rem', color: C.mid, lineHeight: 1.7, marginBottom: '1.75rem' }}>
+              A structured questionnaire across 12 questions revealed clear patterns in how students study, what motivates them, and where they consistently fall short.
+            </p>
+          </Reveal>
+          <SurveyInsights />
+        </div>
 
         {/* IA Diagram */}
         <Reveal>
@@ -1575,34 +1763,39 @@ function DefineSection() {
         {/* HMW 2 */}
         <Reveal delay={0.1}>
           <div style={{
-            background: C.dark, borderRadius: '16px',
+            background: 'linear-gradient(145deg, #BCDC28 0%, #96BC00 45%, #668500 100%)',
+            borderRadius: '16px',
             padding: 'clamp(2rem,4vw,3.5rem)',
             marginBottom: 'clamp(2.5rem,4vw,4rem)',
+            boxShadow: '10px 10px 28px rgba(90,120,0,0.38), -5px -5px 16px rgba(255,255,255,0.65)',
           }}>
             <span style={{
               fontFamily: "'Space Mono', monospace",
               fontSize: '0.55rem',
               letterSpacing: '0.2em',
-              color: C.darkMuted,
+              color: 'rgba(0,0,0,0.4)',
               display: 'block',
               marginBottom: '0.5rem',
+              textAlign: 'left',
             }}>HOW MIGHT WE</span>
             <h3 style={{
               fontFamily: "'Syne', sans-serif",
               fontWeight: 500,
               fontSize: 'clamp(1rem,1.8vw,1.2rem)',
-              color: C.darkInk,
+              color: C.ink,
               marginBottom: '1.5rem',
               letterSpacing: '-0.01em',
+              textAlign: 'left',
             }}>Interface Design & Study Experience</h3>
             <p style={{
               fontFamily: "'EB Garamond', serif",
               fontStyle: 'italic',
               fontSize: 'clamp(1.2rem,2.8vw,1.85rem)',
-              color: 'rgba(242,237,228,0.75)',
+              color: 'rgba(0,0,0,0.68)',
               lineHeight: 1.55,
               maxWidth: 700,
-              margin: 0,
+              margin: '0 auto',
+              textAlign: 'left',
             }}>
               "How might we create an interface that keeps students motivated by combining structured focus techniques with an engaging means to solve the approach of rote memorisation, giving them more time for their goals and interests?"
             </p>
@@ -1658,6 +1851,7 @@ function PersonasSection() {
       opportunities: ['Streak-Based Motivation', 'Pomodoro-Style Focus Mode', 'Accountability Buddy System', 'Personalised Study Challenges'],
       color: C.blue,
       initials: 'AM',
+      photo: '/persona-aarav.jpg',
     },
     {
       name: 'Riya Sharma', age: '15 years',
@@ -1670,6 +1864,7 @@ function PersonasSection() {
       opportunities: ['AI Video Notes', 'Focus Timer with motivational alerts', 'Memory Games (spaced repetition)', 'Study Squad', 'Progress Mascot'],
       color: C.pink,
       initials: 'RS',
+      photo: '/persona-riya.jpg',
     },
   ]
 
@@ -1714,17 +1909,34 @@ function PersonasSection() {
                 borderRadius: '16px',
                 overflow: 'hidden',
               }}>
-                <div style={{ background: p.color, padding: '2rem', position: 'relative' }}>
-                  <div style={{
-                    width: 56, height: 56, borderRadius: '50%',
-                    background: 'rgba(255,255,255,0.2)',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    marginBottom: '1rem',
-                  }}>
-                    <span style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: '1.1rem', color: 'white' }}>{p.initials}</span>
-                  </div>
-                  <h4 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: '1.3rem', color: 'white', margin: '0 0 4px' }}>{p.name}</h4>
-                  <span style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.6rem', color: 'rgba(255,255,255,0.65)', letterSpacing: '0.08em' }}>{p.age} · {p.context}</span>
+                <div style={{ position: 'relative', overflow: 'hidden' }}>
+                  {p.photo ? (
+                    <div style={{ position: 'relative', height: 220 }}>
+                      <img src={p.photo} alt={p.name}
+                        style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center 20%', display: 'block' }} />
+                      <div style={{
+                        position: 'absolute', inset: 0,
+                        background: 'linear-gradient(to top, rgba(6,21,40,0.82) 0%, rgba(6,21,40,0.18) 55%, transparent 100%)',
+                      }} />
+                      <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, padding: '1.25rem 2rem' }}>
+                        <h4 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: '1.3rem', color: 'white', margin: '0 0 4px' }}>{p.name}</h4>
+                        <span style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.6rem', color: 'rgba(255,255,255,0.65)', letterSpacing: '0.08em' }}>{p.age} · {p.context}</span>
+                      </div>
+                    </div>
+                  ) : (
+                    <div style={{ background: p.color, padding: '2rem' }}>
+                      <div style={{
+                        width: 56, height: 56, borderRadius: '50%',
+                        background: 'rgba(255,255,255,0.2)',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        marginBottom: '1rem',
+                      }}>
+                        <span style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: '1.1rem', color: 'white' }}>{p.initials}</span>
+                      </div>
+                      <h4 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: '1.3rem', color: 'white', margin: '0 0 4px' }}>{p.name}</h4>
+                      <span style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.6rem', color: 'rgba(255,255,255,0.65)', letterSpacing: '0.08em' }}>{p.age} · {p.context}</span>
+                    </div>
+                  )}
                 </div>
 
                 <div style={{ padding: '1.75rem' }}>
@@ -1755,7 +1967,7 @@ function PersonasSection() {
                       { title: 'Opportunities', items: p.opportunities, dot: C.green },
                     ].map(col => (
                       <div key={col.title}>
-                        <span style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.55rem', letterSpacing: '0.15em', color: C.muted, textTransform: 'uppercase', display: 'block', marginBottom: '6px' }}>{col.title}</span>
+                        <span style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.65rem', letterSpacing: '0.1em', color: C.muted, textTransform: 'uppercase', display: 'block', marginBottom: '6px' }}>{col.title}</span>
                         <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '5px' }}>
                           {col.items.map((item, ii) => (
                             <li key={ii} style={{ display: 'flex', gap: '6px', alignItems: 'flex-start' }}>
@@ -1872,6 +2084,92 @@ function DesignSystemSection() {
   )
 }
 
+// ─── Mockups Section ──────────────────────────────────────
+function MockupsSection() {
+  return (
+    <section id="mockups" style={{ background: C.bg, ...PAD }}>
+      <Wrap>
+        <Reveal><Label>Touchpoints</Label></Reveal>
+
+        {/* Row 1 — Notes to Nuggets (wide) */}
+        <Reveal delay={0.05}>
+          <div style={{
+            borderRadius: '20px',
+            overflow: 'hidden',
+            marginBottom: 'clamp(1rem,2vw,1.5rem)',
+            background: '#f5f5f3',
+          }}>
+            <img
+              src="/sb-mockup-notes.png"
+              alt="Notes to Nuggets — upload flow"
+              style={{ width: '100%', display: 'block', objectFit: 'cover' }}
+            />
+          </div>
+        </Reveal>
+
+        {/* Row 2 — Home screen + App icon */}
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: '1fr 1fr',
+          gap: 'clamp(1rem,2vw,1.5rem)',
+          marginBottom: 'clamp(1rem,2vw,1.5rem)',
+        }}>
+          <Reveal delay={0.08}>
+            <div style={{ borderRadius: '20px', overflow: 'hidden', background: '#e8e8e6' }}>
+              <img
+                src="/sb-mockup-home.png"
+                alt="Study Buddy home screen"
+                style={{ width: '100%', display: 'block', objectFit: 'cover' }}
+              />
+            </div>
+          </Reveal>
+          <Reveal delay={0.12}>
+            <div style={{ borderRadius: '20px', overflow: 'hidden', background: '#f0f0ee' }}>
+              <img
+                src="/sb-mockup-icon.png"
+                alt="Study Buddy app icon on iPhone"
+                style={{ width: '100%', display: 'block', objectFit: 'cover' }}
+              />
+            </div>
+          </Reveal>
+        </div>
+
+        {/* Row 3 — Planner (dark box for transparent bg) */}
+        <Reveal delay={0.1}>
+          <div style={{
+            borderRadius: '20px',
+            overflow: 'hidden',
+            marginBottom: 'clamp(1rem,2vw,1.5rem)',
+            background: '#0d0d10',
+          }}>
+            <img
+              src="/sb-mockup-planner.png"
+              alt="Plan of Action — daily planner screens"
+              style={{ width: '100%', display: 'block', objectFit: 'cover' }}
+            />
+          </div>
+        </Reveal>
+
+        {/* Row 4 — Account / stats (dark box for transparent bg) */}
+        <Reveal delay={0.12}>
+          <div style={{
+            borderRadius: '20px',
+            overflow: 'hidden',
+            background: '#0d0d10',
+          }}>
+            <img
+              src="/sb-mockup-account.png"
+              alt="Account & stats screens"
+              style={{ width: '100%', display: 'block', objectFit: 'cover' }}
+            />
+          </div>
+        </Reveal>
+
+      </Wrap>
+    </section>
+  )
+}
+
 // ─── Features Section ─────────────────────────────────────
 function FeaturesSection() {
   return (
@@ -1900,48 +2198,76 @@ function FeaturesSection() {
             </p>
           </Reveal>
           <Reveal delay={0.15}>
-            <ImgBox label="Home Dashboard — Daily Overview UI" aspect="56%" />
+            <div style={{ borderRadius: '16px', overflow: 'hidden', background: '#0d0d10' }}>
+              <img
+                src="/sb-mockup-account.png"
+                alt="Home Dashboard — Daily Overview UI"
+                style={{ width: '100%', display: 'block', objectFit: 'cover' }}
+              />
+            </div>
           </Reveal>
         </div>
 
-        {/* Focus Sessions — dark bg */}
-        <div style={{ background: C.dark, borderRadius: '24px', padding: 'clamp(2rem,4vw,3.5rem)', marginBottom: 'clamp(3rem,5vw,5rem)', position: 'relative', overflow: 'hidden' }}>
-          {/* Blob decoration */}
-          <div style={{ position: 'absolute', width: 320, height: 320, borderRadius: '50%', background: C.pink, top: -80, right: -80, opacity: 0.1, zIndex: 0, pointerEvents: 'none' }} />
-          <div style={{ position: 'relative', zIndex: 1 }}>
-            <Reveal>
-              <SectionTag color={C.pink}>02</SectionTag>
-            </Reveal>
-            <Reveal delay={0.05}>
-              <h2 style={{
-                fontFamily: "'Syne', sans-serif",
-                fontWeight: 500,
-                fontSize: 'clamp(1.75rem, 3.5vw, 2.75rem)',
-                letterSpacing: '-0.02em',
-                color: C.white,
-                marginBottom: '1rem',
-              }}>Focus Sessions</h2>
-            </Reveal>
-            <Reveal delay={0.1}>
-              <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.9rem', color: 'rgba(255,255,255,0.6)', lineHeight: 1.7, maxWidth: 560, marginBottom: '2rem' }}>
-                Pomodoro timer with quirky localisation, micro-interactions, dynamic motivating stickers, and contextually relevant illustrations. 25 min work, 5 min break, 4 cycles, then a longer break.
-              </p>
-            </Reveal>
-            <Reveal delay={0.15}>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem' }}>
-                {[
-                  'Timer Interface — Active Focus Mode',
-                  'Break Screen — Motivational Stickers',
-                  'Control Panel — Settings, Pause/Play, Next',
-                ].map((lbl, i) => (
-                  <div key={i}>
-                    <ImgBox label={lbl} aspect="177%" dark />
-                    <ScreenLabel dark>{lbl}</ScreenLabel>
-                  </div>
-                ))}
-              </div>
-            </Reveal>
-          </div>
+        {/* Focus Sessions */}
+        <div style={{ marginBottom: 'clamp(3rem,5vw,5rem)' }}>
+          <Reveal>
+            <SectionTag color={C.pink}>02</SectionTag>
+          </Reveal>
+          <Reveal delay={0.05}>
+            <h2 style={{
+              fontFamily: "'Syne', sans-serif",
+              fontWeight: 500,
+              fontSize: 'clamp(1.75rem, 3.5vw, 2.75rem)',
+              letterSpacing: '-0.02em',
+              color: C.ink,
+              marginBottom: '1rem',
+            }}>Focus Sessions</h2>
+          </Reveal>
+          <Reveal delay={0.1}>
+            <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.9rem', color: C.mid, lineHeight: 1.7, maxWidth: 560, marginBottom: '2rem' }}>
+              Pomodoro timer with quirky localisation, micro-interactions, dynamic motivating stickers, and contextually relevant illustrations. 25 min work, 5 min break, 4 cycles, then a longer break.
+            </p>
+          </Reveal>
+
+          {/* Context screens — row 1: purple, green, pink */}
+          <Reveal delay={0.15}>
+            <div style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.62rem', letterSpacing: '0.18em', color: C.muted, marginBottom: '1rem', textTransform: 'uppercase' }}>
+              Setting the context for first time users
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem', marginBottom: '1.25rem', maxWidth: 560 }}>
+              {[
+                { src: '/sb-pomo-1.png', alt: 'Pomodoro, what\'s that?' },
+                { src: '/sb-pomo-2.png', alt: 'How to Pomodoro?' },
+                { src: '/sb-pomo-intro1.png', alt: 'Earn your Breaks!' },
+              ].map((img, i) => (
+                <div key={i} style={{ borderRadius: '16px', overflow: 'hidden', boxShadow: '0 6px 20px rgba(0,0,0,0.14)' }}>
+                  <img src={img.src} alt={img.alt} style={{ width: '100%', display: 'block' }} />
+                </div>
+              ))}
+            </div>
+          </Reveal>
+
+          {/* Usage screens — row 2 */}
+          <Reveal delay={0.18}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem', marginBottom: '2rem', maxWidth: 560 }}>
+              {[
+                { src: '/sb-pomo-4.png', alt: 'Subject select — empty' },
+                { src: '/sb-pomo-5b.png', alt: 'Subject select — smiley' },
+                { src: '/sb-pomo-intro2.png', alt: 'Subject select — History' },
+              ].map((img, i) => (
+                <div key={i} style={{ borderRadius: '16px', overflow: 'hidden', boxShadow: '0 6px 20px rgba(0,0,0,0.14)' }}>
+                  <img src={img.src} alt={img.alt} style={{ width: '100%', display: 'block' }} />
+                </div>
+              ))}
+            </div>
+          </Reveal>
+
+          {/* Full mockup — 4 timer screens */}
+          {/* Annotated mockup */}
+          <Reveal delay={0.22}>
+            <img src="/sb-pomo-annotated.png" alt="Pomodoro focus sessions — annotated mockup"
+              style={{ width: '100%', display: 'block' }} />
+          </Reveal>
         </div>
 
         {/* Mnemonics — dark bg */}
@@ -2272,7 +2598,8 @@ function ReflectionsSection() {
             color: C.darkMid,
             maxWidth: 560,
             lineHeight: 1.75,
-            margin: 0,
+            margin: '0 auto',
+            textAlign: 'center',
           }}>
             Study Buddy started as a systems exercise. It ended as something I actually wanted students to use. By the time we finished, I understood, in a way I hadn't before, how much the right tools can change whether learning feels possible at all.
           </p>
@@ -2302,11 +2629,13 @@ export default function StudyBuddy() {
         <DefineSection />
         <PersonasSection />
         <DesignSystemSection />
+        <MockupsSection />
         <FeaturesSection />
         <AccessibilitySection />
         <ReflectionsSection />
       </main>
 
+      <BackToTop />
       <Footer />
     </div>
   )

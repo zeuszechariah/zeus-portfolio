@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Information Architecture — Tectonic Plates</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400&display=swap" rel="stylesheet">
+<style>
+  :root { --c: #888; }
+  html, body { margin: 0; padding: 0; background: transparent; overflow: hidden; }
+  svg { width: 100%; height: 100%; display: block; }
+  .node  { fill: transparent; stroke: var(--c); stroke-width: 0.8; }
+  .line  { fill: none; stroke: var(--c); stroke-width: 0.8; }
+  .label { font-family: 'Syne', sans-serif; font-weight: 400; font-size: 13px; fill: var(--c); text-anchor: middle; dominant-baseline: middle; }
+  .anno  { font-family: 'Syne', sans-serif; font-weight: 400; font-size: 11px; fill: var(--c); dominant-baseline: middle; }
+
+  @keyframes unfold { from { opacity: 0; } to { opacity: 1; } }
+  .step { opacity: 0; animation: unfold 0.38s ease forwards; }
+  .s1  { animation-delay: 0.00s; }
+  .s2  { animation-delay: 0.22s; }
+  .s3  { animation-delay: 0.44s; }
+  .s4  { animation-delay: 0.66s; }
+  .s5  { animation-delay: 0.88s; }
+  .s6  { animation-delay: 1.10s; }
+  .s7  { animation-delay: 1.32s; }
+  .s8  { animation-delay: 1.54s; }
+  .s9  { animation-delay: 1.76s; }
+  .s10 { animation-delay: 1.98s; }
+  .s11 { animation-delay: 2.20s; }
+  .s12 { animation-delay: 2.42s; }
+  .s13 { animation-delay: 2.64s; }
+  .s14 { animation-delay: 2.86s; }
+  .s15 { animation-delay: 3.08s; }
+  .s16 { animation-delay: 3.30s; }
+</style>
+</head>
+<body>
+<svg viewBox="0 0 1680 770" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#888"/>
+    </marker>
+  </defs>
+
+  <!-- s1: Start + annotation -->
+  <g class="step s1">
+    <rect class="node" x="80" y="40" width="90" height="40" rx="12" ry="12"/>
+    <text class="label" x="125" y="60">Start</text>
+    <text class="anno" x="178" y="60" text-anchor="start">( Introductory video )</text>
+  </g>
+
+  <!-- s2: 1→2 connector + Diamond 2 + "info at every milestone" annotation -->
+  <g class="step s2">
+    <path class="line" d="M 125 80 L 125 110" marker-end="url(#arrow)"/>
+    <polygon class="node" points="125,112 205,150 125,188 45,150"/>
+    <text class="label" x="125" y="150"><tspan x="125" dy="-7">Choose topic of</tspan><tspan x="125" dy="14">interest</tspan></text>
+    <text class="anno" x="28" y="222" text-anchor="start"><tspan x="28" dy="0">(Information provided at</tspan><tspan x="28" dy="13">every milestone)</tspan></text>
+  </g>
+
+  <!-- s3: 2→3 connector + Node 3 + "Globe's continents" annotation -->
+  <g class="step s3">
+    <path class="line" d="M 205 150 L 223 150" marker-end="url(#arrow)"/>
+    <rect class="node" x="225" y="122" width="130" height="55" rx="12" ry="12"/>
+    <text class="label" x="290" y="150"><tspan x="290" dy="-7">Tectonic</tspan><tspan x="290" dy="14">plates</tspan></text>
+    <text class="anno" x="365" y="140" text-anchor="start"><tspan x="365" dy="0">( Globe's continents in current</tspan><tspan x="365" dy="13">scenario will be seen )</tspan></text>
+  </g>
+
+  <!-- s4: 3→4 connector + Node 4 -->
+  <g class="step s4">
+    <path class="line" d="M 290 177 L 290 203" marker-end="url(#arrow)"/>
+    <rect class="node" x="190" y="205" width="200" height="70" rx="12" ry="12"/>
+    <text class="label" x="290" y="240"><tspan x="290" dy="-14">Take few steps back to</tspan><tspan x="290" dy="14">see the Continental</tspan><tspan x="290" dy="14">drift (until Pangea)</tspan></text>
+  </g>
+
+  <!-- s5: 4→5 connector + Node 5 + "Tectonic map overlays" annotation -->
+  <g class="step s5">
+    <path class="line" d="M 290 275 L 290 300" marker-end="url(#arrow)"/>
+    <rect class="node" x="190" y="302" width="200" height="75" rx="12" ry="12"/>
+    <text class="label" x="290" y="340"><tspan x="290" dy="-14">Come back to original</tspan><tspan x="290" dy="14">position (back to</tspan><tspan x="290" dy="14">current scenario)</tspan></text>
+    <text class="anno" x="182" y="340" text-anchor="end">(Tectonic map overlays)</text>
+  </g>
+
+  <!-- s6: 5→6 connector + Node 6 -->
+  <g class="step s6">
+    <path class="line" d="M 390 340 L 418 340" marker-end="url(#arrow)"/>
+    <rect class="node" x="420" y="302" width="220" height="75" rx="12" ry="12"/>
+    <text class="label" x="530" y="340"><tspan x="530" dy="-14">Peel off the layers of the globe</tspan><tspan x="530" dy="14">one by one, to see the reason for</tspan><tspan x="530" dy="14">the movement</tspan></text>
+  </g>
+
+  <!-- s7: 6→7 connector + Node 7 + annotation above -->
+  <g class="step s7">
+    <path class="line" d="M 640 340 L 663 340" marker-end="url(#arrow)"/>
+    <rect class="node" x="665" y="302" width="210" height="75" rx="12" ry="12"/>
+    <text class="label" x="770" y="340"><tspan x="770" dy="-14">Zip it back up to see various</tspan><tspan x="770" dy="14">types of Tectonic</tspan><tspan x="770" dy="14">movements</tspan></text>
+    <text class="anno" x="770" y="255" text-anchor="middle"><tspan x="770" dy="0">(Tectonic map with indications</tspan><tspan x="770" dy="13">of convergent, divergent and</tspan><tspan x="770" dy="13">transformative movements)</tspan></text>
+  </g>
+
+  <!-- s8: 7→8 connector + Diamond 8 + horizontal bus line -->
+  <g class="step s8">
+    <path class="line" d="M 875 340 L 898 340" marker-end="url(#arrow)"/>
+    <polygon class="node" points="990,295 1080,340 990,385 900,340"/>
+    <text class="label" x="990" y="340"><tspan x="990" dy="-7">Choose type of</tspan><tspan x="990" dy="14">movement to explore</tspan></text>
+    <path class="line" d="M 990 385 L 990 400"/>
+    <path class="line" d="M 850 400 L 1140 400"/>
+  </g>
+
+  <!-- s9: branch drops + Nodes 9, 10, 11 -->
+  <g class="step s9">
+    <path class="line" d="M 850 400 L 850 410" marker-end="url(#arrow)"/>
+    <path class="line" d="M 990 400 L 990 410" marker-end="url(#arrow)"/>
+    <path class="line" d="M 1140 400 L 1140 410" marker-end="url(#arrow)"/>
+    <rect class="node" x="780" y="412" width="140" height="45" rx="12" ry="12"/>
+    <text class="label" x="850" y="435">Covergent</text>
+    <rect class="node" x="925" y="412" width="130" height="45" rx="12" ry="12"/>
+    <text class="label" x="990" y="435">Divergent</text>
+    <rect class="node" x="1065" y="412" width="150" height="45" rx="12" ry="12"/>
+    <text class="label" x="1140" y="435">Transformative</text>
+  </g>
+
+  <!-- s10: 9→12 connector + Diamond 12 (text shifted lower) -->
+  <g class="step s10">
+    <path class="line" d="M 850 457 L 850 486" marker-end="url(#arrow)"/>
+    <polygon class="node" points="850,488 955,525 850,562 745,525"/>
+    <text class="label" x="850" y="533"><tspan x="850" dy="-7">Choose highest mountain,</tspan><tspan x="850" dy="14">continent- wise</tspan></text>
+  </g>
+
+  <!-- s11: 12→13 connector + Node 13 -->
+  <g class="step s11">
+    <path class="line" d="M 955 525 L 988 525" marker-end="url(#arrow)"/>
+    <rect class="node" x="990" y="502" width="160" height="48" rx="12" ry="12"/>
+    <text class="label" x="1070" y="526">India / Himalayas</text>
+  </g>
+
+  <!-- s12: 13→14 connector + Node 14 -->
+  <g class="step s12">
+    <path class="line" d="M 1150 525 L 1178 525" marker-end="url(#arrow)"/>
+    <rect class="node" x="1180" y="493" width="240" height="65" rx="12" ry="12"/>
+    <text class="label" x="1300" y="525"><tspan x="1300" dy="-14">Step back to see Himalayas</tspan><tspan x="1300" dy="14">forming due to converging</tspan><tspan x="1300" dy="14">Lithosphere</tspan></text>
+  </g>
+
+  <!-- s13: 14→15 connector + Node 15 -->
+  <g class="step s13">
+    <path class="line" d="M 1300 558 L 1300 573 L 1165 573 L 1165 586" marker-end="url(#arrow)"/>
+    <rect class="node" x="1060" y="588" width="210" height="60" rx="12" ry="12"/>
+    <text class="label" x="1165" y="618"><tspan x="1165" dy="-7">Come back to see current</tspan><tspan x="1165" dy="14">altitude</tspan></text>
+  </g>
+
+  <!-- s14: 15→16 connector + Node 16 -->
+  <g class="step s14">
+    <path class="line" d="M 1270 618 L 1303 618" marker-end="url(#arrow)"/>
+    <rect class="node" x="1305" y="588" width="210" height="60" rx="12" ry="12"/>
+    <text class="label" x="1410" y="618"><tspan x="1410" dy="-7">Converge to increase the</tspan><tspan x="1410" dy="14">altitude</tspan></text>
+  </g>
+
+  <!-- s15: 16→17 connector + Node 17 -->
+  <g class="step s15">
+    <path class="line" d="M 1410 648 L 1410 678" marker-end="url(#arrow)"/>
+    <rect class="node" x="1313" y="680" width="195" height="50" rx="12" ry="12"/>
+    <text class="label" x="1410" y="705">See the after effects</text>
+  </g>
+
+  <!-- s16: 17→18 connector + Node 18 -->
+  <g class="step s16">
+    <path class="line" d="M 1508 705 L 1538 705" marker-end="url(#arrow)"/>
+    <rect class="node" x="1540" y="680" width="95" height="50" rx="12" ry="12"/>
+    <text class="label" x="1587" y="705">End</text>
+  </g>
+
+</svg>
+</body>
+</html>

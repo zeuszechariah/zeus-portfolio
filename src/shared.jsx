@@ -1,5 +1,5 @@
 import { useRef, useState, useEffect } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { motion, useSpring, useScroll, useTransform, useInView, AnimatePresence, useReducedMotion } from 'framer-motion'
 
 // ─── Constants ────────────────────────────────────────
@@ -152,6 +152,18 @@ export function SectionExit({ children }) {
 //                   post-scroll pill reverts to the light frosted style.
 export function Nav({ light = false, photoHero = false, scrollThreshold = 60 }) {
   const [scrolled, setScrolled] = useState(false)
+  const navigate = useNavigate()
+
+  const handleWorkClick = e => {
+    e.preventDefault()
+    const el = document.getElementById('work')
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth' })
+    } else {
+      window.__pendingWorkScroll = true
+      navigate('/')
+    }
+  }
 
   useEffect(() => {
     const h = () => setScrolled(window.scrollY > scrollThreshold)
@@ -182,9 +194,9 @@ export function Nav({ light = false, photoHero = false, scrollThreshold = 60 }) 
             className="pointer-events-auto font-sans font-semibold text-[0.8125rem] tracking-[0.1em] uppercase" style={{ color: spreadCol }}>
             <Bolt size={13} nudge={-2} />EUS
           </MotionLink>
-          <MotionLink layoutId="nav-work" to="/#work" transition={lt}
+          <MotionLink layoutId="nav-work" to="/" transition={lt}
             className="pointer-events-auto font-mono text-[0.7rem] tracking-[0.1em] uppercase" style={{ color: spreadCol }}
-            onClick={e => { const el = document.getElementById('work'); if (el) { e.preventDefault(); el.scrollIntoView({ behavior:'smooth' }) } }}>Work</MotionLink>
+            onClick={handleWorkClick}>Work</MotionLink>
           <MotionLink layoutId="nav-about" to="/about" transition={lt}
             className="pointer-events-auto font-mono text-[0.7rem] tracking-[0.1em] uppercase" style={{ color: spreadCol }}>About</MotionLink>
         </motion.div>
@@ -202,10 +214,10 @@ export function Nav({ light = false, photoHero = false, scrollThreshold = 60 }) 
               <Bolt size={16} />
             </MotionLink>
             <div className="flex items-center gap-7">
-              {[['Work','/#work'],['About','/about']].map(([label, to]) => (
+              {[['Work','/'],['About','/about']].map(([label, to]) => (
                 <MotionLink key={label} layoutId={`nav-${label.toLowerCase()}`} to={to} transition={lt}
                   className="font-mono text-[0.7rem] tracking-[0.1em] uppercase relative group/link" style={{ color: pillCol }}
-                  onClick={label === 'Work' ? (e => { const el = document.getElementById('work'); if (el) { e.preventDefault(); el.scrollIntoView({ behavior:'smooth' }) } }) : undefined}>
+                  onClick={label === 'Work' ? handleWorkClick : undefined}>
                   {label}
                   <span className="absolute -bottom-[2px] left-0 h-[1px] w-0 transition-[width] duration-300 group-hover/link:w-full"
                     style={{ background: pillCol, transitionTimingFunction:'cubic-bezier(0.16,1,0.3,1)' }} />
@@ -214,6 +226,43 @@ export function Nav({ light = false, photoHero = false, scrollThreshold = 60 }) 
             </div>
           </motion.nav>
         </motion.div>
+      )}
+    </AnimatePresence>
+  )
+}
+
+// ─── Back To Top ──────────────────────────────────────
+export function BackToTop() {
+  const [visible, setVisible] = useState(false)
+  useEffect(() => {
+    const onScroll = () => setVisible(window.scrollY > 400)
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [])
+  return (
+    <AnimatePresence>
+      {visible && (
+        <motion.button
+          onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: 12 }}
+          transition={{ duration: 0.25 }}
+          style={{
+            position: 'fixed', bottom: '2rem', right: '2rem', zIndex: 500,
+            width: 42, height: 42, borderRadius: '50%',
+            background: 'rgba(11,26,46,0.85)', backdropFilter: 'blur(8px)',
+            border: '1px solid rgba(255,255,255,0.1)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            cursor: 'pointer', color: 'rgba(255,255,255,0.75)',
+            boxShadow: '0 4px 16px rgba(0,0,0,0.25)',
+          }}
+          aria-label="Back to top"
+        >
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+            <path d="M7 11V3M3 7l4-4 4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+        </motion.button>
       )}
     </AnimatePresence>
   )
@@ -228,36 +277,31 @@ export function Footer() {
       <div className="max-w-[1200px] mx-auto px-[clamp(1.5rem,5vw,3.5rem)] pt-[clamp(3rem,6vw,5rem)] pb-[clamp(2rem,4vw,3rem)]">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-x-8 gap-y-12">
           <div className="flex flex-col gap-4">
-            <a href="/imprint" className="font-sans text-[0.8125rem] text-ink/38 hover:text-ink/70 transition-colors duration-200">Imprint</a>
-            <a href="/privacy-policy" className="font-sans text-[0.8125rem] text-ink/38 hover:text-ink/70 transition-colors duration-200">Privacy Policy</a>
-            <a href="/press" className="font-sans text-[0.8125rem] text-ink/38 hover:text-ink/70 transition-colors duration-200">Press</a>
+            <a href="/imprint" style={{ fontFamily: 'Syne, sans-serif', fontSize: '0.8125rem', color: 'rgba(255,255,255,0.38)', textDecoration: 'none' }}>Imprint</a>
+            <a href="/privacy-policy" style={{ fontFamily: 'Syne, sans-serif', fontSize: '0.8125rem', color: 'rgba(255,255,255,0.38)', textDecoration: 'none' }}>Privacy Policy</a>
+            <a href="/press" style={{ fontFamily: 'Syne, sans-serif', fontSize: '0.8125rem', color: 'rgba(255,255,255,0.38)', textDecoration: 'none' }}>Press</a>
           </div>
           <div className="flex flex-col gap-4">
-            <a href="https://instagram.com" target="_blank" rel="noopener noreferrer"
-              className="font-sans text-[0.8125rem] text-ink/38 hover:text-ink/70 transition-colors duration-200">Instagram</a>
-            <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer"
-              className="font-sans text-[0.8125rem] text-ink/38 hover:text-ink/70 transition-colors duration-200">LinkedIn</a>
-            <a href="https://behance.net" target="_blank" rel="noopener noreferrer"
-              className="font-sans text-[0.8125rem] text-ink/38 hover:text-ink/70 transition-colors duration-200">Behance</a>
+            <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" style={{ fontFamily: 'Syne, sans-serif', fontSize: '0.8125rem', color: 'rgba(255,255,255,0.38)', textDecoration: 'none' }}>Instagram</a>
+            <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" style={{ fontFamily: 'Syne, sans-serif', fontSize: '0.8125rem', color: 'rgba(255,255,255,0.38)', textDecoration: 'none' }}>LinkedIn</a>
+            <a href="https://behance.net" target="_blank" rel="noopener noreferrer" style={{ fontFamily: 'Syne, sans-serif', fontSize: '0.8125rem', color: 'rgba(255,255,255,0.38)', textDecoration: 'none' }}>Behance</a>
           </div>
           <div className="flex flex-col gap-1">
-            <p className="font-sans font-semibold text-[0.8125rem] text-ink/65 mb-2">National Institute of Design</p>
-            <p className="font-sans text-[0.8125rem] text-ink/35 leading-[1.65]">Peenya, Bangalore<br />Karnataka IN 560022<br />India</p>
+            <p style={{ fontFamily: 'Syne, sans-serif', fontWeight: 600, fontSize: '0.8125rem', color: 'rgba(255,255,255,0.65)', marginBottom: '0.5rem' }}>National Institute of Design</p>
+            <p style={{ fontFamily: 'Syne, sans-serif', fontSize: '0.8125rem', color: 'rgba(255,255,255,0.35)', lineHeight: 1.65 }}>Peenya, Bangalore<br />Karnataka IN 560022<br />India</p>
           </div>
           <div className="flex flex-col gap-4">
-            <a href="mailto:zeusbatkhar.2000@gmail.com"
-              className="font-sans text-[0.8125rem] text-ink/38 hover:text-ink/70 transition-colors duration-200 leading-[1.7]">
+            <a href="mailto:zeusbatkhar.2000@gmail.com" style={{ fontFamily: 'Syne, sans-serif', fontSize: '0.8125rem', color: 'rgba(255,255,255,0.38)', textDecoration: 'none', lineHeight: 1.7 }}>
               zeusbatkhar.2000<br />@gmail.com
             </a>
-            <a href="tel:+918729986319"
-              className="font-sans text-[0.8125rem] text-ink/38 hover:text-ink/70 transition-colors duration-200">
+            <a href="tel:+918729986319" style={{ fontFamily: 'Syne, sans-serif', fontSize: '0.8125rem', color: 'rgba(255,255,255,0.38)', textDecoration: 'none' }}>
               +91 87299 86319
             </a>
           </div>
         </div>
         <div className="flex items-center justify-between mt-10 pt-6 border-t border-white/[0.04]">
-          <span className="text-ink/14 select-none"><Bolt size={11} /></span>
-          <p className="font-mono text-[0.68rem] text-ink/22 tracking-[0.02em]">©2026 Zeus Z B. All Rights Reserved.</p>
+          <span style={{ color: 'rgba(255,255,255,0.14)' }}><Bolt size={11} /></span>
+          <p style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.68rem', color: 'rgba(255,255,255,0.22)', letterSpacing: '0.02em', margin: 0 }}>©2026 Zeus Z B. All Rights Reserved.</p>
         </div>
       </div>
     </footer>

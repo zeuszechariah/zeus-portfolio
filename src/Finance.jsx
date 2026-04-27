@@ -1,6 +1,6 @@
 import { useRef, useState, useEffect } from 'react'
 import { motion, useInView } from 'framer-motion'
-import { Nav, Footer, ProgressBar, MaskReveal, Reveal } from './shared.jsx'
+import { Nav, Footer, ProgressBar, MaskReveal, Reveal, BackToTop } from './shared.jsx'
 
 // ─── Design Tokens ──────────────────────────────────────
 // Accent colours derived from Finance project card gradient:
@@ -300,7 +300,7 @@ function POEMSDiagram() {
 
   return (
     <div ref={ref} style={{ display: 'flex', gap: '2.5rem', alignItems: 'center', flexWrap: 'wrap' }}>
-      <svg viewBox="0 0 400 400" style={{ width: '100%', maxWidth: 320, flexShrink: 0 }}>
+      <svg viewBox="0 0 400 400" style={{ width: '100%', maxWidth: 480, flexShrink: 0 }}>
         <motion.circle cx={CX} cy={CY} r={R + 18}
           fill="none" stroke={C.border} strokeWidth={1} strokeDasharray="4 6"
           initial={{ opacity: 0 }} animate={inView ? { opacity: 1 } : {}} transition={{ duration: 0.6 }}
@@ -440,6 +440,87 @@ function ResultsChart() {
         <p style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: '0.85rem', color: C.ink, margin: 0 }}>Overall Improvement</p>
         <span style={{ fontFamily: "'Space Mono', monospace", fontSize: '1.1rem', fontWeight: 500, color: C.accent }}>+12.59%</span>
       </NeuCard>
+    </div>
+  )
+}
+
+// ─── Workshop Photo Carousel ──────────────────────────────
+const WORKSHOP_IMGS = Array.from({ length: 18 }, (_, i) =>
+  `/fin-workshop-${String(i + 1).padStart(2, '0')}.jpg`
+)
+
+function WorkshopCarousel() {
+  const [idx, setIdx] = useState(0)
+  const total = WORKSHOP_IMGS.length
+  const prev = (idx - 1 + total) % total
+  const next = (idx + 1) % total
+
+  const go = (d) => setIdx(i => (i + d + total) % total)
+
+  const sideStyle = {
+    width: '22%', flexShrink: 0, borderRadius: '10px',
+    overflow: 'hidden', alignSelf: 'center', position: 'relative',
+  }
+  const sideImgStyle = {
+    width: '100%', aspectRatio: '3/4', objectFit: 'cover',
+    display: 'block', filter: 'brightness(0.55)',
+  }
+
+  return (
+    <div style={{ userSelect: 'none' }}>
+      {/* Three-image strip */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+
+        {/* Left side image */}
+        <div style={sideStyle}>
+          <motion.img key={`l${prev}`} src={WORKSHOP_IMGS[prev]} alt=""
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.3 }}
+            style={sideImgStyle} />
+          {/* Fade on outer-left edge */}
+          <div style={{ position: 'absolute', inset: 0, background: `linear-gradient(to right, ${C.dark} 0%, transparent 55%)`, pointerEvents: 'none' }} />
+          {/* Click to go prev */}
+          <button onClick={() => go(-1)} aria-label="Previous" style={{ position: 'absolute', inset: 0, background: 'transparent', border: 'none', cursor: 'w-resize' }} />
+        </div>
+
+        {/* Centre image — bigger, with arrow buttons */}
+        <div style={{ flex: 1, position: 'relative', borderRadius: '12px', overflow: 'hidden' }}>
+          <motion.img key={`c${idx}`} src={WORKSHOP_IMGS[idx]} alt={`Workshop photo ${idx + 1}`}
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.3 }}
+            style={{ width: '100%', aspectRatio: '4/3', objectFit: 'cover', display: 'block' }} />
+          {/* Left arrow */}
+          <button onClick={() => go(-1)} style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', width: 36, height: 36, borderRadius: '50%', border: '1px solid rgba(255,255,255,0.2)', background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(6px)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M10 12L6 8l4-4" stroke="#fff" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/></svg>
+          </button>
+          {/* Right arrow */}
+          <button onClick={() => go(1)} style={{ position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)', width: 36, height: 36, borderRadius: '50%', border: '1px solid rgba(255,255,255,0.2)', background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(6px)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M6 4l4 4-4 4" stroke="#fff" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/></svg>
+          </button>
+        </div>
+
+        {/* Right side image */}
+        <div style={sideStyle}>
+          <motion.img key={`r${next}`} src={WORKSHOP_IMGS[next]} alt=""
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.3 }}
+            style={sideImgStyle} />
+          {/* Fade on outer-right edge */}
+          <div style={{ position: 'absolute', inset: 0, background: `linear-gradient(to left, ${C.dark} 0%, transparent 55%)`, pointerEvents: 'none' }} />
+          {/* Click to go next */}
+          <button onClick={() => go(1)} aria-label="Next" style={{ position: 'absolute', inset: 0, background: 'transparent', border: 'none', cursor: 'e-resize' }} />
+        </div>
+
+      </div>
+
+      {/* Counter + dots — centred below the main image */}
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.6rem', marginTop: '0.9rem' }}>
+        <span style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.52rem', letterSpacing: '0.16em', color: 'rgba(255,255,255,0.3)' }}>
+          {String(idx + 1).padStart(2, '0')} / {String(total).padStart(2, '0')}
+        </span>
+        <div style={{ display: 'flex', gap: '5px', flexWrap: 'wrap', justifyContent: 'center' }}>
+          {Array.from({ length: total }, (_, i) => (
+            <button key={i} onClick={() => setIdx(i)} style={{ width: i === idx ? 18 : 5, height: 5, borderRadius: 3, background: i === idx ? 'rgba(255,255,255,0.65)' : 'rgba(255,255,255,0.15)', border: 'none', padding: 0, cursor: 'pointer', transition: 'width 0.25s ease, background 0.25s ease' }} />
+          ))}
+        </div>
+      </div>
     </div>
   )
 }
@@ -741,13 +822,27 @@ export default function Finance() {
           </StaggerGrid>
 
           <Reveal><Label>Field Documentation</Label></Reveal>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))', gap: '1rem' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '0.6rem', padding: '0.5rem 0 1rem' }}>
             {[
-              ['On-ground interview — Parvati & Mandachalam', 'Field Interview Session 1'],
-              ['Interview with Chandan & Sanjay — NID vicinity', 'Field Interview Session 2'],
-              ['Deepam & Prakash interview documentation', 'Field Interview Session 3'],
-            ].map(([l, s]) => (
-              <div key={s}><ImgBox label={l} aspect="72%" /><ScreenLabel>{s}</ScreenLabel></div>
+              { src: '/fin-field-01.jpg', nudge:  6, shift:  4 },
+              { src: '/fin-field-02.jpg', nudge: -3, shift: -6 },
+              { src: '/fin-field-03.jpg', nudge:  2, shift:  8 },
+              { src: '/fin-field-04.jpg', nudge: -5, shift: -3 },
+              { src: '/fin-field-05.jpg', nudge:  4, shift:  5 },
+              { src: '/fin-field-06.jpg', nudge: -2, shift:  7 },
+              { src: '/fin-field-07.jpg', nudge:  5, shift: -5 },
+              { src: '/fin-field-08.jpg', nudge: -4, shift:  3 },
+              { src: '/fin-field-09.jpg', nudge:  3, shift: -7 },
+              { src: '/fin-field-10.jpg', nudge: -6, shift:  4 },
+            ].map(({ src, nudge, shift }) => (
+              <div key={src} style={{ transform: `rotate(${nudge * 0.35}deg) translateY(${shift * 0.5}px)`, transition: 'transform 0.25s ease', cursor: 'default' }}
+                onMouseEnter={e => { e.currentTarget.style.transform = 'rotate(0deg) translateY(-3px) scale(1.03)'; e.currentTarget.style.zIndex = 2; e.currentTarget.style.position = 'relative' }}
+                onMouseLeave={e => { e.currentTarget.style.transform = `rotate(${nudge * 0.35}deg) translateY(${shift * 0.5}px)`; e.currentTarget.style.zIndex = 0 }}
+              >
+                <div style={{ borderRadius: '8px', overflow: 'hidden', boxShadow: '2px 4px 12px rgba(0,0,0,0.18)' }}>
+                  <img src={src} alt="" style={{ width: '100%', aspectRatio: '4/3', display: 'block', objectFit: 'cover' }} />
+                </div>
+              </div>
             ))}
           </div>
         </Wrap>
@@ -767,19 +862,38 @@ export default function Finance() {
             </p>
           </Reveal>
 
-          <StaggerGrid style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(230px, 1fr))', gap: '0.85rem', marginBottom: '3.5rem' }}>
-            {FINDINGS.map((f, i) => (
-              <StaggerItem key={i} style={{ flex: 1 }}>
-                <NeuCard style={{ flex: 1, padding: '1.25rem 1.4rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '0.1rem' }}>
-                    <span style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.6rem', color: C.accent, opacity: 0.6 + (i % 4) * 0.1 }}>{String(i + 1).padStart(2, '0')}</span>
-                    <div style={{ flex: 1, height: 1, background: C.border }} />
+          <StaggerGrid style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1.5rem', marginBottom: '4rem', alignItems: 'start' }}>
+            {FINDINGS.map((f, i) => {
+              const colors = ['#FFB3C1', '#FFF07C', '#C9B1FF', '#AEECD8']
+              const darken  = ['#F48099', '#E6D350', '#A98EE0', '#7DD4B8']
+              const rots    = [-2, 1.5, -1, 2.2, -1.5, 1, -2.2, 0.8, -1.2, 1.8, -0.8, 2]
+              const bg = colors[i % 4]
+              const fold = darken[i % 4]
+              const rot  = rots[i] || 0
+              return (
+                <StaggerItem key={i}>
+                  <div style={{
+                    background: bg,
+                    borderRadius: '2px',
+                    padding: '1.25rem 1.1rem 1.4rem',
+                    position: 'relative',
+                    transform: `rotate(${rot}deg)`,
+                    boxShadow: '3px 5px 16px rgba(0,0,0,0.13), 0 1px 3px rgba(0,0,0,0.08)',
+                    transition: 'transform 0.2s ease, box-shadow 0.2s ease',
+                    cursor: 'default',
+                  }}
+                  onMouseEnter={e => { e.currentTarget.style.transform = 'rotate(0deg) translateY(-4px)'; e.currentTarget.style.boxShadow = '4px 10px 28px rgba(0,0,0,0.18), 0 2px 6px rgba(0,0,0,0.1)' }}
+                  onMouseLeave={e => { e.currentTarget.style.transform = `rotate(${rot}deg)`; e.currentTarget.style.boxShadow = '3px 5px 16px rgba(0,0,0,0.13), 0 1px 3px rgba(0,0,0,0.08)' }}
+                  >
+                    {/* Folded corner */}
+                    <div style={{ position: 'absolute', top: 0, right: 0, width: 0, height: 0, borderStyle: 'solid', borderWidth: '0 22px 22px 0', borderColor: `transparent ${fold} transparent transparent` }} />
+                    <span style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.52rem', letterSpacing: '0.12em', color: 'rgba(0,0,0,0.35)', display: 'block', marginBottom: '0.6rem' }}>{String(i + 1).padStart(2, '0')}</span>
+                    <p style={{ fontFamily: "'Syne', sans-serif", fontWeight: 600, fontSize: '0.85rem', color: 'rgba(0,0,0,0.82)', margin: '0 0 0.5rem', lineHeight: 1.3 }}>{f.title}</p>
+                    <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.74rem', lineHeight: 1.65, color: 'rgba(0,0,0,0.6)', margin: 0 }}>{f.body}</p>
                   </div>
-                  <p style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: '0.86rem', color: C.ink, margin: 0 }}>{f.title}</p>
-                  <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.77rem', lineHeight: 1.65, color: C.mid, margin: 0, flex: 1 }}>{f.body}</p>
-                </NeuCard>
-              </StaggerItem>
-            ))}
+                </StaggerItem>
+              )
+            })}
           </StaggerGrid>
 
           {/* Inferences */}
@@ -913,16 +1027,7 @@ export default function Finance() {
 
           {/* Docs */}
           <Reveal><Label dark>Workshop Documentation</Label></Reveal>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))', gap: '1rem' }}>
-            {[
-              ['Introduction segment — agenda with participants','Segment 1'],
-              ['Spot the Scam — printed fraud examples','Segment 3'],
-              ['RBI comic "Raju and the 40 Thieves"','Segment 4'],
-              ['Follow-up and brochure distribution','Segments 5 & 6'],
-            ].map(([l,s]) => (
-              <div key={s}><ImgBox dark label={l} aspect="68%" /><ScreenLabel dark>{s}</ScreenLabel></div>
-            ))}
-          </div>
+          <Reveal delay={0.08}><WorkshopCarousel /></Reveal>
         </Wrap>
       </section>
 
@@ -1077,25 +1182,7 @@ export default function Finance() {
         </Wrap>
       </section>
 
-      {/* ── NEXT PROJECT ── */}
-      <section style={{ paddingTop: '3.5rem', paddingBottom: '3.5rem', background: C.page }}>
-        <Wrap>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
-            <div>
-              <p style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.56rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: C.muted, margin: '0 0 0.35rem' }}>Next Project</p>
-              <p style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: '1.2rem', color: C.ink, margin: 0 }}>Spectra — Data Viz & Experience</p>
-            </div>
-            <a href="/work/study-buddy" style={{
-              display: 'inline-flex', alignItems: 'center', gap: '0.5rem',
-              fontFamily: "'Space Mono', monospace", fontSize: '0.68rem', letterSpacing: '0.12em', textTransform: 'uppercase',
-              color: C.ink, textDecoration: 'none',
-              boxShadow: C.neuSm, borderRadius: '99px', padding: '0.65rem 1.4rem',
-              background: C.card,
-            }}>← Study Buddy</a>
-          </div>
-        </Wrap>
-      </section>
-
+      <BackToTop />
       <Footer />
     </div>
   )

@@ -1,6 +1,6 @@
 import { useRef, useState, useEffect } from 'react'
 import { motion, useInView } from 'framer-motion'
-import { Nav, Footer, ProgressBar, MaskReveal, Reveal } from './shared.jsx'
+import { Nav, Footer, ProgressBar, MaskReveal, Reveal, BackToTop } from './shared.jsx'
 
 // ─── Design Tokens ──────────────────────────────────────
 const C = {
@@ -1413,6 +1413,7 @@ export default function CloutCart() {
         <BlueprintSection />
         <ReflectionsSection />
       </main>
+      <BackToTop />
       <Footer />
     </div>
   )

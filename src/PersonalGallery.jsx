@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect } from 'react'
+import { useRef, useEffect, useState } from 'react'
 import { motion, useInView } from 'framer-motion'
 
 function GalleryCanvas() {
@@ -35,6 +35,7 @@ function GalleryCanvas() {
       const uy=(ax2*(c.x-b.x)+bx2*(a.x-c.x)+cx2*(b.x-a.x))/D
       return { x:ux, y:uy, r:Math.hypot(a.x-ux,a.y-uy) }
     }
+
     function triangulate() {
       const n=points.length, s1=n-3, s2=n-2, s3=n-1
       let tris=[{a:s1,b:s2,c:s3}]
@@ -50,6 +51,7 @@ function GalleryCanvas() {
       }
       triangles=tris.filter(t=>t.a<N&&t.b<N&&t.c<N)
     }
+
     function init() {
       W=canvas.width=canvas.offsetWidth; H=canvas.height=canvas.offsetHeight
       points=[]; restPoints=[]; retriFrame=0
@@ -174,152 +176,324 @@ function GalleryCanvas() {
 
 const EASE = [0.22, 1, 0.36, 1]
 
-const POLAROIDS = [
-  // Row 1
-  { id: 1,  src: '/folio/eiffel.jpg',            caption: 'Paris',             objPos: '50% 15%', w: 180, rot:   7, x: '13%', y: 15  },
-  { id: 3,  src: '/folio/child-zeus.jpg',        caption: 'age 5',             objPos: '50% 20%', w: 188, rot:  12, x: '38%', y: 22  },
-  { id: 4,  src: '/folio/hoian.jpg',             caption: 'Hội An',            objPos: '50% 40%', w: 178, rot:  -8, x: '51%', y: 58  },
-  { id: 5,  src: '/folio/dubai-waterpark.jpg',   caption: 'Dubai, 2019',       objPos: '50% 45%', w: 182, rot:   6, x: '64%', y: 18  },
-  { id: 6,  src: '/folio/nid-campus.jpg',        caption: 'NID Ahmedabad',     objPos: '50% 55%', w: 172, rot: -10, x: '77%', y: 50  },
-  // Row 2
-  { id: 7,  src: '/folio/berlin-cathedral.jpg',  caption: 'Berlin Dom',        objPos: '50% 32%', w: 185, rot:   9, x: '3%',  y: 245 },
-  { id: 10, src: '/folio/snowman.jpg',           caption: 'first snow of 2026', objPos: '50% 30%', w: 172, rot:  -9, x: '42%', y: 278 },
-  { id: 11, src: '/folio/football-sunset.jpg',   caption: 'Berlin',            objPos: '50% 18%', w: 178, rot:   7, x: '55%', y: 248 },
-  { id: 12, src: '/folio/leather-jacket.jpg',    caption: 'age 25',            objPos: '50% 32%', w: 182, rot: -11, x: '68%', y: 272, imgFilter: 'grayscale(1)' },
-  // Row 3
-  { id: 14, src: '/folio/hcmc-skyline.jpg',      caption: 'Ho Chi Minh City',  objPos: '50% 58%', w: 182, rot:  -7, x: '10%', y: 480 },
-  { id: 15, src: '/folio/shimla.jpg',            caption: 'Shimla',            objPos: '50% 48%', w: 192, rot:  13, x: '37%', y: 458 },
-  { id: 16, src: '/folio/brandenburg.jpg',       caption: 'Brandenburger Tor', objPos: '50% 22%', w: 182, rot:  -8, x: '63%', y: 478 },
+const PHOTOS = [
+  { id: 1,  src: '/folio/eiffel.jpg',           caption: 'Paris',              objPos: '50% 15%' },
+  { id: 10, src: '/folio/snowman.jpg',           caption: 'first snow of 2026', objPos: '50% 30%' },
+  { id: 4,  src: '/folio/hoian-lanterns.jpg',   caption: 'Hội An',             objPos: '50% 50%' },
+  { id: 5,  src: '/folio/dubai-waterpark.jpg',  caption: 'Dubai',              objPos: '50% 45%' },
+  { id: 6,  src: '/folio/nid-campus.jpg',       caption: 'NID Ahmedabad',      objPos: '50% 55%' },
+  { id: 7,  src: '/folio/berlin-cathedral.jpg', caption: 'Berlin Dom',         objPos: '50% 32%' },
+  { id: 3,  src: '/folio/child-zeus.jpg',        caption: 'age 5',              objPos: '50% 20%' },
+  { id: 11, src: '/folio/football-sunset.jpg',  caption: 'Berlin',             objPos: '50% 18%' },
+  { id: 12, src: '/folio/leather-jacket.jpg',   caption: 'age 25',             objPos: '50% 42%', imgFilter: 'grayscale(1)' },
+  { id: 14, src: '/folio/hcmc-skyline.jpg',     caption: 'Ho Chi Minh City',   objPos: '50% 58%' },
+  { id: 15, src: '/folio/shimla.jpg',           caption: 'Shimla',             objPos: '50% 48%', imgScale: 1.15 },
+  { id: 16, src: '/folio/brandenburg.jpg',      caption: 'Brandenburger Tor',  objPos: '50% 22%' },
+  { id: 17, src: '/folio/la-universal.jpg',     caption: 'L.A.',               objPos: '50% 55%' },
+  { id: 18, src: '/folio/home-terrace.jpg',     caption: 'home 𖹭',            objPos: '50% 50%' },
+  { id: 19, src: '/folio/prague.jpg',           caption: 'Prague',             objPos: '50% 40%' },
+  { id: 20, src: '/folio/brussels.jpg',         caption: 'Brussels',           objPos: '50% 45%' },
+  { id: 21, src: '/folio/vienna.jpg',           caption: 'Vienna',             objPos: '50% 35%' },
+  { id: 22, src: '/folio/amsterdam.jpg',        caption: 'Amsterdam',          objPos: '50% 50%' },
 ]
 
-function Polaroid({ p, inView, sectionRef, zOverride, bringToFront }) {
-  const [dragging, setDragging] = useState(false)
+const CARD_W  = 220
+const CARD_H  = 300
+const RADIUS  = 320
 
-  const imgH   = p.w - 16
-  const totalH = imgH + 46
+function PolaroidFace({ photo }) {
+  return (
+    <div style={{
+      width:         '100%',
+      height:        '100%',
+      background:    'white',
+      borderRadius:  '4px',
+      boxShadow:     '0 8px 32px rgba(0,0,0,0.6)',
+      display:       'flex',
+      flexDirection: 'column',
+      padding:       '10px 10px 0 10px',
+      boxSizing:     'border-box',
+      position:      'relative',
+    }}>
+      <div style={{
+        position:      'absolute',
+        inset:         0,
+        borderRadius:  '4px',
+        background:    'linear-gradient(135deg, transparent 35%, rgba(0,0,0,0.52) 100%)',
+        pointerEvents: 'none',
+        zIndex:        2,
+      }} />
+      <div style={{ flex: 1, overflow: 'hidden', borderRadius: '2px', position: 'relative' }}>
+        <img
+          src={photo.src}
+          alt={photo.caption || ''}
+          draggable={false}
+          style={{
+            width:          '100%',
+            height:         '100%',
+            objectFit:      'cover',
+            objectPosition: photo.objPos || '50% 50%',
+            filter:         photo.imgFilter || undefined,
+            display:        'block',
+            transform:      photo.imgScale ? `scale(${photo.imgScale})` : undefined,
+          }}
+        />
+        {photo.imgBottomCover && (
+          <div style={{
+            position:   'absolute',
+            bottom:     0,
+            left:       0,
+            right:      0,
+            height:     photo.imgBottomCover,
+            background: '#000',
+          }} />
+        )}
+      </div>
+      <div style={{
+        height:         '40px',
+        flexShrink:     0,
+        display:        'flex',
+        alignItems:     'center',
+        justifyContent: 'center',
+      }}>
+        <span style={{
+          fontFamily:    "'Space Mono', monospace",
+          fontSize:      '11px',
+          letterSpacing: '0.05em',
+          color:         '#333',
+        }}>
+          {photo.caption}
+        </span>
+      </div>
+    </div>
+  )
+}
+
+function BarrelCarousel({ focusedIdx, setFocusedIdx, flipped, setFlipped }) {
+  const pairs = []
+  for (let i = 0; i < PHOTOS.length; i += 2) {
+    pairs.push({ front: PHOTOS[i], back: PHOTOS[i + 1] })
+  }
+  const count   = pairs.length
+  const degStep = 360 / count
+
+  const focused = focusedIdx !== null ? pairs[focusedIdx] : null
+
+  function openCard(i) { setFocusedIdx(i); setFlipped(false) }
+  function closeCard()  { setFocusedIdx(null); setFlipped(false) }
 
   return (
-    <motion.div
-      drag
-      dragConstraints={sectionRef}
-      dragElastic={0.05}
-      dragMomentum={false}
-      onPointerDown={() => bringToFront(p.id)}
-      onDragStart={() => setDragging(true)}
-      onDragEnd={() => setDragging(false)}
-      initial={{ opacity: 0, scale: 0.78 }}
-      animate={inView ? { opacity: 1, scale: 1 } : {}}
-      transition={{ duration: 0.65, delay: p.id * 0.02, ease: EASE }}
-      whileHover={!dragging ? { scale: 1.04, transition: { duration: 0.25, ease: EASE } } : {}}
-      style={{
-        position:        'absolute',
-        left:            p.x,
-        top:             p.y,
-        width:           p.w,
-        rotate:          p.rot,
-        zIndex:          dragging ? 100 : (zOverride ?? 3),
-        cursor:          dragging ? 'grabbing' : 'grab',
-        transformOrigin: 'center bottom',
-      }}
-    >
+    <>
       <div style={{
-        width:        p.w,
-        height:       totalH,
-        background:   '#FFFFFF',
-        padding:      '8px 8px 0',
-        borderRadius: '3px',
-        boxShadow:    dragging
-          ? '0 22px 64px rgba(0,0,0,0.72), 0 6px 20px rgba(0,0,0,0.5)'
-          : '0 8px 40px rgba(0,0,0,0.55), 0 2px 10px rgba(0,0,0,0.35)',
-        transition:   'box-shadow 0.2s ease',
-        userSelect:   'none',
+        display:        'flex',
+        alignItems:     'center',
+        justifyContent: 'center',
+        width:          '100%',
+        height:         '560px',
+        position:       'relative',
+        zIndex:         2,
       }}>
-        <div style={{
-          width:    '100%',
-          height:   imgH,
-          overflow: 'hidden',
-          position: 'relative',
-        }}>
-          {p.src ? (
-            <img
-              src={p.src}
-              alt={p.caption || ''}
-              draggable={false}
-              style={{
-                width:          '100%',
-                height:         '100%',
-                objectFit:      'cover',
-                objectPosition: p.objPos || '50% 50%',
-                filter:         p.imgFilter || undefined,
-                display:        'block',
-              }}
-            />
-          ) : (
-            <div style={{
-              width:          '100%',
-              height:         '100%',
-              display:        'flex',
-              alignItems:     'center',
-              justifyContent: 'center',
-              background:     'linear-gradient(145deg, #1c1c1c 0%, #111 100%)',
-            }}>
-              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" opacity="0.2">
-                <rect x="2" y="5" width="20" height="15" rx="2" stroke="#fff" strokeWidth="1.5"/>
-                <circle cx="12" cy="12" r="3.5" stroke="#fff" strokeWidth="1.5"/>
-                <path d="M8 5V4a1 1 0 011-1h6a1 1 0 011 1v1" stroke="#fff" strokeWidth="1.5"/>
-              </svg>
-            </div>
-          )}
-        </div>
 
+        <style>{`
+          @keyframes spinY {
+            from { transform: rotateY(0deg); }
+            to   { transform: rotateY(-360deg); }
+          }
+        `}</style>
+
+        {/* Bottom darkness */}
         <div style={{
-          height:         '38px',
-          display:        'flex',
-          alignItems:     'center',
-          justifyContent: 'center',
-        }}>
-          {p.caption && (
-            <span style={{
-              fontFamily:    "'Space Mono', monospace",
-              fontSize:      '0.52rem',
-              letterSpacing: '0.08em',
-              color:         '#888',
-              textAlign:     'center',
-              lineHeight:    1.4,
+          position:      'absolute',
+          top:           0,
+          left:          0,
+          right:         0,
+          bottom:        '-40px',
+          background:    'radial-gradient(ellipse 100% 40% at 50% 115%, rgba(0,0,0,0.78) 0%, rgba(0,0,0,0.3) 40%, transparent 55%)',
+          pointerEvents: 'none',
+          zIndex:        3,
+        }} />
+
+        <div style={{ position: 'relative', zIndex: 1, overflow: 'visible' }}>
+          <div style={{
+            width:          `${CARD_W}px`,
+            height:         `${CARD_H}px`,
+            transformStyle: 'preserve-3d',
+            transform:      'perspective(1200px) scale(1.18) rotate(24deg) rotateX(-22deg)',
+          }}>
+            <div style={{
+              width:               '100%',
+              height:              '100%',
+              transformStyle:      'preserve-3d',
+              position:            'relative',
+              animation:           'spinY 26s linear infinite',
+              animationPlayState:  focused ? 'paused' : 'running',
             }}>
-              {p.caption}
-            </span>
-          )}
+              {pairs.map((pair, i) => (
+                <div
+                  key={pair.front.id}
+                  onClick={() => openCard(i)}
+                  style={{
+                    position:        'absolute',
+                    top:             '50%',
+                    left:            '50%',
+                    marginLeft:      '0',
+                    marginTop:       `-${CARD_H / 2}px`,
+                    width:           `${CARD_W}px`,
+                    height:          `${CARD_H}px`,
+                    transformOrigin: '0% 50%',
+                    transformStyle:  'preserve-3d',
+                    transform:       `rotateY(${i * degStep}deg) translateZ(55px)`,
+                    cursor:          'pointer',
+                  }}
+                >
+                  <div style={{
+                    position:                 'absolute',
+                    inset:                    0,
+                    backfaceVisibility:       'hidden',
+                    WebkitBackfaceVisibility: 'hidden',
+                  }}>
+                    <PolaroidFace photo={pair.front} />
+                  </div>
+
+                  <div style={{
+                    position:                 'absolute',
+                    inset:                    0,
+                    backfaceVisibility:       'hidden',
+                    WebkitBackfaceVisibility: 'hidden',
+                    transform:                'rotateY(180deg)',
+                  }}>
+                    <PolaroidFace photo={pair.back} />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
-    </motion.div>
+
+      {/* Dark overlay */}
+      {focused && (
+        <div
+          onClick={closeCard}
+          style={{
+            position:   'fixed',
+            inset:      0,
+            background: 'rgba(0,0,0,0.75)',
+            zIndex:     1000,
+            cursor:     'pointer',
+          }}
+        />
+      )}
+
+      {/* Focused card — front first, tap to flip */}
+      {focused && (
+        <div
+          onClick={e => { e.stopPropagation(); setFlipped(f => !f) }}
+          style={{
+            position:    'fixed',
+            top:         '50%',
+            left:        '50%',
+            transform:   'translate(-50%, -50%)',
+            width:       '300px',
+            height:      '410px',
+            zIndex:      1001,
+            perspective: '1000px',
+            cursor:      'pointer',
+          }}
+        >
+          <div style={{
+            width:          '100%',
+            height:         '100%',
+            position:       'relative',
+            transformStyle: 'preserve-3d',
+            transform:      flipped ? 'rotateY(180deg)' : 'rotateY(0deg)',
+            transition:     'transform 0.55s cubic-bezier(0.4, 0, 0.2, 1)',
+          }}>
+            {/* Front */}
+            <div style={{
+              position:                 'absolute',
+              inset:                    0,
+              backfaceVisibility:       'hidden',
+              WebkitBackfaceVisibility: 'hidden',
+            }}>
+              <PolaroidFace photo={focused.front} />
+            </div>
+            {/* Back */}
+            <div style={{
+              position:                 'absolute',
+              inset:                    0,
+              backfaceVisibility:       'hidden',
+              WebkitBackfaceVisibility: 'hidden',
+              transform:                'rotateY(180deg)',
+            }}>
+              <PolaroidFace photo={focused.back} />
+            </div>
+          </div>
+        </div>
+      )}
+    </>
   )
 }
 
 export default function PersonalGallery() {
-  const sectionRef = useRef(null)
-  const inView     = useInView(sectionRef, { once: true, amount: 0.10 })
+  const sectionRef    = useRef(null)
+  const inView        = useInView(sectionRef, { once: true, amount: 0.10 })
+  const cursorRef     = useRef(null)
 
-  const zCounter = useRef(10)
-  const [zMap, setZMap] = useState({})
+  const [focusedIdx, setFocusedIdx] = useState(null)
+  const [flipped, setFlipped]       = useState(false)
+  const isFocused = focusedIdx !== null
 
-  const bringToFront = (id) => {
-    zCounter.current += 1
-    setZMap(prev => ({ ...prev, [id]: zCounter.current }))
+  function handleMouseMove(e) {
+    if (!cursorRef.current) return
+    cursorRef.current.style.left    = `${e.clientX + 14}px`
+    cursorRef.current.style.top     = `${e.clientY + 20}px`
+    cursorRef.current.style.opacity = '1'
+  }
+  function handleMouseLeave() {
+    if (cursorRef.current) cursorRef.current.style.opacity = '0'
   }
 
   return (
     <section
       ref={sectionRef}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
       style={{
         background:    '#000000',
         position:      'relative',
-        overflow:      'hidden',
+        overflow:      'visible',
         paddingTop:    'clamp(5rem, 8vw, 7rem)',
         paddingBottom: 'clamp(4rem, 6vw, 5rem)',
       }}
     >
+      {/* Cursor label */}
+      <div
+        ref={cursorRef}
+        style={{
+          position:      'fixed',
+          pointerEvents: 'none',
+          zIndex:        2000,
+          opacity:       0,
+          transition:    'opacity 0.2s',
+          textAlign:     'center',
+          lineHeight:    1.55,
+        }}
+      >
+        {isFocused ? (
+          <>
+            <span style={{ fontFamily: "'Space Mono', monospace", fontSize: '10px', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'rgba(242,237,228,0.45)', display: 'block' }}>tap to flip polaroid</span>
+            <span style={{ fontFamily: "'Space Mono', monospace", fontSize: '10px', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'rgba(242,237,228,0.28)', display: 'block' }}>click anywhere to close</span>
+          </>
+        ) : (
+          <>
+            <span style={{ fontFamily: "'Space Mono', monospace", fontSize: '10px', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'rgba(242,237,228,0.45)', display: 'block' }}>tap on polaroid</span>
+            <span style={{ fontFamily: "'Space Mono', monospace", fontSize: '10px', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'rgba(242,237,228,0.45)', display: 'block' }}>to view</span>
+          </>
+        )}
+      </div>
       <GalleryCanvas />
+
       {/* Top fade */}
       <div aria-hidden="true" style={{
         position: 'absolute', top: 0, left: 0, right: 0, height: '20%',
@@ -394,24 +568,12 @@ export default function PersonalGallery() {
         </motion.p>
       </div>
 
-      {/* Polaroid scatter — drag is constrained to sectionRef so the full section is reachable */}
-      <div style={{
-        position: 'relative',
-        width:    '100%',
-        height:   '740px',
-        zIndex:   2,
-      }}>
-        {POLAROIDS.map(p => (
-          <Polaroid
-            key={p.id}
-            p={p}
-            inView={inView}
-            sectionRef={sectionRef}
-            zOverride={zMap[p.id]}
-            bringToFront={bringToFront}
-          />
-        ))}
-      </div>
+      <BarrelCarousel
+        focusedIdx={focusedIdx}
+        setFocusedIdx={setFocusedIdx}
+        flipped={flipped}
+        setFlipped={setFlipped}
+      />
     </section>
   )
 }
