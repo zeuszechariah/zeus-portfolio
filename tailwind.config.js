@@ -10,7 +10,7 @@ export default {
       },
       colors: {
         bg:     '#000000',
-        surface:'#0d0d0d',
+        surface:'#000000',
         ink:    '#F2EDE4',
         muted:  'rgba(242,237,228,0.4)',
         pink:   '#FF4B8F',

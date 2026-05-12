@@ -2,6 +2,14 @@
 @tailwind components;
 @tailwind utilities;
 
+@font-face {
+  font-family: 'Halo Grotesk';
+  src: url('/fonts/HaloGrotesk-Regular.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
 /* ── Global ─────────────────────────────────────────── */
 *, *::before, *::after { box-sizing: border-box; }
 html { scroll-behavior: smooth; overflow-x: hidden; }
@@ -152,6 +160,37 @@ body::before {
   .bento-wide, .bento-narrow { grid-column: span 12; }
 }
 
+/* ── Mobile layout ─────────────────────────────────── */
+@media (max-width: 767px) {
+  /* Clear fixed bottom nav on case study pages */
+  .has-bottom-nav { padding-bottom: 76px !important; }
+
+  /* Project Work grid — 1 col on very small phones */
+  @media (max-width: 479px) {
+    .grid-cols-2 { grid-template-columns: 1fr !important; }
+  }
+
+  /* Tables — don't let them overflow, just scroll */
+  table { font-size: 0.78rem !important; }
+  th, td { padding: 0.55rem 0.65rem !important; }
+
+  /* Horizontal scroll containers — keep but clip overflow cleanly */
+  [style*="overflowX: auto"] { -webkit-overflow-scrolling: touch; }
+
+  /* Process phase flex row — vertical stack on mobile */
+  .cc-phase-row { flex-direction: column !important; min-width: unset !important; }
+
+  /* Section tags / labels — reduce letter-spacing so they don't overflow */
+  [style*="letterSpacing: '0.18em'"] { letter-spacing: 0.1em !important; }
+
+  /* Reduce heavy section padding on mobile */
+  [style*="paddingTop: 'clamp(5rem"] { padding-top: clamp(3rem,7vw,4rem) !important; }
+  [style*="paddingBottom: 'clamp(4rem"] { padding-bottom: clamp(2.5rem,6vw,3.5rem) !important; }
+
+  /* Wrap padding — tighter on phone */
+  [style*="px-[clamp(1.5rem,5vw,3rem)"] { padding-left: 1rem !important; padding-right: 1rem !important; }
+}
+
 /* Hero text glow — steady flicker between moderate and near-invisible */
 @keyframes heroGlow {
   0%, 100% {
@@ -251,6 +290,15 @@ body::before {
 }
 .ennea-glow {
   animation: ennea-flicker 11s ease-in-out infinite;
+}
+
+/* Loading screen hue cycle */
+@keyframes hueCycle {
+  0%, 100% { background-color: #075056; }
+  50%       { background-color: #FF5B04; }
+}
+.hue-cycle {
+  animation: hueCycle 3s ease-in-out infinite;
 }
 
 /* ── Reduced motion — honour OS accessibility setting ── */

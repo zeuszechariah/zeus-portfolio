@@ -1,6 +1,16 @@
 import { useRef, useEffect, useState } from 'react'
 import { motion, useInView } from 'framer-motion'
 
+function useIsMobile() {
+  const [mobile, setMobile] = useState(() => typeof window !== 'undefined' && window.innerWidth < 768)
+  useEffect(() => {
+    const h = () => setMobile(window.innerWidth < 768)
+    window.addEventListener('resize', h, { passive: true })
+    return () => window.removeEventListener('resize', h)
+  }, [])
+  return mobile
+}
+
 function GalleryCanvas() {
   const canvasRef = useRef(null)
 
@@ -21,9 +31,9 @@ function GalleryCanvas() {
     function getPositionalColor(x, y) {
       const nx = x / W, ny = y / H
       return [
-        Math.round(255*(1-nx)*(1-ny) + 255*nx*(1-ny) + 255*(1-nx)*ny + 255*nx*ny),
-        Math.round(110*(1-nx)*(1-ny) + 185*nx*(1-ny) +  85*(1-nx)*ny + 160*nx*ny),
-        Math.round(  0*(1-nx)*(1-ny) +  35*nx*(1-ny) +   0*(1-nx)*ny +  10*nx*ny),
+        Math.round(255*(1-nx)*(1-ny) + 255*nx*(1-ny) + 250*(1-nx)*ny + 255*nx*ny),
+        Math.round(150*(1-nx)*(1-ny) + 180*nx*(1-ny) + 130*(1-nx)*ny + 165*nx*ny),
+        Math.round(  0*(1-nx)*(1-ny) +   5*nx*(1-ny) +   0*(1-nx)*ny +   2*nx*ny),
       ]
     }
 
@@ -102,7 +112,7 @@ function GalleryCanvas() {
       }
 
       ctx.globalAlpha=BASE_OPACITY
-      ctx.strokeStyle='rgba(242,237,228,0.55)'
+      ctx.strokeStyle='rgba(255,165,0,0.30)'
       ctx.lineWidth=0.5
       ctx.beginPath()
       for (let k=0;k<len;k++) {
@@ -122,16 +132,16 @@ function GalleryCanvas() {
         const inv=1-g
         ctx.globalAlpha=Math.min(1, BASE_OPACITY+g*1.3)
         ctx.lineWidth=0.5+g*0.9
-        ctx.strokeStyle=`rgb(${Math.round(242*inv+cr*g)},${Math.round(237*inv+cg*g)},${Math.round(228*inv+cb*g)})`
+        ctx.strokeStyle=`rgb(${Math.round(180*inv+cr*g)},${Math.round(120*inv+cg*g)},${Math.round(0*inv+cb*g)})`
         ctx.beginPath(); ctx.moveTo(a.x,a.y); ctx.lineTo(b.x,b.y); ctx.lineTo(c.x,c.y); ctx.closePath(); ctx.stroke()
       }
 
       for (let i=0;i<N;i++) {
         const p=points[i], g=smoothGlow[i]
         ctx.shadowBlur = 5 + g * 10
-        ctx.shadowColor = `rgba(242,237,228,${0.55 + g * 0.45})`
-        ctx.globalAlpha = 0.72 + g * 0.28
-        ctx.fillStyle = '#F2EDE4'
+        ctx.shadowColor = `rgba(255,165,0,${0.45 + g * 0.55})`
+        ctx.globalAlpha = 0.65 + g * 0.35
+        ctx.fillStyle = `rgb(${Math.round(180+g*75)},${Math.round(120+g*45)},${Math.round(0)})`
         ctx.beginPath(); ctx.arc(p.x,p.y,0.8+g*1.2,0,Math.PI*2); ctx.fill()
       }
       ctx.shadowBlur=0; ctx.shadowColor='transparent'; ctx.globalAlpha=1
@@ -435,10 +445,31 @@ function BarrelCarousel({ focusedIdx, setFocusedIdx, flipped, setFlipped }) {
   )
 }
 
+// ─── Mobile polaroid strip ────────────────────────────
+function MobilePolaroidStrip({ setFocusedIdx, setFlipped }) {
+  const pairs = []
+  for (let i = 0; i < PHOTOS.length; i += 2) pairs.push({ front: PHOTOS[i], back: PHOTOS[i + 1] })
+  const rotations = [-2, 1.5, -1, 2.5, -1.5, 1, -2.5, 2, -1]
+  return (
+    <div style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch', padding: '0 20px 24px', display: 'flex', gap: '14px', position: 'relative', zIndex: 2 }}>
+      {pairs.map((pair, i) => (
+        <div
+          key={pair.front.id}
+          onClick={() => { setFocusedIdx(i); setFlipped(false) }}
+          style={{ width: '150px', height: '205px', flexShrink: 0, transform: `rotate(${rotations[i % rotations.length]}deg)`, cursor: 'pointer' }}
+        >
+          <PolaroidFace photo={pair.front} />
+        </div>
+      ))}
+    </div>
+  )
+}
+
 export default function PersonalGallery() {
   const sectionRef    = useRef(null)
   const inView        = useInView(sectionRef, { once: true, amount: 0.10 })
   const cursorRef     = useRef(null)
+  const isMobile      = useIsMobile()
 
   const [focusedIdx, setFocusedIdx] = useState(null)
   const [flipped, setFlipped]       = useState(false)
@@ -492,7 +523,22 @@ export default function PersonalGallery() {
           </>
         )}
       </div>
-      <GalleryCanvas />
+      {!isMobile && <GalleryCanvas />}
+
+      {/* Teal blob behind polaroids */}
+      <div aria-hidden="true" style={{
+        position:     'absolute',
+        top:          '50%',
+        left:         '50%',
+        transform:    'translate(-50%, -20%)',
+        width:        'clamp(320px, 48vw, 640px)',
+        height:       'clamp(320px, 48vw, 640px)',
+        borderRadius: '50%',
+        background:   'radial-gradient(circle, rgba(7,80,86,0.48) 0%, rgba(7,80,86,0.22) 45%, transparent 70%)',
+        filter:       'blur(72px)',
+        pointerEvents:'none',
+        zIndex:       0,
+      }} />
 
       {/* Top fade */}
       <div aria-hidden="true" style={{
@@ -530,7 +576,7 @@ export default function PersonalGallery() {
             margin:        '0 0 16px',
           }}
         >
-          Beyond the work
+          On &amp; off the clock
         </motion.p>
 
         <motion.h2
@@ -564,16 +610,64 @@ export default function PersonalGallery() {
             margin:     0,
           }}
         >
-          The two aren't separate for me. I design experiences by living them — every detour, conversation, and place I've found myself in feeds directly into how I think and what I make.
+          The two aren't separate for me. I design experiences by living them. Every detour, conversation, and place I've found myself in feeds directly into how I think and what I make.
         </motion.p>
       </div>
 
-      <BarrelCarousel
-        focusedIdx={focusedIdx}
-        setFocusedIdx={setFocusedIdx}
-        flipped={flipped}
-        setFlipped={setFlipped}
-      />
+      {/* Deep sea green glow blob behind the carousel */}
+      <div aria-hidden="true" style={{
+        position:      'absolute',
+        top:           '50%',
+        left:          '50%',
+        transform:     'translate(-50%, -38%)',
+        width:         'clamp(320px, 48vw, 640px)',
+        height:        'clamp(320px, 48vw, 640px)',
+        borderRadius:  '50%',
+        background:    'radial-gradient(circle, rgba(0,0,0,0) 0%, transparent 70%)',
+        filter:        'blur(72px)',
+        pointerEvents: 'none',
+        zIndex:        0,
+      }} />
+      <div aria-hidden="true" style={{
+        position:        'absolute',
+        top:             '50%',
+        left:            '50%',
+        transform:       'translate(-50%, -38%)',
+        width:           'clamp(320px, 48vw, 640px)',
+        height:          'clamp(320px, 48vw, 640px)',
+        borderRadius:    '50%',
+        backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E\")",
+        backgroundSize:  '180px 180px',
+        opacity:         0.08,
+        mixBlendMode:    'overlay',
+        pointerEvents:   'none',
+        zIndex:          0,
+      }} />
+
+      {isMobile
+        ? <MobilePolaroidStrip setFocusedIdx={setFocusedIdx} setFlipped={setFlipped} />
+        : <BarrelCarousel focusedIdx={focusedIdx} setFocusedIdx={setFocusedIdx} flipped={flipped} setFlipped={setFlipped} />
+      }
+
+      {/* Focused overlay — mobile only (BarrelCarousel handles desktop) */}
+      {isMobile && focusedIdx !== null && (() => {
+        const pairs = []
+        for (let i = 0; i < PHOTOS.length; i += 2) pairs.push({ front: PHOTOS[i], back: PHOTOS[i + 1] })
+        const focused = pairs[focusedIdx]
+        return (
+          <>
+            <div onClick={() => { setFocusedIdx(null); setFlipped(false) }}
+              style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.8)', zIndex: 1000, cursor: 'pointer' }} />
+            <div onClick={e => { e.stopPropagation(); setFlipped(f => !f) }}
+              style={{ position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%,-50%)', width: isMobile ? '80vw' : '300px', height: isMobile ? 'calc(80vw * 300/220)' : '410px', zIndex: 1001, perspective: '1000px', cursor: 'pointer' }}>
+              <div style={{ width: '100%', height: '100%', position: 'relative', transformStyle: 'preserve-3d', transform: flipped ? 'rotateY(180deg)' : 'rotateY(0deg)', transition: 'transform 0.55s cubic-bezier(0.4,0,0.2,1)' }}>
+                <div style={{ position: 'absolute', inset: 0, backfaceVisibility: 'hidden', WebkitBackfaceVisibility: 'hidden' }}><PolaroidFace photo={focused.front} /></div>
+                <div style={{ position: 'absolute', inset: 0, backfaceVisibility: 'hidden', WebkitBackfaceVisibility: 'hidden', transform: 'rotateY(180deg)' }}><PolaroidFace photo={focused.back} /></div>
+              </div>
+            </div>
+          </>
+        )
+      })()}
     </section>
   )
 }

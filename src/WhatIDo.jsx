@@ -19,38 +19,38 @@ const FAN = [
 const CARDS = [
   {
     backBg: [
-      'radial-gradient(ellipse at 28% 82%, rgba(70,110,255,0.14) 0%, transparent 52%)',
-      'radial-gradient(ellipse at 78% 22%, rgba(120,60,255,0.08) 0%, transparent 48%)',
-      'linear-gradient(145deg, rgba(10,14,38,0.38) 0%, rgba(8,12,32,0.42) 100%)',
+      'radial-gradient(ellipse at 28% 82%, rgba(7,80,86,0.48) 0%, transparent 52%)',
+      'radial-gradient(ellipse at 78% 22%, rgba(7,80,86,0.22) 0%, transparent 48%)',
+      'linear-gradient(145deg, rgba(4,40,46,0.70) 0%, rgba(3,28,32,0.78) 100%)',
     ].join(', '),
-    rimColor:   'rgba(255,255,255,0.55)',
-    glowShadow: '0 0 48px rgba(70,110,255,0.22), 0 0 96px rgba(70,110,255,0.10)',
+    rimColor:   'rgba(7,200,230,0.38)',
+    glowShadow: '0 0 48px rgba(7,80,86,0.32), 0 0 96px rgba(7,80,86,0.14)',
     title:      'UX & Product Design',
-    desc:       'I map systems before screens — flows, mental models, and edge cases first. Every interaction decision is grounded in research and stress-tested against real constraints.',
+    desc:       'Systems before screens. Every interaction decision is grounded in research, tested against real constraints.',
     initBR:     '20px 0 0 20px',
   },
   {
     backBg: [
-      'radial-gradient(ellipse at 65% 78%, rgba(0,210,140,0.12) 0%, transparent 52%)',
-      'radial-gradient(ellipse at 25% 25%, rgba(0,160,255,0.07) 0%, transparent 48%)',
-      'linear-gradient(145deg, rgba(6,18,14,0.38) 0%, rgba(4,14,10,0.42) 100%)',
+      'radial-gradient(ellipse at 65% 78%, rgba(255,91,4,0.40) 0%, transparent 52%)',
+      'radial-gradient(ellipse at 25% 25%, rgba(255,91,4,0.18) 0%, transparent 48%)',
+      'linear-gradient(145deg, rgba(60,20,4,0.70) 0%, rgba(40,12,2,0.78) 100%)',
     ].join(', '),
-    rimColor:   'rgba(255,255,255,0.50)',
-    glowShadow: '0 0 48px rgba(0,210,140,0.18), 0 0 96px rgba(0,210,140,0.08)',
+    rimColor:   'rgba(255,140,60,0.42)',
+    glowShadow: '0 0 48px rgba(255,91,4,0.30), 0 0 96px rgba(255,91,4,0.12)',
     title:      'Visual Design\n& Branding',
-    desc:       'Craft-first, concept-driven. I build cohesive visual languages that hold across touchpoints — from type hierarchies to motion, every detail earns its place.',
+    desc:       'Craft-first, concept-driven. Visual languages built to hold across every touchpoint.',
     initBR:     '0',
   },
   {
     backBg: [
-      'radial-gradient(ellipse at 55% 72%, rgba(160,70,255,0.14) 0%, transparent 52%)',
-      'radial-gradient(ellipse at 20% 22%, rgba(255,60,160,0.08) 0%, transparent 48%)',
-      'linear-gradient(145deg, rgba(12,8,30,0.38) 0%, rgba(8,6,28,0.42) 100%)',
+      'radial-gradient(ellipse at 55% 72%, rgba(237,241,223,0.22) 0%, transparent 52%)',
+      'radial-gradient(ellipse at 20% 22%, rgba(228,238,240,0.14) 0%, transparent 48%)',
+      'linear-gradient(145deg, rgba(22,35,42,0.78) 0%, rgba(16,26,30,0.85) 100%)',
     ].join(', '),
-    rimColor:   'rgba(255,255,255,0.52)',
-    glowShadow: '0 0 48px rgba(160,70,255,0.22), 0 0 96px rgba(160,70,255,0.10)',
+    rimColor:   'rgba(237,241,223,0.52)',
+    glowShadow: '0 0 48px rgba(237,241,223,0.18), 0 0 96px rgba(228,238,240,0.09)',
     title:      'Creative Strategy',
-    desc:       'I bridge research and output — translating cultural signals and user insight into sharp creative direction. The why always precedes the what.',
+    desc:       'Research translated into sharp creative direction. The why before the what.',
     initBR:     '0 20px 20px 0',
   },
 ]
@@ -60,8 +60,8 @@ function Icon({ i }) {
   const sd = 'rgba(255,255,255,0.28)'
   if (i === 0) return (
     <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-      <path d="M4 16L16 4M16 4H7M16 4V13"
-        stroke={s} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+      <path d="M10 2V18M2 10H18" stroke={s}  strokeWidth="1.4" strokeLinecap="round"/>
+      <path d="M4 4L16 16M16 4L4 16" stroke={sd} strokeWidth="1" strokeLinecap="round"/>
     </svg>
   )
   if (i === 1) return (
@@ -74,8 +74,8 @@ function Icon({ i }) {
   )
   return (
     <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-      <path d="M10 2V18M2 10H18" stroke={s}  strokeWidth="1.4" strokeLinecap="round"/>
-      <path d="M4 4L16 16M16 4L4 16" stroke={sd} strokeWidth="1" strokeLinecap="round"/>
+      <path d="M4 16L16 4M16 4H7M16 4V13"
+        stroke={s} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
     </svg>
   )
 }
@@ -102,8 +102,6 @@ export default function WhatIDo() {
       tl.to('.wid-strip', { scale: 1.00, duration: 0.22, ease: 'power2.inOut' }, 0)
 
       // ── Phase 1 (0.32 → 0.68): Cards break from image — upright, no tilt ────
-      // Fade vignette out as cards separate
-      tl.to('.wid-vignette', { opacity: 0, duration: 0.36, ease: 'power1.inOut' }, 0.32)
       // x separation only; fan rotation is deferred to the flip phase
       tl.to('.wid-c0', { x: -34, duration: 0.36, ease: 'power1.inOut' }, 0.32)
       tl.to('.wid-c2', { x:  34, duration: 0.36, ease: 'power1.inOut' }, 0.32)
@@ -156,28 +154,17 @@ export default function WhatIDo() {
         position:       'relative',
       }}
     >
-      {/* Dot grid texture */}
+      {/* Grid background — fades at top and bottom via mask */}
       <div aria-hidden="true" style={{
-        position:        'absolute',
-        inset:           0,
-        backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.13) 1px, transparent 1px)',
-        backgroundSize:  '22px 22px',
-        pointerEvents:   'none',
-        zIndex:          0,
-      }} />
-      {/* Top fade */}
-      <div aria-hidden="true" style={{
-        position:   'absolute', top: 0, left: 0, right: 0,
-        height:     '22%',
-        background: 'linear-gradient(to bottom, #000000 0%, transparent 100%)',
-        pointerEvents: 'none', zIndex: 1,
-      }} />
-      {/* Bottom fade */}
-      <div aria-hidden="true" style={{
-        position:   'absolute', bottom: 0, left: 0, right: 0,
-        height:     '22%',
-        background: 'linear-gradient(to top, #000000 0%, transparent 100%)',
-        pointerEvents: 'none', zIndex: 1,
+        position:   'absolute', inset: 0,
+        backgroundImage: [
+          'linear-gradient(rgba(255,255,255,0.055) 1px, transparent 1px)',
+          'linear-gradient(90deg, rgba(255,255,255,0.055) 1px, transparent 1px)',
+        ].join(', '),
+        backgroundSize: '44px 44px',
+        WebkitMaskImage: 'linear-gradient(to bottom, transparent 0%, black 22%, black 78%, transparent 100%)',
+        maskImage:       'linear-gradient(to bottom, transparent 0%, black 22%, black 78%, transparent 100%)',
+        pointerEvents: 'none', zIndex: 0,
       }} />
       <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 44px', width: '100%', position: 'relative', zIndex: 1 }}>
 
@@ -217,15 +204,6 @@ export default function WhatIDo() {
             transformOrigin: '50% 50%',
           }}>
 
-          {/* Strip-level vignette — only on the unified rect, fades on separation */}
-          <div className="wid-vignette" style={{
-            position:      'absolute',
-            inset:         0,
-            background:    'radial-gradient(ellipse at 50% 50%, transparent 38%, rgba(0,0,0,0.75) 100%)',
-            pointerEvents: 'none',
-            zIndex:        5,
-          }} />
-
           {CARDS.map((card, i) => (
             <div
               key={i}
@@ -264,16 +242,15 @@ export default function WhatIDo() {
                     justifyContent:     'center',
                   }}
                 >
-                  {/* Blurred bg — inset covers blur edge, position compensated */}
+                  {/* Single panoramic image spanning all 3 cards */}
                   <div style={{
                     position:           'absolute',
                     inset:              0,
                     backgroundColor:    '#000',
-                    backgroundImage:    'url(/card-front.jpg)',
+                    backgroundImage:    'url(/card-front-waves.png)',
                     backgroundSize:     `${CW * 3}px auto`,
                     backgroundPosition: `${-i * CW}px 50%`,
                     backgroundRepeat:   'no-repeat',
-                    filter:             'none',
                   }} />
                   {/* Grain */}
                   <div style={{
@@ -293,7 +270,7 @@ export default function WhatIDo() {
                       fontStyle:     'italic',
                       fontWeight:    400,
                       fontSize:      'clamp(5rem, 9vw, 7.5rem)',
-                      color:         'rgba(255,255,255,0.92)',
+                      color:         '#e4eef0',
                       letterSpacing: '-0.03em',
                       userSelect:    'none',
                     }}>

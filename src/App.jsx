@@ -14,14 +14,18 @@ const StudyBuddy   = lazy(() => import('./StudyBuddy.jsx'))
 const Finance      = lazy(() => import('./Finance.jsx'))
 const Aadhaar      = lazy(() => import('./Aadhaar.jsx'))
 const CloutCart    = lazy(() => import('./CloutCart.jsx'))
+const Skippr       = lazy(() => import('./Skippr.jsx'))
+const Dokitti      = lazy(() => import('./Dokitti.jsx'))
 
 const PROJECTS = [
-  { id:1, name:'Study Buddy',     tags:'UX Research · Mobile',   desc:'Rethinking how Indian students study & building habits that actually stick.', color:'from-[#061528] via-[#0f2d52] to-[#1b4a8a]', pitch:'https://pitch.com/v/study-buddy-pqwx5j', thumb:'/thumnail-1-opt.gif', slug:'/work/study-buddy',   filterKeys:['ux','research'] },
-  { id:2, name:'Get Set Globe',   tags:'EdTech · Product Design', desc:'Making Earth science something children feel, not just memorise.', color:'from-[#050f08] via-[#0b2e16] to-[#135728]', thumb:'/thumb-getsetglobe.jpg', thumbPos:'50% 0%', slug:'/work/get-set-globe',  filterKeys:['ux','system']   },
-  { id:3, name:'Spectra',         tags:'Data Viz · Experience',   desc:'Two invisible threats, one shared sky. Mapping the overlap of air and light pollution across urban India.', color:'from-[#0d0702] via-[#2e1606] to-[#7a430e]', pitch:'https://pitch.com/v/spectra-2vnqiq', thumb:'/thumb-spectra-opt.jpg', thumbPos:'50% 15%', thumbFilter:'saturate(0.75)', filterKeys:['branding','ux'] },
-  { id:4, name:'Finance for semi/less literate', tags:'Research · Social Design', desc:'Researching financial literacy through scam resilience and financial literacy.', color:'from-[#040409] via-[#0e0e30] to-[#1a1060]', pitch:'https://canva.link/ryd4ojcrh70b9qq', thumb:'/thumb-finance.jpg', thumbBg:'#EEF3DF', slug:'/work/finance', filterKeys:['research']       },
-  { id:5, name:'Aadhaar Research', tags:'UX Research · Social Design', desc:'Mapping the invisible friction elderly citizens face when Aadhaar fails them in moments of urgency.', color:'from-[#0A1E1E] via-[#075959] to-[#0D7878]', slug:'/work/aadhaar', filterKeys:['research','ux']  },
-  { id:6, name:'CloutCart', tags:'Product Strategy · Creator Economy', desc:'Where brands cart their next collab. A vibe-led influencer-enterprise matchmaking platform.', color:'from-[#1A0A2E] via-[#3B0764] to-[#6D28D9]', slug:'/work/cloutcart', filterKeys:['system','ux']    },
+  { id:1, name:'Study Buddy',    desc:'Habit-building for Indian students who study hard but retain little.', color:'from-[#061528] via-[#0f2d52] to-[#1b4a8a]', slug:'/work/study-buddy',  filterKeys:['ux','system']  },
+  { id:2, name:'Get Set Globe',  desc:'Earth science you feel, not just memorise.', color:'from-[#050f08] via-[#0b2e16] to-[#135728]', slug:'/work/get-set-globe', filterKeys:['ux']          },
+  { id:3, name:'Skippr',         desc:'A clip-on self-checkout for every cart. Skip the queue, keep the flow.', color:'from-[#020d0f] via-[#043d47] to-[#0b7c8c]', slug:'/work/skippr', filterKeys:['ux'] },
+  { id:4, name:'Hanakasu',       desc:'Understanding financial literacy and scam resilience amongst semi-literate users.', color:'from-[#040409] via-[#0e0e30] to-[#1a1060]', slug:'/work/finance',      filterKeys:['research']     },
+  { id:5, name:'Aadhaar Vihin', desc:'Designing for the urgency of needing identity proof when your Aadhaar card is not with you.', color:'from-[#0A1E1E] via-[#075959] to-[#0D7878]',  slug:'/work/aadhaar',      filterKeys:['research']     },
+  { id:6, name:'CloutCart',      desc:'Vibe-led matchmaking for brands and creators.', color:'from-[#1A0A2E] via-[#3B0764] to-[#6D28D9]',  slug:'/work/cloutcart',    filterKeys:['system']       },
+  { id:7, name:'Dokitti',        desc:'A mascot brand built on personality and play.', color:'from-[#130410] via-[#3d0b2e] to-[#8c1b66]',  slug:'/work/dokitti', filterKeys:['branding']    },
+  { id:8, name:'Staple',         desc:'Visual identity for a neighbourhood cafe that felt like home.', color:'from-[#0f0a04] via-[#3d2008] to-[#8c5414]', filterKeys:['branding']    },
 ]
 
 const FILTER_TABS = [
@@ -136,6 +140,11 @@ function VideoIntro({ onComplete }) {
         <video ref={videoRef} autoPlay muted playsInline preload="auto"
           style={{ width: '100%', height: '100%', objectFit: 'cover' }}
           src="/headervideo.mp4" />
+        {/* Hue overlay — cycles teal ↔ orange every 1.5s */}
+        <div className="hue-cycle absolute inset-0" style={{
+          mixBlendMode: 'hue',
+          pointerEvents: 'none',
+        }} />
         <div className="absolute inset-0" style={{
           background: [
             'linear-gradient(to bottom, #000000 0%, transparent 18%)',
@@ -311,6 +320,12 @@ function Enneagram({ size = 700 }) {
 // ─── Hero ─────────────────────────────────────────────
 function Hero() {
   const heroRef = useRef(null)
+  const [isMobile, setIsMobile] = useState(() => typeof window !== 'undefined' && window.innerWidth < 768)
+  useEffect(() => {
+    const h = () => setIsMobile(window.innerWidth < 768)
+    window.addEventListener('resize', h, { passive: true })
+    return () => window.removeEventListener('resize', h)
+  }, [])
   const { scrollYProgress } = useScroll({ target: heroRef, offset: ['start start', 'end start'] })
   const parallaxY = useTransform(scrollYProgress, [0, 1], ['0%', '-22%'])
 
@@ -325,15 +340,15 @@ function Hero() {
           aria-hidden="true"
           fetchPriority="high"
           style={{
-            width:'100%', height:'112%',
+            width:'100%', height: isMobile ? '100%' : '112%',
             objectFit:'cover', objectPosition:'50% 40%',
             filter:'contrast(1.22) brightness(0.78) saturate(1.08)',
-            y: parallaxY,
-            top: '-6%',
+            y: isMobile ? 0 : parallaxY,
+            top: isMobile ? 0 : '-6%',
             position: 'absolute',
-            willChange: 'transform',
+            willChange: isMobile ? 'auto' : 'transform',
           }}
-          animate={{ scale: [1, 1.06, 1] }}
+          animate={isMobile ? {} : { scale: [1, 1.06, 1] }}
           transition={{ duration: 7, repeat: Infinity, ease: 'easeInOut' }}
         />
       </div>
@@ -377,7 +392,7 @@ function Hero() {
             backdropFilter:'blur(16px)',
             WebkitBackdropFilter:'blur(16px)',
             padding:'5px 14px',
-            marginBottom:'clamp(1.25rem, 3vw, 2.25rem)',
+            marginBottom:'clamp(3rem, 6vw, 5.5rem)',
           }}
         >
           <span className="availability-dot" style={{ width:'6px', height:'6px', borderRadius:'50%', background:'#22c55e', flexShrink:0 }} />
@@ -386,32 +401,38 @@ function Hero() {
           </span>
         </motion.div>
 
-        {/* Headline — Syne semibold body, EB Garamond for "structure, sensation & more" */}
-        <motion.h1
+        {/* Headline */}
+        <motion.div
           initial={{ opacity:0, y:22 }}
           animate={{ opacity:1, y:0 }}
           transition={{ duration:0.80, delay:0.40, ease:EASE }}
-          style={{
-            fontFamily:    "'Syne', sans-serif",
-            fontWeight:    600,
-            fontSize:      'clamp(30px, 4.0vw, 62px)',
-            color:         '#ffffff',
-            lineHeight:    1.08,
-            letterSpacing: '-0.03em',
-            textAlign:     'center',
-            margin:        0,
-            maxWidth:      'min(90vw, 900px)',
-            textShadow:    '0 0 60px rgba(255,255,255,0.22), 0 0 22px rgba(255,255,255,0.14), 0 0 8px rgba(255,255,255,0.08)',
-          }}
+          style={{ display:'flex', flexDirection:'column', alignItems:'flex-start' }}
         >
-          I'm an Indian designer,<br />
-          global in practice, focused on<br />
-          <span style={{ fontFamily:"'EB Garamond', Georgia, serif", fontWeight:400 }}>
-            structure, sensation{' '}
-            <em style={{ fontStyle:'italic' }}>&amp;</em>
-            {' '}more
+          {/* "creating what" — Syne medium, -10 tracking */}
+          <span style={{
+            fontFamily:    "'Syne', sans-serif",
+            fontWeight:    500,
+            fontSize:      'clamp(22px, 3.82vw, 55.08px)',
+            letterSpacing: '-0.01em',
+            lineHeight:    0.82,
+            color:         '#edf1df',
+            display:       'block',
+          }}>
+            creating what
           </span>
-        </motion.h1>
+          {/* "endures" — Halo Grotesk regular, 0 tracking */}
+          <span style={{
+            fontFamily:    "'Halo Grotesk', sans-serif",
+            fontWeight:    400,
+            fontSize:      'clamp(38px, 6.73vw, 96.93px)',
+            letterSpacing: '0',
+            lineHeight:    1,
+            color:         '#edf1df',
+            display:       'block',
+          }}>
+            endures
+          </span>
+        </motion.div>
 
         {/* Subtext */}
         <motion.p
@@ -424,11 +445,11 @@ function Hero() {
             fontSize:      'clamp(0.75rem, 1vw, 0.875rem)',
             color:         'rgba(255,255,255,0.36)',
             lineHeight:    1.6,
-            margin:        'clamp(1rem, 2.2vw, 1.75rem) 0 0',
+            margin:        'clamp(3rem, 6vw, 5.5rem) 0 0',
             letterSpacing: '0.01em',
           }}
         >
-          Welcome!
+          Hi, I'm Zeus, a hearty welcome here!
         </motion.p>
 
         {/* CTA */}
@@ -490,7 +511,6 @@ function ProjectCard({ project, delay = 0 }) {
       <div className="flex-1 p-[clamp(1rem,2vw,1.375rem)] flex flex-col">
         <div className="flex items-start justify-between gap-3 mb-2.5">
           <div>
-            <p className="font-mono text-[0.6rem] tracking-[0.12em] uppercase mb-[0.35rem]" style={{ color:'#9a9a9a' }}>{project.tags}</p>
             <h3 className="font-sans font-semibold text-black tracking-[-0.022em]" style={{ fontSize:'clamp(1rem,1.6vw,1.2rem)', lineHeight:1.2 }}>
               <MaskReveal>{project.name}</MaskReveal>
             </h3>
@@ -534,9 +554,9 @@ function WorkCanvas() {
     function getGlowColor(x, y) {
       const nx = x / W, ny = y / H
       return [
-        Math.round(120*(1-nx)*(1-ny) + 160*nx*(1-ny) + 80*(1-nx)*ny  + 140*nx*ny),
-        Math.round( 55*(1-nx)*(1-ny) +  90*nx*(1-ny) + 35*(1-nx)*ny  +  70*nx*ny),
-        Math.round(  5*(1-nx)*(1-ny) +  18*nx*(1-ny) +  2*(1-nx)*ny  +  10*nx*ny),
+        Math.round(210*(1-nx)*(1-ny) + 255*nx*(1-ny) + 180*(1-nx)*ny  + 230*nx*ny),
+        Math.round( 72*(1-nx)*(1-ny) +  91*nx*(1-ny) +  58*(1-nx)*ny  +  80*nx*ny),
+        Math.round(  2*(1-nx)*(1-ny) +   4*nx*(1-ny) +   1*(1-nx)*ny  +   3*nx*ny),
       ]
     }
 
@@ -645,8 +665,8 @@ function WorkCanvas() {
         const p=points[i], g=smoothGlow[i]
         if (g>0.05) {
           ctx.shadowBlur  = 4+g*8
-          ctx.shadowColor = `rgba(140,70,10,${0.4+g*0.6})`
-          ctx.fillStyle   = `rgb(${Math.round(100+g*60)},${Math.round(50+g*30)},${Math.round(5+g*10)})`
+          ctx.shadowColor = `rgba(255,91,4,${0.4+g*0.6})`
+          ctx.fillStyle   = `rgb(${Math.round(160+g*95)},${Math.round(55+g*36)},${Math.round(2+g*2)})`
         } else {
           ctx.shadowBlur  = 0
           ctx.fillStyle   = 'rgba(26,14,4,0.9)'
@@ -787,46 +807,17 @@ function VitalStatCell({ v, index }) {
   return (
     <div ref={ref} style={{
       position:        'relative',
-      background:      '#080808',
-      backdropFilter:  'blur(8px)',
-      WebkitBackdropFilter: 'blur(8px)',
-      borderRadius:    '50%',
-      aspectRatio:     '1',
-      border:          '1px solid rgba(255,255,255,0.04)',
+      background:      '#000000',
+      borderRadius:    '16px',
+      border:          '1px solid rgba(255,255,255,0.06)',
       overflow:        'hidden',
-      boxShadow:       '0 0 0 1px rgba(0,0,0,0.5), 0 20px 60px rgba(0,0,0,0.7), 0 4px 12px rgba(0,0,0,0.5)',
       display:         'flex',
       flexDirection:   'column',
       alignItems:      'center',
       justifyContent:  'center',
       textAlign:       'center',
-      padding:         'clamp(1.5rem,3vw,2rem)',
+      padding:         'clamp(1.75rem,3vw,2.5rem) clamp(1rem,2vw,1.5rem)',
     }}>
-      {/* Corner rim — follows circle arc, fades diagonally */}
-      <div style={{
-        position:        'absolute', inset: 0, borderRadius: '50%',
-        border:          '1px solid transparent',
-        borderTop:       '1px solid rgba(255,255,255,0.55)',
-        borderLeft:      '1px solid rgba(255,255,255,0.28)',
-        WebkitMaskImage: 'linear-gradient(135deg, black 0%, black 22%, transparent 52%)',
-        maskImage:       'linear-gradient(135deg, black 0%, black 22%, transparent 52%)',
-        pointerEvents:   'none', zIndex: 5,
-      }} />
-      {/* Bottom-right face shadow */}
-      <div style={{
-        position:      'absolute', bottom: '-10%', right: '-10%',
-        width: '65%',  height: '60%',
-        background:    'radial-gradient(ellipse at 60% 60%, rgba(0,0,0,0.88) 0%, rgba(0,0,0,0.50) 45%, transparent 72%)',
-        borderRadius:  '50%', pointerEvents: 'none', zIndex: 3,
-      }} />
-      {/* Specular highlight */}
-      <div style={{
-        position:      'absolute', top: '-30%', left: '-15%',
-        width: '55%',  height: '50%',
-        background:    'radial-gradient(ellipse at 40% 40%, rgba(255,255,255,0.09) 0%, rgba(255,255,255,0.04) 35%, transparent 65%)',
-        borderRadius:  '50%', transform: 'rotate(-10deg)',
-        pointerEvents: 'none', filter: 'blur(2px)', zIndex: 3,
-      }} />
       <p className="font-sans font-semibold text-ink leading-none tracking-[-0.03em]"
         style={{ position:'relative', zIndex:4, fontSize:'clamp(2.2rem,4vw,3.5rem)', marginBottom:'0.4rem' }}>{display}</p>
       <p className="font-display italic text-ink"
@@ -841,8 +832,6 @@ function VitalStatCell({ v, index }) {
 function VitalSigns() {
   return (
     <section style={{ background:'#000000' }} className="py-[clamp(3.5rem,5.5vw,5rem)] border-t border-white/[0.04] relative overflow-hidden">
-      <div className="absolute pointer-events-none" style={{ width:'clamp(350px,44vw,600px)',height:'clamp(350px,44vw,600px)',borderRadius:'50%',bottom:'-25%',right:'-6%',background:'radial-gradient(circle,rgba(124,58,237,0.085) 0%,transparent 65%)' }} />
-      <div className="absolute pointer-events-none" style={{ width:'clamp(260px,32vw,440px)',height:'clamp(260px,32vw,440px)',borderRadius:'50%',top:'-18%',left:'30%',background:'radial-gradient(circle,rgba(255,75,143,0.058) 0%,transparent 65%)' }} />
       <div className="max-w-[1200px] mx-auto px-[clamp(1.5rem,5vw,3.5rem)]">
         <div className="mb-[clamp(3rem,5vw,4rem)]">
           <Reveal>
@@ -853,7 +842,7 @@ function VitalSigns() {
           <h2 className="font-sans font-semibold text-ink tracking-[-0.04em] leading-[0.92]"
               style={{ fontSize:'clamp(2.5rem,6vw,5rem)' }}>
             <MaskReveal>Distilled</MaskReveal>
-            <MaskReveal delay={0.08}><em className="font-display" style={{ fontStyle:'italic', fontSize:'1.08em' }}>to digits.</em></MaskReveal>
+            <MaskReveal delay={0.08}><em className="font-display" style={{ fontStyle:'italic', fontWeight: 400, fontSize:'1.08em' }}>to digits</em></MaskReveal>
           </h2>
         </div>
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
@@ -868,8 +857,7 @@ function VitalSigns() {
 function ProfessionalExposure() {
   return (
     <section id="about" style={{ background:'#000000' }} className="py-[clamp(4rem,6.5vw,6rem)] border-t border-white/[0.04] relative overflow-hidden">
-      <div className="absolute pointer-events-none" style={{ width:'clamp(460px,55vw,740px)',height:'clamp(460px,55vw,740px)',borderRadius:'50%',top:'-22%',left:'-12%',background:'radial-gradient(circle,rgba(124,58,237,0.085) 0%,transparent 65%)' }} />
-      <div className="absolute pointer-events-none" style={{ width:'clamp(300px,38vw,520px)',height:'clamp(300px,38vw,520px)',borderRadius:'50%',bottom:'-18%',right:'-4%',background:'radial-gradient(circle,rgba(255,75,143,0.062) 0%,transparent 65%)' }} />
+      <div className="absolute pointer-events-none" style={{ width:'clamp(460px,55vw,740px)',height:'clamp(460px,55vw,740px)',borderRadius:'50%',top:'-22%',left:'-12%',background:'radial-gradient(circle,rgba(255,91,4,0.07) 0%,transparent 65%)' }} />
       <div className="max-w-[1200px] mx-auto px-[clamp(1.5rem,5vw,3.5rem)]">
         <div className="mb-[clamp(3.5rem,6vw,5rem)]">
           <Reveal>
@@ -928,7 +916,6 @@ const GALLERY_ROWS = [
     { id: 'r1b', img: '/glimpses/kufri-banner.png',  pos: '50% 38%'  }, // Kufri Zoo banners — portrait, crop to show both banners
     { id: 'r1c', img: '/glimpses/staple-cans.png',   pos: '50% 50%'  }, // Staple containers — nearly square, full bleed works
     { id: 'r1d', img: '/glimpses/dokitti-face.png',  pos: '50% 35%'  }, // Dokitti face — horizontal, crop to face
-    { id: 'r1e', img: '/glimpses/service-design.png', pos: '55% 45%'  }, // Service design ecosystem map — crop to dense central cluster
     { id: 'r1f', img: '/glimpses/blr-dw-mobile.png', pos: '50% 48%'  }, // BLR DW mobile — wide, centre on phones
     { id: 'r1g', img: '/glimpses/getsetglobe.png',   pos: '50% 45%'  }, // Get Set Globe — devices mockup, centre
     { id: 'r1h', img: '/glimpses/taylors.png',       pos: '50% 42%'  }, // Taylors tea — portrait boxes, centre crop
@@ -936,7 +923,6 @@ const GALLERY_ROWS = [
 
   // Row 2 — scrolls left. Dark/illustrative/textured.
   [
-    { id: 'r2a', img: '/glimpses/industrial.png',    pos: '50% 50%', fit: 'contain', bg: '#000000', filter: 'brightness(0.85) contrast(1.8)' }, // crush blacks to pure black
     { id: 'r2b', img: '/glimpses/kufri-badges.png',  pos: '50% 50%'  }, // Kufri Zoo badges — square, centred teal
     { id: 'r2c', img: '/glimpses/dokitti-sweater.png', pos: '50% 28%' }, // Dokitti sweater — portrait, crop to face+logo
     { id: 'r2d', img: '/glimpses/nike-infographic.png', pos: '50% 50%' }, // Nike infographic — landscape, centre spread
@@ -986,6 +972,12 @@ function MarqueeRow({ items, reverse = false, speed = 45 }) {
 }
 
 function MarqueeGallery() {
+  const [isMobile, setIsMobile] = useState(() => typeof window !== 'undefined' && window.innerWidth < 768)
+  useEffect(() => {
+    const h = () => setIsMobile(window.innerWidth < 768)
+    window.addEventListener('resize', h, { passive: true })
+    return () => window.removeEventListener('resize', h)
+  }, [])
   return (
     // overflowX:clip clips horizontally without creating a scroll container,
     // so the perspective-rotated rows can overflow top/bottom naturally
@@ -1012,19 +1004,19 @@ function MarqueeGallery() {
 
       {/* Left / right fades */}
       <div className="absolute inset-y-0 left-0 z-10 pointer-events-none"
-        style={{ width:'22vw', background:'linear-gradient(to right,#000000 15%,transparent 100%)' }} />
+        style={{ width:'22vw', background:'linear-gradient(to right,#060606 15%,transparent 100%)' }} />
       <div className="absolute inset-y-0 right-0 z-10 pointer-events-none"
-        style={{ width:'22vw', background:'linear-gradient(to left,#000000 15%,transparent 100%)' }} />
+        style={{ width:'22vw', background:'linear-gradient(to left,#060606 15%,transparent 100%)' }} />
       {/* Top / bottom fades */}
       <div className="absolute top-0 left-0 right-0 z-10 pointer-events-none"
-        style={{ height:'clamp(100px,14vw,180px)', background:'linear-gradient(to bottom,#000000 0%,transparent 100%)' }} />
+        style={{ height:'clamp(100px,14vw,180px)', background:'linear-gradient(to bottom,#060606 0%,transparent 100%)' }} />
       <div className="absolute bottom-0 left-0 right-0 z-10 pointer-events-none"
-        style={{ height:'clamp(100px,14vw,180px)', background:'linear-gradient(to top,#000000 0%,transparent 100%)' }} />
+        style={{ height:'clamp(100px,14vw,180px)', background:'linear-gradient(to top,#060606 0%,transparent 100%)' }} />
 
-      {/* Perspective tilt */}
-      <div style={{ perspective:'1100px', perspectiveOrigin:'50% 50%' }}>
+      {/* Perspective tilt — desktop only */}
+      <div style={isMobile ? {} : { perspective:'1100px', perspectiveOrigin:'50% 50%' }}>
         <div
-          style={{
+          style={isMobile ? {} : {
             transform: 'rotateX(25deg) rotateZ(-5deg)',
             transformOrigin: 'center center',
             willChange: 'transform',
@@ -1039,8 +1031,7 @@ function MarqueeGallery() {
       {/* CTA — merged below the marquee */}
       <div className="relative z-20 text-center py-[clamp(5rem,9vw,8rem)]">
         {/* Glows */}
-        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none" style={{ width:800,height:500,background:'radial-gradient(ellipse,rgba(124,58,237,0.14) 0%,transparent 62%)' }} />
-        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none" style={{ width:400,height:250,background:'radial-gradient(ellipse,rgba(255,75,143,0.085) 0%,transparent 65%)' }} />
+        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none" style={{ width:800,height:500,background:'radial-gradient(ellipse,rgba(255,91,4,0.13) 0%,transparent 62%)' }} />
         <div className="relative max-w-[1200px] mx-auto px-[clamp(1.5rem,5vw,3.5rem)]">
           <Reveal>
             <span className="flex items-center justify-center gap-2.5 font-mono text-[0.625rem] tracking-[0.16em] uppercase text-ink/32 mb-8">
@@ -1049,7 +1040,7 @@ function MarqueeGallery() {
           </Reveal>
           <h2 className="font-sans font-semibold text-ink tracking-[-0.04em] leading-[0.95] mb-14" style={{ fontSize:'clamp(2.75rem,7vw,6.5rem)' }}>
             <MaskReveal>Got a project?</MaskReveal>
-            <MaskReveal delay={0.1}><em className="font-display not-italic" style={{ fontStyle:'italic', fontFamily:'"EB Garamond", Georgia, serif', fontSize:'1.08em' }}>Let's talk.</em></MaskReveal>
+            <MaskReveal delay={0.1}><em className="font-display" style={{ fontStyle:'italic', fontWeight: 400, fontFamily:'"EB Garamond", Georgia, serif', fontSize:'1.08em' }}>Let's talk.</em></MaskReveal>
           </h2>
           <Reveal delay={0.12} className="flex items-center justify-center gap-3 flex-wrap">
             <HeroButton href="mailto:zeusbatkhar.2000@gmail.com">Get in touch ↗</HeroButton>
@@ -1133,9 +1124,69 @@ function AppRoutes() {
           <Route path="/work/finance" element={<Finance />} />
           <Route path="/work/aadhaar" element={<Aadhaar />} />
           <Route path="/work/cloutcart" element={<CloutCart />} />
+          <Route path="/work/skippr"   element={<Skippr />} />
+          <Route path="/work/dokitti"  element={<Dokitti />} />
         </Routes>
       </Suspense>
     </motion.div>
+  )
+}
+
+// ─── Mobile Block ─────────────────────────────────────
+function MobileBlock() {
+  return (
+    <div
+      className="hidden max-[767px]:flex flex-col items-center justify-center text-center"
+      style={{
+        position: 'fixed', inset: 0, zIndex: 99999,
+        background: '#000000',
+        padding: '2.5rem',
+      }}
+    >
+      <span style={{
+        fontFamily: "'Space Mono', monospace",
+        fontSize: '0.6rem',
+        letterSpacing: '0.22em',
+        textTransform: 'uppercase',
+        color: 'rgba(242,237,228,0.28)',
+        marginBottom: '2rem',
+        display: 'block',
+      }}>
+        Display Notice
+      </span>
+      <p style={{
+        fontFamily: "'Syne', sans-serif",
+        fontWeight: 600,
+        fontSize: 'clamp(1.5rem, 7vw, 2rem)',
+        color: '#F2EDE4',
+        lineHeight: 1.15,
+        letterSpacing: '-0.025em',
+        marginBottom: '1.25rem',
+        maxWidth: '18ch',
+      }}>
+        Best viewed on desktop.
+      </p>
+      <p style={{
+        fontFamily: "'Syne', sans-serif",
+        fontWeight: 300,
+        fontSize: '0.8rem',
+        color: 'rgba(242,237,228,0.38)',
+        lineHeight: 1.75,
+        maxWidth: '28ch',
+        marginBottom: '2.5rem',
+      }}>
+        This portfolio is optimised for desktop screens. Please open it on a computer, or switch to desktop view in your browser settings.
+      </p>
+      <span style={{
+        fontFamily: "'Space Mono', monospace",
+        fontSize: '0.55rem',
+        letterSpacing: '0.14em',
+        textTransform: 'uppercase',
+        color: 'rgba(242,237,228,0.16)',
+      }}>
+        zeus-design.in
+      </span>
+    </div>
   )
 }
 
@@ -1143,6 +1194,7 @@ function AppRoutes() {
 export default function App() {
   return (
     <>
+      <MobileBlock />
       <BrowserRouter>
         <ScrollToTop />
         <CookieBanner />

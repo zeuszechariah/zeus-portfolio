@@ -89,7 +89,7 @@ export function Bolt({ size = 14, nudge = 0 }) {
 export function ProgressBar() {
   const { scrollYProgress } = useScroll()
   const scaleY = useSpring(scrollYProgress, { stiffness:100, damping:30 })
-  return <motion.div className="fixed left-0 top-0 bottom-0 w-[2px] z-[600] origin-top" style={{ scaleY, background:'linear-gradient(180deg,#7C3AED,#FF4B8F)' }} />
+  return <motion.div className="fixed left-0 top-0 bottom-0 w-[2px] z-[600] origin-top" style={{ scaleY, background:'linear-gradient(180deg,#16232A 0%,#FF5B04 45%,#075056 100%)' }} />
 }
 
 // ─── MaskReveal — translateY clip reveal for headings ─
@@ -130,15 +130,19 @@ const MotionLink = motion(Link)
 // ─── SectionExit — converge + fade as section scrolls off top ─
 export function SectionExit({ children }) {
   const ref = useRef(null)
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ['start start', 'end start'],
-  })
+  const [isMobile, setIsMobile] = useState(() => typeof window !== 'undefined' && window.innerWidth < 768)
+  useEffect(() => {
+    const h = () => setIsMobile(window.innerWidth < 768)
+    window.addEventListener('resize', h, { passive: true })
+    return () => window.removeEventListener('resize', h)
+  }, [])
+
+  const { scrollYProgress } = useScroll({ target: ref, offset: ['start start', 'end start'] })
   const opacity = useTransform(scrollYProgress, [0.50, 0.85], [1, 0])
   const scale   = useTransform(scrollYProgress, [0.50, 0.85], [1, 0.88])
 
   return (
-    <motion.div ref={ref} style={{ opacity, scale, transformOrigin: 'center center', willChange: 'transform, opacity' }}>
+    <motion.div ref={ref} style={isMobile ? {} : { opacity, scale, transformOrigin: 'center center', willChange: 'transform, opacity' }}>
       {children}
     </motion.div>
   )
@@ -272,8 +276,8 @@ export function BackToTop() {
 export function Footer() {
   return (
     <footer style={{ background:'#000000' }} className="border-t border-white/[0.04] relative overflow-hidden">
-      <div className="absolute pointer-events-none" style={{ width:'clamp(300px,38vw,520px)',height:'clamp(300px,38vw,520px)',borderRadius:'50%',top:'-30%',right:'10%',background:'radial-gradient(circle,rgba(124,58,237,0.075) 0%,transparent 65%)' }} />
-      <div className="absolute pointer-events-none" style={{ width:'clamp(220px,28vw,380px)',height:'clamp(220px,28vw,380px)',borderRadius:'50%',bottom:'-20%',left:'-5%',background:'radial-gradient(circle,rgba(255,75,143,0.052) 0%,transparent 65%)' }} />
+      <div className="absolute pointer-events-none" style={{ width:'clamp(300px,38vw,520px)',height:'clamp(300px,38vw,520px)',borderRadius:'50%',top:'-30%',right:'10%',background:'radial-gradient(circle,rgba(255,91,4,0.08) 0%,transparent 65%)' }} />
+      <div className="absolute pointer-events-none" style={{ width:'clamp(220px,28vw,380px)',height:'clamp(220px,28vw,380px)',borderRadius:'50%',bottom:'-20%',left:'-5%',background:'radial-gradient(circle,rgba(7,80,86,0.07) 0%,transparent 65%)' }} />
       <div className="max-w-[1200px] mx-auto px-[clamp(1.5rem,5vw,3.5rem)] pt-[clamp(3rem,6vw,5rem)] pb-[clamp(2rem,4vw,3rem)]">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-x-8 gap-y-12">
           <div className="flex flex-col gap-4">

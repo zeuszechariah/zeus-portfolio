@@ -140,7 +140,7 @@ function AboutIntro() {
       style={{ minHeight:'100svh', background:'#000000' }}>
 
       {/* Ambient glow — top-left */}
-      <div className="absolute pointer-events-none" style={{ width:'clamp(260px,30vw,420px)', height:'clamp(260px,30vw,420px)', borderRadius:'50%', top:'6%', left:'-6%', background:'radial-gradient(circle,rgba(255,75,143,0.085) 0%,rgba(124,58,237,0.07) 50%,transparent 70%)', filter:'blur(48px)', zIndex:0 }} />
+      <div className="absolute pointer-events-none" style={{ width:'clamp(260px,30vw,420px)', height:'clamp(260px,30vw,420px)', borderRadius:'50%', top:'6%', left:'-6%', background:'radial-gradient(circle,rgba(255,91,4,0.12) 0%,rgba(7,80,86,0.08) 50%,transparent 70%)', filter:'blur(48px)', zIndex:0 }} />
 
       <div className="relative z-[1] flex-1 flex flex-col w-full max-w-[1200px] mx-auto
                       px-[clamp(1.5rem,5vw,3.5rem)]">
@@ -393,7 +393,7 @@ function ContactForm() {
       style={{ background:'#000000' }}>
       <div className="absolute left-1/2 top-1/3 -translate-x-1/2 -translate-y-1/2 pointer-events-none"
         style={{ width:600, height:400,
-                 background:'radial-gradient(ellipse,rgba(124,58,237,0.06) 0%,transparent 65%)' }} />
+                 background:'radial-gradient(ellipse,rgba(255,91,4,0.09) 0%,transparent 65%)' }} />
 
       <div className="relative max-w-[1200px] mx-auto px-[clamp(1.5rem,5vw,3.5rem)]">
         <div className="mb-[clamp(3rem,6vw,5rem)]" ref={ref}>
