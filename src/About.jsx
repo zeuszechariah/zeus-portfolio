@@ -154,14 +154,14 @@ function AboutIntro() {
 
             {/* Synopsis label */}
             <Reveal>
-              <span className="font-mono text-[0.58rem] tracking-[0.16em] uppercase text-ink/28 mb-5 block">
+              <span className="font-mono text-[0.58rem] tracking-[0.16em] uppercase mb-5 block" style={{ color:'#C48A1A' }}>
                 Synopsis
               </span>
             </Reveal>
 
             {/* About heading — left-aligned */}
             <h1 className="font-sans font-semibold text-ink tracking-[-0.04em] leading-[0.92] mb-8"
-                style={{ fontSize:'clamp(2.25rem,5vw,4rem)' }}>
+                style={{ fontSize:'clamp(1.9rem,3.8vw,3rem)' }}>
               <MaskReveal>About</MaskReveal>
             </h1>
 
@@ -189,6 +189,13 @@ function AboutIntro() {
                 For me, vision, craft, systems, instinct and art are the forces behind
                 everything I make. My focus, hunger and desire for wisdom are what drive
                 me forward and keep me fulfilled.
+              </p>
+            </Reveal>
+
+            <Reveal delay={0.16}>
+              <p className="font-sans text-ink/55 leading-[1.85] mb-3"
+                style={{ fontSize:'clamp(0.75rem,0.88vw,0.825rem)' }}>
+                Humbled to receive:
               </p>
             </Reveal>
 
@@ -287,8 +294,8 @@ function AboutIntro() {
                       filter:        'blur(2px)',
                       zIndex:        3,
                     }} />
-                    <span className="font-mono text-[0.58rem] tracking-[0.16em] uppercase text-ink/28 block"
-                      style={{ position: 'relative', zIndex: 4, marginBottom: '16px' }}>
+                    <span className="font-mono text-[0.58rem] tracking-[0.16em] uppercase block"
+                      style={{ position: 'relative', zIndex: 4, marginBottom: '16px', color: '#C48A1A' }}>
                       {label}
                     </span>
                     <div style={{ position: 'relative', zIndex: 4 }}>
@@ -343,12 +350,12 @@ function Resume() {
 
           <div>
             <Reveal>
-              <span className="font-mono text-[0.625rem] tracking-[0.16em] uppercase text-ink/32 mb-5 block">
+              <span className="font-mono text-[0.625rem] tracking-[0.16em] uppercase mb-5 block" style={{ color:'#C48A1A' }}>
                 Experience
               </span>
             </Reveal>
             <h2 className="font-sans font-semibold text-ink tracking-[-0.04em] leading-[0.92] mb-6"
-                style={{ fontSize:'clamp(2.25rem,5vw,4rem)' }}>
+                style={{ fontSize:'clamp(1.9rem,3.8vw,3rem)' }}>
               <MaskReveal >My Resumè.</MaskReveal>
             </h2>
             <Reveal delay={0.1}>
@@ -393,17 +400,17 @@ function ContactForm() {
       style={{ background:'#000000' }}>
       <div className="absolute left-1/2 top-1/3 -translate-x-1/2 -translate-y-1/2 pointer-events-none"
         style={{ width:600, height:400,
-                 background:'radial-gradient(ellipse,rgba(255,91,4,0.09) 0%,transparent 65%)' }} />
+                 background:'radial-gradient(ellipse,rgba(7,80,86,0.18) 0%,transparent 65%)' }} />
 
       <div className="relative max-w-[1200px] mx-auto px-[clamp(1.5rem,5vw,3.5rem)]">
         <div className="mb-[clamp(3rem,6vw,5rem)]" ref={ref}>
           <Reveal>
-            <span className="font-mono text-[0.625rem] tracking-[0.16em] uppercase text-ink/32 mb-5 block">
-              Get in touch
+            <span className="font-mono text-[0.625rem] tracking-[0.16em] uppercase mb-5 block" style={{ color:'#C48A1A' }}>
+              Contact Form
             </span>
           </Reveal>
           <h2 className="font-sans font-semibold text-ink tracking-[-0.04em] leading-[0.92]"
-              style={{ fontSize:'clamp(2.25rem,5vw,4rem)' }}>
+              style={{ fontSize:'clamp(1.9rem,3.8vw,3rem)' }}>
             <MaskReveal >Got an idea?</MaskReveal>
             <MaskReveal  delay={0.1}>Let's connect.</MaskReveal>
           </h2>

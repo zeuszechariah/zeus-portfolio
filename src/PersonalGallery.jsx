@@ -137,12 +137,13 @@ function GalleryCanvas() {
       }
 
       for (let i=0;i<N;i++) {
-        const p=points[i], g=smoothGlow[i]
-        ctx.shadowBlur = 5 + g * 10
-        ctx.shadowColor = `rgba(255,165,0,${0.45 + g * 0.55})`
-        ctx.globalAlpha = 0.65 + g * 0.35
-        ctx.fillStyle = `rgb(${Math.round(180+g*75)},${Math.round(120+g*45)},${Math.round(0)})`
-        ctx.beginPath(); ctx.arc(p.x,p.y,0.8+g*1.2,0,Math.PI*2); ctx.fill()
+        const p=points[i], g=smoothGlow[i], inv=1-g
+        // Rest: white + subtle white glow → Hover: amber + orange glow (smooth interpolation)
+        ctx.shadowBlur  = 4 + g * 11
+        ctx.shadowColor = `rgba(255,${Math.round(255*inv+165*g)},${Math.round(255*inv)},${0.22+g*0.78})`
+        ctx.globalAlpha = 0.52 + g * 0.48
+        ctx.fillStyle   = `rgb(255,${Math.round(255*inv+165*g)},${Math.round(255*(1-g))})`
+        ctx.beginPath(); ctx.arc(p.x,p.y,1.1+g*0.9,0,Math.PI*2); ctx.fill()
       }
       ctx.shadowBlur=0; ctx.shadowColor='transparent'; ctx.globalAlpha=1
       rafId=requestAnimationFrame(loop)
@@ -572,7 +573,7 @@ export default function PersonalGallery() {
             fontSize:      '11px',
             letterSpacing: '0.20em',
             textTransform: 'uppercase',
-            color:         'rgba(242,237,228,0.34)',
+            color:         '#C48A1A',
             margin:        '0 0 16px',
           }}
         >
@@ -587,14 +588,14 @@ export default function PersonalGallery() {
             fontFamily:    "'Syne', sans-serif",
             fontSize:      'clamp(1.9rem, 3.8vw, 3rem)',
             fontWeight:    600,
-            color:         '#F2EDE4',
+            color:         '#edf1df',
             lineHeight:    1.08,
             margin:        '0 0 20px',
             letterSpacing: '-0.025em',
             maxWidth:      '20ch',
           }}
         >
-          Experience designer.<br />Experience collector.
+          Experience <em style={{ fontFamily:'"Lora", Georgia, serif', fontStyle:'italic', fontWeight:400, fontSize:'1.08em' }}>designer.</em><br />Experience <em style={{ fontFamily:'"Lora", Georgia, serif', fontStyle:'italic', fontWeight:400, fontSize:'1.08em' }}>collector.</em>
         </motion.h2>
 
         <motion.p

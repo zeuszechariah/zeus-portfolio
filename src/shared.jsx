@@ -25,7 +25,7 @@ export function HeroButton({ children, onClick, href, target, rel, type }) {
         alignItems:     'center',
         justifyContent: 'center',
         borderRadius:   '100px',
-        border:         '1px solid rgba(255,255,255,0.12)',
+        border:         'none',
         fontFamily:     "'Syne', sans-serif",
         fontWeight:     500,
         fontSize:       '0.875rem',
@@ -47,6 +47,32 @@ export function HeroButton({ children, onClick, href, target, rel, type }) {
       onMouseDown={() => setPress(true)}
       onMouseUp={() => setPress(false)}
     >
+      {/* Liquid metal iridescent ring */}
+      <span aria-hidden="true" style={{
+        position:             'absolute',
+        inset:                0,
+        borderRadius:         'inherit',
+        padding:              '1px',
+        background:           `conic-gradient(from var(--lm-angle),
+          rgba(255,255,255,0.95) 0deg,
+          rgba(180,188,200,0.80) 35deg,
+          rgba(100,110,125,0.60) 70deg,
+          rgba(210,215,225,0.85) 105deg,
+          rgba(255,255,255,0.98) 140deg,
+          rgba(160,168,180,0.70) 175deg,
+          rgba(80,88,100,0.45)   210deg,
+          rgba(220,224,232,0.80) 250deg,
+          rgba(255,255,255,0.90) 290deg,
+          rgba(190,196,208,0.65) 325deg,
+          rgba(255,255,255,0.95) 360deg
+        )`,
+        animation:            'liquid-metal 5s linear infinite',
+        WebkitMask:           'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
+        WebkitMaskComposite:  'xor',
+        maskComposite:        'exclude',
+        pointerEvents:        'none',
+        zIndex:               0,
+      }} />
       {/* Top-left rim hot-spot */}
       <span aria-hidden="true" style={{
         position:     'absolute',
@@ -98,7 +124,7 @@ export function MaskReveal({ children, delay = 0, duration = 0.75, className = '
   const inView       = useInView(ref, { once: true, amount: 0.15 })
   const reducedMotion = useReducedMotion()
   return (
-    <div ref={ref} style={{ overflow:'hidden', display:'block', paddingBottom:'0.18em', marginBottom:'-0.18em' }} className={className}>
+    <div ref={ref} style={{ overflow:'hidden', display:'block', paddingBottom:'0.32em', marginBottom:'-0.32em' }} className={className}>
       <motion.span
         style={{ display:'inline-block', willChange:'transform' }}
         initial={{ y: reducedMotion ? '0%' : '110%' }}

@@ -16,16 +16,17 @@ const Aadhaar      = lazy(() => import('./Aadhaar.jsx'))
 const CloutCart    = lazy(() => import('./CloutCart.jsx'))
 const Skippr       = lazy(() => import('./Skippr.jsx'))
 const Dokitti      = lazy(() => import('./Dokitti.jsx'))
+const Staple       = lazy(() => import('./Staple.jsx'))
 
 const PROJECTS = [
-  { id:1, name:'Study Buddy',    desc:'Habit-building for Indian students who study hard but retain little.', color:'from-[#061528] via-[#0f2d52] to-[#1b4a8a]', slug:'/work/study-buddy',  filterKeys:['ux','system']  },
-  { id:2, name:'Get Set Globe',  desc:'Earth science you feel, not just memorise.', color:'from-[#050f08] via-[#0b2e16] to-[#135728]', slug:'/work/get-set-globe', filterKeys:['ux']          },
-  { id:3, name:'Skippr',         desc:'A clip-on self-checkout for every cart. Skip the queue, keep the flow.', color:'from-[#020d0f] via-[#043d47] to-[#0b7c8c]', slug:'/work/skippr', filterKeys:['ux'] },
-  { id:4, name:'Hanakasu',       desc:'Understanding financial literacy and scam resilience amongst semi-literate users.', color:'from-[#040409] via-[#0e0e30] to-[#1a1060]', slug:'/work/finance',      filterKeys:['research']     },
-  { id:5, name:'Aadhaar Vihin', desc:'Designing for the urgency of needing identity proof when your Aadhaar card is not with you.', color:'from-[#0A1E1E] via-[#075959] to-[#0D7878]',  slug:'/work/aadhaar',      filterKeys:['research']     },
-  { id:6, name:'CloutCart',      desc:'Vibe-led matchmaking for brands and creators.', color:'from-[#1A0A2E] via-[#3B0764] to-[#6D28D9]',  slug:'/work/cloutcart',    filterKeys:['system']       },
-  { id:7, name:'Dokitti',        desc:'A mascot brand built on personality and play.', color:'from-[#130410] via-[#3d0b2e] to-[#8c1b66]',  slug:'/work/dokitti', filterKeys:['branding']    },
-  { id:8, name:'Staple',         desc:'Visual identity for a neighbourhood cafe that felt like home.', color:'from-[#0f0a04] via-[#3d2008] to-[#8c5414]', filterKeys:['branding']    },
+  { id:1, name:'Study Buddy',    desc:'Habit-building for Indian students who study hard but retain little.', color:'from-[#061528] via-[#0f2d52] to-[#1b4a8a]', thumb:'/thumb-studybuddy.svg', thumbOverlay:'/thumb-studybuddy.png', slug:'/work/study-buddy',  filterKeys:['ux','system']  },
+  { id:2, name:'Get Set Globe',  desc:'Earth science you feel, not just memorise.', color:'from-[#050f08] via-[#0b2e16] to-[#135728]', thumb:'/thumb-getsetglobe.svg', thumbOverlay:'/thumb-gsg.png', slug:'/work/get-set-globe', filterKeys:['ux']          },
+  { id:3, name:'Skippr',         desc:'A clip-on self-checkout for every cart. Skip the queue, keep the flow.', color:'from-[#020d0f] via-[#043d47] to-[#0b7c8c]', thumb:'/thumb-skippr.svg', thumbOverlay:'/thumb-skippr.png', slug:'/work/skippr', filterKeys:['ux'] },
+  { id:4, name:'Hanakasu',       desc:'Understanding financial literacy and scam resilience amongst semi-literate users.', color:'from-[#040409] via-[#0e0e30] to-[#1a1060]', thumb:'/thumb-hanakasu.svg', thumbOverlay:'/thumb-hanakasu.png', slug:'/work/finance',      filterKeys:['research']     },
+  { id:5, name:'Aadhaar Vihin',  desc:'Designing for the urgency of needing identity proof when your Aadhaar card is not with you.', color:'from-[#0A1E1E] via-[#075959] to-[#0D7878]', thumb:'/thumb-aadhaar.svg',  slug:'/work/aadhaar',      filterKeys:['research']     },
+  { id:6, name:'CloutCart',      desc:'Vibe-led matchmaking for brands and creators.', color:'from-[#1A0A2E] via-[#3B0764] to-[#6D28D9]', thumb:'/thumb-cloutcart.svg',  slug:'/work/cloutcart',    filterKeys:['system']       },
+  { id:7, name:'Dokitti',        desc:'A pet care brand built on personality and play.', color:'from-[#130410] via-[#3d0b2e] to-[#8c1b66]', thumb:'/thumb-dokitti.svg',  slug:'/work/dokitti', filterKeys:['branding']    },
+  { id:8, name:'Staple',         desc:'Visual identity for a restaurant at Greater Kailash, New Delhi.', color:'from-[#0f0a04] via-[#3d2008] to-[#8c5414]', thumb:'/thumb-staple.svg', slug:'/work/staple', filterKeys:['branding']    },
 ]
 
 const FILTER_TABS = [
@@ -40,17 +41,21 @@ const FILTER_TABS = [
 const VITALS = [
   { stat:'06+',  label:'Years in Design',         desc:'Academic + Professional\njourney' },
   { stat:'80%',  label:'Time in Design Thinking', desc:'Discussions, sticky notes, mind-maps and more' },
-  { stat:'20%',  label:'Time in Making',          desc:'Headphones and shifting\npixels' },
+  { stat:'20%',  label:'Time in Making',          desc:'Music, prompting and shifting\npixels' },
   { stat:'100%', label:'Zeal',                    desc:'Trying my best (guaranteed)\n:)' },
 ]
 
 // Brand logos — whitened via CSS filter brightness(0) invert(1)
 // hasBg: true = PNG with white/light bg, needs mix-blend-mode:screen to kill it
 const BRANDS = [
-  { id:1, name:'Fosite',     src: '/logos/fosite.png',                                                     label:'Fosite Co., Bengaluru',                       year:'2023–24', hasBg: false, maxH: 80 },
-  { id:2, name:'GIZ',        src: 'https://www.giz.de/themes/custom/dreist/build/giz-logo-with-claim.svg', label:'German Intl. Cooperation, New Delhi', year:'2023',    hasBg: false, maxH: 38 },
-  { id:3, name:'ADI',        src: '/logos/adi.svg',                                                        label:'Association of Designers, BLR Chapter',        year:'2022',    hasBg: false, maxH: 38 },
-  { id:4, name:'Tata Elxsi', src: '/logos/tata-elxsi.svg',                                                 label:'Tata Elxsi Ltd., Bengaluru',                   year:'2022',    hasBg: false, maxH: 38 },
+  { id:1, name:'Fosite',     src: '/logos/fosite.png',                                                     label:'Fosite Co., Bengaluru',                        year:'2023–24',      hasBg: false, maxH: 80 },
+  { id:2, name:'GIZ',        src: 'https://www.giz.de/themes/custom/dreist/build/giz-logo-with-claim.svg', label:'German Intl. Cooperation, New Delhi',          year:'2023',         hasBg: false, maxH: 38 },
+  { id:3, name:'ADI',        src: '/logos/adi.svg',                                                        label:'Association of Designers, BLR Chapter',        year:'2022',         hasBg: false, maxH: 38 },
+  { id:4, name:'Tata Elxsi', src: '/logos/tata-elxsi.svg',                                                 label:'Tata Elxsi Ltd., Bengaluru',                   year:'2022',         hasBg: false, maxH: 38 },
+  { id:5, name:'NID',        src: '/logos/nid.png',                                                        label:'National Institute of Design, Bengaluru',     year:'2024–present', hasBg: false, maxH: 44, topAlign: true },
+  { id:6, name:'HTW Berlin', src: '/logos/htw.png',                                                        label:'HTW University of Applied Sciences, Berlin',  year:'2025–26',      hasBg: false, maxH: 44, topAlign: true },
+  { id:7, name:'Srishti',    src: '/logos/srishti.png',                                                    label:'Srishti Inst. of Art Design & Technology, Bengaluru', year:'2019–23', hasBg: false, maxH: 140, topAlign: true, nudgeUp: 18 },
+  { id:8, name:'TISD',       src: '/logos/tisd.png',                                                       label:"India's Best Design Student Award, Pune",     year:'2025',         hasBg: false, maxH: 32, topAlign: true },
 ]
 
 // ─── Stagger List ─────────────────────────────────────
@@ -368,6 +373,13 @@ function Hero() {
       }} />
 
       {/* Film grain */}
+      <div aria-hidden="true" style={{
+        position: 'absolute', inset: 0, zIndex: 3, pointerEvents: 'none',
+        backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='250' height='250'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.72' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='250' height='250' filter='url(%23g)'/%3E%3C/svg%3E\")",
+        backgroundSize: '220px 220px',
+        opacity: 0.045,
+        mixBlendMode: 'overlay',
+      }} />
 
       {/* Content — centred column */}
       <div style={{
@@ -408,7 +420,7 @@ function Hero() {
           transition={{ duration:0.80, delay:0.40, ease:EASE }}
           style={{ display:'flex', flexDirection:'column', alignItems:'flex-start' }}
         >
-          {/* "creating what" — Syne medium, -10 tracking */}
+          {/* "creating what" — Syne medium */}
           <span style={{
             fontFamily:    "'Syne', sans-serif",
             fontWeight:    500,
@@ -420,15 +432,15 @@ function Hero() {
           }}>
             creating what
           </span>
-          {/* "endures" — Halo Grotesk regular, 0 tracking */}
+          {/* "endures" — Halo Grotesk platinum stroke */}
           <span style={{
-            fontFamily:    "'Halo Grotesk', sans-serif",
-            fontWeight:    400,
-            fontSize:      'clamp(38px, 6.73vw, 96.93px)',
-            letterSpacing: '0',
-            lineHeight:    1,
-            color:         '#edf1df',
-            display:       'block',
+            fontFamily:          "'Halo Grotesk', sans-serif",
+            fontWeight:          400,
+            fontSize:            'clamp(38px, 6.73vw, 96.93px)',
+            letterSpacing:       '0',
+            lineHeight:          1,
+            display:             'block',
+            color:               '#edf1df',
           }}>
             endures
           </span>
@@ -442,14 +454,14 @@ function Hero() {
           style={{
             fontFamily:    "'Syne', sans-serif",
             fontWeight:    300,
-            fontSize:      'clamp(0.75rem, 1vw, 0.875rem)',
+            fontSize:      'clamp(0.95rem, 1.4vw, 1.15rem)',
             color:         'rgba(255,255,255,0.36)',
             lineHeight:    1.6,
             margin:        'clamp(3rem, 6vw, 5.5rem) 0 0',
             letterSpacing: '0.01em',
           }}
         >
-          Hi, I'm Zeus, a hearty welcome here!
+          Hi I'm <span style={{ fontWeight: 600, color: '#ffffff' }}>Zeus</span><br /><em style={{ fontFamily:'"Lora", Georgia, serif', fontStyle:'italic', fontWeight:400 }}>A hearty welcome here!</em>
         </motion.p>
 
         {/* CTA */}
@@ -477,13 +489,25 @@ function ProjectCard({ project, delay = 0 }) {
     <TiltCard className="h-full flex flex-col rounded-[18px] overflow-hidden cursor-pointer border border-black/[0.07]" style={{ background:'#EAEAEA' }}>
       <div className="relative overflow-hidden flex-shrink-0" style={{ aspectRatio:'2/3', background: project.thumbBg || undefined }}>
         {project.thumb ? (
-          <img src={project.thumb} alt={project.name} loading="lazy" decoding="async"
-            className="absolute inset-0 w-full h-full transition-transform duration-700 group-hover:scale-[1.03]"
-            style={{ objectFit: project.thumbBg ? 'contain' : 'cover', objectPosition: project.thumbPos || '50% 50%', filter: project.thumbFilter || undefined }} />
+          <>
+            <img src={project.thumb} alt={project.name} loading="lazy" decoding="async"
+              className="absolute inset-0 w-full h-full transition-transform duration-700 group-hover:scale-[1.03]"
+              style={{ objectFit: project.thumbBg ? 'contain' : 'cover', objectPosition: project.thumbPos || '50% 50%', filter: project.thumbFilter || (project.thumbOverlay ? 'saturate(0.45)' : undefined) }} />
+            {project.thumbOverlay && (
+              <img src={project.thumbOverlay} alt="" aria-hidden="true" loading="lazy" decoding="async"
+                className="absolute bottom-0 left-0 w-full transition-transform duration-700 group-hover:scale-[1.03]"
+                style={{ height:'auto', zIndex:2 }} />
+            )}
+          </>
         ) : (
           <>
             <div className={`absolute inset-0 bg-gradient-to-br ${project.color} transition-transform duration-700 group-hover:scale-[1.03]`} />
-            <motion.div className="absolute bottom-[-4%] left-0 right-0 flex justify-center pointer-events-none" style={{ y:sMockupY, zIndex:2 }}
+            {project.thumbOverlay && (
+              <img src={project.thumbOverlay} alt={project.name} loading="lazy" decoding="async"
+                className="absolute bottom-0 left-0 w-full transition-transform duration-700 group-hover:scale-[1.03]"
+                style={{ height:'auto', zIndex:2, objectFit:'contain', objectPosition:'bottom center' }} />
+            )}
+            {!project.thumbOverlay && <motion.div className="absolute bottom-[-4%] left-0 right-0 flex justify-center pointer-events-none" style={{ y:sMockupY, zIndex:2 }}
               onMouseEnter={()=>mockupY.set(-12)} onMouseLeave={()=>mockupY.set(0)}>
               <div className="w-[72%] max-w-[300px]" style={{ filter:'drop-shadow(0 18px 48px rgba(0,0,0,0.75))' }}>
                 <div className="rounded-t-[7px] rounded-b-[2px] border border-b-0 border-white/[0.1] px-[3.5%] pt-[5%] pb-[2%] relative" style={{ background:'linear-gradient(175deg,#252525 0%,#1c1c1c 100%)' }}>
@@ -504,7 +528,7 @@ function ProjectCard({ project, delay = 0 }) {
                   <div className="w-[28%] h-[4px] rounded mx-auto border" style={{ background:'rgba(255,255,255,0.04)',borderColor:'rgba(255,255,255,0.05)' }} />
                 </div>
               </div>
-            </motion.div>
+            </motion.div>}
           </>
         )}
       </div>
@@ -727,12 +751,13 @@ function Work() {
         <div className="flex items-end justify-between mb-[clamp(2rem,4vw,3rem)] gap-6 flex-wrap">
           <div>
             <Reveal>
-              <span className="flex items-center gap-2.5 font-mono text-[0.625rem] tracking-[0.16em] uppercase text-black/30 mb-5">
+              <span className="flex items-center gap-2.5 font-mono text-[0.625rem] tracking-[0.16em] uppercase mb-5" style={{ color:'#C48A1A' }}>
                 <span className="inline-block w-4 h-[1px] bg-black/18" />Work
               </span>
             </Reveal>
-            <h2 className="font-sans font-semibold text-black tracking-[-0.04em] leading-[0.93]" style={{ fontSize:'clamp(2.5rem,6vw,5rem)' }}>
-              <MaskReveal>Select Projects</MaskReveal>
+            <h2 className="font-sans font-semibold text-black tracking-[-0.04em] leading-[0.82]" style={{ fontSize:'clamp(1.9rem,3.8vw,3rem)', paddingBottom:'0.12em' }}>
+              <MaskReveal>Select</MaskReveal>
+              <div style={{ marginTop:'-0.18em' }}><MaskReveal delay={0.08}><em style={{ fontFamily:'"Lora", Georgia, serif', fontStyle:'italic', fontWeight:500, fontSize:'1.08em' }}>Projects</em></MaskReveal></div>
             </h2>
           </div>
 
@@ -818,12 +843,18 @@ function VitalStatCell({ v, index }) {
       textAlign:       'center',
       padding:         'clamp(1.75rem,3vw,2.5rem) clamp(1rem,2vw,1.5rem)',
     }}>
-      <p className="font-sans font-semibold text-ink leading-none tracking-[-0.03em]"
-        style={{ position:'relative', zIndex:4, fontSize:'clamp(2.2rem,4vw,3.5rem)', marginBottom:'0.4rem' }}>{display}</p>
-      <p className="font-display italic text-ink"
-        style={{ position:'relative', zIndex:4, fontSize:'clamp(0.75rem,1.1vw,0.95rem)', lineHeight:1.3, marginBottom:'0.3rem' }}>{v.label}</p>
+      <p className="font-sans font-semibold leading-none tracking-[-0.03em]"
+        style={{
+          position:              'relative', zIndex: 4,
+          fontSize:              'clamp(2.2rem,4vw,3.5rem)',
+          marginBottom:          '0.4rem',
+          color:                 '#edf1df',
+        }}>{display}</p>
+      <p className="font-display italic"
+        style={{ position:'relative', zIndex:4, fontSize:'clamp(0.875rem,1.3vw,1.1rem)', lineHeight:1.3, marginBottom:'0.75rem', color:'rgba(255,91,4,0.62)' }}>{v.label}</p>
+      <div style={{ width:'28px', height:'1px', background:'#195D5F', margin:'0 auto 0.75rem', position:'relative', zIndex:4 }} />
       <p className="font-sans text-ink/35"
-        style={{ position:'relative', zIndex:4, fontSize:'clamp(0.58rem,0.75vw,0.7rem)', lineHeight:1.55, whiteSpace:'pre-line' }}>{v.desc}</p>
+        style={{ position:'relative', zIndex:4, fontSize:'clamp(0.72rem,0.9vw,0.85rem)', lineHeight:1.55, whiteSpace:'pre-line' }}>{v.desc}</p>
     </div>
   )
 }
@@ -835,12 +866,12 @@ function VitalSigns() {
       <div className="max-w-[1200px] mx-auto px-[clamp(1.5rem,5vw,3.5rem)]">
         <div className="mb-[clamp(3rem,5vw,4rem)]">
           <Reveal>
-            <span className="flex items-center gap-2.5 font-mono text-[0.625rem] tracking-[0.16em] uppercase text-ink/32 mb-5">
+            <span className="flex items-center gap-2.5 font-mono text-[0.625rem] tracking-[0.16em] uppercase mb-5" style={{ color:'#C48A1A' }}>
               <span className="inline-block w-4 h-[1px] bg-ink/18" />(Not so) Vital Signs
             </span>
           </Reveal>
           <h2 className="font-sans font-semibold text-ink tracking-[-0.04em] leading-[0.92]"
-              style={{ fontSize:'clamp(2.5rem,6vw,5rem)' }}>
+              style={{ fontSize:'clamp(1.9rem,3.8vw,3rem)' }}>
             <MaskReveal>Distilled</MaskReveal>
             <MaskReveal delay={0.08}><em className="font-display" style={{ fontStyle:'italic', fontWeight: 400, fontSize:'1.08em' }}>to digits</em></MaskReveal>
           </h2>
@@ -861,13 +892,13 @@ function ProfessionalExposure() {
       <div className="max-w-[1200px] mx-auto px-[clamp(1.5rem,5vw,3.5rem)]">
         <div className="mb-[clamp(3.5rem,6vw,5rem)]">
           <Reveal>
-            <span className="flex items-center gap-2.5 font-mono text-[0.625rem] tracking-[0.16em] uppercase text-ink/32 mb-5">
-              <span className="inline-block w-4 h-[1px] bg-ink/18" />Brands & Studios
+            <span className="flex items-center gap-2.5 font-mono text-[0.625rem] tracking-[0.16em] uppercase mb-5" style={{ color:'#C48A1A' }}>
+              <span className="inline-block w-4 h-[1px] bg-ink/18" />organisations
             </span>
           </Reveal>
-          <h2 className="font-sans font-semibold text-ink tracking-[-0.04em] leading-[0.92]" style={{ fontSize:'clamp(2.5rem,6vw,5rem)' }}>
-            <MaskReveal>Professional</MaskReveal>
-            <MaskReveal delay={0.1}>Exposure</MaskReveal>
+          <h2 className="font-sans font-semibold text-ink tracking-[-0.04em] leading-[0.92]" style={{ fontSize:'clamp(1.9rem,3.8vw,3rem)' }}>
+            <MaskReveal><em style={{ fontFamily:'"Lora", Georgia, serif', fontStyle:'italic', fontWeight:400, fontSize:'1.05em' }}>Proud</em></MaskReveal>
+            <MaskReveal delay={0.1}>Associations</MaskReveal>
           </h2>
           <Reveal delay={0.15}>
             <p className="font-sans text-ink/40 leading-[1.8] mt-5 max-w-[44ch]" style={{ fontSize:'clamp(0.875rem,1.1vw,0.9375rem)' }}>
@@ -877,16 +908,26 @@ function ProfessionalExposure() {
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-          {BRANDS.map(({ id, name, src, label, year, hasBg, maxH }, i) => (
-            <Reveal key={id} delay={i * 0.09}
-              className="flex flex-col items-center justify-center gap-4 p-[clamp(1.5rem,3vw,2rem)] cursor-default"
+          {BRANDS.map(({ id, name, src, label, year, hasBg, maxH, clipH, topAlign, nudgeUp }, i) => (
+            <Reveal key={id} delay={i * 0.07}
+              className={`flex flex-col items-center gap-4 p-[clamp(1rem,2vw,1.5rem)] cursor-default ${topAlign ? 'justify-start' : 'justify-center'}`}
             >
-              <div className="w-full flex items-center justify-center" style={{ minHeight: 56 }}>
-                <img src={src} alt={name}
-                  style={{ maxWidth:'85%', height:'auto', maxHeight: maxH,
-                    filter:'brightness(0) invert(1)', opacity: 0.72,
-                    mixBlendMode: hasBg ? 'screen' : 'normal',
-                    display: 'block' }} />
+              <div className="w-full flex items-center justify-center" style={{ height: topAlign ? 150 : undefined, minHeight: topAlign ? undefined : 56 }}>
+                {clipH ? (
+                  <div style={{ overflow:'hidden', height: clipH, display:'flex', alignItems:'center', justifyContent:'center', maxWidth:'85%' }}>
+                    <img src={src} alt={name}
+                      style={{ height: maxH, width:'auto',
+                        filter:'brightness(0) invert(1)', opacity: 0.72,
+                        mixBlendMode: hasBg ? 'screen' : 'normal',
+                        display: 'block', flexShrink: 0 }} />
+                  </div>
+                ) : (
+                  <img src={src} alt={name}
+                    style={{ maxWidth:'85%', height:'auto', maxHeight: maxH, transform: nudgeUp ? `translateY(-${nudgeUp}px)` : undefined,
+                      filter:'brightness(0) invert(1)', opacity: 0.72,
+                      mixBlendMode: hasBg ? 'screen' : 'normal',
+                      display: 'block' }} />
+                )}
               </div>
               <div className="flex flex-col items-center gap-[6px]">
                 <span className="font-mono text-[0.52rem] tracking-[0.08em] uppercase text-ink/14 text-center leading-[1.5]"
@@ -990,13 +1031,13 @@ function MarqueeGallery() {
       {/* Section header */}
       <div className="relative z-20 max-w-[1200px] mx-auto px-[clamp(1.5rem,5vw,3.5rem)] mb-[clamp(2.5rem,5vw,4rem)]">
         <Reveal>
-          <span className="flex items-center gap-2.5 font-mono text-[0.625rem] tracking-[0.16em] uppercase text-ink/32 mb-5">
+          <span className="flex items-center gap-2.5 font-mono text-[0.625rem] tracking-[0.16em] uppercase mb-5" style={{ color:'#C48A1A' }}>
             <span className="inline-block w-4 h-[1px] bg-ink/18" />showcase of other projects
           </span>
         </Reveal>
         <MaskReveal>
           <h2 className="font-sans font-semibold text-ink tracking-[-0.04em] leading-[0.92]"
-            style={{ fontSize:'clamp(2.5rem,6vw,5rem)' }}>
+            style={{ fontSize:'clamp(1.9rem,3.8vw,3rem)' }}>
             Glimpses
           </h2>
         </MaskReveal>
@@ -1034,16 +1075,15 @@ function MarqueeGallery() {
         <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none" style={{ width:800,height:500,background:'radial-gradient(ellipse,rgba(255,91,4,0.13) 0%,transparent 62%)' }} />
         <div className="relative max-w-[1200px] mx-auto px-[clamp(1.5rem,5vw,3.5rem)]">
           <Reveal>
-            <span className="flex items-center justify-center gap-2.5 font-mono text-[0.625rem] tracking-[0.16em] uppercase text-ink/32 mb-8">
+            <span className="flex items-center justify-center gap-2.5 font-mono text-[0.625rem] tracking-[0.16em] uppercase mb-8" style={{ color:'#C48A1A' }}>
               <span className="inline-block w-4 h-[1px] bg-ink/18" />Let's work together
             </span>
           </Reveal>
-          <h2 className="font-sans font-semibold text-ink tracking-[-0.04em] leading-[0.95] mb-14" style={{ fontSize:'clamp(2.75rem,7vw,6.5rem)' }}>
+          <h2 className="font-sans font-semibold text-ink tracking-[-0.04em] leading-[0.95] mb-14" style={{ fontSize:'clamp(1.9rem,3.8vw,3rem)' }}>
             <MaskReveal>Got a project?</MaskReveal>
-            <MaskReveal delay={0.1}><em className="font-display" style={{ fontStyle:'italic', fontWeight: 400, fontFamily:'"EB Garamond", Georgia, serif', fontSize:'1.08em' }}>Let's talk.</em></MaskReveal>
+            <MaskReveal delay={0.1}><em className="font-display" style={{ fontStyle:'italic', fontWeight: 400, fontFamily:'"Lora", Georgia, serif', fontSize:'1.08em' }}>Let's talk.</em></MaskReveal>
           </h2>
-          <Reveal delay={0.12} className="flex items-center justify-center gap-3 flex-wrap">
-            <HeroButton href="mailto:zeusbatkhar.2000@gmail.com">Get in touch ↗</HeroButton>
+          <Reveal delay={0.12} className="flex items-center justify-center">
             <HeroButton href="https://www.linkedin.com/in/zeusbatkhar" target="_blank" rel="noopener noreferrer">LinkedIn ↗</HeroButton>
           </Reveal>
         </div>
@@ -1126,6 +1166,7 @@ function AppRoutes() {
           <Route path="/work/cloutcart" element={<CloutCart />} />
           <Route path="/work/skippr"   element={<Skippr />} />
           <Route path="/work/dokitti"  element={<Dokitti />} />
+          <Route path="/work/staple"   element={<Staple />} />
         </Routes>
       </Suspense>
     </motion.div>

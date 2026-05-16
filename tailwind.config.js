@@ -4,14 +4,14 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        display: ['"Cormorant Garamond"', 'Georgia', 'serif'],
+        display: ['"Lora"', 'Georgia', 'serif'],
         mono:    ['"Space Mono"', 'monospace'],
         sans:    ['Syne', '"Helvetica Neue"', 'sans-serif'],
       },
       colors: {
         bg:     '#000000',
         surface:'#000000',
-        ink:    '#F2EDE4',
+        ink:    '#edf1df',
         muted:  'rgba(242,237,228,0.4)',
         pink:   '#FF4B8F',
         purple: '#7C3AED',

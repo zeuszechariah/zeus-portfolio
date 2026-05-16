@@ -10,6 +10,16 @@
   font-display: swap;
 }
 
+/* ── Liquid metal ring ───────────────────────────────── */
+@property --lm-angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+@keyframes liquid-metal {
+  to { --lm-angle: 360deg; }
+}
+
 /* ── Global ─────────────────────────────────────────── */
 *, *::before, *::after { box-sizing: border-box; }
 html { scroll-behavior: smooth; overflow-x: hidden; }
@@ -210,7 +220,7 @@ body::before {
 /* ── Font variables ────────────────────────────────── */
 :root {
   --font-sans:  'Syne', 'Helvetica Neue', sans-serif;
-  --font-serif: 'EB Garamond', Georgia, serif;
+  --font-serif: 'Lora', Georgia, serif;
 }
 
 /* ── Hero section ──────────────────────────────────── */
@@ -267,7 +277,7 @@ body::before {
 }
 
 .hero-words {
-  font-family: 'EB Garamond', Georgia, serif;
+  font-family: 'Lora', Georgia, serif;
   font-size: clamp(56px, 6.5vw, 88px);
   font-weight: 400;
   line-height: 1.04;

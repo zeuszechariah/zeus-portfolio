@@ -98,11 +98,12 @@ export default function WhatIDo() {
       })
 
       // ── Phase 0 (0 → 0.22): Strip breath ────────────────────────────────────
-      gsap.set('.wid-strip', { scale: 1.18 })
-      tl.to('.wid-strip', { scale: 1.00, duration: 0.22, ease: 'power2.inOut' }, 0)
+      gsap.set('.wid-strip, .wid-hand', { scale: 1.05 })
+      tl.to('.wid-strip, .wid-hand', { scale: 1.00, duration: 0.22, ease: 'power2.inOut' }, 0)
 
       // ── Phase 1 (0.32 → 0.68): Cards break from image — upright, no tilt ────
       // x separation only; fan rotation is deferred to the flip phase
+      tl.to('.wid-hand', { opacity: 0, duration: 0.36, ease: 'power2.inOut' }, 0.32)
       tl.to('.wid-c0', { x: -34, duration: 0.36, ease: 'power1.inOut' }, 0.32)
       tl.to('.wid-c2', { x:  34, duration: 0.36, ease: 'power1.inOut' }, 0.32)
       tl.to(['.wid-c0 .wid-front', '.wid-c1 .wid-front', '.wid-c2 .wid-front'], {
@@ -138,7 +139,7 @@ export default function WhatIDo() {
     return () => ctx.revert()
   }, [])
 
-  const topY = Math.round((STACK_H - CH) / 2) - 36
+  const topY = Math.round((STACK_H - CH) / 2) - 62
 
   return (
     <section
@@ -154,12 +155,29 @@ export default function WhatIDo() {
         position:       'relative',
       }}
     >
+      {/* Hand holding the card — RHS (hidden for now, keep asset) */}
+      {/* <img
+        src="/hand.png"
+        aria-hidden="true"
+        className="wid-hand"
+        style={{
+          position:      'absolute',
+          right:         '-4%',
+          bottom:        '-38%',
+          height:        '170%',
+          width:         'auto',
+          zIndex:        2,
+          pointerEvents: 'none',
+          userSelect:    'none',
+        }}
+      /> */}
+
       {/* Grid background — fades at top and bottom via mask */}
       <div aria-hidden="true" style={{
         position:   'absolute', inset: 0,
         backgroundImage: [
-          'linear-gradient(rgba(255,255,255,0.055) 1px, transparent 1px)',
-          'linear-gradient(90deg, rgba(255,255,255,0.055) 1px, transparent 1px)',
+          'linear-gradient(rgba(255,255,255,0.12) 1px, transparent 1px)',
+          'linear-gradient(90deg, rgba(255,255,255,0.12) 1px, transparent 1px)',
         ].join(', '),
         backgroundSize: '44px 44px',
         WebkitMaskImage: 'linear-gradient(to bottom, transparent 0%, black 22%, black 78%, transparent 100%)',
@@ -173,7 +191,7 @@ export default function WhatIDo() {
           fontSize:      '11px',
           letterSpacing: '0.20em',
           textTransform: 'uppercase',
-          color:         'rgba(242,237,228,0.34)',
+          color:         '#C48A1A',
           margin:        '0 0 16px',
         }}>
           What I Do
@@ -183,12 +201,12 @@ export default function WhatIDo() {
           fontFamily:    "'Syne', sans-serif",
           fontSize:      'clamp(1.9rem, 3.8vw, 3rem)',
           fontWeight:    600,
-          color:         '#F2EDE4',
+          color:         '#edf1df',
           lineHeight:    1.08,
           margin:        '0 0 80px',
           letterSpacing: '-0.025em',
         }}>
-          What I bring to the table
+          What I bring to<br /><em style={{ fontFamily:'"Lora", Georgia, serif', fontStyle:'italic', fontWeight:400 }}>the table</em>
         </h2>
 
         <div style={{
@@ -266,7 +284,7 @@ export default function WhatIDo() {
                     <span style={{
                       position:      'relative',
                       zIndex:        2,
-                      fontFamily:    "'EB Garamond', Georgia, serif",
+                      fontFamily:    "'Lora', Georgia, serif",
                       fontStyle:     'italic',
                       fontWeight:    400,
                       fontSize:      'clamp(5rem, 9vw, 7.5rem)',
@@ -318,7 +336,7 @@ export default function WhatIDo() {
                       fontFamily:    "'Syne', sans-serif",
                       fontSize:      '28px',
                       fontWeight:    700,
-                      color:         '#F2EDE4',
+                      color:         '#edf1df',
                       lineHeight:    1.12,
                       margin:        '0 0 18px',
                       letterSpacing: '-0.025em',
