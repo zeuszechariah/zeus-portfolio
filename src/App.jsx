@@ -142,7 +142,7 @@ function VideoIntro({ onComplete }) {
         transform: 'translate(-50%, -50%)',
         width: '75%', height: '75%', overflow: 'hidden',
       }}>
-        <video ref={videoRef} autoPlay muted playsInline preload="auto"
+        <video ref={videoRef} autoPlay muted playsInline preload="metadata"
           style={{ width: '100%', height: '100%', objectFit: 'cover' }}
           src="/headervideo.mp4" />
         {/* Hue overlay — cycles teal ↔ orange every 1.5s */}
@@ -915,14 +915,14 @@ function ProfessionalExposure() {
               <div className="w-full flex items-center justify-center" style={{ height: topAlign ? 150 : undefined, minHeight: topAlign ? undefined : 56 }}>
                 {clipH ? (
                   <div style={{ overflow:'hidden', height: clipH, display:'flex', alignItems:'center', justifyContent:'center', maxWidth:'85%' }}>
-                    <img src={src} alt={name}
+                    <img src={src} alt={name} loading="lazy" decoding="async"
                       style={{ height: maxH, width:'auto',
                         filter:'brightness(0) invert(1)', opacity: 0.72,
                         mixBlendMode: hasBg ? 'screen' : 'normal',
                         display: 'block', flexShrink: 0 }} />
                   </div>
                 ) : (
-                  <img src={src} alt={name}
+                  <img src={src} alt={name} loading="lazy" decoding="async"
                     style={{ maxWidth:'85%', height:'auto', maxHeight: maxH, transform: nudgeUp ? `translateY(-${nudgeUp}px)` : undefined,
                       filter:'brightness(0) invert(1)', opacity: 0.72,
                       mixBlendMode: hasBg ? 'screen' : 'normal',

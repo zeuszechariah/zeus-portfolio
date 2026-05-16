@@ -1,0 +1,29 @@
+<svg viewBox="0 0 400 600" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="hbg" x1="0" y1="0" x2="400" y2="600" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#16232A"/>
+      <stop offset="100%" stop-color="#075056"/>
+    </linearGradient>
+    <filter id="sb" x="-80%" y="-80%" width="260%" height="260%">
+      <feGaussianBlur stdDeviation="38"/>
+    </filter>
+    <filter id="grain" x="0%" y="0%" width="100%" height="100%" color-interpolation-filters="sRGB">
+      <feTurbulence type="turbulence" baseFrequency="0.62" numOctaves="1" seed="2" stitchTiles="stitch" result="n"/>
+      <feColorMatrix type="saturate" values="0" in="n" result="g"/>
+      <feComponentTransfer in="g">
+        <feFuncR type="linear" slope="3.2" intercept="-1.1"/>
+        <feFuncG type="linear" slope="3.2" intercept="-1.1"/>
+        <feFuncB type="linear" slope="3.2" intercept="-1.1"/>
+      </feComponentTransfer>
+    </filter>
+  </defs>
+  <rect width="400" height="600" fill="url(#hbg)"/>
+  <!-- Diamond arrangement of glows -->
+  <circle cx="200" cy="120" r="100" fill="#E4EEF0" filter="url(#sb)" opacity="0.18"/>
+  <circle cx="370" cy="300" r="100" fill="#E4EEF0" filter="url(#sb)" opacity="0.14"/>
+  <circle cx="200" cy="480" r="100" fill="#E4EEF0" filter="url(#sb)" opacity="0.14"/>
+  <circle cx="30"  cy="300" r="100" fill="#E4EEF0" filter="url(#sb)" opacity="0.14"/>
+  <circle cx="200" cy="300" r="70"  fill="#FF5B04" filter="url(#sb)" opacity="0.90"/>
+  <rect width="400" height="600" filter="url(#grain)" style="mix-blend-mode:overlay; opacity:0.60"/>
+  <rect width="400" height="600" filter="url(#grain)" style="mix-blend-mode:screen;  opacity:0.22"/>
+</svg>

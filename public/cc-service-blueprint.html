@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Service Blueprint</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: transparent; font-family: 'Syne', sans-serif; }
+
+  .bp {
+    position: relative;
+    width: 1140px;
+    height: 810px;
+    padding: 0;
+  }
+
+  /* Lane labels */
+  .lbl {
+    position: absolute;
+    left: 8px;
+    width: 118px;
+    background: #e8eef7;
+    border-radius: 4px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 6px 5px;
+    font-size: 10px;
+    font-weight: 600;
+    color: #1a1a2e;
+    line-height: 1.3;
+    z-index: 30;
+    letter-spacing: -0.3px;
+  }
+  .lbl small {
+    font-weight: 400;
+    font-size: 8.5px;
+    color: #555;
+    margin-top: 2px;
+    display: block;
+  }
+
+  /* Dividers */
+  .divline {
+    position: absolute;
+    left: 0; right: 0;
+    height: 1px;
+    background-image: repeating-linear-gradient(90deg, #d0d5e8 0px, #d0d5e8 4px, transparent 4px, transparent 8px);
+    z-index: 5;
+  }
+  .divtxt {
+    position: absolute;
+    left: 140px;
+    font-size: 8px;
+    font-weight: 600;
+    letter-spacing: .1em;
+    color: #8892b0;
+    z-index: 6;
+    text-transform: uppercase;
+  }
+
+  /* Sticky notes */
+  .s {
+    position: absolute;
+    width: 110px;
+    border-radius: 3px;
+    padding: 6px 6px 5px;
+    font-size: 8.5px;
+    font-weight: 500;
+    line-height: 1.32;
+    color: #1a1a2e;
+    display: flex;
+    flex-direction: column;
+    z-index: 20;
+    box-shadow: 1px 2px 5px rgba(0,0,0,.12);
+  }
+  .y  { background: #f5e8d0; }
+  .b  { background: #cce5f2; }
+  .pk { background: #f2d9e8; }
+
+  .dots { display: flex; gap: 2.5px; flex-wrap: wrap; margin-top: auto; padding-top: 4px; }
+  .d { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+  .ceo { background: #c9453a; }
+  .cos { background: #d97706; }
+  .ux  { background: #7c9d4f; }
+  .mkt { background: #d99f43; }
+  .tch { background: #2b9bb4; }
+  .dat { background: #c94e8a; }
+
+  /* SVG layer */
+  .svgl {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 10;
+    overflow: visible;
+  }
+
+  /* Legend */
+  .legend {
+    position: absolute;
+    right: 30px;
+    top: 686px;
+    display: grid;
+    grid-template-columns: 110px 110px;
+    row-gap: 8px;
+    column-gap: 16px;
+    z-index: 50;
+  }
+  .li { display: flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 600; color: #2a2a3a; letter-spacing: -0.2px; }
+  .ld { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+</style>
+</head>
+<body>
+<div class="bp">
+
+<!-- LANE LABELS -->
+<div class="lbl" style="top:32px; height:105px;">Customer Actions<small>(Brands &amp; Influencers)</small></div>
+<div class="lbl" style="top:218px; height:105px;">Front Stage<small>(Visible Actions)</small></div>
+<div class="lbl" style="top:380px; height:108px;">Back Stage<small>(Invisible to Users)</small></div>
+<div class="lbl" style="top:500px; height:260px;">Support<br>Services</div>
+
+<!-- DIVIDERS -->
+<div class="divline" style="top:208px;"></div>
+<div class="divtxt" style="top:211px;">Line of Interaction</div>
+
+<div class="divline" style="top:350px;"></div>
+<div class="divtxt" style="top:353px;">Line of Visibility</div>
+
+<div class="divline" style="top:490px;"></div>
+<div class="divtxt" style="top:493px;">Line of Internal Interaction</div>
+
+<!-- ═══ CUSTOMER ACTIONS ═══ -->
+<!-- column positions: C1=150, C2=270, C3=390, C4=510, C5=630, C6=750, C7=870, C8=990 -->
+
+<div class="s y" style="left:150px; top:36px; min-height:68px;">Sees an Instagram Ad about CloutCart<div class="dots"><span class="d mkt"></span></div></div>
+
+<div class="s y" style="left:270px; top:36px; min-height:68px;">Visits CloutCart platform<div class="dots"><span class="d mkt"></span></div></div>
+
+<div class="s y" style="left:390px; top:36px; min-height:70px;">Signs up and takes vibe quiz / creates profile<div class="dots"><span class="d ux"></span></div></div>
+
+<div class="s y" style="left:510px; top:36px; min-height:68px;">Views match results<div class="dots"><span class="d ux"></span></div></div>
+
+<div class="s y" style="left:630px; top:36px; min-height:70px;">Selects the right influencer for them<div class="dots"><span class="d ux"></span></div></div>
+
+<div class="s y" style="left:750px; top:25px; min-height:82px;">Interacts (DMs, collabs, offers, proposals)<div class="dots"><span class="d ux"></span><span class="d tch"></span></div></div>
+
+<div class="s y" style="left:870px; top:36px; min-height:68px;">Tracks outcomes<div class="dots"><span class="d ux"></span><span class="d dat"></span></div></div>
+
+<div class="s y" style="left:990px; top:25px; min-height:82px;">Leaves feedback or upgrades subscription<div class="dots"><span class="d ux"></span><span class="d mkt"></span></div></div>
+
+<!-- ═══ FRONT STAGE ═══ -->
+<div class="s b" style="left:390px; top:222px; min-height:64px;">Onboarding UI: quiz, tag-based profiling<div class="dots"><span class="d ux"></span><span class="d tch"></span></div></div>
+
+<div class="s b" style="left:390px; top:296px; min-height:48px;">Site onboarding flow<div class="dots"><span class="d ux"></span><span class="d tch"></span></div></div>
+
+<div class="s b" style="left:510px; top:228px; min-height:76px;">Matchmaking interface: card view, search, filters<div class="dots"><span class="d ux"></span><span class="d tch"></span></div></div>
+
+<div class="s b" style="left:630px; top:242px; min-height:66px;">Profile &amp; campaign interface<div class="dots"><span class="d ux"></span><span class="d tch"></span></div></div>
+
+<div class="s b" style="left:750px; top:242px; min-height:66px;">Chat / collaboration interface<div class="dots"><span class="d ux"></span><span class="d tch"></span></div></div>
+
+<div class="s b" style="left:870px; top:242px; min-height:66px;">Analytics dashboard<div class="dots"><span class="d ux"></span><span class="d tch"></span><span class="d dat"></span></div></div>
+
+<div class="s b" style="left:990px; top:222px; min-height:64px;">Customer support (chat/ help center)<div class="dots"><span class="d cos"></span><span class="d tch"></span></div></div>
+
+<div class="s b" style="left:990px; top:296px; min-height:48px;">Subscription paywall &amp; upgrade flow<div class="dots"><span class="d ux"></span><span class="d tch"></span><span class="d mkt"></span></div></div>
+
+<!-- ═══ BACK STAGE ═══ -->
+<div class="s y" style="left:150px; top:384px; min-height:78px;">AI matchmaking algorithm based on quiz + tags<div class="dots"><span class="d tch"></span><span class="d dat"></span></div></div>
+
+<div class="s y" style="left:270px; top:384px; min-height:74px;">User tagging and profile classification<div class="dots"><span class="d tch"></span><span class="d dat"></span></div></div>
+
+<div class="s y" style="left:390px; top:384px; min-height:78px;">Internal user ratings, flags, fraud detection<div class="dots"><span class="d tch"></span><span class="d dat"></span></div></div>
+
+<div class="s y" style="left:510px; top:380px; min-height:82px;">Creator/brand verification and content moderation<div class="dots"><span class="d cos"></span><span class="d tch"></span></div></div>
+
+<div class="s y" style="left:630px; top:384px; min-height:78px;">Notification scheduling and campaign alerts<div class="dots"><span class="d tch"></span></div></div>
+
+<div class="s y" style="left:750px; top:380px; min-height:82px;">Payment processing and subscription management<div class="dots"><span class="d tch"></span><span class="d dat"></span></div></div>
+
+<div class="s y" style="left:990px; top:384px; width:120px; min-height:78px;">Data collection on match quality and conversions<div class="dots"><span class="d dat"></span></div></div>
+
+<!-- ═══ SUPPORT SERVICES ROW A ═══ -->
+<div class="s pk" style="left:150px; top:504px; min-height:70px;">Marketing campaigns (ads, SEO, outreach)<div class="dots"><span class="d mkt"></span></div></div>
+
+<div class="s pk" style="left:270px; top:504px; min-height:70px;">Trains AI model on Engagement Metrics<div class="dots"><span class="d tch"></span><span class="d dat"></span></div></div>
+
+<div class="s pk" style="left:390px; top:504px; min-height:70px;">Customer success playbooks<div class="dots"><span class="d cos"></span></div></div>
+
+<div class="s pk" style="left:510px; top:504px; min-height:70px;">Bug reports and feature rollout<div class="dots"><span class="d tch"></span></div></div>
+
+<div class="s pk" style="left:630px; top:504px; min-height:70px;">Oversees technical infrastructure &amp; uptime<div class="dots"><span class="d tch"></span></div></div>
+
+<div class="s pk" style="left:750px; top:504px; min-height:70px;">Brand safety &amp; moderation tools<div class="dots"><span class="d cos"></span><span class="d tch"></span></div></div>
+
+<div class="s pk" style="left:870px; top:504px; min-height:70px;">Maintains internal dashboards and KPIs<div class="dots"><span class="d dat"></span><span class="d ceo"></span></div></div>
+
+<div class="s pk" style="left:990px; top:504px; min-height:70px;">Tracks team-wide tasks and OKRs<div class="dots"><span class="d cos"></span><span class="d ceo"></span></div></div>
+
+<!-- ═══ SUPPORT SERVICES ROW B ═══ -->
+<div class="s pk" style="left:150px; top:594px; min-height:70px;">Optimizes Marketing Strategy through different channels<div class="dots"><span class="d mkt"></span></div></div>
+
+<div class="s pk" style="left:270px; top:594px; min-height:70px;">Runs beta campaigns and onboarding incentives<div class="dots"><span class="d mkt"></span><span class="d cos"></span></div></div>
+
+<div class="s pk" style="left:390px; top:594px; min-height:70px;">Designs roadmap &amp; branding consistency<div class="dots"><span class="d ceo"></span><span class="d ux"></span></div></div>
+
+<div class="s pk" style="left:510px; top:594px; min-height:70px;">Handles investor decks, pitch materials<div class="dots"><span class="d ceo"></span><span class="d cos"></span></div></div>
+
+<!-- ═══ SUPPORT SERVICES ROW C ═══ -->
+<div class="s pk" style="left:150px; top:684px; min-height:66px;">Updates Marketing Campaign Goals<div class="dots"><span class="d mkt"></span><span class="d ceo"></span></div></div>
+
+<!-- ═══ SVG ARROWS (orthogonal with corners) ═══ -->
+<svg class="svgl" xmlns="http://www.w3.org/2000/svg">
+<defs>
+  <marker id="ah" markerWidth="5" markerHeight="5" refX="4" refY="2.5" orient="auto">
+    <path d="M0,0 L4,2.5 L0,5 Z" fill="#9ca3b8"/>
+  </marker>
+</defs>
+
+<!-- ═ Customer Actions horizontal chain (y=70) ═ -->
+<polyline points="210,70 240,70" fill="none" stroke="#9ca3b8" stroke-width="1.2" marker-end="url(#ah)"/>
+<polyline points="330,70 360,70" fill="none" stroke="#9ca3b8" stroke-width="1.2" marker-end="url(#ah)"/>
+<polyline points="450,72 480,72" fill="none" stroke="#9ca3b8" stroke-width="1.2" marker-end="url(#ah)"/>
+<polyline points="570,70 600,70" fill="none" stroke="#9ca3b8" stroke-width="1.2" marker-end="url(#ah)"/>
+<polyline points="690,70 720,70" fill="none" stroke="#9ca3b8" stroke-width="1.2" marker-end="url(#ah)"/>
+<polyline points="810,66 840,66" fill="none" stroke="#9ca3b8" stroke-width="1.2" marker-end="url(#ah)"/>
+<polyline points="930,70 960,70" fill="none" stroke="#9ca3b8" stroke-width="1.2" marker-end="url(#ah)"/>
+
+<!-- ═ C3 → Onboarding UI (straight down) ═ -->
+<polyline points="445,106 445,220" fill="none" stroke="#9ca3b8" stroke-width="1.2" marker-end="url(#ah)"/>
+
+<!-- ═ Onboarding UI → Site onboarding (down) ═ -->
+<polyline points="445,286 445,294" fill="none" stroke="#9ca3b8" stroke-width="1.2" marker-end="url(#ah)"/>
+
+<!-- ═ Site onboarding → User tagging (orthogonal: down, left, down) ═ -->
+<polyline points="445,344 445,362 360,362 360,384" fill="none" stroke="#9ca3b8" stroke-width="1.2" marker-end="url(#ah)"/>
+
+<!-- ═ Onboarding UI → AI matchmaking (orthogonal: down, left, down) ═ -->
+<polyline points="410,286 410,334 240,334 240,382" fill="none" stroke="#9ca3b8" stroke-width="1.2" marker-end="url(#ah)"/>
+
+<!-- ═ Backstage horizontal chain (y=424) ═ -->
+<polyline points="210,424 260,424" fill="none" stroke="#9ca3b8" stroke-width="1.2" marker-end="url(#ah)"/>
+<polyline points="330,424 380,424" fill="none" stroke="#9ca3b8" stroke-width="1.2" marker-end="url(#ah)"/>
+<polyline points="450,423 500,423" fill="none" stroke="#9ca3b8" stroke-width="1.2" marker-end="url(#ah)"/>
+
+<!-- ═ C4 → Matchmaking UI (down) ═ -->
+<polyline points="565,106 565,226" fill="none" stroke="#9ca3b8" stroke-width="1.2" marker-end="url(#ah)"/>
+
+<!-- ═ Matchmaking UI → Profile & campaign (right) ═ -->
+<polyline points="600,270 630,270" fill="none" stroke="#9ca3b8" stroke-width="1.2" marker-end="url(#ah)"/>
+
+<!-- ═ C5 → Profile & campaign (down) ═ -->
+<polyline points="685,106 685,240" fill="none" stroke="#9ca3b8" stroke-width="1.2" marker-end="url(#ah)"/>
+
+<!-- ═ Profile & campaign → Chat (right) ═ -->
+<polyline points="700,275 750,275" fill="none" stroke="#9ca3b8" stroke-width="1.2" marker-end="url(#ah)"/>
+
+<!-- ═ C6 → Chat interface (down) ═ -->
+<polyline points="805,107 805,240" fill="none" stroke="#9ca3b8" stroke-width="1.2" marker-end="url(#ah)"/>
+
+<!-- ═ Notification scheduling ↑ to Chat (up) ═ -->
+<polyline points="805,362 805,310" fill="none" stroke="#9ca3b8" stroke-width="1.2" marker-end="url(#ah)"/>
+
+<!-- ═ C7 → Analytics dashboard (down) ═ -->
+<polyline points="925,106 925,240" fill="none" stroke="#9ca3b8" stroke-width="1.2" marker-end="url(#ah)"/>
+
+<!-- ═ Payment processing → Data collection (right) ═ -->
+<polyline points="860,403 990,403" fill="none" stroke="#9ca3b8" stroke-width="1.2" marker-end="url(#ah)"/>
+
+<!-- ═ C8 → Customer support (down) ═ -->
+<polyline points="1045,107 1045,220" fill="none" stroke="#9ca3b8" stroke-width="1.2" marker-end="url(#ah)"/>
+
+<!-- ═ C8 upgrade path → Subscription paywall (down) ═ -->
+<polyline points="1065,107 1065,294" fill="none" stroke="#9ca3b8" stroke-width="1.2" marker-end="url(#ah)"/>
+
+<!-- ═ Support: Marketing campaigns ↑ to AI matchmaking (up) ═ -->
+<polyline points="205,504 205,422" fill="none" stroke="#9ca3b8" stroke-width="1.2" marker-end="url(#ah)"/>
+
+<!-- ═ Support: Trains AI ↑ (up-left to AI matching) ═ -->
+<polyline points="325,504 325,462 240,462 240,422" fill="none" stroke="#9ca3b8" stroke-width="1.2" marker-end="url(#ah)"/>
+
+<!-- ═ Support Col1: chain A → B → C ═ -->
+<polyline points="205,574 205,592" fill="none" stroke="#9ca3b8" stroke-width="1.2" marker-end="url(#ah)"/>
+<polyline points="205,664 205,682" fill="none" stroke="#9ca3b8" stroke-width="1.2" marker-end="url(#ah)"/>
+
+<!-- ═ Support Col2: Runs beta ↑ to Trains AI ═ -->
+<polyline points="325,592 325,580" fill="none" stroke="#9ca3b8" stroke-width="1.2" marker-end="url(#ah)"/>
+
+</svg>
+
+<!-- LEGEND -->
+<div class="legend">
+  <div class="li"><div class="ld" style="background:#c9453a;"></div>CEO</div>
+  <div class="li"><div class="ld" style="background:#d99f43;"></div>Marketing</div>
+  <div class="li"><div class="ld" style="background:#d97706;"></div>CoS</div>
+  <div class="li"><div class="ld" style="background:#2b9bb4;"></div>Tech</div>
+  <div class="li"><div class="ld" style="background:#7c9d4f;"></div>UX</div>
+  <div class="li"><div class="ld" style="background:#c94e8a;"></div>Data</div>
+</div>
+
+</div>
+</body>
+</html>

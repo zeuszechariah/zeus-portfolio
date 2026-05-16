@@ -24,11 +24,11 @@ const NODES = [
 // SVG arc: A 306,228 0 0,1 x,y  (sweep=1 = clockwise, large-arc=0)
 // Start/end points computed at angles ±8° inside each node's angular position.
 const ARROWS = [
-  { path: 'M 423,24 A 306,228 0 0 1 655,150',  label: 'ENCOURAGES', lx: 574, ly: 36  },
-  { path: 'M 681,210 A 306,228 0 0 1 593,414', label: 'LEADS TO',   lx: 698, ly: 326 },
-  { path: 'M 524,451 A 306,228 0 0 1 236,451', label: 'REINFORCES', lx: 380, ly: 494 },
-  { path: 'M 167,414 A 306,228 0 0 1 79,210',  label: 'EFFECT',     lx: 62,  ly: 326 },
-  { path: 'M 105,150 A 306,228 0 0 1 337,24',  label: 'INCREASE',   lx: 186, ly: 36  },
+  { path: 'M 409,39 A 306,228 0 0 1 650,158',  label: 'ENCOURAGES', lx: 574, ly: 36  },
+  { path: 'M 669,207 A 306,228 0 0 1 575,408', label: 'LEADS TO',   lx: 698, ly: 326 },
+  { path: 'M 526,437 A 306,228 0 0 1 234,437', label: 'REINFORCES', lx: 380, ly: 494 },
+  { path: 'M 185,408 A 306,228 0 0 1 91,207',  label: 'EFFECT',     lx: 62,  ly: 326 },
+  { path: 'M 110,158 A 306,228 0 0 1 351,39',  label: 'INCREASE',   lx: 186, ly: 36  },
 ]
 
 export default function FeedbackLoops() {

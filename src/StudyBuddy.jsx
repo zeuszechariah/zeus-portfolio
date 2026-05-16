@@ -1,5 +1,8 @@
 import { useRef, useState, useEffect } from 'react'
 import { motion, useInView, AnimatePresence } from 'framer-motion'
+import { gsap } from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
+gsap.registerPlugin(ScrollTrigger)
 import { Nav, Footer, ProgressBar, MaskReveal, Reveal, BackToTop } from './shared.jsx'
 
 // ─── Design Tokens ──────────────────────────────────────
@@ -63,11 +66,8 @@ const NAV_SECTIONS = [
   { id: 'systems',       label: 'Systems' },
   { id: 'research',      label: 'Research' },
   { id: 'define',        label: 'Define' },
-  { id: 'personas',      label: 'Personas' },
   { id: 'design-system', label: 'Design' },
-  { id: 'features',      label: 'Features' },
-  { id: 'accessibility', label: 'Access.' },
-  { id: 'reflections',   label: 'Reflect.' },
+  { id: 'reflections',   label: 'Reflect' },
 ]
 
 // ─── Layout Helpers ──────────────────────────────────────
@@ -88,7 +88,7 @@ function SectionTag({ children, color }) {
     <span style={{
       display: 'inline-block',
       fontFamily: "'Space Mono', monospace",
-      fontSize: '0.6rem',
+      fontSize: '0.58rem',
       letterSpacing: '0.18em',
       textTransform: 'uppercase',
       color: col,
@@ -104,7 +104,7 @@ function Label({ children, light = false }) {
   return (
     <span style={{
       fontFamily: "'Space Mono', monospace",
-      fontSize: '0.6rem',
+      fontSize: '0.58rem',
       letterSpacing: '0.18em',
       textTransform: 'uppercase',
       color: light ? 'rgba(255,255,255,0.3)' : C.muted,
@@ -145,8 +145,9 @@ function ImgBox({ label, aspect = '56.25%', style = {}, dark = false }) {
         </svg>
         <span style={{
           fontFamily: "'Space Mono', monospace",
-          fontSize: '0.6rem',
+          fontSize: '0.58rem',
           letterSpacing: '0.1em',
+          textTransform: 'uppercase',
           color: dark ? 'rgba(255,255,255,0.35)' : C.muted,
           textAlign: 'center',
           maxWidth: '220px',
@@ -162,7 +163,7 @@ function ScreenLabel({ children, dark = false }) {
   return (
     <div style={{
       fontFamily: "'Space Mono', monospace",
-      fontSize: '0.55rem',
+      fontSize: '0.58rem',
       letterSpacing: '0.2em',
       textTransform: 'uppercase',
       color: dark ? 'rgba(255,255,255,0.45)' : C.muted,
@@ -178,7 +179,7 @@ function HowHelpful({ text }) {
     <div style={{ marginTop: '1.5rem' }}>
       <p style={{
         fontFamily: "'Space Mono', monospace",
-        fontSize: '0.62rem',
+        fontSize: '0.58rem',
         letterSpacing: '0.15em',
         textTransform: 'uppercase',
         color: C.blue,
@@ -189,7 +190,7 @@ function HowHelpful({ text }) {
       </p>
       <div style={{ display: 'flex', gap: 10, alignItems: 'flex-start' }}>
         <span style={{ color: C.blue, fontSize: '0.9rem', flexShrink: 0 }}>→</span>
-        <p style={{ fontSize: '0.85rem', lineHeight: 1.65, color: C.mid, margin: 0, fontFamily: "'Syne', sans-serif" }}>{text}</p>
+        <p style={{ fontSize: '0.9rem', lineHeight: 1.65, color: C.mid, margin: 0, fontFamily: "'Syne', sans-serif" }}>{text}</p>
       </div>
     </div>
   )
@@ -240,58 +241,42 @@ function NeuCard({ children, style = {}, dark = false }) {
 
 // ─── Sidebar Nav ─────────────────────────────────────────
 function SidebarNav({ active }) {
+  const [isMobile, setIsMobile] = useState(() => typeof window !== 'undefined' && window.innerWidth < 768)
+  useEffect(() => {
+    const h = () => setIsMobile(window.innerWidth < 768)
+    window.addEventListener('resize', h, { passive: true })
+    return () => window.removeEventListener('resize', h)
+  }, [])
+
   function scrollTo(id) {
     const el = document.getElementById(id)
     if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' })
   }
+
+  if (isMobile) {
+    return (
+      <nav style={{ position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 500, display: 'flex', flexDirection: 'row', justifyContent: 'space-evenly', alignItems: 'center', background: 'rgba(255,255,255,0.97)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)', borderTop: '1px solid rgba(0,0,0,0.09)', boxShadow: '0 -2px 20px rgba(0,0,0,0.07)', padding: '8px 4px', paddingBottom: 'max(10px, env(safe-area-inset-bottom))' }}>
+        {NAV_SECTIONS.map(sec => {
+          const isActive = active === sec.id
+          return (
+            <button key={sec.id} onClick={() => scrollTo(sec.id)} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '5px', background: 'none', border: 'none', cursor: 'pointer', padding: '4px 10px', minWidth: 52 }}>
+              <div style={{ width: isActive ? 22 : 14, height: 2, borderRadius: 2, background: isActive ? C.accent : 'rgba(0,0,0,0.18)', transition: 'all 0.25s' }} />
+              <span style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.48rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: isActive ? C.accent : 'rgba(0,0,0,0.42)', transition: 'color 0.25s', whiteSpace: 'nowrap' }}>{sec.label}</span>
+            </button>
+          )
+        })}
+      </nav>
+    )
+  }
+
   return (
-    <div style={{
-      position: 'fixed',
-      left: 'clamp(10px, 1.5vw, 22px)',
-      top: '50%',
-      transform: 'translateY(-50%)',
-      zIndex: 200,
-      display: 'flex',
-      flexDirection: 'column',
-      gap: '8px',
-    }}>
+    <div style={{ position: 'fixed', left: 'clamp(10px, 1.5vw, 22px)', top: '50%', transform: 'translateY(-50%)', zIndex: 200, display: 'flex', flexDirection: 'column', gap: '8px' }}>
       {NAV_SECTIONS.map(sec => {
         const isActive = active === sec.id
         return (
-          <button
-            key={sec.id}
-            onClick={() => scrollTo(sec.id)}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px',
-              background: 'none',
-              border: 'none',
-              cursor: 'pointer',
-              padding: '2px 0',
-            }}
-          >
-            <motion.div
-              animate={{
-                width: isActive ? 3 : 1.5,
-                height: isActive ? 32 : 24,
-                background: isActive ? C.accent : C.border,
-                borderRadius: 2,
-              }}
-              transition={{ duration: 0.3 }}
-              style={{ flexShrink: 0 }}
-            />
-            <span style={{
-              fontFamily: "'Space Mono', monospace",
-              fontSize: '0.58rem',
-              letterSpacing: '0.14em',
-              textTransform: 'uppercase',
-              color: isActive ? C.accent : C.muted,
-              transition: 'color 0.25s',
-              whiteSpace: 'nowrap',
-            }}>
-              {sec.label}
-            </span>
+          <button key={sec.id} onClick={() => scrollTo(sec.id)} style={{ display: 'flex', alignItems: 'center', gap: '8px', background: 'none', border: 'none', cursor: 'pointer', padding: '2px 0' }}>
+            <motion.div animate={{ width: isActive ? 3 : 1.5, height: isActive ? 32 : 24, background: isActive ? C.accent : C.border, borderRadius: 2 }} transition={{ duration: 0.3 }} style={{ flexShrink: 0 }} />
+            <span style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.58rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: isActive ? C.accent : C.muted, transition: 'color 0.25s', whiteSpace: 'nowrap' }}>{sec.label}</span>
           </button>
         )
       })}
@@ -319,11 +304,12 @@ function useActiveSection(ids) {
   return active
 }
 
-import ActorMap    from './components/diagrams/study-buddy/ActorMap.jsx'
-import SubSystems  from './components/diagrams/study-buddy/SubSystems.jsx'
-import FeedbackLoops from './components/diagrams/study-buddy/FeedbackLoops.jsx'
-import SystemMap   from './components/diagrams/study-buddy/SystemMap.jsx'
-import SystemMapII from './components/diagrams/study-buddy/SystemMapII.jsx'
+import ActorMap        from './components/diagrams/study-buddy/ActorMap.jsx'
+import SubSystems      from './components/diagrams/study-buddy/SubSystems.jsx'
+import FeedbackLoops   from './components/diagrams/study-buddy/FeedbackLoops.jsx'
+import SystemMap       from './components/diagrams/study-buddy/SystemMap.jsx'
+import SystemMapII     from './components/diagrams/study-buddy/SystemMapII.jsx'
+import EcosystemDiagram from './components/diagrams/study-buddy/EcosystemDiagram.jsx'
 
 // ─── LEGACY (not rendered) ────────────────────────────────
 function _ActorMapLegacy() {
@@ -487,7 +473,7 @@ function _ActorMapLegacy() {
         ].map(l => (
           <div key={l.label} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
             <div style={{ width: 10, height: 10, borderRadius: '50%', background: l.color }} />
-            <span style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.58rem', letterSpacing: '0.1em', color: C.mid }}>{l.label}</span>
+            <span style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.58rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: C.mid }}>{l.label}</span>
           </div>
         ))}
       </div>
@@ -608,8 +594,10 @@ const EMPATHY_DATA = [
     key: 'thinks', label: 'Thinks', color: '#1A5276', pale: 'rgba(26,82,118,0.06)', textColor: '#1A5276',
     icon: (
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-        <path d="M9.5 2C7 2 5 4 5 6.5c0 .8.2 1.6.6 2.2C4.2 9.4 3 10.9 3 12.7c0 1.5.8 2.8 2 3.5v.3A2.5 2.5 0 007.5 19H9v1.5a1.5 1.5 0 003 0V19h2.5a2.5 2.5 0 002.5-2.5v-.3c1.2-.7 2-2 2-3.5 0-1.8-1.2-3.3-2.6-4C16.8 8.1 17 7.3 17 6.5 17 4 15 2 12.5 2c-.8 0-1.6.2-2.3.6A4.6 4.6 0 009.5 2z" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
-        <path d="M12 7v5M9.5 9.5c0-1.4 1.1-2.5 2.5-2.5s2.5 1.1 2.5 2.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+        <path d="M12 3A3 3 0 006 6a3 3 0 00-3 4 3 3 0 002 5h14a3 3 0 002-5 3 3 0 00-3-4 3 3 0 00-6-3z"
+          stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
+        <circle cx="10" cy="19" r="1.3" stroke="currentColor" strokeWidth="1.4" />
+        <circle cx="8" cy="22.3" r="0.85" stroke="currentColor" strokeWidth="1.4" />
       </svg>
     ),
     items: [
@@ -635,61 +623,97 @@ const EMPATHY_DATA = [
   },
 ]
 
+const EMPATHY_ICONS = [
+  {
+    // Says — pink circle, top-left: cx=63.12/820.38, cy=65.27/517.14
+    left: '7.70%', top: '12.62%',
+    icon: (
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
+        <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" stroke="#fff" strokeWidth="1.8" strokeLinejoin="round" />
+      </svg>
+    ),
+  },
+  {
+    // Does — yellow circle, top-right: cx=757.26/820.38, cy=63.12/517.14
+    left: '92.31%', top: '12.20%',
+    icon: (
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
+        <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" stroke="#414042" strokeWidth="1.8" strokeLinejoin="round" />
+        <polyline points="14 2 14 8 20 8" stroke="#414042" strokeWidth="1.8" strokeLinejoin="round" />
+        <line x1="9" y1="13" x2="15" y2="13" stroke="#414042" strokeWidth="1.8" strokeLinecap="round" />
+        <line x1="9" y1="17" x2="12" y2="17" stroke="#414042" strokeWidth="1.8" strokeLinecap="round" />
+      </svg>
+    ),
+  },
+  {
+    // Thinks — blue circle, bottom-left: cx=63.12/820.38, cy=322.22/517.14
+    left: '7.70%', top: '62.30%',
+    icon: (
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
+        <path d="M12 3A3 3 0 006 6a3 3 0 00-3 4 3 3 0 002 5h14a3 3 0 002-5 3 3 0 00-3-4 3 3 0 00-6-3z"
+          stroke="#fff" strokeWidth="1.6" strokeLinejoin="round" />
+        <circle cx="10" cy="19" r="1.3" stroke="#fff" strokeWidth="1.4" />
+        <circle cx="8" cy="22.3" r="0.85" stroke="#fff" strokeWidth="1.4" />
+      </svg>
+    ),
+  },
+  {
+    // Feels — green circle, bottom-right: cx=757.26/820.38, cy=322.22/517.14
+    left: '92.31%', top: '62.30%',
+    icon: (
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
+        <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" stroke="#414042" strokeWidth="1.8" strokeLinejoin="round" />
+      </svg>
+    ),
+  },
+]
+
 function EmpathyMap() {
   const ref = useRef(null)
   const inView = useInView(ref, { once: true, amount: 0.2 })
 
   return (
-    <div ref={ref} style={{
-      display: 'grid',
-      gridTemplateColumns: '1fr 1fr',
-      gap: '3px',
-      borderRadius: '16px',
-      overflow: 'hidden',
-    }}>
-      {EMPATHY_DATA.map((q, i) => (
-        <motion.div key={q.key}
-          initial={{ opacity: 0, y: 24 }}
-          animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.55, delay: 0.1 + i * 0.09, ease: EASE }}
+    <motion.div
+      ref={ref}
+      initial={{ opacity: 0, y: 24 }}
+      animate={inView ? { opacity: 1, y: 0 } : {}}
+      transition={{ duration: 0.55, delay: 0.1, ease: EASE }}
+      style={{ position: 'relative', width: '100%' }}
+    >
+      <img
+        src="/sb-empathy-map.svg"
+        alt="Empathy Map"
+        loading="lazy" decoding="async" style={{ width: '100%', height: 'auto', display: 'block' }}
+      />
+      {/* Centre person photo — overlaid on the SVG circle (cx=423/820.38, cy=192.95/517.14, r=102.27) */}
+      <div style={{
+        position: 'absolute',
+        left: '51.57%',
+        top: '37.32%',
+        transform: 'translate(-50%, -50%)',
+        width: '24.93%',
+        aspectRatio: '1',
+        borderRadius: '50%',
+        overflow: 'hidden',
+        pointerEvents: 'none',
+      }}>
+        <img src="/sb-empathy-person.png" alt="" loading="lazy" decoding="async" style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center top' }} />
+      </div>
+      {EMPATHY_ICONS.map((item, i) => (
+        <div
+          key={i}
           style={{
-            background: q.pale,
-            padding: 'clamp(1.25rem, 3vw, 2rem)',
-            minHeight: '240px',
+            position: 'absolute',
+            left: item.left,
+            top: item.top,
+            transform: 'translate(-50%, -50%)',
+            pointerEvents: 'none',
           }}
         >
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '1rem', color: q.textColor }}>
-            {q.icon}
-            <span style={{
-              fontFamily: "'Syne', sans-serif",
-              fontSize: '1rem',
-              fontWeight: 500,
-              color: q.textColor,
-            }}>{q.label}</span>
-          </div>
-          <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '10px' }}>
-            {q.items.map((item, j) => (
-              <li key={j} style={{
-                fontFamily: "'EB Garamond', serif",
-                fontSize: 'clamp(0.9rem, 1.5vw, 1rem)',
-                color: q.textColor,
-                lineHeight: 1.5,
-                paddingLeft: '14px',
-                position: 'relative',
-                opacity: 0.9,
-              }}>
-                <span style={{
-                  position: 'absolute', left: 0, top: '0.5em',
-                  width: 5, height: 5, borderRadius: '50%',
-                  background: q.color, display: 'block',
-                }} />
-                {item}
-              </li>
-            ))}
-          </ul>
-        </motion.div>
+          {item.icon}
+        </div>
       ))}
-    </div>
+    </motion.div>
   )
 }
 
@@ -731,7 +755,7 @@ function IADiagram() {
             style={{
               background: C.blue, color: 'white',
               padding: '12px 28px', borderRadius: '10px',
-              fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: '0.95rem',
+              fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: '0.9rem',
               letterSpacing: '-0.01em',
             }}
           >Study Buddy</motion.div>
@@ -777,7 +801,7 @@ function IADiagram() {
                 {branch.label.split('\n').map((l, li) => (
                   <div key={li} style={{
                     fontFamily: "'Syne', sans-serif",
-                    fontSize: '0.72rem',
+                    fontSize: '0.58rem',
                     fontWeight: 500,
                     color: branch.color,
                     lineHeight: 1.3,
@@ -798,10 +822,11 @@ function IADiagram() {
                       borderRadius: '6px',
                       padding: '6px 8px',
                       fontFamily: "'Space Mono', monospace",
-                      fontSize: '0.55rem',
+                      fontSize: '0.58rem',
                       letterSpacing: '0.05em',
                       color: C.mid,
                       textAlign: 'center',
+                      textTransform: 'uppercase',
                     }}
                   >{child}</motion.div>
                 ))}
@@ -814,153 +839,137 @@ function IADiagram() {
   )
 }
 
-// ─── 5. Behavioural Cycle — Flower Shape ─────────────────
-function BehaviouralCycle() {
-  const ref = useRef(null)
-  const inView = useInView(ref, { once: true, amount: 0.3 })
+// ─── helpers for BehaviouralCycle ─────────────────────────
+const clampP = (v, lo, hi) => Math.min(hi, Math.max(lo, v))
+const rangeP = (p, a, b) => clampP((p - a) / (b - a), 0, 1)
+function lerpHex(c1, c2, t) {
+  const h = s => [parseInt(s.slice(1,3),16), parseInt(s.slice(3,5),16), parseInt(s.slice(5,7),16)]
+  const [r1,g1,b1] = h(c1), [r2,g2,b2] = h(c2)
+  return `rgb(${Math.round(r1+(r2-r1)*t)},${Math.round(g1+(g2-g1)*t)},${Math.round(b1+(b2-b1)*t)})`
+}
 
-  // ViewBox: 0 0 420 480
-  // Center: (210, 220)
-  const cx = 210, cy = 220
+// ─── 5. Behavioural Cycle — GSAP pinned scrub ─────────────
+function BehaviouralCycle() {
+  const sectionRef = useRef(null)
+  const [p, setP] = useState(0)   // 0 → 1 scroll progress
+
+  useEffect(() => {
+    const el = sectionRef.current
+    if (!el) return
+    const ctx = gsap.context(() => {
+      gsap.timeline({
+        scrollTrigger: {
+          trigger: el,
+          start: 'top top',
+          end: '+=850',
+          scrub: 1.4,
+          pin: true,
+          anticipatePin: 1,
+          invalidateOnRefresh: true,
+          onUpdate: self => setP(self.progress),
+        },
+      }).to({}, { duration: 1 })
+    }, el)
+    // Framer Motion Reveal animations on elements above take ~800ms to settle.
+    // Refresh so GSAP measures the correct final positions.
+    const t = setTimeout(() => ScrollTrigger.refresh(), 900)
+    return () => { clearTimeout(t); ctx.revert() }
+  }, [])
+
+  const cx = 260, cy = 265
+  const GREY = '#9CA3AF'
+  const nodeR = 78, nodeD = 200
+
+  const loop    = 1 - rangeP(p, 0.05, 0.45)
+  const flower  = rangeP(p, 0.35, 0.68)
+  const stemPct = rangeP(p, 0.55, 0.82)
+  const faceCol = lerpHex(GREY, C.yellow, rangeP(p, 0.28, 0.60))
+  const sadOp   = 1 - rangeP(p, 0.28, 0.55)
+  const smileOp = rangeP(p, 0.44, 0.68)
+  const quoteOp = rangeP(p, 0.65, 0.85)
+  const quoteY  = 20 - 20 * rangeP(p, 0.65, 0.85)
+
+  const nodes = [
+    { lx: cx,       ly: cy-nodeD, label: 'Demotivated\nFeeling' },
+    { lx: cx+nodeD, ly: cy,       label: 'Procrastination\n& Low Energy' },
+    { lx: cx,       ly: cy+nodeD, label: 'Decrease in\nActivity' },
+    { lx: cx-nodeD, ly: cy,       label: 'Increased\nGuilt' },
+  ]
+  const arrows = [
+    `M ${cx+nodeR} ${cy-nodeD} Q ${cx+nodeD} ${cy-nodeD} ${cx+nodeD} ${cy-nodeR}`,
+    `M ${cx+nodeD} ${cy+nodeR} Q ${cx+nodeD} ${cy+nodeD} ${cx+nodeR} ${cy+nodeD}`,
+    `M ${cx-nodeR} ${cy+nodeD} Q ${cx-nodeD} ${cy+nodeD} ${cx-nodeD} ${cy+nodeR}`,
+    `M ${cx-nodeD} ${cy-nodeR} Q ${cx-nodeD} ${cy-nodeD} ${cx-nodeR} ${cy-nodeD}`,
+  ]
+
+  const stemY1 = cy + 148
+  const stemLen = 580 - stemY1
+  const stemDash = `${stemLen * stemPct} ${stemLen}`
 
   return (
-    <div ref={ref} style={{ display: 'flex', alignItems: 'center', gap: '2rem', flexWrap: 'wrap', justifyContent: 'center' }}>
-      <svg viewBox="0 0 420 480" style={{ width: '100%', maxWidth: 360, overflow: 'visible' }}>
-        <defs>
-          <marker id="arrowPink" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
-            <path d="M0,0 L8,3 L0,6 Z" fill={C.ink} />
-          </marker>
-        </defs>
+    <div ref={sectionRef} style={{ position: 'relative' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem', padding: 'clamp(2rem,4vw,4rem) 0' }}>
+        <svg viewBox="0 0 520 700" style={{ width: '100%', maxWidth: 620, overflow: 'visible' }}>
+          <defs>
+            <marker id="arrowLoop2" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto">
+              <path d="M0,0 L7,3 L0,6 Z" fill={GREY} opacity="0.7" />
+            </marker>
+          </defs>
 
-        {/* Petals — pink ellipses at N/E/S/W */}
-        {/* Top petal */}
-        <motion.ellipse cx={cx} cy={cy - 74} rx={52} ry={72}
-          fill={C.diagramPink} opacity={0.9}
-          initial={{ opacity: 0, scaleY: 0 }} animate={inView ? { opacity: 0.85, scaleY: 1 } : {}}
-          transition={{ duration: 0.6, delay: 0.15, ease: EASE }}
-          style={{ transformBox: 'fill-box', transformOrigin: 'center bottom' }}
-        />
-        {/* Right petal */}
-        <motion.ellipse cx={cx + 74} cy={cy} rx={72} ry={52}
-          fill={C.diagramPink} opacity={0.9}
-          initial={{ opacity: 0, scaleX: 0 }} animate={inView ? { opacity: 0.85, scaleX: 1 } : {}}
-          transition={{ duration: 0.6, delay: 0.25, ease: EASE }}
-          style={{ transformBox: 'fill-box', transformOrigin: 'left center' }}
-        />
-        {/* Bottom petal */}
-        <motion.ellipse cx={cx} cy={cy + 74} rx={52} ry={72}
-          fill={C.diagramPink} opacity={0.9}
-          initial={{ opacity: 0, scaleY: 0 }} animate={inView ? { opacity: 0.85, scaleY: 1 } : {}}
-          transition={{ duration: 0.6, delay: 0.35, ease: EASE }}
-          style={{ transformBox: 'fill-box', transformOrigin: 'center top' }}
-        />
-        {/* Left petal */}
-        <motion.ellipse cx={cx - 74} cy={cy} rx={72} ry={52}
-          fill={C.diagramPink} opacity={0.9}
-          initial={{ opacity: 0, scaleX: 0 }} animate={inView ? { opacity: 0.85, scaleX: 1 } : {}}
-          transition={{ duration: 0.6, delay: 0.45, ease: EASE }}
-          style={{ transformBox: 'fill-box', transformOrigin: 'right center' }}
-        />
+          {/* ── STEM drawn first so it sits behind everything ── */}
+          <g style={{ opacity: flower }}>
+            <line x1={cx} y1={stemY1} x2={cx} y2={580}
+              stroke={C.green} strokeWidth={9} strokeLinecap="round"
+              strokeDasharray={stemDash}
+            />
+          </g>
 
-        {/* Green stem */}
-        <motion.line x1={cx} y1={cy + 148} x2={cx} y2={460}
-          stroke={C.green} strokeWidth={8} strokeLinecap="round"
-          initial={{ pathLength: 0 }} animate={inView ? { pathLength: 1 } : {}}
-          transition={{ duration: 0.5, delay: 0.6, ease: EASE }}
-        />
+          {/* ── FLOWER petals — fades in ── */}
+          <g style={{ opacity: flower }}>
+            <ellipse cx={cx}    cy={cy-88} rx={60} ry={80} fill={C.diagramPink} />
+            <ellipse cx={cx+88} cy={cy}    rx={80} ry={60} fill={C.diagramPink} />
+            <ellipse cx={cx}    cy={cy+88} rx={60} ry={80} fill={C.diagramPink} />
+            <ellipse cx={cx-88} cy={cy}    rx={80} ry={60} fill={C.diagramPink} />
+          </g>
 
-        {/* Clockwise arc arrows between nodes */}
-        {/* Top → Right */}
-        <motion.path
-          d={`M ${cx + 38} ${cy - 120} Q ${cx + 120} ${cy - 120} ${cx + 120} ${cy - 38}`}
-          fill="none" stroke={C.dark} strokeWidth={1.5} opacity={0.5}
-          markerEnd="url(#arrowPink)"
-          initial={{ pathLength: 0 }} animate={inView ? { pathLength: 1 } : {}}
-          transition={{ duration: 0.5, delay: 0.7, ease: EASE }}
-        />
-        {/* Right → Bottom */}
-        <motion.path
-          d={`M ${cx + 120} ${cy + 38} Q ${cx + 120} ${cy + 120} ${cx + 38} ${cy + 120}`}
-          fill="none" stroke={C.dark} strokeWidth={1.5} opacity={0.5}
-          markerEnd="url(#arrowPink)"
-          initial={{ pathLength: 0 }} animate={inView ? { pathLength: 1 } : {}}
-          transition={{ duration: 0.5, delay: 0.8, ease: EASE }}
-        />
-        {/* Bottom → Left */}
-        <motion.path
-          d={`M ${cx - 38} ${cy + 120} Q ${cx - 120} ${cy + 120} ${cx - 120} ${cy + 38}`}
-          fill="none" stroke={C.dark} strokeWidth={1.5} opacity={0.5}
-          markerEnd="url(#arrowPink)"
-          initial={{ pathLength: 0 }} animate={inView ? { pathLength: 1 } : {}}
-          transition={{ duration: 0.5, delay: 0.9, ease: EASE }}
-        />
-        {/* Left → Top */}
-        <motion.path
-          d={`M ${cx - 120} ${cy - 38} Q ${cx - 120} ${cy - 120} ${cx - 38} ${cy - 120}`}
-          fill="none" stroke={C.dark} strokeWidth={1.5} opacity={0.5}
-          markerEnd="url(#arrowPink)"
-          initial={{ pathLength: 0 }} animate={inView ? { pathLength: 1 } : {}}
-          transition={{ duration: 0.5, delay: 1.0, ease: EASE }}
-        />
-
-        {/* Center yellow circle */}
-        <motion.circle cx={cx} cy={cy} r={56}
-          fill={C.yellow}
-          initial={{ opacity: 0, scale: 0 }} animate={inView ? { opacity: 1, scale: 1 } : {}}
-          transition={{ duration: 0.5, delay: 0.55, ease: EASE }}
-          style={{ transformBox: 'fill-box', transformOrigin: 'center' }}
-        />
-        {/* Center face */}
-        <motion.g initial={{ opacity: 0 }} animate={inView ? { opacity: 1 } : {}} transition={{ delay: 0.7 }}>
-          <circle cx={cx - 12} cy={cy - 8} r={3.5} fill={C.dark} />
-          <circle cx={cx + 12} cy={cy - 8} r={3.5} fill={C.dark} />
-          <path d={`M ${cx - 14} ${cy + 12} Q ${cx} ${cy + 4} ${cx + 14} ${cy + 12}`}
-            fill="none" stroke={C.dark} strokeWidth={2.5} strokeLinecap="round" />
-        </motion.g>
-
-        {/* Dark node circles at N/E/S/W */}
-        {[
-          { lx: cx, ly: cy - 148, label: 'Demotivated\nFeeling' },
-          { lx: cx + 148, ly: cy, label: 'Procrastination\n& Low Energy' },
-          { lx: cx, ly: cy + 148, label: 'Decrease in Activity\n& Neglect' },
-          { lx: cx - 148, ly: cy, label: 'Increased\nGuilt' },
-        ].map((node, i) => (
-          <motion.g key={i} style={{ transformBox: 'fill-box', transformOrigin: 'center' }}
-            initial={{ opacity: 0, scale: 0 }} animate={inView ? { opacity: 1, scale: 1 } : {}}
-            transition={{ duration: 0.45, delay: 0.2 + i * 0.1, ease: EASE }}
-          >
-            <circle cx={node.lx} cy={node.ly} r={34}
-              fill={C.dark} opacity={0.9} />
-            {node.label.split('\n').map((line, li) => (
-              <text key={li}
-                x={node.lx}
-                y={node.ly + (li - (node.label.split('\n').length - 1) / 2) * 11}
-                textAnchor="middle" dominantBaseline="middle"
-                fontSize={7} fill="white" fontFamily="'Space Mono', monospace"
-              >{line}</text>
+          {/* ── LOOP — fades out ── */}
+          <g style={{ opacity: loop }}>
+            {arrows.map((d, i) => (
+              <path key={i} d={d} fill="none" stroke={GREY} strokeWidth={1.5} opacity={0.6} markerEnd="url(#arrowLoop2)" />
             ))}
-          </motion.g>
-        ))}
-      </svg>
+            {nodes.map((node, i) => (
+              <g key={i}>
+                <circle cx={node.lx} cy={node.ly} r={nodeR} fill={GREY} opacity={0.9} />
+                {node.label.split('\n').map((line, li) => (
+                  <text key={li} x={node.lx}
+                    y={node.ly + (li - (node.label.split('\n').length - 1) / 2) * 13}
+                    textAnchor="middle" dominantBaseline="middle"
+                    fontSize={12} fill="white" fontFamily="'Syne', sans-serif"
+                  >{line}</text>
+                ))}
+              </g>
+            ))}
+          </g>
 
-      {/* Right annotation */}
-      <div style={{ maxWidth: 220 }}>
-        <p style={{
-          fontFamily: "'EB Garamond', serif",
-          fontStyle: 'italic',
-          fontSize: 'clamp(1.5rem, 3vw, 2.25rem)',
-          color: C.ink,
-          lineHeight: 1.2,
-          marginBottom: '1rem',
+          {/* ── CENTER FACE — rendered last (on top) ── */}
+          <circle cx={cx} cy={cy} r={72} fill={faceCol} />
+          <circle cx={cx-16} cy={cy-12} r={5} fill={C.dark} />
+          <circle cx={cx+16} cy={cy-12} r={5} fill={C.dark} />
+          <path d={`M ${cx-18} ${cy+20} Q ${cx} ${cy+8} ${cx+18} ${cy+20}`}
+            fill="none" stroke={C.dark} strokeWidth={3.5} strokeLinecap="round" opacity={sadOp} />
+          <path d={`M ${cx-18} ${cy+8} Q ${cx} ${cy+24} ${cx+18} ${cy+8}`}
+            fill="none" stroke={C.dark} strokeWidth={3.5} strokeLinecap="round" opacity={smileOp} />
+        </svg>
+
+        <p style={{ opacity: quoteOp, transform: `translateY(${quoteY}px)`,
+          fontFamily: "'Lora', Georgia, serif", fontStyle: 'italic',
+          fontSize: 'clamp(1.5rem,3vw,2.2rem)', color: C.ink,
+          lineHeight: 1.3, textAlign: 'center', maxWidth: 480, margin: 0, transition: 'none',
         }}>
           "One's academic life shouldn't feel grey"
         </p>
-        <p style={{
-          fontFamily: "'Syne', sans-serif",
-          fontSize: '0.82rem',
-          lineHeight: 1.65,
-          color: C.mid,
-        }}>
+
+        <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.9rem', lineHeight: 1.65, color: C.mid, textAlign: 'center', maxWidth: 400, opacity: quoteOp }}>
           <strong style={{ color: C.ink }}>Behavioural Activation</strong> is a means by which one can{' '}
           <strong style={{ color: C.ink }}>prevent</strong> themselves from falling into this{' '}
           <em style={{ color: C.ink }}>vicious cycle</em>.
@@ -977,65 +986,32 @@ function BehaviouralCycle() {
 // ─── Hero / Overview ──────────────────────────────────────
 function HeroSection() {
   return (
-    <section id="overview" style={{
-      position: 'relative',
-      backgroundImage: 'url(/hero-studybuddy.jpg)',
-      backgroundSize: 'cover',
-      backgroundPosition: 'center 30%',
-      paddingTop: 'clamp(7rem,12vw,11rem)',
-      paddingBottom: 'clamp(5rem,8vw,8rem)',
-    }}>
-      {/* Dark gradient overlay — slightly reduced so the photo breathes */}
-      <div style={{
-        position: 'absolute', inset: 0, zIndex: 0,
-        background: 'linear-gradient(to right, rgba(6,21,40,0.80) 0%, rgba(6,21,40,0.70) 40%, rgba(6,21,40,0.38) 68%, rgba(6,21,40,0.10) 100%)',
-      }} />
-
-      <Wrap style={{ position: 'relative', zIndex: 1 }}>
-        <MaskReveal delay={0}>
-          <span style={{
-            display: 'inline-block',
-            fontFamily: "'Space Mono', monospace",
-            fontSize: '0.6rem', letterSpacing: '0.18em', textTransform: 'uppercase',
-            color: 'rgba(255,255,255,0.55)',
-            border: '1px solid rgba(255,255,255,0.22)',
-            padding: '4px 10px', borderRadius: '99px', marginBottom: '1.25rem',
-          }}>Mobile App · UX Design · Systems Thinking</span>
-        </MaskReveal>
-        <MaskReveal delay={0.1}>
-          <h1 style={{
-            fontFamily: "'Syne', sans-serif", fontWeight: 500,
-            fontSize: 'clamp(2.4rem,5.5vw,4.2rem)', lineHeight: 1.08,
-            color: '#FFFFFF', margin: '0 0 1.75rem', maxWidth: '18ch',
-          }}>
-            Study Buddy
-          </h1>
-        </MaskReveal>
-        <MaskReveal delay={0.2}>
-          <p style={{
-            fontFamily: "'Syne', sans-serif", fontSize: 'clamp(1rem,2vw,1.15rem)',
-            lineHeight: 1.75, color: 'rgba(255,255,255,0.78)', maxWidth: '52ch', margin: '0 0 3rem',
-          }}>
-            Millions of students know exactly what they want to achieve, but they just can't seem to get there consistently. Study Buddy is a mobile app I co-designed with a team at NID to give students a system that actually works.
-          </p>
-        </MaskReveal>
+    <div id="overview" style={{ position: 'relative', paddingTop: 'clamp(7rem,12vw,11rem)', paddingBottom: 'clamp(5rem,8vw,8rem)', overflow: 'hidden' }}>
+      <img src="/hero-studybuddy.jpg" aria-hidden="true" loading="lazy" decoding="async" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center 30%' }} />
+      <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to right, rgba(6,21,40,0.92) 0%, rgba(6,21,40,0.82) 40%, rgba(6,21,40,0.55) 68%, rgba(6,21,40,0.25) 100%)' }} />
+      <div style={{ position: 'relative', zIndex: 2, maxWidth: '1120px', margin: '0 auto', padding: '0 clamp(1.5rem,5vw,3rem)' }}>
+        <span style={{ display: 'inline-block', fontFamily: "'Space Mono', monospace", fontSize: '0.58rem', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.55)', border: '1px solid rgba(255,255,255,0.22)', padding: '4px 10px', borderRadius: '99px', marginBottom: '1.25rem' }}>UX Design · Systems Thinking</span>
+        <h1 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: 'clamp(2.4rem,5.5vw,4.2rem)', lineHeight: 1.08, color: '#FFFFFF', margin: '0 0 1.75rem', maxWidth: '18ch' }}>
+          Study Buddy
+        </h1>
+        <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.9rem', lineHeight: 1.75, color: 'rgba(255,255,255,0.78)', maxWidth: '52ch', margin: '0 0 3rem' }}>
+          Millions of students know exactly what they want to achieve, but they just can't seem to get there consistently. Study Buddy is a mobile app I co-designed with a team at NID to give students a system that actually works.
+        </p>
         <div style={{ display: 'flex', gap: '3rem', flexWrap: 'wrap' }}>
           {[
-            { l: 'Timeline',      v: '2 Weeks' },
-            { l: 'Institution',   v: 'NID Bangalore' },
-            { l: 'Team',          v: 'Manali Boudh · Sravan P' },
-            { l: 'Mentors',       v: 'Jagriti Galphade · Athul Dinesh' },
+            { l: 'Timeline',      v: '6 Weeks' },
+            { l: 'Collaborators', v: 'Manali Boudh, Sravan P' },
             { l: 'Tools',         v: 'Figma · Miro' },
             { l: 'Output',        v: 'Mobile App Prototype' },
           ].map(m => (
             <div key={m.l}>
-              <p style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.55rem', letterSpacing: '0.18em', color: 'rgba(255,255,255,0.45)', textTransform: 'uppercase', margin: '0 0 0.3rem' }}>{m.l}</p>
+              <p style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.58rem', letterSpacing: '0.18em', color: '#FFFFFF', textTransform: 'uppercase', margin: '0 0 0.3rem' }}>{m.l}</p>
               <p style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: '0.9rem', color: '#FFFFFF', margin: 0 }}>{m.v}</p>
             </div>
           ))}
         </div>
-      </Wrap>
-    </section>
+      </div>
+    </div>
   )
 }
 
@@ -1050,19 +1026,22 @@ function WhySection() {
             <h2 style={{
               fontFamily: "'Syne', sans-serif",
               fontWeight: 500,
-              fontSize: 'clamp(1.75rem, 3.5vw, 2.75rem)',
+              fontSize: 'clamp(1.75rem,3.5vw,2.75rem)',
               letterSpacing: '-0.02em',
               lineHeight: 1.05,
               color: C.ink,
               marginBottom: '1.5rem',
-            }}>I started with a question that felt <em style={{ fontFamily: "'EB Garamond', serif", fontStyle: 'italic', color: C.diagramPurple }}>personal</em></h2>
+            }}>I started with a question that felt <em style={{ fontFamily: "'Lora', Georgia, serif", fontStyle: 'italic', color: '#7C3AED' }}>personal</em></h2>
           </MaskReveal>
           <Reveal delay={0.2}>
             <p style={{
-              fontFamily: "'EB Garamond', serif",
-              fontSize: 'clamp(1.05rem,2vw,1.3rem)',
+              fontFamily: "'Syne', sans-serif",
+              fontSize: '0.9rem',
               color: C.mid,
               lineHeight: 1.75,
+              maxWidth: '70ch',
+              margin: '0 auto',
+              textAlign: 'left',
             }}>
               I grew up watching students, myself included, grind through subjects they didn't understand, for exams that valued recall over meaning. That frustration brought our team to Indian education as a design space. It's a <strong style={{ color: C.ink, fontWeight: 600 }}>deeply layered system with visible failures</strong>, and those failures compound: students who disengage, lose confidence, and stop believing they can get better at learning. We chose to start where the problem felt most immediate: <strong style={{ color: C.ink, fontWeight: 600 }}>the student trying to get through tomorrow</strong>.
             </p>
@@ -1078,10 +1057,15 @@ function SystemsSection() {
   return (
     <section id="systems" style={{ background: C.bg, ...PAD }}>
       <Wrap>
-        <Reveal><Label>Systems Thinking Process</Label></Reveal>
+        <Reveal><SectionTag>Systems</SectionTag></Reveal>
+        <MaskReveal delay={0.05}>
+          <h2 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: 'clamp(1.75rem,3.5vw,2.75rem)', letterSpacing: '-0.02em', color: C.ink, margin: '0 0 1.25rem', lineHeight: 1.1 }}>
+            Thinking before designing
+          </h2>
+        </MaskReveal>
 
-        <Reveal delay={0.05}>
-          <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.95rem', color: C.mid, lineHeight: 1.75, maxWidth: 640, marginBottom: 'clamp(2rem,3.5vw,3rem)' }}>
+        <Reveal delay={0.1}>
+          <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.9rem', color: C.mid, lineHeight: 1.75, maxWidth: 640, marginBottom: 'clamp(2rem,3.5vw,3rem)' }}>
             Before designing anything, I needed to understand the system I was stepping into. We used systems thinking not as a formality, but as a way to test whether our instincts about the problem were correct, and to find where design could actually create change.
           </p>
         </Reveal>
@@ -1118,7 +1102,7 @@ function SystemsSection() {
               <div style={{ paddingLeft: '2%', paddingRight: '4%' }}>
                 {['Actor Map', 'Knowledge Graph', 'Sub-systems', 'System Mapping', 'Feedback Loops', 'Gap Analysis', 'Research'].map((s, j, arr) => (
                   <div key={s} style={{
-                    fontFamily: "'Syne', sans-serif", fontSize: '0.68rem', color: C.mid,
+                    fontFamily: "'Syne', sans-serif", fontSize: '0.58rem', color: C.mid,
                     padding: '4px 0', borderBottom: j < arr.length - 1 ? `1px solid ${C.border}` : 'none',
                   }}>{s}</div>
                 ))}
@@ -1126,7 +1110,7 @@ function SystemsSection() {
               <div style={{ paddingLeft: '4%', paddingRight: '2%' }}>
                 {['Research-led Redesign', 'UX & Screen Design', 'Systems Approach', 'Design Briefs'].map((s, j, arr) => (
                   <div key={s} style={{
-                    fontFamily: "'Syne', sans-serif", fontSize: '0.68rem', color: C.mid,
+                    fontFamily: "'Syne', sans-serif", fontSize: '0.58rem', color: C.mid,
                     padding: '4px 0', borderBottom: j < arr.length - 1 ? `1px solid ${C.border}` : 'none',
                   }}>{s}</div>
                 ))}
@@ -1139,9 +1123,9 @@ function SystemsSection() {
         <div style={{ marginBottom: 'clamp(3rem,5vw,5rem)' }}>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'clamp(2rem,5vw,5rem)', alignItems: 'start', marginBottom: 'clamp(1.5rem,2.5vw,2.5rem)' }}>
             <div>
-              <Reveal><SectionTag color={C.pink}>Actor Map</SectionTag></Reveal>
+              <Reveal><p style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.58rem', letterSpacing: '0.18em', textTransform: 'uppercase', color: C.muted, marginBottom: '0.75rem' }}>Actor Map</p></Reveal>
               <Reveal delay={0.05}>
-                <h2 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: 'clamp(1.75rem, 3.5vw, 2.75rem)', letterSpacing: '-0.02em', color: C.ink, marginBottom: '1rem' }}>Stakeholder Ecosystem</h2>
+                <h2 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: 'clamp(1.75rem,3.5vw,2.75rem)', letterSpacing: '-0.02em', color: C.ink, marginBottom: '1rem' }}><span style={{ background: 'linear-gradient(to bottom, transparent 60%, #FFE566 60%)', paddingBottom: '1px', display: 'inline' }}>Stakeholder</span> Ecosystem</h2>
               </Reveal>
               <Reveal delay={0.1}>
                 <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.9rem', color: C.mid, lineHeight: 1.7, margin: 0 }}>
@@ -1151,7 +1135,7 @@ function SystemsSection() {
             </div>
             <Reveal delay={0.05}>
               <div style={{ background: C.card, borderRadius: '14px', padding: 'clamp(1.25rem,2.5vw,1.75rem)', boxShadow: '6px 6px 18px rgba(0,0,0,0.07), -4px -4px 12px rgba(255,255,255,0.85)' }}>
-                <p style={{ fontFamily: "'EB Garamond', serif", fontSize: 'clamp(1.1rem,2vw,1.35rem)', color: C.ink, margin: '0 0 0.9rem', lineHeight: 1.25 }}>
+                <p style={{ fontFamily: "'Syne', sans-serif", fontSize: 'clamp(1.1rem,2vw,1.35rem)', color: C.ink, margin: '0 0 0.9rem', lineHeight: 1.25 }}>
                   <em style={{ fontStyle: 'italic' }}>How</em> was this helpful?
                 </p>
                 <div style={{ display: 'flex', gap: '10px', alignItems: 'flex-start' }}>
@@ -1172,9 +1156,9 @@ function SystemsSection() {
         <div style={{ marginBottom: 'clamp(3rem,5vw,5rem)' }}>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'clamp(2rem,5vw,5rem)', alignItems: 'start', marginBottom: 'clamp(1.5rem,2.5vw,2.5rem)' }}>
             <div>
-              <Reveal><SectionTag color={C.blue}>Knowledge Graph</SectionTag></Reveal>
+              <Reveal><p style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.58rem', letterSpacing: '0.18em', textTransform: 'uppercase', color: C.muted, marginBottom: '0.75rem' }}>Knowledge Graph</p></Reveal>
               <Reveal delay={0.05}>
-                <h2 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: 'clamp(1.75rem, 3.5vw, 2.75rem)', letterSpacing: '-0.02em', color: C.ink, marginBottom: '1rem' }}>Connecting the Dots</h2>
+                <h2 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: 'clamp(1.75rem,3.5vw,2.75rem)', letterSpacing: '-0.02em', color: C.ink, marginBottom: '1rem' }}><span style={{ background: 'linear-gradient(to bottom, transparent 60%, #FFE566 60%)', paddingBottom: '1px', display: 'inline' }}>Connecting</span> the Dots</h2>
               </Reveal>
               <Reveal delay={0.1}>
                 <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.9rem', color: C.mid, lineHeight: 1.7, margin: 0 }}>
@@ -1184,7 +1168,7 @@ function SystemsSection() {
             </div>
             <Reveal delay={0.05}>
               <div style={{ background: C.card, borderRadius: '14px', padding: 'clamp(1.25rem,2.5vw,1.75rem)', boxShadow: '6px 6px 18px rgba(0,0,0,0.07), -4px -4px 12px rgba(255,255,255,0.85)' }}>
-                <p style={{ fontFamily: "'EB Garamond', serif", fontSize: 'clamp(1.1rem,2vw,1.35rem)', color: C.ink, margin: '0 0 0.9rem', lineHeight: 1.25 }}>
+                <p style={{ fontFamily: "'Syne', sans-serif", fontSize: 'clamp(1.1rem,2vw,1.35rem)', color: C.ink, margin: '0 0 0.9rem', lineHeight: 1.25 }}>
                   <em style={{ fontStyle: 'italic' }}>How</em> was this helpful?
                 </p>
                 <div style={{ display: 'flex', gap: '10px', alignItems: 'flex-start' }}>
@@ -1196,18 +1180,16 @@ function SystemsSection() {
               </div>
             </Reveal>
           </div>
-          <Reveal delay={0.1}>
-            <ImgBox label="Knowledge Graph — to be uploaded" aspect="65%" />
-          </Reveal>
+          <EcosystemDiagram />
         </div>
 
         {/* Sub-systems — editorial layout */}
         <div style={{ marginBottom: 'clamp(3rem,5vw,5rem)' }}>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'clamp(2rem,5vw,5rem)', alignItems: 'start', marginBottom: 'clamp(1.5rem,2.5vw,2.5rem)' }}>
             <div>
-              <Reveal><SectionTag>Sub-systems</SectionTag></Reveal>
+              <Reveal><p style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.58rem', letterSpacing: '0.18em', textTransform: 'uppercase', color: C.muted, marginBottom: '0.75rem' }}>Sub-systems</p></Reveal>
               <Reveal delay={0.05}>
-                <h2 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: 'clamp(1.75rem, 3.5vw, 2.75rem)', letterSpacing: '-0.02em', color: C.ink, marginBottom: '1rem' }}>Sub-Systems of Formal Education</h2>
+                <h2 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: 'clamp(1.75rem,3.5vw,2.75rem)', letterSpacing: '-0.02em', color: C.ink, marginBottom: '1rem' }}><span style={{ background: 'linear-gradient(to bottom, transparent 60%, #FFE566 60%)', paddingBottom: '1px', display: 'inline' }}>Sub-Systems</span> of Formal Education</h2>
               </Reveal>
               <Reveal delay={0.1}>
                 <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.9rem', color: C.mid, lineHeight: 1.7, margin: 0 }}>
@@ -1217,7 +1199,7 @@ function SystemsSection() {
             </div>
             <Reveal delay={0.05}>
               <div style={{ background: C.card, borderRadius: '14px', padding: 'clamp(1.25rem,2.5vw,1.75rem)', boxShadow: '6px 6px 18px rgba(0,0,0,0.07), -4px -4px 12px rgba(255,255,255,0.85)' }}>
-                <p style={{ fontFamily: "'EB Garamond', serif", fontSize: 'clamp(1.1rem,2vw,1.35rem)', color: C.ink, margin: '0 0 0.9rem', lineHeight: 1.25 }}>
+                <p style={{ fontFamily: "'Syne', sans-serif", fontSize: 'clamp(1.1rem,2vw,1.35rem)', color: C.ink, margin: '0 0 0.9rem', lineHeight: 1.25 }}>
                   <em style={{ fontStyle: 'italic' }}>How</em> was this helpful?
                 </p>
                 <div style={{ display: 'flex', gap: '10px', alignItems: 'flex-start' }}>
@@ -1246,9 +1228,9 @@ function SystemsSection() {
         <div style={{ marginBottom: 'clamp(3rem,5vw,5rem)' }}>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'clamp(2rem,5vw,5rem)', alignItems: 'start', marginBottom: 'clamp(1.5rem,2.5vw,2.5rem)' }}>
             <div>
-              <Reveal><SectionTag color={C.pink}>Feedback Loops</SectionTag></Reveal>
+              <Reveal><p style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.58rem', letterSpacing: '0.18em', textTransform: 'uppercase', color: C.muted, marginBottom: '0.75rem' }}>Feedback Loops</p></Reveal>
               <Reveal delay={0.05}>
-                <h2 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: 'clamp(1.75rem, 3.5vw, 2.75rem)', letterSpacing: '-0.02em', color: C.ink, marginBottom: '1rem' }}>Reinforcing & Balancing Loops</h2>
+                <h2 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: 'clamp(1.75rem,3.5vw,2.75rem)', letterSpacing: '-0.02em', color: C.ink, marginBottom: '1rem' }}>Reinforcing & Balancing Loops</h2>
               </Reveal>
               <Reveal delay={0.1}>
                 <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.9rem', color: C.mid, lineHeight: 1.7, margin: 0 }}>
@@ -1258,7 +1240,7 @@ function SystemsSection() {
             </div>
             <Reveal delay={0.05}>
               <div style={{ background: C.card, borderRadius: '14px', padding: 'clamp(1.25rem,2.5vw,1.75rem)', boxShadow: '6px 6px 18px rgba(0,0,0,0.07), -4px -4px 12px rgba(255,255,255,0.85)' }}>
-                <p style={{ fontFamily: "'EB Garamond', serif", fontSize: 'clamp(1.1rem,2vw,1.35rem)', color: C.ink, margin: '0 0 0.9rem', lineHeight: 1.25 }}>
+                <p style={{ fontFamily: "'Syne', sans-serif", fontSize: 'clamp(1.1rem,2vw,1.35rem)', color: C.ink, margin: '0 0 0.9rem', lineHeight: 1.25 }}>
                   <em style={{ fontStyle: 'italic' }}>How</em> was this helpful?
                 </p>
                 <div style={{ display: 'flex', gap: '10px', alignItems: 'flex-start' }}>
@@ -1278,17 +1260,17 @@ function SystemsSection() {
         {/* HMW 1 */}
         <Reveal delay={0.1}>
           <div style={{
-            background: 'linear-gradient(145deg, #CC80DE 0%, #B555C5 45%, #8828A8 100%)',
-            borderRadius: '16px',
+            background: C.dark,
+            borderRadius: '14px',
             padding: 'clamp(2rem,4vw,3.5rem)',
             marginTop: 'clamp(2rem,4vw,3.5rem)',
-            boxShadow: '10px 10px 28px rgba(120,40,160,0.38), -5px -5px 16px rgba(255,255,255,0.65)',
           }}>
             <span style={{
               fontFamily: "'Space Mono', monospace",
-              fontSize: '0.55rem',
+              fontSize: '0.58rem',
               letterSpacing: '0.2em',
-              color: 'rgba(0,0,0,0.4)',
+              textTransform: 'uppercase',
+              color: C.darkMuted,
               display: 'block',
               marginBottom: '0.5rem',
               textAlign: 'left',
@@ -1296,17 +1278,17 @@ function SystemsSection() {
             <h3 style={{
               fontFamily: "'Syne', sans-serif",
               fontWeight: 500,
-              fontSize: 'clamp(1rem,1.8vw,1.2rem)',
-              color: C.ink,
+              fontSize: 'clamp(1.1rem,2vw,1.35rem)',
+              color: 'rgba(255,255,255,0.7)',
               marginBottom: '1.5rem',
               letterSpacing: '-0.01em',
               textAlign: 'left',
             }}>Motivation & Real-Time Achievement</h3>
             <p style={{
-              fontFamily: "'EB Garamond', serif",
+              fontFamily: "'Syne', sans-serif",
               fontStyle: 'italic',
               fontSize: 'clamp(1.3rem,3vw,2rem)',
-              color: 'rgba(0,0,0,0.68)',
+              color: '#FFFFFF',
               lineHeight: 1.55,
               maxWidth: 680,
               margin: '0 auto',
@@ -1376,14 +1358,14 @@ function SurveyInsights() {
 
   const DK = { bg: C.dark, border: '1px solid rgba(255,255,255,0.07)', ink: C.darkInk, mid: C.darkMid, muted: C.darkMuted, track: 'rgba(255,255,255,0.09)' }
   function DarkCard({ children, style = {} }) {
-    return <div style={{ background: DK.bg, borderRadius: '14px', border: DK.border, padding: 'clamp(1.25rem,2.5vw,2rem)', boxShadow: '6px 6px 18px rgba(0,0,0,0.4), -3px -3px 10px rgba(255,255,255,0.04)', ...style }}>{children}</div>
+    return <div style={{ background: DK.bg, borderRadius: '14px', border: DK.border, padding: 'clamp(1.25rem,2.5vw,2rem)', ...style }}>{children}</div>
   }
   function HBar({ label, pct, accent }) {
     return (
       <div style={{ marginBottom: '0.85rem' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '5px' }}>
-          <span style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.8rem', color: DK.ink, lineHeight: 1.3 }}>{label}</span>
-          <span style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.58rem', color: accent, letterSpacing: '0.05em', flexShrink: 0, marginLeft: '0.75rem', fontWeight: 700 }}>{pct}%</span>
+          <span style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.9rem', color: DK.ink, lineHeight: 1.3 }}>{label}</span>
+          <span style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.58rem', color: accent, letterSpacing: '0.05em', textTransform: 'uppercase', flexShrink: 0, marginLeft: '0.75rem', fontWeight: 700 }}>{pct}%</span>
         </div>
         <div style={{ height: 3, background: DK.track, borderRadius: 2 }}>
           <div style={{ width: `${pct}%`, height: '100%', background: accent, borderRadius: 2 }} />
@@ -1394,7 +1376,7 @@ function SurveyInsights() {
 
   function CardLabel({ children }) {
     return (
-      <div style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.52rem', letterSpacing: '0.18em', color: DK.muted, textTransform: 'uppercase', marginBottom: '1.25rem' }}>{children}</div>
+      <div style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.58rem', letterSpacing: '0.18em', color: DK.muted, textTransform: 'uppercase', marginBottom: '1.25rem' }}>{children}</div>
     )
   }
 
@@ -1411,8 +1393,8 @@ function SurveyInsights() {
           ].map(s => (
             <DarkCard key={s.n}>
               <div style={{ fontFamily: "'Syne', sans-serif", fontWeight: 600, fontSize: 'clamp(1.9rem,4vw,2.8rem)', color: s.color, lineHeight: 1, marginBottom: '0.5rem' }}>{s.n}</div>
-              <div style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.78rem', color: DK.mid, lineHeight: 1.45, marginBottom: '0.75rem' }}>{s.label}</div>
-              <span style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.52rem', letterSpacing: '0.14em', color: DK.muted, textTransform: 'uppercase' }}>{s.sub}</span>
+              <div style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.9rem', color: DK.mid, lineHeight: 1.45, marginBottom: '0.75rem' }}>{s.label}</div>
+              <span style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.58rem', letterSpacing: '0.14em', color: DK.muted, textTransform: 'uppercase' }}>{s.sub}</span>
             </DarkCard>
           ))}
         </div>
@@ -1438,18 +1420,18 @@ function SurveyInsights() {
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1.25rem', flexWrap: 'wrap', gap: '0.5rem' }}>
             <div>
               <CardLabel>How motivated are/were you to study? · 141 responses</CardLabel>
-              <div style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.8rem', color: DK.mid }}>Rated 1–5 &nbsp;·&nbsp; 1 = Not at all &nbsp;·&nbsp; 5 = Highly motivated</div>
+              <div style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.9rem', color: DK.mid }}>Rated 1–5 &nbsp;·&nbsp; 1 = Not at all &nbsp;·&nbsp; 5 = Highly motivated</div>
             </div>
-            <div style={{ fontFamily: "'EB Garamond', serif", fontStyle: 'italic', fontSize: '0.9rem', color: DK.muted, maxWidth: 260, textAlign: 'right', lineHeight: 1.5 }}>
+            <div style={{ fontFamily: "'Syne', sans-serif", fontStyle: 'italic', fontSize: '0.9rem', color: DK.muted, maxWidth: 260, textAlign: 'right', lineHeight: 1.5 }}>
               <span style={{ color: P.yellow, fontStyle: 'normal', fontWeight: 600 }}>76.6%</span> rated themselves a 3 or 4 — willing but inconsistent.
             </div>
           </div>
           <div style={{ display: 'flex', alignItems: 'flex-end', gap: '0.6rem', height: 88 }}>
             {motivationScale.map(m => (
               <div key={m.n} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '5px', height: '100%', justifyContent: 'flex-end' }}>
-                <span style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.55rem', color: m.color, fontWeight: 700, whiteSpace: 'nowrap' }}>{m.pct}%</span>
+                <span style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.58rem', color: m.color, fontWeight: 700, whiteSpace: 'nowrap', textTransform: 'uppercase' }}>{m.pct}%</span>
                 <div style={{ width: '100%', height: `${(m.pct / scaleMax) * 60}px`, background: m.color, borderRadius: '3px 3px 0 0', opacity: m.pct < 10 ? 0.55 : 1 }} />
-                <span style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.62rem', color: m.color, fontWeight: 700 }}>{m.n}</span>
+                <span style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.58rem', color: m.color, fontWeight: 700, textTransform: 'uppercase' }}>{m.n}</span>
               </div>
             ))}
           </div>
@@ -1482,8 +1464,8 @@ function SurveyInsights() {
           <div style={{ display: 'flex', gap: 2 }}>
             {pressureSegments.map(g => (
               <div key={g.label} style={{ flex: g.pct, minWidth: 0 }}>
-                <div style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: '1.25rem', color: g.color, lineHeight: 1 }}>{g.pct}%</div>
-                <div style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.68rem', color: DK.muted, marginTop: '3px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{g.label}</div>
+                <div style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: 'clamp(1.1rem,2vw,1.35rem)', color: g.color, lineHeight: 1 }}>{g.pct}%</div>
+                <div style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.58rem', color: DK.muted, marginTop: '3px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{g.label}</div>
               </div>
             ))}
           </div>
@@ -1506,11 +1488,11 @@ function ResearchSection() {
 
   function HighlightText({ text, keyword, color }) {
     if (!keyword || !text.includes(keyword)) {
-      return <span style={{ fontFamily: "'Syne', sans-serif", fontSize: '1rem', lineHeight: 1.7, color: C.ink }}>{text}</span>
+      return <span style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.9rem', lineHeight: 1.7, color: C.ink }}>{text}</span>
     }
     const parts = text.split(keyword)
     return (
-      <span style={{ fontFamily: "'Syne', sans-serif", fontSize: '1rem', lineHeight: 1.7, color: C.ink }}>
+      <span style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.9rem', lineHeight: 1.7, color: C.ink }}>
         {parts[0]}
         <span style={{ color, fontWeight: 500 }}>{keyword}</span>
         {parts[1]}
@@ -1521,9 +1503,14 @@ function ResearchSection() {
   return (
     <section id="research" style={{ background: C.surface, ...PAD }}>
       <Wrap>
-        <Reveal><Label>Primary Research</Label></Reveal>
-        <Reveal delay={0.05}>
-          <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.95rem', color: C.mid, lineHeight: 1.75, maxWidth: 640, marginBottom: 'clamp(2rem,3.5vw,3rem)' }}>
+        <Reveal><SectionTag>Research</SectionTag></Reveal>
+        <MaskReveal delay={0.05}>
+          <h2 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: 'clamp(1.75rem,3.5vw,2.75rem)', letterSpacing: '-0.02em', color: C.ink, margin: '0 0 1.25rem', lineHeight: 1.1 }}>
+            What students actually said
+          </h2>
+        </MaskReveal>
+        <Reveal delay={0.1}>
+          <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.9rem', color: C.mid, lineHeight: 1.75, maxWidth: 640, marginBottom: 'clamp(2rem,3.5vw,3rem)' }}>
             The systems maps pointed toward student motivation as a central leverage point. We went into <em>primary research to test whether that held, and to hear what students actually had to say about how they study.</em>
           </p>
         </Reveal>
@@ -1534,7 +1521,7 @@ function ResearchSection() {
             <h3 style={{
               fontFamily: "'Syne', sans-serif",
               fontWeight: 500,
-              fontSize: 'clamp(1.1rem, 2vw, 1.4rem)',
+              fontSize: 'clamp(1.1rem,2vw,1.35rem)',
               color: C.ink,
               marginBottom: '0.5rem',
               letterSpacing: '-0.02em',
@@ -1553,7 +1540,7 @@ function ResearchSection() {
           <h3 style={{
             fontFamily: "'Syne', sans-serif",
             fontWeight: 500,
-            fontSize: 'clamp(1.1rem, 2vw, 1.4rem)',
+            fontSize: 'clamp(1.1rem,2vw,1.35rem)',
             color: C.ink,
             marginBottom: '2rem',
             letterSpacing: '-0.02em',
@@ -1571,15 +1558,15 @@ function ResearchSection() {
           {insights.map((ins, i) => (
             <StaggerItem key={i} style={{ flex: 1 }}>
               <div style={{
-                border: `2px solid ${ins.color}`,
-                borderRadius: 18,
+                background: C.card,
+                borderRadius: '14px',
                 padding: '1.5rem 1.75rem',
-                background: 'transparent',
+                boxShadow: C.neuSm,
                 flex: 1,
                 display: 'flex',
                 flexDirection: 'column',
               }}>
-                <p style={{ fontSize: '1rem', lineHeight: 1.7, color: C.ink, margin: 0, fontFamily: "'Syne', sans-serif", flex: 1 }}>
+                <p style={{ fontSize: '0.9rem', lineHeight: 1.7, color: C.ink, margin: 0, fontFamily: "'Syne', sans-serif", flex: 1 }}>
                   <span style={{ color: ins.color, fontWeight: 500 }}>{ins.keyword}</span>
                   {ins.text.replace(ins.keyword, '')}
                 </p>
@@ -1591,8 +1578,8 @@ function ResearchSection() {
         {/* Target Audience */}
         <Reveal delay={0.1}>
           <div style={{
-            background: '#A6CA00',
-            borderRadius: '16px',
+            background: C.dark,
+            borderRadius: '14px',
             padding: 'clamp(1.75rem,3vw,2.75rem)',
             textAlign: 'left',
           }}>
@@ -1601,14 +1588,14 @@ function ResearchSection() {
               fontSize: '0.58rem',
               letterSpacing: '0.18em',
               textTransform: 'uppercase',
-              color: 'rgba(0,0,0,0.45)',
+              color: C.darkMuted,
               marginBottom: '0.75rem',
             }}>Target Audience</div>
             <p style={{
               fontFamily: "'Syne', sans-serif",
               fontWeight: 500,
-              fontSize: 'clamp(1rem,2vw,1.35rem)',
-              color: '#000',
+              fontSize: 'clamp(1.1rem,2vw,1.35rem)',
+              color: C.darkInk,
               margin: 0,
             }}>
               Students 13+ years of age, primarily from upper-middle class income groups
@@ -1634,9 +1621,14 @@ function DefineSection() {
   return (
     <section id="define" style={{ background: C.bg, ...PAD }}>
       <Wrap>
-        <Reveal><Label>Define</Label></Reveal>
-        <Reveal delay={0.05}>
-          <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.95rem', color: C.mid, lineHeight: 1.75, maxWidth: 640, marginBottom: 'clamp(2rem,3.5vw,3rem)' }}>
+        <Reveal><SectionTag>Define</SectionTag></Reveal>
+        <MaskReveal delay={0.05}>
+          <h2 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: 'clamp(1.75rem,3.5vw,2.75rem)', letterSpacing: '-0.02em', color: C.ink, margin: '0 0 1.25rem', lineHeight: 1.1 }}>
+            <span style={{ background: 'linear-gradient(to bottom, transparent 60%, #FFE566 60%)', paddingBottom: '1px', display: 'inline' }}>Translating</span> research into direction
+          </h2>
+        </MaskReveal>
+        <Reveal delay={0.1}>
+          <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.9rem', color: C.mid, lineHeight: 1.75, maxWidth: 640, marginBottom: 'clamp(2rem,3.5vw,3rem)' }}>
             The research was clear about the problem. Now I had to define what we were actually building, making sure every feature had a reason rooted in what we heard, not what seemed like a good idea.
           </p>
         </Reveal>
@@ -1644,21 +1636,18 @@ function DefineSection() {
         {/* Product Definition */}
         <div style={{ marginBottom: 'clamp(3rem,5vw,5rem)' }}>
           <Reveal>
-            <SectionTag>Product Definition</SectionTag>
+            <p style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.58rem', letterSpacing: '0.18em', textTransform: 'uppercase', color: C.muted, marginBottom: '0.75rem' }}>Product Definition</p>
           </Reveal>
           <Reveal delay={0.1}>
             <p style={{
-              fontFamily: "'EB Garamond', serif",
-              fontSize: 'clamp(1rem,2vw,1.3rem)',
-              color: C.ink,
-              lineHeight: 1.5,
-              maxWidth: 680,
-              marginTop: '0.5rem',
-              marginLeft: 'auto',
-              marginRight: 'auto',
-              textAlign: 'left',
+              fontFamily: "'Syne', sans-serif",
+              fontSize: '0.9rem',
+              color: C.mid,
+              lineHeight: 1.75,
+              maxWidth: '70ch',
+              margin: '0.5rem 0 0',
             }}>
-              Study Buddy is an <strong style={{ color: C.ink }}>AI-powered learning companion</strong> that helps students study smarter by transforming notes into engaging video explanations, optimising focus through personalised Pomodoro sessions, and enhancing memory retention using <strong style={{ color: C.ink }}>science-backed mnemonics</strong>, all while tracking progress to show real learning gains. This all-in-one app combines <em>cognitive psychology with smart technology</em> to make studying more effective, efficient, and enjoyable.
+              Study Buddy is an <strong style={{ color: C.ink, fontWeight: 600 }}>AI-powered learning companion</strong> that helps students study smarter by transforming notes into engaging video explanations, optimising focus through personalised Pomodoro sessions, and enhancing memory retention using <strong style={{ color: C.ink, fontWeight: 600 }}>science-backed mnemonics</strong>, all while tracking progress to show real learning gains. This all-in-one app combines cognitive psychology with smart technology to make studying more effective, efficient, and enjoyable.
             </p>
           </Reveal>
         </div>
@@ -1668,7 +1657,7 @@ function DefineSection() {
           <h3 style={{
             fontFamily: "'Syne', sans-serif",
             fontWeight: 500,
-            fontSize: 'clamp(1.1rem, 2vw, 1.4rem)',
+            fontSize: 'clamp(1.1rem,2vw,1.35rem)',
             color: C.ink,
             marginBottom: '1.5rem',
             letterSpacing: '-0.02em',
@@ -1683,29 +1672,24 @@ function DefineSection() {
           marginBottom: 'clamp(3rem,5vw,5rem)',
         }}>
           {quotes.map((q, i) => {
-            const voiceColors = ['#FE60AC', '#4A5DE2', '#A6CA00', '#CE93D8', '#FAFF38', '#FE60AC']
+            const voiceColors = ['#FE60AC', '#4A5DE2', '#A6CA00', '#CE93D8', '#22C55E', '#FE60AC']
             return (
             <StaggerItem key={i}>
               <div style={{
-                background: C.surface,
-                border: `1.5px solid ${voiceColors[i % voiceColors.length]}`,
-                borderRadius: '12px',
+                background: C.card,
+                borderRadius: '14px',
                 padding: '1.5rem',
+                boxShadow: C.neuSm,
                 height: '100%',
               }}>
-                <div style={{
-                  fontFamily: "'EB Garamond', serif",
-                  fontSize: '2rem',
-                  color: C.pink,
-                  lineHeight: 1,
-                  marginBottom: '0.5rem',
-                }}>"</div>
                 <p style={{
-                  fontFamily: "'EB Garamond', serif",
-                  fontSize: '1.2rem',
+                  fontFamily: "'Syne', sans-serif",
+                  fontSize: '0.9rem',
                   color: C.mid,
-                  lineHeight: 1.65,
+                  lineHeight: 1.7,
                   margin: 0,
+                  borderLeft: `2px solid ${C.border}`,
+                  paddingLeft: '0.75rem',
                 }}>{q.replace(/^"|"$/g, '')}</p>
               </div>
             </StaggerItem>
@@ -1718,7 +1702,7 @@ function DefineSection() {
             <h3 style={{
               fontFamily: "'Syne', sans-serif",
               fontWeight: 500,
-              fontSize: 'clamp(1.1rem, 2vw, 1.4rem)',
+              fontSize: 'clamp(1.1rem,2vw,1.35rem)',
               color: C.ink,
               marginBottom: '0.5rem',
               letterSpacing: '-0.02em',
@@ -1732,12 +1716,22 @@ function DefineSection() {
           <SurveyInsights />
         </div>
 
+      </Wrap>
+    </section>
+  )
+}
+
+// ─── IA + HMW + User Story (after Personas) ───────────────
+function PostPersonasSection() {
+  return (
+    <section style={{ background: C.bg, ...PAD }}>
+      <Wrap>
         {/* IA Diagram */}
         <Reveal>
           <h3 style={{
             fontFamily: "'Syne', sans-serif",
             fontWeight: 500,
-            fontSize: 'clamp(1.1rem, 2vw, 1.4rem)',
+            fontSize: 'clamp(1.1rem,2vw,1.35rem)',
             color: C.ink,
             marginBottom: '0.5rem',
             letterSpacing: '-0.02em',
@@ -1760,38 +1754,36 @@ function DefineSection() {
           </div>
         </Reveal>
 
-        {/* HMW 2 */}
+        {/* HMW Interface Design & Study Experience */}
         <Reveal delay={0.1}>
           <div style={{
-            background: 'linear-gradient(145deg, #BCDC28 0%, #96BC00 45%, #668500 100%)',
-            borderRadius: '16px',
+            background: C.dark,
+            borderRadius: '14px',
             padding: 'clamp(2rem,4vw,3.5rem)',
             marginBottom: 'clamp(2.5rem,4vw,4rem)',
-            boxShadow: '10px 10px 28px rgba(90,120,0,0.38), -5px -5px 16px rgba(255,255,255,0.65)',
           }}>
             <span style={{
               fontFamily: "'Space Mono', monospace",
-              fontSize: '0.55rem',
+              fontSize: '0.58rem',
               letterSpacing: '0.2em',
-              color: 'rgba(0,0,0,0.4)',
+              textTransform: 'uppercase',
+              color: C.darkMuted,
               display: 'block',
               marginBottom: '0.5rem',
-              textAlign: 'left',
             }}>HOW MIGHT WE</span>
             <h3 style={{
               fontFamily: "'Syne', sans-serif",
               fontWeight: 500,
-              fontSize: 'clamp(1rem,1.8vw,1.2rem)',
-              color: C.ink,
+              fontSize: 'clamp(1.1rem,2vw,1.35rem)',
+              color: 'rgba(255,255,255,0.7)',
               marginBottom: '1.5rem',
               letterSpacing: '-0.01em',
-              textAlign: 'left',
             }}>Interface Design & Study Experience</h3>
             <p style={{
-              fontFamily: "'EB Garamond', serif",
+              fontFamily: "'Syne', sans-serif",
               fontStyle: 'italic',
               fontSize: 'clamp(1.2rem,2.8vw,1.85rem)',
-              color: 'rgba(0,0,0,0.68)',
+              color: '#FFFFFF',
               lineHeight: 1.55,
               maxWidth: 700,
               margin: '0 auto',
@@ -1810,8 +1802,8 @@ function DefineSection() {
           }}>
             <Label>User Story</Label>
             <p style={{
-              fontFamily: "'EB Garamond', serif",
-              fontSize: 'clamp(1.05rem,2vw,1.3rem)',
+              fontFamily: "'Syne', sans-serif",
+              fontSize: 'clamp(1.1rem,2vw,1.35rem)',
               color: C.ink,
               lineHeight: 1.7,
               margin: 0,
@@ -1822,8 +1814,9 @@ function DefineSection() {
               {['Pomodoro Flow', 'Scan to Video', 'Memorise'].map(f => (
                 <span key={f} style={{
                   fontFamily: "'Space Mono', monospace",
-                  fontSize: '0.6rem',
+                  fontSize: '0.58rem',
                   letterSpacing: '0.1em',
+                  textTransform: 'uppercase',
                   color: C.pink,
                   border: `1px solid ${C.pink}40`,
                   padding: '4px 10px', borderRadius: '99px',
@@ -1843,147 +1836,162 @@ function PersonasSection() {
     {
       name: 'Aarav Mehta', age: '14 years',
       context: 'Upper-middle-class · Private CBSE · Bangalore',
-      quote: '"I know I can do well if I just stay consistent… I just need something to keep me going."',
+      quote: <>"I know I can do well if I just stay consistent… I just need something to really…. keep<br />me going."</>,
       personality: 'Ambitious, tech-savvy, struggles with consistency',
-      learningStyle: 'Enjoys interactive and gamified learning; gets bored with repetitive tasks',
+      learningStyle: <><strong style={{ fontWeight: 600 }}>Enjoys interactive and gamified learning</strong>; gets bored with repetitive tasks</>,
       needs: ['Structured Study Plan', 'External Motivation', 'Engaging & Fun Learning', 'Short & Effective Study Sessions', 'Social Connection'],
       challenges: ['Procrastination', 'Easily Distracted', 'Lack of Study Consistency', 'Overwhelmed by Large Tasks'],
       opportunities: ['Streak-Based Motivation', 'Pomodoro-Style Focus Mode', 'Accountability Buddy System', 'Personalised Study Challenges'],
       color: C.blue,
+      borderColor: '#CE93D8',
       initials: 'AM',
       photo: '/persona-aarav.jpg',
+      photoStyle: { objectPosition: 'center 20%' },
     },
     {
       name: 'Riya Sharma', age: '15 years',
       context: 'Upper-middle-class · Private CBSE · Delhi',
       quote: '"I\'ll study hard for one day, then forget everything by week\'s end. There\'s got to be a better way to remember."',
       personality: 'Social, artistic, impatient with slow progress',
-      learningStyle: 'Retains best through videos and interactive content',
+      learningStyle: <strong style={{ fontWeight: 600 }}>Retains best through videos and interactive content</strong>,
       needs: ['Bite-sized study sessions', 'Visual explanations', 'Progress tracking', 'Fun breaks', 'Friendly competition'],
       challenges: ['Loses focus after 20 minutes', 'Forgets concepts quickly', 'Procrastinates on revision', 'Overwhelmed by syllabus'],
       opportunities: ['AI Video Notes', 'Focus Timer with motivational alerts', 'Memory Games (spaced repetition)', 'Study Squad', 'Progress Mascot'],
       color: C.pink,
+      borderColor: '#FE60AC',
       initials: 'RS',
       photo: '/persona-riya.jpg',
+      photoStyle: { objectPosition: 'center 72%' },
     },
   ]
 
   return (
     <section id="personas" style={{ background: C.surface, ...PAD }}>
       <Wrap>
-        <Reveal><Label>User Personas & Empathy Map</Label></Reveal>
+        <Reveal><SectionTag>Personas</SectionTag></Reveal>
+        <MaskReveal delay={0.05}>
+          <h2 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: 'clamp(1.75rem,3.5vw,2.75rem)', letterSpacing: '-0.02em', color: C.ink, margin: '0 0 1.75rem', lineHeight: 1.1 }}>
+            <span style={{ background: 'linear-gradient(to bottom, transparent 60%, #FFE566 60%)', paddingBottom: '1px', display: 'inline' }}>Who</span> we were designing for
+          </h2>
+        </MaskReveal>
 
-        {/* Empathy Map */}
-        <Reveal>
-          <h3 style={{
-            fontFamily: "'Syne', sans-serif",
-            fontWeight: 500,
-            fontSize: 'clamp(1.1rem, 2vw, 1.4rem)',
-            color: C.ink,
-            marginBottom: '0.5rem',
-            letterSpacing: '-0.02em',
-          }}>
-            Empathy Map
-          </h3>
-          <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.9rem', color: C.mid, lineHeight: 1.7, marginBottom: '2rem', maxWidth: 560 }}>
-            What our primary user says, does, thinks, and feels, capturing the emotional landscape of a student who wants to do better.
-          </p>
-        </Reveal>
-        <Reveal delay={0.1}>
-          <div style={{ marginBottom: 'clamp(3rem,5vw,5rem)', borderRadius: '16px', overflow: 'hidden', border: `1px solid ${C.border}` }}>
-            <EmpathyMap />
-          </div>
-        </Reveal>
-
-        {/* Persona cards */}
+        {/* Persona cards — CSS subgrid so sections align across both cards */}
         <StaggerGrid style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))',
-          gap: '1.5rem',
+          gridTemplateColumns: '1fr 1fr',
+          gridTemplateRows: 'auto auto auto auto auto',
+          gap: '0 1.5rem',
         }}>
           {personas.map((p) => (
-            <StaggerItem key={p.name}>
-              <div style={{
-                background: C.bg,
-                border: `1px solid ${C.border}`,
-                borderRadius: '16px',
-                overflow: 'hidden',
-              }}>
-                <div style={{ position: 'relative', overflow: 'hidden' }}>
-                  {p.photo ? (
-                    <div style={{ position: 'relative', height: 220 }}>
-                      <img src={p.photo} alt={p.name}
-                        style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center 20%', display: 'block' }} />
-                      <div style={{
-                        position: 'absolute', inset: 0,
-                        background: 'linear-gradient(to top, rgba(6,21,40,0.82) 0%, rgba(6,21,40,0.18) 55%, transparent 100%)',
-                      }} />
-                      <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, padding: '1.25rem 2rem' }}>
-                        <h4 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: '1.3rem', color: 'white', margin: '0 0 4px' }}>{p.name}</h4>
-                        <span style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.6rem', color: 'rgba(255,255,255,0.65)', letterSpacing: '0.08em' }}>{p.age} · {p.context}</span>
-                      </div>
+            <StaggerItem key={p.name} style={{
+              display: 'grid',
+              gridTemplateRows: 'subgrid',
+              gridRow: 'span 5',
+              background: C.bg,
+              border: `1px solid ${C.border}`,
+              borderRadius: '16px',
+              overflow: 'hidden',
+            }}>
+              {/* Row 1: Photo / colour header */}
+              <div>
+                {p.photo ? (
+                  <div style={{ position: 'relative', height: 240, overflow: 'hidden' }}>
+                    <img src={p.photo} alt={p.name}
+                      loading="lazy" decoding="async" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', ...p.photoStyle }} />
+                    <div style={{
+                      position: 'absolute', inset: 0,
+                      background: 'linear-gradient(to top, rgba(6,21,40,0.85) 0%, rgba(6,21,40,0.18) 55%, transparent 100%)',
+                    }} />
+                    <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, padding: '1.25rem 1.75rem' }}>
+                      <h4 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: 'clamp(1.1rem,2vw,1.35rem)', color: 'white', margin: '0 0 4px' }}>{p.name}</h4>
+                      <span style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.58rem', color: 'rgba(255,255,255,0.65)', letterSpacing: '0.08em', textTransform: 'uppercase' }}>{p.age} · {p.context}</span>
                     </div>
-                  ) : (
-                    <div style={{ background: p.color, padding: '2rem' }}>
-                      <div style={{
-                        width: 56, height: 56, borderRadius: '50%',
-                        background: 'rgba(255,255,255,0.2)',
-                        display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        marginBottom: '1rem',
-                      }}>
-                        <span style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: '1.1rem', color: 'white' }}>{p.initials}</span>
-                      </div>
-                      <h4 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: '1.3rem', color: 'white', margin: '0 0 4px' }}>{p.name}</h4>
-                      <span style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.6rem', color: 'rgba(255,255,255,0.65)', letterSpacing: '0.08em' }}>{p.age} · {p.context}</span>
+                  </div>
+                ) : (
+                  <div style={{ background: p.color, padding: '2rem' }}>
+                    <div style={{ width: 56, height: 56, borderRadius: '50%', background: 'rgba(255,255,255,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1rem' }}>
+                      <span style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: 'clamp(1.1rem,2vw,1.35rem)', color: 'white' }}>{p.initials}</span>
                     </div>
-                  )}
-                </div>
-
-                <div style={{ padding: '1.75rem' }}>
-                  <p style={{
-                    fontFamily: "'EB Garamond', serif",
-                    fontStyle: 'italic',
-                    fontSize: '1.05rem',
-                    color: C.mid,
-                    lineHeight: 1.65,
-                    borderLeft: `3px solid ${p.color}`,
-                    paddingLeft: '1rem',
-                    marginBottom: '1.5rem',
-                  }}>{p.quote}</p>
-
-                  <div style={{ marginBottom: '1.25rem' }}>
-                    <span style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.58rem', letterSpacing: '0.15em', color: C.muted, textTransform: 'uppercase', display: 'block', marginBottom: '4px' }}>Personality</span>
-                    <span style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.85rem', color: C.ink }}>{p.personality}</span>
+                    <h4 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: 'clamp(1.1rem,2vw,1.35rem)', color: 'white', margin: '0 0 4px' }}>{p.name}</h4>
+                    <span style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.58rem', color: 'rgba(255,255,255,0.65)', letterSpacing: '0.08em' }}>{p.age} · {p.context}</span>
                   </div>
-                  <div style={{ marginBottom: '1.5rem' }}>
-                    <span style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.58rem', letterSpacing: '0.15em', color: C.muted, textTransform: 'uppercase', display: 'block', marginBottom: '4px' }}>Learning Style</span>
-                    <span style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.85rem', color: C.ink }}>{p.learningStyle}</span>
-                  </div>
+                )}
+              </div>
 
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '1rem' }}>
-                    {[
-                      { title: 'Needs',        items: p.needs,        dot: p.color },
-                      { title: 'Challenges',   items: p.challenges,   dot: C.pink },
-                      { title: 'Opportunities', items: p.opportunities, dot: C.green },
-                    ].map(col => (
-                      <div key={col.title}>
-                        <span style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.65rem', letterSpacing: '0.1em', color: C.muted, textTransform: 'uppercase', display: 'block', marginBottom: '6px' }}>{col.title}</span>
-                        <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '5px' }}>
-                          {col.items.map((item, ii) => (
-                            <li key={ii} style={{ display: 'flex', gap: '6px', alignItems: 'flex-start' }}>
-                              <div style={{ width: 4, height: 4, borderRadius: '50%', background: col.dot, marginTop: '0.45em', flexShrink: 0 }} />
-                              <span style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.6rem', color: C.mid, lineHeight: 1.45 }}>{item}</span>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    ))}
-                  </div>
+              {/* Row 2: Quote */}
+              <div style={{ padding: '1.75rem 1.75rem 1.5rem', borderBottom: `1px solid ${C.border}` }}>
+                <p style={{
+                  fontFamily: "'Lora', Georgia, serif",
+                  fontStyle: 'normal',
+                  fontSize: 'clamp(1.2rem,2.2vw,1.5rem)',
+                  color: C.mid,
+                  lineHeight: 1.25,
+                  borderLeft: `3px solid ${p.borderColor || p.color}`,
+                  paddingLeft: '1rem',
+                  margin: 0,
+                }}>{p.quote}</p>
+              </div>
+
+              {/* Row 3: Personality */}
+              <div style={{ padding: '1.25rem 1.75rem', borderBottom: `1px solid ${C.border}` }}>
+                <span style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.58rem', letterSpacing: '0.15em', color: C.muted, textTransform: 'uppercase', display: 'block', marginBottom: '5px' }}>Personality</span>
+                <span style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.9rem', color: C.ink }}>{p.personality}</span>
+              </div>
+
+              {/* Row 4: Learning Style */}
+              <div style={{ padding: '1.25rem 1.75rem', borderBottom: `1px solid ${C.border}` }}>
+                <span style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.58rem', letterSpacing: '0.15em', color: C.muted, textTransform: 'uppercase', display: 'block', marginBottom: '5px' }}>Learning Style</span>
+                <span style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.9rem', color: C.ink }}>{p.learningStyle}</span>
+              </div>
+
+              {/* Row 5: Needs / Challenges / Opportunities */}
+              <div style={{ padding: '1.25rem 1.75rem 1.75rem' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '1rem' }}>
+                  {[
+                    { title: 'Needs',         items: p.needs,         dot: p.color },
+                    { title: 'Challenges',    items: p.challenges,    dot: C.pink },
+                    { title: 'Opportunities', items: p.opportunities, dot: C.green },
+                  ].map(col => (
+                    <div key={col.title}>
+                      <span style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.58rem', letterSpacing: '0.1em', color: C.muted, textTransform: 'uppercase', display: 'block', marginBottom: '8px' }}>{col.title}</span>
+                      <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                        {col.items.map((item, ii) => (
+                          <li key={ii} style={{ display: 'flex', gap: '6px', alignItems: 'flex-start' }}>
+                            <div style={{ width: 4, height: 4, borderRadius: '50%', background: col.dot, marginTop: '0.45em', flexShrink: 0 }} />
+                            <span style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.58rem', color: C.mid, lineHeight: 1.45, textTransform: 'uppercase' }}>{item}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  ))}
                 </div>
               </div>
             </StaggerItem>
           ))}
         </StaggerGrid>
+
+        {/* Empathy Map */}
+        <Reveal delay={0.1}>
+          <div style={{ marginTop: 'clamp(5rem,8vw,8rem)' }}>
+            <h3 style={{
+              fontFamily: "'Syne', sans-serif",
+              fontWeight: 500,
+              fontSize: 'clamp(1.1rem,2vw,1.35rem)',
+              color: C.ink,
+              marginBottom: '0.5rem',
+              letterSpacing: '-0.02em',
+            }}>
+              Empathy Map
+            </h3>
+            <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.9rem', color: C.mid, lineHeight: 1.7, marginBottom: '2rem', maxWidth: 560 }}>
+              What our primary user says, does, thinks, and feels, capturing the emotional landscape of a student who wants to do better.
+            </p>
+            <div style={{ maxWidth: 780, margin: '0 auto' }}>
+              <EmpathyMap />
+            </div>
+          </div>
+        </Reveal>
+
       </Wrap>
     </section>
   )
@@ -2001,9 +2009,14 @@ function DesignSystemSection() {
   ]
 
   return (
-    <section id="design-system" style={{ background: C.bg, ...PAD }}>
+    <section id="design-system" style={{ background: C.dark, ...PAD }}>
       <Wrap>
-        <Reveal><Label>Design System</Label></Reveal>
+        <Reveal><SectionTag color="rgba(255,255,255,0.55)">Design System</SectionTag></Reveal>
+        <MaskReveal delay={0.05}>
+          <h2 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: 'clamp(1.75rem,3.5vw,2.75rem)', letterSpacing: '-0.02em', color: C.darkInk, margin: '0 0 1.75rem', lineHeight: 1.1 }}>
+            The visual language
+          </h2>
+        </MaskReveal>
 
         <StaggerGrid style={{
           display: 'grid',
@@ -2012,13 +2025,13 @@ function DesignSystemSection() {
           marginBottom: 'clamp(2.5rem,4vw,4rem)',
         }}>
           <StaggerItem>
-            <div style={{ background: C.card, borderRadius: '14px', padding: '1.75rem', height: '100%', boxShadow: C.neu }}>
-              <div style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.58rem', letterSpacing: '0.2em', color: C.blue, marginBottom: '0.75rem' }}>GRID SYSTEM</div>
-              <h4 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: '1.1rem', color: C.ink, marginBottom: '1rem' }}>16px Baseline Grid</h4>
+            <div style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '14px', padding: '1.75rem', height: '100%' }}>
+              <div style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.58rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: C.darkMuted, marginBottom: '0.75rem' }}>GRID SYSTEM</div>
+              <h4 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: 'clamp(1.1rem,2vw,1.35rem)', color: C.darkInk, marginBottom: '1rem' }}>16px Baseline Grid</h4>
               <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '6px' }}>
                 {['16px margin & gutter space', '8pt baseline grid', 'Perfect Fifth scale (×1.5) for headers', 'Golden Ratio (×1.618) for incremental type'].map(item => (
-                  <li key={item} style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.65rem', color: C.mid, display: 'flex', gap: '8px', alignItems: 'flex-start' }}>
-                    <div style={{ width: 4, height: 4, borderRadius: '50%', background: C.blue, marginTop: '0.45em', flexShrink: 0 }} />
+                  <li key={item} style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.58rem', textTransform: 'uppercase', color: C.darkMid, display: 'flex', gap: '8px', alignItems: 'flex-start' }}>
+                    <div style={{ width: 4, height: 4, borderRadius: '50%', background: 'rgba(255,255,255,0.3)', marginTop: '0.45em', flexShrink: 0 }} />
                     {item}
                   </li>
                 ))}
@@ -2027,26 +2040,26 @@ function DesignSystemSection() {
           </StaggerItem>
 
           <StaggerItem>
-            <div style={{ background: C.card, borderRadius: '14px', padding: '1.75rem', height: '100%', boxShadow: C.neu }}>
-              <div style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.58rem', letterSpacing: '0.2em', color: C.pink, marginBottom: '0.75rem' }}>TYPOGRAPHY</div>
+            <div style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '14px', padding: '1.75rem', height: '100%' }}>
+              <div style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.58rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: C.darkMuted, marginBottom: '0.75rem' }}>TYPOGRAPHY</div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                 <div>
-                  <div style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: '2rem', color: C.ink, lineHeight: 1 }}>Absans</div>
-                  <div style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.58rem', color: C.muted, marginTop: '4px' }}>H1 · H2 · Content headings</div>
+                  <div style={{ fontFamily: "'AbSans', sans-serif", fontWeight: 500, fontSize: '2rem', color: C.darkInk, lineHeight: 1 }}>Absans</div>
+                  <div style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.58rem', color: C.darkMuted, marginTop: '4px', textTransform: 'uppercase' }}>H1 · H2 · Content headings</div>
                 </div>
                 <div>
-                  <div style={{ fontFamily: "'Space Mono', monospace", fontWeight: 400, fontSize: '1rem', color: C.mid }}>Urbanist</div>
-                  <div style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.58rem', color: C.muted, marginTop: '4px' }}>Body text · UI elements</div>
+                  <div style={{ fontFamily: "'Urbanist', sans-serif", fontWeight: 500, fontSize: '1.5rem', color: C.darkMid, lineHeight: 1 }}>Urbanist</div>
+                  <div style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.58rem', color: C.darkMuted, marginTop: '4px', textTransform: 'uppercase' }}>Body text · UI elements</div>
                 </div>
               </div>
             </div>
           </StaggerItem>
 
           <StaggerItem>
-            <div style={{ background: C.card, borderRadius: '14px', padding: '1.75rem', height: '100%', boxShadow: C.neu }}>
-              <div style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.58rem', letterSpacing: '0.2em', color: C.muted, marginBottom: '0.75rem' }}>TARGET ENERGY</div>
-              <h4 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: '1.1rem', color: C.ink, marginBottom: '0.75rem' }}>Fresh · Youthful · Focused</h4>
-              <p style={{ fontFamily: "'EB Garamond', serif", fontSize: '1rem', color: C.mid, lineHeight: 1.65, margin: 0 }}>
+            <div style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '14px', padding: '1.75rem', height: '100%' }}>
+              <div style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.58rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: C.darkMuted, marginBottom: '0.75rem' }}>TARGET ENERGY</div>
+              <h4 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: 'clamp(1.1rem,2vw,1.35rem)', color: C.darkInk, marginBottom: '0.75rem' }}>Fresh · Youthful · Focused</h4>
+              <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.9rem', color: C.darkMid, lineHeight: 1.65, margin: 0 }}>
                 Palette chosen to resonate with 13+ age group: vibrant enough to feel energetic, restrained enough to aid focus during long study sessions.
               </p>
             </div>
@@ -2055,11 +2068,11 @@ function DesignSystemSection() {
 
         {/* Colour Palette */}
         <Reveal>
-          <h3 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: '1.2rem', color: C.ink, marginBottom: '1.25rem', letterSpacing: '-0.02em' }}>Colour Palette</h3>
+          <h3 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: 'clamp(1.1rem,2vw,1.35rem)', color: C.darkInk, marginBottom: '1.25rem', letterSpacing: '-0.02em' }}>Colour Palette</h3>
         </Reveal>
         <StaggerGrid style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fill, minmax(120px, 1fr))',
+          gridTemplateColumns: 'repeat(6, 1fr)',
           gap: '10px',
         }}>
           {colors.map(col => (
@@ -2067,14 +2080,14 @@ function DesignSystemSection() {
               <div>
                 <div style={{
                   background: col.hex,
-                  borderRadius: '10px',
-                  height: '72px',
+                  borderRadius: '8px',
+                  height: '120px',
                   marginBottom: '8px',
                   border: col.hex === '#FFFFFF' ? `1px solid ${C.border}` : 'none',
                 }} />
-                <div style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: '0.72rem', color: C.ink, marginBottom: '2px' }}>{col.name}</div>
-                <div style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.58rem', color: C.muted, marginBottom: '2px' }}>{col.hex}</div>
-                <div style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.55rem', color: C.muted, lineHeight: 1.4 }}>{col.role}</div>
+                <div style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: '0.58rem', color: C.darkInk, marginBottom: '2px' }}>{col.name}</div>
+                <div style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.58rem', color: C.darkMuted, marginBottom: '2px', textTransform: 'uppercase' }}>{col.hex}</div>
+                <div style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.58rem', color: C.darkMuted, lineHeight: 1.4, textTransform: 'uppercase' }}>{col.role}</div>
               </div>
             </StaggerItem>
           ))}
@@ -2086,235 +2099,50 @@ function DesignSystemSection() {
 
 // ─── Mockups Section ──────────────────────────────────────
 function MockupsSection() {
+  const SB_PAGES = [1,2,3,4,5,6,7,8,9]
   return (
-    <section id="mockups" style={{ background: C.bg, ...PAD }}>
+    <section id="mockups" style={{ background: C.bg, paddingTop: PAD.paddingTop, paddingBottom: 0 }}>
       <Wrap>
-        <Reveal><Label>Touchpoints</Label></Reveal>
-
-        {/* Row 1 — Notes to Nuggets (wide) */}
-        <Reveal delay={0.05}>
-          <div style={{
-            borderRadius: '20px',
-            overflow: 'hidden',
-            marginBottom: 'clamp(1rem,2vw,1.5rem)',
-            background: '#f5f5f3',
-          }}>
-            <img
-              src="/sb-mockup-notes.png"
-              alt="Notes to Nuggets — upload flow"
-              style={{ width: '100%', display: 'block', objectFit: 'cover' }}
-            />
-          </div>
-        </Reveal>
-
-        {/* Row 2 — Home screen + App icon */}
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: '1fr 1fr',
-          gap: 'clamp(1rem,2vw,1.5rem)',
-          marginBottom: 'clamp(1rem,2vw,1.5rem)',
-        }}>
-          <Reveal delay={0.08}>
-            <div style={{ borderRadius: '20px', overflow: 'hidden', background: '#e8e8e6' }}>
-              <img
-                src="/sb-mockup-home.png"
-                alt="Study Buddy home screen"
-                style={{ width: '100%', display: 'block', objectFit: 'cover' }}
-              />
-            </div>
-          </Reveal>
-          <Reveal delay={0.12}>
-            <div style={{ borderRadius: '20px', overflow: 'hidden', background: '#f0f0ee' }}>
-              <img
-                src="/sb-mockup-icon.png"
-                alt="Study Buddy app icon on iPhone"
-                style={{ width: '100%', display: 'block', objectFit: 'cover' }}
-              />
-            </div>
-          </Reveal>
-        </div>
-
-        {/* Row 3 — Planner (dark box for transparent bg) */}
-        <Reveal delay={0.1}>
-          <div style={{
-            borderRadius: '20px',
-            overflow: 'hidden',
-            marginBottom: 'clamp(1rem,2vw,1.5rem)',
-            background: '#0d0d10',
-          }}>
-            <img
-              src="/sb-mockup-planner.png"
-              alt="Plan of Action — daily planner screens"
-              style={{ width: '100%', display: 'block', objectFit: 'cover' }}
-            />
-          </div>
-        </Reveal>
-
-        {/* Row 4 — Account / stats (dark box for transparent bg) */}
-        <Reveal delay={0.12}>
-          <div style={{
-            borderRadius: '20px',
-            overflow: 'hidden',
-            background: '#0d0d10',
-          }}>
-            <img
-              src="/sb-mockup-account.png"
-              alt="Account & stats screens"
-              style={{ width: '100%', display: 'block', objectFit: 'cover' }}
-            />
-          </div>
-        </Reveal>
-
-      </Wrap>
-    </section>
-  )
-}
-
-// ─── Features Section ─────────────────────────────────────
-function FeaturesSection() {
-  return (
-    <section id="features" style={{ background: C.surface, ...PAD }}>
-      <Wrap>
-        <Reveal><Label>App Features</Label></Reveal>
-
-        {/* Home Dashboard */}
-        <div style={{ marginBottom: 'clamp(3rem,5vw,5rem)' }}>
-          <Reveal>
-            <SectionTag>01</SectionTag>
-          </Reveal>
-          <Reveal delay={0.05}>
-            <h2 style={{
-              fontFamily: "'Syne', sans-serif",
-              fontWeight: 500,
-              fontSize: 'clamp(1.75rem, 3.5vw, 2.75rem)',
-              letterSpacing: '-0.02em',
-              color: C.ink,
-              marginBottom: '1rem',
-            }}>Home Dashboard</h2>
-          </Reveal>
-          <Reveal delay={0.1}>
-            <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.9rem', color: C.mid, lineHeight: 1.7, maxWidth: 560, marginBottom: '2rem' }}>
-              Centralised overview: today's plan, quick-start shortcuts, and streak status at a glance.
-            </p>
-          </Reveal>
-          <Reveal delay={0.15}>
-            <div style={{ borderRadius: '16px', overflow: 'hidden', background: '#0d0d10' }}>
-              <img
-                src="/sb-mockup-account.png"
-                alt="Home Dashboard — Daily Overview UI"
-                style={{ width: '100%', display: 'block', objectFit: 'cover' }}
-              />
-            </div>
-          </Reveal>
-        </div>
-
-        {/* Focus Sessions */}
-        <div style={{ marginBottom: 'clamp(3rem,5vw,5rem)' }}>
-          <Reveal>
-            <SectionTag color={C.pink}>02</SectionTag>
-          </Reveal>
-          <Reveal delay={0.05}>
-            <h2 style={{
-              fontFamily: "'Syne', sans-serif",
-              fontWeight: 500,
-              fontSize: 'clamp(1.75rem, 3.5vw, 2.75rem)',
-              letterSpacing: '-0.02em',
-              color: C.ink,
-              marginBottom: '1rem',
-            }}>Focus Sessions</h2>
-          </Reveal>
-          <Reveal delay={0.1}>
-            <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.9rem', color: C.mid, lineHeight: 1.7, maxWidth: 560, marginBottom: '2rem' }}>
-              Pomodoro timer with quirky localisation, micro-interactions, dynamic motivating stickers, and contextually relevant illustrations. 25 min work, 5 min break, 4 cycles, then a longer break.
-            </p>
-          </Reveal>
-
-          {/* Context screens — row 1: purple, green, pink */}
-          <Reveal delay={0.15}>
-            <div style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.62rem', letterSpacing: '0.18em', color: C.muted, marginBottom: '1rem', textTransform: 'uppercase' }}>
-              Setting the context for first time users
-            </div>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem', marginBottom: '1.25rem', maxWidth: 560 }}>
-              {[
-                { src: '/sb-pomo-1.png', alt: 'Pomodoro, what\'s that?' },
-                { src: '/sb-pomo-2.png', alt: 'How to Pomodoro?' },
-                { src: '/sb-pomo-intro1.png', alt: 'Earn your Breaks!' },
-              ].map((img, i) => (
-                <div key={i} style={{ borderRadius: '16px', overflow: 'hidden', boxShadow: '0 6px 20px rgba(0,0,0,0.14)' }}>
-                  <img src={img.src} alt={img.alt} style={{ width: '100%', display: 'block' }} />
-                </div>
-              ))}
-            </div>
-          </Reveal>
-
-          {/* Usage screens — row 2 */}
-          <Reveal delay={0.18}>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem', marginBottom: '2rem', maxWidth: 560 }}>
-              {[
-                { src: '/sb-pomo-4.png', alt: 'Subject select — empty' },
-                { src: '/sb-pomo-5b.png', alt: 'Subject select — smiley' },
-                { src: '/sb-pomo-intro2.png', alt: 'Subject select — History' },
-              ].map((img, i) => (
-                <div key={i} style={{ borderRadius: '16px', overflow: 'hidden', boxShadow: '0 6px 20px rgba(0,0,0,0.14)' }}>
-                  <img src={img.src} alt={img.alt} style={{ width: '100%', display: 'block' }} />
-                </div>
-              ))}
-            </div>
-          </Reveal>
-
-          {/* Full mockup — 4 timer screens */}
-          {/* Annotated mockup */}
-          <Reveal delay={0.22}>
-            <img src="/sb-pomo-annotated.png" alt="Pomodoro focus sessions — annotated mockup"
-              style={{ width: '100%', display: 'block' }} />
-          </Reveal>
-        </div>
-
-        {/* Mnemonics — dark bg */}
-        <div style={{ background: C.dark, borderRadius: '24px', padding: 'clamp(2rem,4vw,3.5rem)', marginBottom: 'clamp(3rem,5vw,5rem)', position: 'relative', overflow: 'hidden' }}>
-          <div style={{ position: 'absolute', width: 280, height: 280, borderRadius: '50%', background: C.blue, bottom: -60, left: -60, opacity: 0.12, zIndex: 0, pointerEvents: 'none' }} />
-          <div style={{ position: 'relative', zIndex: 1 }}>
-            <Reveal>
-              <SectionTag color={C.green}>03</SectionTag>
-            </Reveal>
-            <Reveal delay={0.05}>
-              <h2 style={{
-                fontFamily: "'Syne', sans-serif",
-                fontWeight: 500,
-                fontSize: 'clamp(1.75rem, 3.5vw, 2.75rem)',
-                letterSpacing: '-0.02em',
-                color: C.white,
-                marginBottom: '1rem',
-              }}>Mnemonics & Memorisation</h2>
-            </Reveal>
-            <Reveal delay={0.1}>
-              <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.9rem', color: 'rgba(255,255,255,0.6)', lineHeight: 1.7, maxWidth: 560, marginBottom: '2rem' }}>
-                Assisted memorisation through imagery and organisation. Acronyms, vivid mental images, structured formats. Flow: Intro → Upload → Analyse → Generate.
-              </p>
-            </Reveal>
-            <Reveal delay={0.15}>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '1rem' }}>
-                {['Intro Screen', 'Upload Notes', 'Analysing', 'Generated Mnemonic'].map((lbl, i) => (
-                  <div key={i}>
-                    <ImgBox label={lbl} aspect="177%" dark />
-                    <ScreenLabel dark>{lbl}</ScreenLabel>
-                  </div>
-                ))}
+        {/* Page images — Wrap-width, stacked */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginBottom: 'clamp(3rem,5vw,5rem)' }}>
+          {SB_PAGES.map((n, i) => (
+            <Reveal key={n} delay={i * 0.04}>
+              <div style={{ borderRadius: '18px', overflow: 'hidden', boxShadow: '0 2px 16px rgba(0,0,0,0.06)', background: '#ffffff', isolation: 'isolate' }}>
+                <img
+                  src={`/sb-page-${n}.png`}
+                  alt={`Study Buddy design — page ${n}`}
+                  loading="lazy" decoding="async" style={{ width: '100%', display: 'block', mixBlendMode: 'multiply' }}
+                />
               </div>
             </Reveal>
-          </div>
+          ))}
         </div>
 
+        {/* Walkthrough video */}
+        <Reveal delay={0.05}>
+          <div style={{ marginBottom: 'clamp(2rem,4vw,3.5rem)' }}>
+            <p style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.58rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: C.muted, margin: '0 0 0.75rem' }}>App Walkthrough</p>
+            <div style={{ borderRadius: '14px', overflow: 'hidden', boxShadow: C.neu, aspectRatio: '16/9' }}>
+              <iframe width="100%" height="100%"
+                src="https://www.youtube.com/embed/wV1lMz2Ebb4"
+                title="Study Buddy App Walkthrough"
+                frameBorder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+                style={{ display: 'block' }}
+              />
+            </div>
+          </div>
+        </Reveal>
+
         {/* Behavioural Activation */}
-        <div style={{ marginBottom: 'clamp(3rem,5vw,5rem)' }}>
-          <Reveal>
-            <SectionTag>04</SectionTag>
-          </Reveal>
+        <div style={{ marginBottom: 0 }}>
           <Reveal delay={0.05}>
             <h2 style={{
-              fontFamily: "'Syne', sans-serif",
+              fontFamily: "'Lora', Georgia, serif",
               fontWeight: 500,
-              fontSize: 'clamp(1.75rem, 3.5vw, 2.75rem)',
+              fontStyle: 'italic',
+              fontSize: 'clamp(1.75rem,3.5vw,2.75rem)',
               letterSpacing: '-0.02em',
               color: C.ink,
               marginBottom: '0.75rem',
@@ -2322,124 +2150,13 @@ function FeaturesSection() {
           </Reveal>
           <Reveal delay={0.08}>
             <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.9rem', color: C.mid, lineHeight: 1.7, maxWidth: 560, marginBottom: '2rem' }}>
-              Effective planning through draggable routine tags, customisable logs, and activity ratings. Breaks the vicious cycle of demotivation, procrastination, decreased activity, and guilt.
+              <strong style={{ fontWeight: 600, color: C.ink }}>Effective planning</strong> through draggable routine tags, customisable logs, and activity ratings.<br />
+              <strong style={{ fontWeight: 600, color: C.ink }}>Breaks the vicious cycle of demotivation, procrastination, decreased activity, and guilt.</strong>
             </p>
           </Reveal>
-          <Reveal delay={0.12}>
-            <div style={{ background: C.card, borderRadius: '14px', padding: 'clamp(1.25rem,2.5vw,2rem)', boxShadow: C.neu }}>
-              <BehaviouralCycle />
-            </div>
-          </Reveal>
+          <BehaviouralCycle />
         </div>
 
-        {/* Stats & Profile — dark bg */}
-        <div style={{ background: C.dark, borderRadius: '24px', padding: 'clamp(2rem,4vw,3.5rem)', marginBottom: 'clamp(3rem,5vw,5rem)', position: 'relative', overflow: 'hidden' }}>
-          <div style={{ position: 'absolute', width: 260, height: 260, borderRadius: '50%', background: C.yellow, top: -60, right: -60, opacity: 0.12, zIndex: 0, pointerEvents: 'none' }} />
-          <div style={{ position: 'relative', zIndex: 1 }}>
-            <Reveal>
-              <SectionTag color={C.yellow}>05</SectionTag>
-            </Reveal>
-            <Reveal delay={0.05}>
-              <h2 style={{
-                fontFamily: "'Syne', sans-serif",
-                fontWeight: 500,
-                fontSize: 'clamp(1.75rem, 3.5vw, 2.75rem)',
-                letterSpacing: '-0.02em',
-                color: C.white,
-                marginBottom: '1rem',
-              }}>Stats & Profile</h2>
-            </Reveal>
-            <Reveal delay={0.1}>
-              <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.9rem', color: 'rgba(255,255,255,0.6)', lineHeight: 1.7, maxWidth: 560, marginBottom: '2rem' }}>
-                Check-in dashboard with editable avatar, progress sorted across different time periods, streaks, and achievement history.
-              </p>
-            </Reveal>
-            <Reveal delay={0.15}>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem' }}>
-                {['Profile Overview', 'Streak History', 'Achievement Badges'].map((lbl, i) => (
-                  <div key={i}>
-                    <ImgBox label={lbl} aspect="177%" dark />
-                    <ScreenLabel dark>{lbl}</ScreenLabel>
-                  </div>
-                ))}
-              </div>
-            </Reveal>
-          </div>
-        </div>
-
-        {/* Video Playback — dark bg */}
-        <div style={{ background: C.dark, borderRadius: '24px', padding: 'clamp(2rem,4vw,3.5rem)', marginBottom: 'clamp(3rem,5vw,5rem)', position: 'relative', overflow: 'hidden' }}>
-          <div style={{ position: 'absolute', width: 300, height: 300, borderRadius: '50%', background: C.green, bottom: -80, right: 60, opacity: 0.12, zIndex: 0, pointerEvents: 'none' }} />
-          <div style={{ position: 'relative', zIndex: 1 }}>
-            <Reveal>
-              <SectionTag color={C.green}>06</SectionTag>
-            </Reveal>
-            <Reveal delay={0.05}>
-              <h2 style={{
-                fontFamily: "'Syne', sans-serif",
-                fontWeight: 500,
-                fontSize: 'clamp(1.75rem, 3.5vw, 2.75rem)',
-                letterSpacing: '-0.02em',
-                color: C.white,
-                marginBottom: '1rem',
-              }}>Video Playback</h2>
-            </Reveal>
-            <Reveal delay={0.1}>
-              <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.9rem', color: 'rgba(255,255,255,0.6)', lineHeight: 1.7, maxWidth: 560, marginBottom: '2rem' }}>
-                AI-generated video player with brightness adjustment, 10-second skip controls, captions, speed adjustment, and lock screen support.
-              </p>
-            </Reveal>
-            <Reveal delay={0.15}>
-              <ImgBox label="Video Player — AI-Generated Explanation UI" aspect="50%" dark />
-            </Reveal>
-          </div>
-        </div>
-
-        {/* Scan to Video Flow — white bg, lime blob */}
-        <div style={{ position: 'relative', overflow: 'hidden', marginBottom: 'clamp(3rem,5vw,5rem)' }}>
-          {/* Lime green blob at bottom right */}
-          <div style={{ position: 'absolute', width: 280, height: 280, borderRadius: '50%', background: C.green, bottom: -60, right: -60, opacity: 0.15, zIndex: 0, pointerEvents: 'none' }} />
-          <div style={{ position: 'relative', zIndex: 1 }}>
-            <Reveal>
-              <h3 style={{
-                fontFamily: "'Syne', sans-serif",
-                fontWeight: 500,
-                fontSize: 'clamp(1.1rem, 2vw, 1.4rem)',
-                color: C.ink,
-                marginBottom: '1.5rem',
-                letterSpacing: '-0.02em',
-              }}>
-                Scan to Video: 3-Step Flow
-              </h3>
-            </Reveal>
-            <StaggerGrid style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(3, 1fr)',
-              gap: '1rem',
-            }}>
-              {[
-                { num: '01', label: 'Begin Scanning Notes',                   color: C.blue },
-                { num: '02', label: 'Play Video',                             color: C.dark },
-                { num: '03', label: 'Video Automatically Saved in Profile',   color: C.mid },
-              ].map(s => (
-                <StaggerItem key={s.num}>
-                  <div>
-                    <ImgBox label={`Step ${s.num} — ${s.label}`} aspect="177%" style={{ borderRadius: '12px' }} />
-                    <div style={{
-                      fontFamily: "'Space Mono', monospace",
-                      fontSize: '0.55rem',
-                      letterSpacing: '0.2em',
-                      textTransform: 'uppercase',
-                      color: s.color,
-                      textAlign: 'center',
-                      marginTop: '0.75rem',
-                    }}>{s.label}</div>
-                  </div>
-                </StaggerItem>
-              ))}
-            </StaggerGrid>
-          </div>
-        </div>
       </Wrap>
     </section>
   )
@@ -2469,12 +2186,12 @@ function AccessibilitySection() {
   return (
     <section id="accessibility" style={{ background: C.bg, ...PAD }}>
       <Wrap>
-        <Reveal><Label>Accessibility: POUR Framework</Label></Reveal>
+        <Reveal><SectionTag>Accessibility</SectionTag></Reveal>
         <Reveal>
           <h2 style={{
             fontFamily: "'Syne', sans-serif",
             fontWeight: 500,
-            fontSize: 'clamp(1.75rem, 3.5vw, 2.75rem)',
+            fontSize: 'clamp(1.75rem,3.5vw,2.75rem)',
             color: C.ink,
             marginBottom: '0.5rem',
             letterSpacing: '-0.02em',
@@ -2504,16 +2221,17 @@ function AccessibilitySection() {
                     fontFamily: "'Space Mono', monospace",
                     fontSize: '2.5rem',
                     fontWeight: 500,
+                    textTransform: 'uppercase',
                     color: C.ink,
                     lineHeight: 1,
                   }}>{p.letter}</span>
-                  <span style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: '1.05rem', color: C.ink }}>{p.title}</span>
+                  <span style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: 'clamp(1.1rem,2vw,1.35rem)', color: C.ink }}>{p.title}</span>
                 </div>
                 <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '8px' }}>
                   {p.items.map((item, i) => (
                     <li key={i} style={{ display: 'flex', gap: '8px', alignItems: 'flex-start' }}>
                       <div style={{ width: 5, height: 5, borderRadius: '50%', background: C.border, marginTop: '0.45em', flexShrink: 0, border: `1px solid ${C.muted}` }} />
-                      <span style={{ fontFamily: "'EB Garamond', serif", fontSize: '1rem', color: C.mid, lineHeight: 1.55 }}>{item}</span>
+                      <span style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.9rem', color: C.mid, lineHeight: 1.55 }}>{item}</span>
                     </li>
                   ))}
                 </ul>
@@ -2536,20 +2254,20 @@ function ReflectionsSection() {
   ]
 
   return (
-    <section id="reflections" style={{ background: 'linear-gradient(145deg,#0a0a0a 0%,#161616 55%,#0f0f0f 100%)', ...PAD }}>
+    <section id="reflections" style={{ background: '#0d0d0d', ...PAD }}>
       <Wrap>
         <Reveal>
           <span style={{
             fontFamily: "'Space Mono', monospace",
             fontSize: '0.58rem', letterSpacing: '0.18em', textTransform: 'uppercase',
-            color: C.darkMuted, display: 'block', marginBottom: '1.25rem',
+            color: '#FE60AC', display: 'block', marginBottom: '1.25rem',
           }}>My Takeaway</span>
         </Reveal>
         <Reveal delay={0.1}>
           <h2 style={{
             fontFamily: "'Syne', sans-serif",
             fontWeight: 500,
-            fontSize: 'clamp(1.75rem, 3.5vw, 2.75rem)',
+            fontSize: 'clamp(1.75rem,3.5vw,2.75rem)',
             color: C.darkInk,
             letterSpacing: '-0.02em',
             marginBottom: 'clamp(2rem,4vw,3.5rem)',
@@ -2575,13 +2293,14 @@ function ReflectionsSection() {
                   fontFamily: "'Space Mono', monospace",
                   fontSize: '0.58rem',
                   letterSpacing: '0.22em',
+                  textTransform: 'uppercase',
                   color: C.darkMuted,
                   marginBottom: '1.25rem',
                 }}>{r.n}</div>
                 <p style={{
-                  fontFamily: "'EB Garamond', serif",
+                  fontFamily: "'Syne', sans-serif",
                   fontStyle: 'italic',
-                  fontSize: 'clamp(1.05rem,2vw,1.25rem)',
+                  fontSize: '0.9rem',
                   color: C.darkInk,
                   lineHeight: 1.65,
                   margin: 0,
@@ -2593,8 +2312,8 @@ function ReflectionsSection() {
 
         <Reveal delay={0.2}>
           <p style={{
-            fontFamily: "'EB Garamond', serif",
-            fontSize: 'clamp(1rem,2vw,1.2rem)',
+            fontFamily: "'Syne', sans-serif",
+            fontSize: 'clamp(1.1rem,2vw,1.35rem)',
             color: C.darkMid,
             maxWidth: 560,
             lineHeight: 1.75,
@@ -2621,16 +2340,23 @@ export default function StudyBuddy() {
       <Nav light photoHero />
       <SidebarNav active={active} />
 
-      <main>
+      <main className="has-bottom-nav">
         <HeroSection />
+        <div style={{ background: C.surface, borderBottom: `1px solid ${C.border}` }}>
+          <Wrap>
+            <p style={{ margin: 0, textAlign: 'right', fontFamily: "'Space Mono', monospace", fontSize: '0.58rem', letterSpacing: '0.14em', color: C.muted, textTransform: 'uppercase', padding: '0.7rem 0' }}>
+              approx. 8 min quick read
+            </p>
+          </Wrap>
+        </div>
         <WhySection />
         <SystemsSection />
         <ResearchSection />
         <DefineSection />
         <PersonasSection />
+        <PostPersonasSection />
         <DesignSystemSection />
         <MockupsSection />
-        <FeaturesSection />
         <AccessibilitySection />
         <ReflectionsSection />
       </main>

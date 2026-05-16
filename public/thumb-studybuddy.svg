@@ -1,0 +1,22 @@
+<svg viewBox="0 0 400 600" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <filter id="sb" x="-80%" y="-80%" width="260%" height="260%">
+      <feGaussianBlur stdDeviation="38"/>
+    </filter>
+    <filter id="grain" x="0%" y="0%" width="100%" height="100%" color-interpolation-filters="sRGB">
+      <feTurbulence type="turbulence" baseFrequency="0.62" numOctaves="1" seed="4" stitchTiles="stitch" result="n"/>
+      <feColorMatrix type="saturate" values="0" in="n" result="g"/>
+      <feComponentTransfer in="g">
+        <feFuncR type="linear" slope="3.2" intercept="-1.1"/>
+        <feFuncG type="linear" slope="3.2" intercept="-1.1"/>
+        <feFuncB type="linear" slope="3.2" intercept="-1.1"/>
+      </feComponentTransfer>
+    </filter>
+  </defs>
+  <rect width="400" height="600" fill="#16232A"/>
+  <circle cx="310" cy="100" r="210" fill="#075056" filter="url(#sb)" opacity="0.9"/>
+  <circle cx="60"  cy="500" r="160" fill="#E4EEF0" filter="url(#sb)" opacity="0.22"/>
+  <circle cx="150" cy="340" r="80"  fill="#FF5B04" filter="url(#sb)" opacity="0.85"/>
+  <rect width="400" height="600" filter="url(#grain)" style="mix-blend-mode:overlay; opacity:0.60"/>
+  <rect width="400" height="600" filter="url(#grain)" style="mix-blend-mode:screen;  opacity:0.22"/>
+</svg>

@@ -37,18 +37,10 @@ const EASE = [0.22, 1, 0.36, 1]
 // ─── Sidebar Sections ────────────────────────────────────
 const NAV_SECTIONS = [
   { id: 'overview',    label: 'Overview' },
-  { id: 'problem',     label: 'Problem' },
-  { id: 'process',     label: 'Process' },
-  { id: 'people',      label: 'People' },
-  { id: 'solution',    label: 'Solution' },
-  { id: 'product',     label: 'Product' },
-  { id: 'roadmap',     label: 'Roadmap' },
-  { id: 'ux',          label: 'UX' },
-  { id: 'journeys',    label: 'Journeys' },
-  { id: 'tech',        label: 'Tech' },
-  { id: 'impact',      label: 'Impact' },
-  { id: 'blueprint',   label: 'Blueprint' },
-  { id: 'reflections', label: 'Reflect.' },
+  { id: 'problem',     label: 'Discovery' },
+  { id: 'solution',    label: 'Strategy' },
+  { id: 'ux',          label: 'Experience' },
+  { id: 'reflections', label: 'Reflect' },
 ]
 
 // ─── Layout Helpers ──────────────────────────────────────
@@ -86,6 +78,34 @@ function Label({ children, dark = false }) {
   )
 }
 
+function Sticker({ src, style = {} }) {
+  return (
+    <img src={src} alt="" aria-hidden="true" draggable={false} className="cc-sticker"
+      loading="lazy" decoding="async" style={{ position: 'absolute', pointerEvents: 'none', userSelect: 'none', zIndex: 20, ...style }}
+    />
+  )
+}
+
+function CCStyles() {
+  return (
+    <style>{`
+      @media (max-width: 767px) {
+        .cc-sidebar  { display: none !important; /* replaced by inline mobile bar */ }
+        .cc-sticker  { display: none !important; }
+        .cc-people-svg { display: none !important; }
+        .cc-g2, .cc-g3 { grid-template-columns: 1fr !important; }
+        .cc-g5       { grid-template-columns: repeat(2, 1fr) !important; }
+        .cc-arch-lbl { width: 72px !important; padding: 0.5rem 0.5rem !important; font-size: 0.5rem !important; }
+        .cc-hero-meta { gap: 1.5rem !important; }
+      }
+      @media (min-width: 768px) and (max-width: 1023px) {
+        .cc-g3 { grid-template-columns: repeat(2, 1fr) !important; }
+        .cc-g5 { grid-template-columns: repeat(3, 1fr) !important; }
+      }
+    `}</style>
+  )
+}
+
 function StaggerGrid({ children, style = {}, className = '' }) {
   const ref = useRef(null)
   const inView = useInView(ref, { once: true, amount: 0.08 })
@@ -118,9 +138,33 @@ function NeuCard({ children, style = {}, dark = false }) {
 }
 
 function SidebarNav({ active }) {
+  const [isMobile, setIsMobile] = useState(() => typeof window !== 'undefined' && window.innerWidth < 768)
+  useEffect(() => {
+    const h = () => setIsMobile(window.innerWidth < 768)
+    window.addEventListener('resize', h, { passive: true })
+    return () => window.removeEventListener('resize', h)
+  }, [])
+
   function scrollTo(id) { const el = document.getElementById(id); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' }) }
+
+  if (isMobile) {
+    return (
+      <nav style={{ position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 500, display: 'flex', flexDirection: 'row', justifyContent: 'space-evenly', alignItems: 'center', background: 'rgba(255,255,255,0.97)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)', borderTop: '1px solid rgba(0,0,0,0.09)', boxShadow: '0 -2px 20px rgba(0,0,0,0.07)', padding: '8px 4px', paddingBottom: 'max(10px, env(safe-area-inset-bottom))' }}>
+        {NAV_SECTIONS.map(sec => {
+          const isActive = active === sec.id
+          return (
+            <button key={sec.id} onClick={() => scrollTo(sec.id)} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '5px', background: 'none', border: 'none', cursor: 'pointer', padding: '4px 10px', minWidth: 52 }}>
+              <div style={{ width: isActive ? 22 : 14, height: 2, borderRadius: 2, background: isActive ? C.accent : 'rgba(0,0,0,0.18)', transition: 'all 0.25s' }} />
+              <span style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.48rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: isActive ? C.accent : 'rgba(0,0,0,0.42)', transition: 'color 0.25s', whiteSpace: 'nowrap' }}>{sec.label}</span>
+            </button>
+          )
+        })}
+      </nav>
+    )
+  }
+
   return (
-    <div style={{ position: 'fixed', left: 'clamp(10px,1.5vw,22px)', top: '50%', transform: 'translateY(-50%)', zIndex: 200, display: 'flex', flexDirection: 'column', gap: '8px' }}>
+    <div className="cc-sidebar" style={{ position: 'fixed', left: 'clamp(10px,1.5vw,22px)', top: '50%', transform: 'translateY(-50%)', zIndex: 200, display: 'flex', flexDirection: 'column', gap: '8px' }}>
       {NAV_SECTIONS.map(sec => {
         const isActive = active === sec.id
         return (
@@ -153,91 +197,115 @@ function useActiveSection(ids) {
 // ─── People Map SVG ──────────────────────────────────────
 function PeopleMap() {
   const ref = useRef(null)
-  const inView = useInView(ref, { once: true, amount: 0.3 })
+  const inView = useInView(ref, { once: true, amount: 0.25 })
 
-  const cx = 300, cy = 210, r = 155
+  const CX = 390, CY = 280, R = 200
+
   const roles = [
-    { label: 'Chief of\nStaff', angle: 270, color: C.accentMid, cadence: 'Weekly check-ins', focus: 'Ops & execution' },
-    { label: 'Branding &\nMarketing', angle: 342, color: C.pink, cadence: 'Daily syncs', focus: 'Growth & brand voice' },
-    { label: 'Tech\nLead', angle: 54, color: '#0EA5E9', cadence: 'Sprint-based', focus: 'Build & feasibility' },
-    { label: 'Data\nAnalyst', angle: 126, color: C.green, cadence: 'Bi-weekly', focus: 'Match intelligence' },
-    { label: 'UX\nLead', angle: 198, color: C.amber, cadence: 'Continuous', focus: 'Design & flows' },
+    { lines: ['Chief of', 'Staff'],    angle: 270, color: C.accentMid, cadence: 'Weekly',      focus: 'Ops & Execution' },
+    { lines: ['Branding &', 'Mktg'],   angle: 342, color: C.pink,      cadence: 'Daily',        focus: 'Growth & Brand' },
+    { lines: ['Tech', 'Lead'],          angle: 54,  color: '#0EA5E9',   cadence: 'Sprint-based', focus: 'Build & Feasibility' },
+    { lines: ['Data', 'Analyst'],       angle: 126, color: C.green,     cadence: 'Bi-weekly',    focus: 'Match Intelligence' },
+    { lines: ['UX', 'Lead'],            angle: 198, color: C.amber,     cadence: 'Continuous',   focus: 'Design & Flows' },
   ]
 
   const toXY = (angleDeg, radius) => {
     const rad = (angleDeg * Math.PI) / 180
-    return { x: cx + radius * Math.cos(rad), y: cy + radius * Math.sin(rad) }
+    return { x: CX + radius * Math.cos(rad), y: CY + radius * Math.sin(rad) }
   }
 
   return (
-    <div ref={ref} style={{ overflowX: 'auto' }}>
-      <svg viewBox="0 0 600 420" width="100%" style={{ maxWidth: 600, display: 'block', margin: '0 auto' }}>
-        {/* Connection lines */}
+    <div ref={ref} className="cc-people-svg">
+      <svg viewBox="0 0 780 560" width="100%" style={{ display: 'block', margin: '0 auto' }}>
+        {/* Outer dashed ring */}
+        <motion.circle cx={CX} cy={CY} r={R + 24}
+          fill="none" stroke={C.border} strokeWidth={1} strokeDasharray="5 9"
+          initial={{ opacity: 0 }} animate={inView ? { opacity: 1 } : {}} transition={{ duration: 0.8 }}
+        />
+
+        {/* Connection lines center to nodes */}
         {roles.map((role, i) => {
-          const pos = toXY(role.angle, r)
-          const mid = toXY(role.angle, r * 0.5)
+          const pos = toXY(role.angle, R)
           return (
-            <motion.line key={i} x1={cx} y1={cy} x2={pos.x} y2={pos.y}
-              stroke={`${role.color}40`} strokeWidth={1.5}
+            <motion.line key={`line-${i}`} x1={CX} y1={CY} x2={pos.x} y2={pos.y}
+              stroke={`${role.color}55`} strokeWidth={2}
               initial={{ pathLength: 0, opacity: 0 }}
               animate={inView ? { pathLength: 1, opacity: 1 } : {}}
-              transition={{ duration: 0.8, delay: i * 0.12, ease: EASE }}
+              transition={{ duration: 0.75, delay: i * 0.1, ease: EASE }}
             />
           )
         })}
 
-        {/* Cadence labels on lines */}
+        {/* Pentagon ring between adjacent nodes */}
         {roles.map((role, i) => {
-          const mid = toXY(role.angle, r * 0.52)
+          const pos  = toXY(role.angle, R)
+          const next = toXY(roles[(i + 1) % roles.length].angle, R)
           return (
-            <motion.text key={i} x={mid.x} y={mid.y}
-              textAnchor="middle" dominantBaseline="middle"
-              style={{ fontFamily: "'Space Mono', monospace", fontSize: 7.5, fill: C.muted, pointerEvents: 'none' }}
+            <motion.line key={`ring-${i}`} x1={pos.x} y1={pos.y} x2={next.x} y2={next.y}
+              stroke={C.border} strokeWidth={1}
               initial={{ opacity: 0 }} animate={inView ? { opacity: 1 } : {}}
-              transition={{ duration: 0.5, delay: 0.6 + i * 0.08 }}
-            >{role.cadence}</motion.text>
+              transition={{ duration: 0.5, delay: 0.65 + i * 0.08 }}
+            />
+          )
+        })}
+
+        {/* Cadence labels at midpoint of each spoke */}
+        {roles.map((role, i) => {
+          const mid = toXY(role.angle, R * 0.53)
+          return (
+            <motion.text key={`cadence-${i}`} x={mid.x} y={mid.y}
+              textAnchor="middle" dominantBaseline="middle"
+              style={{ fontFamily: "'Space Mono', monospace", fontSize: 9.5, fill: C.muted, pointerEvents: 'none', letterSpacing: '0.08em' }}
+              initial={{ opacity: 0 }} animate={inView ? { opacity: 1 } : {}}
+              transition={{ duration: 0.5, delay: 0.75 + i * 0.07 }}
+            >{role.cadence.toUpperCase()}</motion.text>
           )
         })}
 
         {/* CEO center node */}
-        <motion.circle cx={cx} cy={cy} r={44}
+        <motion.circle cx={CX} cy={CY} r={56}
           fill={C.accent}
           initial={{ scale: 0, opacity: 0 }} animate={inView ? { scale: 1, opacity: 1 } : {}}
           transition={{ duration: 0.5, ease: EASE }}
+          style={{ transformOrigin: `${CX}px ${CY}px`, filter: 'drop-shadow(0 4px 16px rgba(124,58,237,0.3))' }}
         />
-        <text x={cx} y={cy - 7} textAnchor="middle" style={{ fontFamily: "'Syne', sans-serif", fontSize: 11, fontWeight: 700, fill: '#fff' }}>CEO</text>
-        <text x={cx} y={cy + 8} textAnchor="middle" style={{ fontFamily: "'Space Mono', monospace", fontSize: 7, fill: 'rgba(255,255,255,0.7)' }}>CloutCart</text>
+        <text x={CX} y={CY - 9} textAnchor="middle" dominantBaseline="middle"
+          style={{ fontFamily: "'Syne', sans-serif", fontSize: 17, fontWeight: 700, fill: '#fff' }}>CEO</text>
+        <text x={CX} y={CY + 12} textAnchor="middle" dominantBaseline="middle"
+          style={{ fontFamily: "'Space Mono', monospace", fontSize: 8.5, fill: 'rgba(255,255,255,0.65)', letterSpacing: '0.12em' }}>CLOUTCART</text>
 
         {/* Role nodes */}
         {roles.map((role, i) => {
-          const pos = toXY(role.angle, r)
-          const lines = role.label.split('\n')
+          const pos = toXY(role.angle, R)
           return (
-            <motion.g key={i}
+            <motion.g key={`role-${i}`}
               initial={{ scale: 0, opacity: 0 }} animate={inView ? { scale: 1, opacity: 1 } : {}}
               transition={{ duration: 0.5, delay: 0.2 + i * 0.12, ease: EASE }}
+              style={{ transformOrigin: `${pos.x}px ${pos.y}px` }}
             >
-              <circle cx={pos.x} cy={pos.y} r={32} fill={`${role.color}18`} stroke={role.color} strokeWidth={1.5} />
-              {lines.map((line, li) => (
-                <text key={li} x={pos.x} y={pos.y + (li - (lines.length - 1) / 2) * 11}
+              <circle cx={pos.x} cy={pos.y} r={46}
+                fill={`${role.color}15`} stroke={role.color} strokeWidth={2}
+                style={{ filter: 'drop-shadow(3px 3px 8px rgba(0,0,0,0.08)) drop-shadow(-2px -2px 5px rgba(255,255,255,0.85))' }}
+              />
+              {role.lines.map((line, li) => (
+                <text key={li} x={pos.x} y={pos.y + (li - (role.lines.length - 1) / 2) * 15}
                   textAnchor="middle" dominantBaseline="middle"
-                  style={{ fontFamily: "'Space Mono', monospace", fontSize: 8, fill: C.ink, fontWeight: 600 }}
+                  style={{ fontFamily: "'Syne', sans-serif", fontSize: 12, fill: C.ink, fontWeight: 700, pointerEvents: 'none' }}
                 >{line}</text>
               ))}
-              {/* Focus label below node */}
-              <text x={pos.x} y={pos.y + 44} textAnchor="middle"
-                style={{ fontFamily: "'Syne', sans-serif", fontSize: 8.5, fill: C.muted }}
-              >{role.focus}</text>
+              <text x={pos.x} y={pos.y + 62} textAnchor="middle" dominantBaseline="middle"
+                style={{ fontFamily: "'Space Mono', monospace", fontSize: 8.5, fill: C.muted, letterSpacing: '0.07em' }}
+              >{role.focus.toUpperCase()}</text>
             </motion.g>
           )
         })}
       </svg>
 
-      {/* Legend */}
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem', justifyContent: 'center', marginTop: '1.5rem' }}>
-        {[['CEO', C.accent], ['Chief of Staff', C.accentMid], ['Marketing', C.pink], ['Tech Lead', '#0EA5E9'], ['Data Analyst', C.green], ['UX Lead', C.amber]].map(([label, color]) => (
-          <div key={label} style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-            <div style={{ width: 8, height: 8, borderRadius: '50%', background: color }} />
+      {/* Colour legend */}
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1.25rem', justifyContent: 'center', marginTop: '1.75rem' }}>
+        {[['CEO', C.accent], ['Chief of Staff', C.accentMid], ['Branding & Marketing', C.pink], ['Tech Lead', '#0EA5E9'], ['Data Analyst', C.green], ['UX Lead', C.amber]].map(([label, color]) => (
+          <div key={label} style={{ display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
+            <div style={{ width: 9, height: 9, borderRadius: '50%', background: color, flexShrink: 0 }} />
             <span style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.58rem', color: C.muted, textTransform: 'uppercase', letterSpacing: '0.1em' }}>{label}</span>
           </div>
         ))}
@@ -256,7 +324,7 @@ function TechArchDiagram() {
     { label: 'Frontend', color: C.accentMid, items: ['React.js / Next.js (Web)', 'React Native (Mobile)', 'Onboarding · Profiles · Swipe · Dashboard · Subscriptions'] },
     { label: 'API Gateway', color: '#0EA5E9', items: ['REST / GraphQL · JWT Auth · Data validation · Request routing'] },
     { label: 'Backend Services', color: '#06B6D4', items: ['Auth · User Profile · Matchmaking · Swipe Mgmt · Subscriptions · Notifications · Admin APIs'] },
-    { label: 'Match Engine', color: C.green, items: ['Phase 1: Rule-based filters & scoring', 'Phase 2: ML model — feedback loops + recommendations'] },
+    { label: 'Match Engine', color: C.green, items: ['Phase 1: Rule-based filters & scoring', 'Phase 2: ML model with feedback loops and recommendations'] },
     { label: 'Database Layer', color: C.amber, items: ['PostgreSQL / Firestore · User & profile data · Swipe records · Subscriptions', 'Firebase Storage / S3 · Redis cache'] },
     { label: 'External Integrations', color: C.pink, items: ['Firebase Auth · Stripe / Razorpay · Cloudinary · SendGrid · Mixpanel · Sentry'] },
     { label: 'Admin & Analytics', color: C.muted, items: ['Internal monitoring · Mixpanel / Firebase Analytics · Sentry / LogRocket'] },
@@ -270,7 +338,7 @@ function TechArchDiagram() {
           transition={{ duration: 0.5, delay: i * 0.07, ease: EASE }}
           style={{ display: 'flex', alignItems: 'stretch', borderRadius: '10px', overflow: 'hidden', boxShadow: C.neuSm }}
         >
-          <div style={{ background: layer.color, padding: '0.65rem 1rem', display: 'flex', alignItems: 'center', justifyContent: 'center', minWidth: 90, textAlign: 'center' }}>
+          <div className="cc-arch-lbl" style={{ background: layer.color, padding: '0.65rem 1rem', display: 'flex', alignItems: 'center', justifyContent: 'center', width: 140, flexShrink: 0, textAlign: 'center' }}>
             <span style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.58rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: '#fff', fontWeight: 700, lineHeight: 1.4 }}>{layer.label}</span>
           </div>
           <div style={{ background: C.card, padding: '0.65rem 1.25rem', flex: 1, display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '0.5rem' }}>
@@ -288,47 +356,35 @@ function TechArchDiagram() {
 
 // ─── Hero Section ────────────────────────────────────────
 function HeroSection() {
-  const ref = useRef(null)
-  const inView = useInView(ref, { once: true, amount: 0.3 })
   return (
-    <section id="overview" ref={ref} style={{ background: C.heroGrad, minHeight: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', position: 'relative', overflow: 'hidden' }}>
-      {/* Background texture */}
-      <div aria-hidden style={{ position: 'absolute', inset: 0, backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.04) 1px, transparent 1px)', backgroundSize: '24px 24px', pointerEvents: 'none' }} />
-      <div aria-hidden style={{ position: 'absolute', top: '-20%', right: '-10%', width: '60vw', height: '60vw', borderRadius: '50%', background: 'radial-gradient(circle, rgba(236,72,153,0.12) 0%, transparent 65%)', pointerEvents: 'none' }} />
-
-      <Wrap>
-        <div style={{ paddingTop: 'clamp(8rem,14vw,12rem)', paddingBottom: 'clamp(4rem,7vw,6rem)' }}>
-          <motion.div initial={{ opacity: 0, y: 16 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.6, ease: EASE }}>
-            <SectionTag dark>Product Strategy · Creator Economy · B2B2C SaaS</SectionTag>
-          </motion.div>
-
-          <motion.h1 initial={{ opacity: 0, y: 24 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.7, delay: 0.08, ease: EASE }}
-            style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: 'clamp(3rem,7vw,6rem)', color: C.darkInk, letterSpacing: '-0.03em', lineHeight: 1.0, margin: '0 0 1.25rem' }}>
-            CloutCart
-          </motion.h1>
-
-          <motion.p initial={{ opacity: 0, y: 18 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.65, delay: 0.14, ease: EASE }}
-            style={{ fontFamily: "'EB Garamond', Georgia, serif", fontStyle: 'italic', fontSize: 'clamp(1.2rem,2.5vw,1.75rem)', color: C.darkMid, margin: '0 0 1rem' }}>
-            Where brands cart their next collab.
-          </motion.p>
-
-          <motion.p initial={{ opacity: 0, y: 16 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.6, delay: 0.20, ease: EASE }}
-            style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.75rem', letterSpacing: '0.08em', color: 'rgba(236,72,153,0.9)', marginBottom: '2.5rem' }}>
-            Think Bumble meets LinkedIn — but with way more clout.
-          </motion.p>
-
-          <motion.div initial={{ opacity: 0, y: 14 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.6, delay: 0.28, ease: EASE }}
-            style={{ display: 'flex', flexWrap: 'wrap', gap: '2.5rem', borderTop: '1px solid rgba(255,255,255,0.10)', paddingTop: '2rem' }}>
-            {[['Type', 'Design Management II'], ['Domain', 'Creator Economy / Influencer Marketing'], ['Market', 'India-first, Global expansion'], ['Model', 'B2B2C SaaS Marketplace']].map(([k, v]) => (
-              <div key={k}>
-                <p style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.55rem', letterSpacing: '0.16em', textTransform: 'uppercase', color: C.darkMuted, marginBottom: '0.3rem' }}>{k}</p>
-                <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.875rem', color: C.darkInk, fontWeight: 500 }}>{v}</p>
-              </div>
-            ))}
-          </motion.div>
+    <div id="overview" style={{ position: 'relative', backgroundImage: 'url(/cc-hero.jpg)', backgroundSize: 'cover', backgroundPosition: 'center 20%', paddingTop: 'clamp(7rem,12vw,11rem)', paddingBottom: 'clamp(5rem,8vw,8rem)', overflow: 'hidden' }}>
+      {/* Dark overlay — keeps text readable over photo */}
+      <div aria-hidden style={{ position: 'absolute', inset: 0, background: 'linear-gradient(110deg, rgba(26,10,46,0.94) 0%, rgba(59,7,100,0.78) 45%, rgba(109,40,217,0.38) 80%, rgba(26,10,46,0.15) 100%)', pointerEvents: 'none' }} />
+      <div aria-hidden style={{ position: 'absolute', inset: 0, backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.035) 1px, transparent 1px)', backgroundSize: '24px 24px', pointerEvents: 'none' }} />
+      <div aria-hidden style={{ position: 'absolute', top: '-20%', right: '-10%', width: '60vw', height: '60vw', borderRadius: '50%', background: 'radial-gradient(circle, rgba(236,72,153,0.10) 0%, transparent 65%)', pointerEvents: 'none' }} />
+      <div style={{ position: 'relative', zIndex: 1, maxWidth: '1120px', margin: '0 auto', padding: '0 clamp(1.5rem,5vw,3rem)' }}>
+        <span style={{ display: 'inline-block', fontFamily: "'Space Mono', monospace", fontSize: '0.6rem', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.55)', border: '1px solid rgba(255,255,255,0.22)', padding: '4px 10px', borderRadius: '99px', marginBottom: '1.25rem' }}>Product Strategy · Creator Economy</span>
+        <h1 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: 'clamp(2.4rem,5.5vw,4.2rem)', lineHeight: 1.08, color: '#FFFFFF', margin: '0 0 1.75rem', maxWidth: '16ch' }}>
+          CloutCart
+        </h1>
+        <p style={{ fontFamily: "'Syne', sans-serif", fontSize: 'clamp(1rem,2vw,1.15rem)', lineHeight: 1.75, color: 'rgba(255,255,255,0.78)', maxWidth: '52ch', margin: '0 0 3rem' }}>
+          Where brands cart their next collab. A vibe-led matchmaking platform for creators and brands. Think Bumble meets LinkedIn, with way more clout.
+        </p>
+        <div className="cc-hero-meta" style={{ display: 'flex', gap: '3rem', flexWrap: 'wrap' }}>
+          {[
+            { l: 'Timeline',      v: '1 Week' },
+            { l: 'Collaborators', v: 'Cross-Functional Team' },
+            { l: 'Tools',         v: 'Figma · Notion' },
+            { l: 'Output',        v: 'Product Strategy Proposal, Service Blueprint' },
+          ].map(m => (
+            <div key={m.l}>
+              <p style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.55rem', letterSpacing: '0.18em', color: '#FFFFFF', textTransform: 'uppercase', margin: '0 0 0.3rem' }}>{m.l}</p>
+              <p style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: '0.9rem', color: '#FFFFFF', margin: 0 }}>{m.v}</p>
+            </div>
+          ))}
         </div>
-      </Wrap>
-    </section>
+      </div>
+    </div>
   )
 }
 
@@ -337,15 +393,17 @@ function WhatSection() {
   const ref = useRef(null)
   const inView = useInView(ref, { once: true, amount: 0.15 })
   const features = [
-    { icon: '⚡', title: 'Smart, swipeable matching', body: 'For brands to discover — and for influencers to get discovered. Nike is viewing you.' },
+    { icon: '⚡', title: 'Smart, swipeable matching', body: 'For brands to discover, and for influencers to get discovered. Nike is viewing you.' },
     { icon: '🤝', title: 'Curate meaningful collabs', body: 'Not transactional gigs. Real creative partnerships between aligned brands and creators.' },
     { icon: '🎯', title: 'Find your people', body: 'Brands find their tribe. Creators find their kind of brand. Fit over follower count.' },
-    { icon: '💳', title: 'Subscription-based access', body: 'Transparent tiered pricing for businesses — free entry, growth plans, enterprise.' },
+    { icon: '💳', title: 'Subscription-based access', body: 'Transparent tiered pricing for businesses: free entry, growth plans, enterprise.' },
     { icon: '🔮', title: 'Curated by mutual fit', body: 'Vibe quizzes, aesthetic tags, and content values guide every match recommendation.' },
-    { icon: '🌱', title: 'Partnerships, not profiles', body: 'People-first platform. Not a directory — a place to grow together.' },
+    { icon: '🌱', title: 'Partnerships, not profiles', body: 'People-first platform. Not a directory, but a place to grow together.' },
   ]
   return (
-    <section style={{ background: C.bg, ...PAD }}>
+    <section style={{ background: C.bg, ...PAD, position: 'relative' }}>
+      <Sticker src="/stickers/s-box.png" style={{ top: '-50px', left: '9%', width: '218px', transform: 'rotate(8deg)' }} />
+      <Sticker src="/stickers/s-lemon.png" style={{ bottom: '-36px', left: '3%', width: '112px', transform: 'rotate(16deg)' }} />
       <Wrap>
         <Reveal>
           <Label>What it is</Label>
@@ -353,14 +411,14 @@ function WhatSection() {
             A vibe-led matchmaking platform
           </h2>
           <p style={{ fontFamily: "'Syne', sans-serif", fontSize: 'clamp(0.9rem,1.4vw,1rem)', color: C.mid, lineHeight: 1.8, maxWidth: '56ch', margin: '0 0 3rem' }}>
-            The creator economy has exploded. Brands spend billions on influencer marketing. And yet — the actual connection between the two sides still happens in DMs, spreadsheets, and WhatsApp threads. CloutCart is the fix.
+            The creator economy has exploded. Brands spend billions on influencer marketing. And yet the actual connection between the two sides still happens in DMs, spreadsheets, and WhatsApp threads. CloutCart is the fix.
           </p>
         </Reveal>
-        <StaggerGrid style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px,1fr))', gap: '1.25rem' }}>
+        <StaggerGrid className="cc-g3" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1.25rem' }}>
           {features.map(f => (
             <StaggerItem key={f.title}>
               <NeuCard style={{ padding: '1.5rem', height: '100%', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-                <span style={{ fontSize: '1.4rem' }}>{f.icon}</span>
+                <span style={{ fontSize: '2rem' }}>{f.icon}</span>
                 <p style={{ fontFamily: "'Syne', sans-serif", fontWeight: 600, fontSize: '0.95rem', color: C.ink, margin: 0 }}>{f.title}</p>
                 <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.85rem', color: C.mid, lineHeight: 1.65, margin: 0 }}>{f.body}</p>
               </NeuCard>
@@ -372,18 +430,57 @@ function WhatSection() {
   )
 }
 
+// ─── Why This Topic ──────────────────────────────────────
+function WhySection() {
+  return (
+    <section style={{ background: C.surface, ...PAD, position: 'relative' }}>
+      <Sticker src="/stickers/s-wallet.png" style={{ bottom: '28px', right: '4%', width: '172px', transform: 'rotate(-14deg)' }} />
+      <Wrap>
+        <div style={{ maxWidth: 720, margin: '0 auto', textAlign: 'center' }}>
+          <Reveal><SectionTag>Why This Topic</SectionTag></Reveal>
+          <MaskReveal delay={0.1}>
+            <h2 style={{
+              fontFamily: "'Syne', sans-serif",
+              fontWeight: 500,
+              fontSize: 'clamp(1.75rem,3.5vw,2.75rem)',
+              letterSpacing: '-0.02em',
+              lineHeight: 1.05,
+              color: C.ink,
+              marginBottom: '1.5rem',
+            }}>We started with something<br /><em style={{ fontFamily: "'Syne', sans-serif", fontStyle: 'italic', color: C.accent }}>broken</em></h2>
+          </MaskReveal>
+          <Reveal delay={0.2}>
+            <p style={{
+              fontFamily: "'Syne', sans-serif",
+              fontSize: '0.9rem',
+              color: C.mid,
+              lineHeight: 1.8,
+              maxWidth: '68ch',
+              margin: '0 auto',
+              textAlign: 'left',
+            }}>
+              The creator economy is a billion-dollar space with a surprisingly unsolved coordination problem. Brands spend huge budgets on influencer marketing, and creators hustle for brand deals that actually fit them. Yet the matching still happens through Instagram DMs, WhatsApp threads, and shared spreadsheets. No structure. No signal. We chose this space because the <strong style={{ color: C.ink, fontWeight: 600 }}>gap between the problem and the solution felt unusually wide</strong>, and wide gaps are where design has the most to contribute.<br /><br />CloutCart was our attempt to close it.
+            </p>
+          </Reveal>
+        </div>
+      </Wrap>
+    </section>
+  )
+}
+
 // ─── Problem Section ─────────────────────────────────────
 function ProblemSection() {
   const ref = useRef(null)
   const inView = useInView(ref, { once: true, amount: 0.15 })
   const problems = [
-    { n: '01', title: 'Discovery is broken', body: 'Brands struggle to find relevant influencers beyond celebrity lists — real fit gets lost in noise.' },
+    { n: '01', title: 'Discovery is broken', body: 'Brands struggle to find relevant influencers beyond celebrity lists. Real fit gets lost in noise.' },
     { n: '02', title: 'Cost walls out small brands', body: 'SMEs and D2C startups can\'t afford influencer agencies or dedicated marketing teams.' },
     { n: '03', title: 'No compatibility tracking', body: 'There\'s no easy way to measure aesthetic alignment, audience match, or past performance quality.' },
-    { n: '04', title: 'Chaos at every step', body: 'Instagram DMs, spreadsheets, fake engagement, no accountability — it\'s all noise, no signal.' },
+    { n: '04', title: 'Chaos at every step', body: 'Instagram DMs, spreadsheets, fake engagement, no accountability: all noise, no signal.' },
   ]
   return (
-    <section id="problem" ref={ref} style={{ background: C.surface, ...PAD }}>
+    <section id="problem" ref={ref} style={{ background: C.surface, ...PAD, position: 'relative' }}>
+      <Sticker src="/stickers/s-megaphone.png" style={{ top: '40%', right: '2%', width: '168px', transform: 'rotate(-18deg) scaleX(-1)' }} />
       <Wrap>
         <Reveal>
           <Label>The Opportunity Space</Label>
@@ -394,11 +491,11 @@ function ProblemSection() {
             Here's why existing solutions keep falling short.
           </p>
         </Reveal>
-        <StaggerGrid style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px,1fr))', gap: '1.25rem' }}>
+        <StaggerGrid className="cc-g2" style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '1.25rem' }}>
           {problems.map(p => (
             <StaggerItem key={p.n}>
-              <NeuCard style={{ padding: '1.75rem' }}>
-                <p style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.58rem', letterSpacing: '0.18em', color: C.accent, margin: '0 0 0.75rem' }}>{p.n}</p>
+              <NeuCard style={{ padding: '1.75rem', height: '100%' }}>
+                <p style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.58rem', letterSpacing: '0.18em', color: C.accent, margin: '0 0 0.75rem', textTransform: 'uppercase' }}>{p.n}</p>
                 <p style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: '1.05rem', color: C.ink, margin: '0 0 0.6rem' }}>{p.title}</p>
                 <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.85rem', color: C.mid, lineHeight: 1.65, margin: 0 }}>{p.body}</p>
               </NeuCard>
@@ -408,20 +505,20 @@ function ProblemSection() {
 
         {/* Two-sided market */}
         <motion.div ref={ref} initial={{ opacity: 0, y: 24 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.65, delay: 0.3, ease: EASE }}
-          style={{ marginTop: '3.5rem', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.25rem' }}>
+          className="cc-g2" style={{ marginTop: '3.5rem', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.25rem' }}>
           {[
-            { side: 'Brands & Companies', color: C.accent, icon: '🏢', desc: 'Startups, D2C brands, lifestyle, fashion, wellness, beauty, tech. Looking to grow reach, build community, and boost engagement — without the agency markup.', tags: ['D2C Startups', 'SMEs', 'Lifestyle Brands', 'Boutique Agencies'] },
-            { side: 'Influencers & Creators', color: C.pink, icon: '🎨', desc: 'Nano to macro creators across Instagram, YouTube, LinkedIn, and every emerging platform. Looking for brand collabs that match their vibe and values — not just their follower count.', tags: ['Nano Creators', 'Micro Influencers', 'Content Strategists', 'Macro Talent'] },
+            { side: 'Brands & Companies', color: C.accent, icon: '🏢', desc: 'Startups, D2C brands, lifestyle, fashion, wellness, beauty, tech. Looking to grow reach, build community, and boost engagement, without the agency markup.', tags: ['D2C Startups', 'SMEs', 'Lifestyle Brands', 'Boutique Agencies'] },
+            { side: 'Influencers & Creators', color: C.pink, icon: '🎨', desc: 'Nano to macro creators across Instagram, YouTube, LinkedIn, and every emerging platform. Looking for brand collabs that match their vibe and values, not just their follower count.', tags: ['Nano Creators', 'Micro Influencers', 'Content Strategists', 'Macro Talent'] },
           ].map(side => (
-            <NeuCard key={side.side} style={{ padding: '2rem' }}>
+            <NeuCard key={side.side} style={{ padding: '2rem', height: '100%' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1rem' }}>
-                <div style={{ width: 36, height: 36, borderRadius: '10px', background: `${side.color}15`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.1rem' }}>{side.icon}</div>
+                <div style={{ width: 44, height: 44, borderRadius: '12px', background: `${side.color}15`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.75rem', flexShrink: 0 }}>{side.icon}</div>
                 <p style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: '0.95rem', color: side.color, margin: 0 }}>{side.side}</p>
               </div>
               <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.85rem', color: C.mid, lineHeight: 1.7, margin: '0 0 1rem' }}>{side.desc}</p>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem' }}>
                 {side.tags.map(tag => (
-                  <span key={tag} style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.58rem', letterSpacing: '0.1em', textTransform: 'uppercase', background: `${side.color}10`, color: side.color, border: `1px solid ${side.color}30`, borderRadius: '99px', padding: '3px 8px' }}>{tag}</span>
+                  <span key={tag} style={{ display: 'inline-block', fontFamily: "'Space Mono', monospace", fontSize: '0.58rem', letterSpacing: '0.1em', textTransform: 'uppercase', background: `${side.color}10`, color: side.color, border: `1px solid ${side.color}30`, borderRadius: '99px', padding: '4px 12px', height: 24, lineHeight: '16px', boxSizing: 'border-box' }}>{tag}</span>
                 ))}
               </div>
             </NeuCard>
@@ -430,7 +527,7 @@ function ProblemSection() {
 
         {/* Competitor gaps table */}
         <motion.div initial={{ opacity: 0, y: 24 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.65, delay: 0.45, ease: EASE }} style={{ marginTop: '3.5rem' }}>
-          <h3 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 600, fontSize: '1.1rem', color: C.ink, margin: '0 0 1.25rem' }}>What's out there — and what's broken</h3>
+          <h3 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 600, fontSize: '1.1rem', color: C.ink, margin: '0 0 1.25rem' }}>What's out there, and what's broken</h3>
           <div style={{ overflowX: 'auto', borderRadius: '12px', boxShadow: C.neuSm }}>
             <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: 560 }}>
               <thead>
@@ -458,7 +555,7 @@ function ProblemSection() {
             </table>
           </div>
           <blockquote style={{ margin: '1.5rem 0 0', padding: '1.25rem 1.5rem', borderLeft: `3px solid ${C.accent}`, background: C.accentDim, borderRadius: '0 10px 10px 0' }}>
-            <p style={{ fontFamily: "'EB Garamond', Georgia, serif", fontStyle: 'italic', fontSize: 'clamp(1rem,1.8vw,1.2rem)', color: C.ink, margin: 0, lineHeight: 1.6 }}>
+            <p style={{ fontFamily: "'Lora', Georgia, serif", fontStyle: 'italic', fontSize: 'clamp(1rem,1.8vw,1.2rem)', color: C.ink, margin: 0, lineHeight: 1.6 }}>
               "Most existing tools treat people like profiles, not partnerships."
             </p>
           </blockquote>
@@ -492,7 +589,8 @@ function ProcessSection() {
   ]
 
   return (
-    <section id="process" ref={ref} style={{ background: C.bg, ...PAD }}>
+    <section id="process" ref={ref} style={{ background: C.bg, ...PAD, position: 'relative' }}>
+      <Sticker src="/stickers/s-ipod.png" style={{ bottom: '-30px', left: '5%', width: '142px', transform: 'rotate(-16deg)' }} />
       <Wrap>
         <Reveal>
           <Label>Strategic Design Process</Label>
@@ -503,13 +601,13 @@ function ProcessSection() {
 
         {/* Phase cards */}
         <div style={{ overflowX: 'auto', paddingBottom: '1rem' }}>
-          <div style={{ display: 'flex', gap: '0.75rem', minWidth: 720 }}>
+          <div className="cc-phase-row" style={{ display: 'flex', gap: '0.75rem', minWidth: 720 }}>
             {phases.map((ph, i) => (
               <motion.div key={i} initial={{ opacity: 0, y: 18 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.5, delay: i * 0.09, ease: EASE }}
                 style={{ flex: 1, minWidth: 130 }}>
                 <NeuCard style={{ padding: '1.25rem 1rem', height: '100%', position: 'relative', overflow: 'hidden' }}>
                   <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 3, background: `linear-gradient(90deg, ${C.accent}, ${C.pink})`, opacity: 0.7 }} />
-                  <p style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.55rem', letterSpacing: '0.16em', color: C.accent, margin: '0.5rem 0 0.5rem' }}>{ph.n}</p>
+                  <p style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.55rem', letterSpacing: '0.16em', color: C.accent, margin: '0.5rem 0 0.5rem', textTransform: 'uppercase' }}>{ph.n}</p>
                   <p style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: '0.85rem', color: C.ink, margin: '0 0 0.5rem', lineHeight: 1.2 }}>{ph.label}</p>
                   <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.75rem', color: C.mid, lineHeight: 1.55, margin: 0 }}>{ph.desc}</p>
                 </NeuCard>
@@ -555,7 +653,8 @@ function ProcessSection() {
 // ─── People Map Section ───────────────────────────────────
 function PeopleSection() {
   return (
-    <section id="people" style={{ background: C.surface, ...PAD }}>
+    <section id="people" style={{ background: C.surface, ...PAD, position: 'relative' }}>
+      <Sticker src="/stickers/s-headphones.png" style={{ top: '22px', right: '-6px', width: '310px', transform: 'rotate(-8deg)' }} />
       <Wrap>
         <Reveal>
           <Label>People Map</Label>
@@ -563,23 +662,23 @@ function PeopleSection() {
             How the team connects
           </h2>
           <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.95rem', color: C.mid, lineHeight: 1.75, maxWidth: '52ch', margin: '0 0 3rem' }}>
-            Every role orbits the CEO — but the real value is in the connection lines. Each link has a cadence, a focus, and a reason to exist.
+            Every role orbits the CEO. The real value is in the connection lines. Each link has a cadence, a focus, and a reason to exist.
           </p>
         </Reveal>
         <PeopleMap />
 
         {/* Role responsibility blocks */}
-        <StaggerGrid style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px,1fr))', gap: '1rem', marginTop: '2.5rem' }}>
+        <StaggerGrid className="cc-g3" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem', marginTop: '2.5rem' }}>
           {[
             { role: 'CEO', color: C.accent, resp: 'Drives vision and strategy. Pitches the idea. Ensures alignment across the team and makes key decisions.' },
             { role: 'Chief of Staff', color: C.accentMid, resp: 'Coordinates between roles. Tracks deadlines. Supports execution, logistics, and internal workflow.' },
             { role: 'Branding & Marketing', color: C.pink, resp: 'Attracts users. Builds campaigns, manages social presence, and positions the brand for growth.' },
             { role: 'UX Lead', color: C.amber, resp: 'Designs user flows and interfaces for brands and influencers. Makes the product usable and trustworthy.' },
-            { role: 'Tech Lead', color: '#0EA5E9', resp: 'Builds core platform features — matchmaking logic, user accounts, APIs, database systems.' },
+            { role: 'Tech Lead', color: '#0EA5E9', resp: 'Builds core platform features: matchmaking logic, user accounts, APIs, database systems.' },
             { role: 'Data Analyst', color: C.green, resp: 'Analyses influencer and brand data to improve matchmaking, tracks campaign performance, informs product.' },
           ].map(item => (
             <StaggerItem key={item.role}>
-              <NeuCard style={{ padding: '1.25rem' }}>
+              <NeuCard style={{ padding: '1.25rem', height: '100%' }}>
                 <div style={{ width: 6, height: 6, borderRadius: '50%', background: item.color, marginBottom: '0.75rem' }} />
                 <p style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: '0.875rem', color: C.ink, margin: '0 0 0.5rem' }}>{item.role}</p>
                 <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.8rem', color: C.mid, lineHeight: 1.65, margin: 0 }}>{item.resp}</p>
@@ -587,6 +686,20 @@ function PeopleSection() {
             </StaggerItem>
           ))}
         </StaggerGrid>
+
+        {/* Service Roleplay photo */}
+        <Reveal delay={0.15}>
+          <div style={{ marginTop: '3rem', maxWidth: '680px', margin: '3rem auto 0' }}>
+            <p style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.58rem', letterSpacing: '0.16em', textTransform: 'uppercase', color: C.muted, marginBottom: '1rem' }}>Service Roleplay</p>
+            <div style={{ borderRadius: '18px', overflow: 'hidden', boxShadow: C.neu }}>
+              <img
+                src="/cc-teamphoto.png"
+                alt="The team at work — service roleplay session"
+                loading="lazy" decoding="async" style={{ width: '100%', display: 'block' }}
+              />
+            </div>
+          </div>
+        </Reveal>
       </Wrap>
     </section>
   )
@@ -598,13 +711,14 @@ function SolutionSection() {
   const inView = useInView(ref, { once: true, amount: 0.15 })
 
   const gtmPhases = [
-    { phase: '🐣 Crawl', period: 'Month 1–3', color: C.accentDim, border: C.accent, items: ['Build MVP — web + app onboarding', 'Manual brand/influencer onboarding', 'Closed beta: 10 brands + 50 influencers', 'Basic vibe quiz + discovery engine'] },
+    { phase: '🐣 Crawl', period: 'Month 1–3', color: C.accentDim, border: C.accent, items: ['Build MVP: web and app onboarding', 'Manual brand/influencer onboarding', 'Closed beta: 10 brands + 50 influencers', 'Basic vibe quiz + discovery engine'] },
     { phase: '🚶 Walk', period: 'Month 4–6', color: C.pinkDim, border: C.pink, items: ['Dashboards, analytics, swipe interface', 'Launch subscription model', 'Outreach to 100+ brands (SMBs, D2C)', 'Begin influencer-side content tools'] },
     { phase: '🚀 Fly', period: 'Month 6–12', color: C.greenDim, border: C.green, items: ['Matching refinement + tech systems', 'Brand-funded campaigns', 'Community collabs, product partnerships', 'Revenue scaling, team growth', 'Onboarding multi-national brands'] },
   ]
 
   return (
-    <section id="solution" ref={ref} style={{ background: C.bg, ...PAD }}>
+    <section id="solution" ref={ref} style={{ background: C.bg, ...PAD, position: 'relative' }}>
+      <Sticker src="/stickers/s-apple.png" style={{ bottom: '-34px', left: '4.5%', width: '138px', transform: 'rotate(17deg)' }} />
       <Wrap>
         <Reveal>
           <Label>Solution Matrix</Label>
@@ -646,13 +760,13 @@ function SolutionSection() {
           <Label>Go-to-Market</Label>
           <h3 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: 'clamp(1.4rem,2.8vw,2rem)', color: C.ink, letterSpacing: '-0.02em', margin: '0 0 2rem' }}>Crawl. Walk. Fly.</h3>
         </Reveal>
-        <StaggerGrid style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px,1fr))', gap: '1.25rem' }}>
+        <StaggerGrid className="cc-g3" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1.25rem' }}>
           {gtmPhases.map((ph, i) => (
             <StaggerItem key={ph.phase}>
-              <div style={{ padding: '1.75rem', background: ph.color, border: `1.5px solid ${ph.border}40`, borderRadius: '14px', position: 'relative', paddingBottom: `${2 + i * 0.5}rem` }}>
-                <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: `${(i + 1) * 8}px`, background: `${ph.border}15`, borderRadius: '0 0 14px 14px' }} />
+              <div style={{ padding: '1.75rem', paddingBottom: '2rem', background: ph.color, border: `1.5px solid ${ph.border}40`, borderRadius: '14px', position: 'relative', height: '100%', boxSizing: 'border-box' }}>
+                <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '10px', background: `${ph.border}18`, borderRadius: '0 0 14px 14px' }} />
                 <p style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: '1rem', color: C.ink, margin: '0 0 0.25rem' }}>{ph.phase}</p>
-                <p style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.6rem', letterSpacing: '0.12em', color: ph.border, margin: '0 0 1rem' }}>{ph.period}</p>
+                <p style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.6rem', letterSpacing: '0.12em', color: ph.border, margin: '0 0 1rem', textTransform: 'uppercase' }}>{ph.period}</p>
                 <ul style={{ margin: 0, padding: 0, listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
                   {ph.items.map(item => (
                     <li key={item} style={{ display: 'flex', gap: '0.5rem', alignItems: 'flex-start' }}>
@@ -675,7 +789,8 @@ function ProductSection() {
   const ref = useRef(null)
   const inView = useInView(ref, { once: true, amount: 0.1 })
   return (
-    <section id="product" ref={ref} style={{ background: C.surface, ...PAD }}>
+    <section id="product" ref={ref} style={{ background: C.surface, ...PAD, position: 'relative' }}>
+      <Sticker src="/stickers/s-handycam.png" style={{ top: '58px', right: '1.5%', width: '178px', transform: 'rotate(11deg)' }} />
       <Wrap>
         {/* Match Engine */}
         <Reveal>
@@ -688,16 +803,16 @@ function ProductSection() {
           </p>
         </Reveal>
 
-        <StaggerGrid style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px,1fr))', gap: '1.25rem', marginBottom: '3.5rem' }}>
+        <StaggerGrid className="cc-g3" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1.25rem', marginBottom: '3.5rem' }}>
           {[
-            { label: 'Onboarding', icon: '🚀', color: C.accent, items: ['Single interface: "I\'m a brand" / "I\'m an influencer"', 'Vibe quiz — tone, goals, content values', 'Matches by niche + vibe + platform + campaign type'] },
+            { label: 'Onboarding', icon: '🚀', color: C.accent, items: ['Single interface: "I\'m a brand" / "I\'m an influencer"', 'Vibe quiz: tone, goals, content values', 'Matches by niche, vibe, platform, and campaign type'] },
             { label: 'Influencer Dashboard', icon: '👁️', color: C.pink, items: ['Who\'s viewing your profile', 'Top 3 brand categories engaging with you', 'Visibility score + collab history'] },
             { label: 'Brand Dashboard', icon: '⚡', color: C.green, items: ['Swipe → Shortlist → Reach out or post a brief', 'Track campaign results inline', 'Creator scoring and compatibility view'] },
           ].map(card => (
             <StaggerItem key={card.label}>
-              <NeuCard style={{ padding: '1.75rem' }}>
+              <NeuCard style={{ padding: '1.75rem', height: '100%' }}>
                 <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center', marginBottom: '1rem' }}>
-                  <div style={{ width: 36, height: 36, borderRadius: '10px', background: `${card.color}15`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.1rem' }}>{card.icon}</div>
+                  <div style={{ width: 44, height: 44, borderRadius: '12px', background: `${card.color}15`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.75rem' }}>{card.icon}</div>
                   <p style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: '0.95rem', color: card.color, margin: 0 }}>{card.label}</p>
                 </div>
                 <ul style={{ margin: 0, padding: 0, listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
@@ -719,7 +834,7 @@ function ProductSection() {
           <h3 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: 'clamp(1.4rem,2.8vw,2rem)', color: C.ink, letterSpacing: '-0.02em', margin: '0 0 2rem' }}>Built for both sides of the marketplace</h3>
         </Reveal>
 
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem', marginBottom: '3.5rem' }}>
+        <div className="cc-g2" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem', marginBottom: '3.5rem' }}>
           {[
             {
               side: 'For Brands', color: C.accent,
@@ -748,7 +863,7 @@ function ProductSection() {
                       <p style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: '0.9rem', color: C.ink, margin: 0 }}>{tier.name}</p>
                       <p style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: '0.9rem', color: group.color, margin: 0 }}>{tier.price}</p>
                     </div>
-                    <p style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.55rem', letterSpacing: '0.08em', color: C.muted, margin: '0 0 0.5rem' }}>{tier.who}</p>
+                    <p style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.55rem', letterSpacing: '0.08em', color: C.muted, margin: '0 0 0.5rem', textTransform: 'uppercase' }}>{tier.who}</p>
                     <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.78rem', color: C.mid, lineHeight: 1.55, margin: 0 }}>{tier.features}</p>
                   </NeuCard>
                 ))}
@@ -762,17 +877,17 @@ function ProductSection() {
           <Label>Competitive Moat</Label>
           <h3 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: 'clamp(1.4rem,2.8vw,2rem)', color: C.ink, letterSpacing: '-0.02em', margin: '0 0 2rem' }}>Four reasons CloutCart isn't easy to clone</h3>
         </Reveal>
-        <StaggerGrid style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.25rem', marginBottom: '2.5rem' }}>
+        <StaggerGrid className="cc-g2" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.25rem', marginBottom: '2.5rem' }}>
           {[
-            { n: '1', title: 'Proprietary AI matchmaking', body: 'Tailored to vibe + business KPIs — not just keyword filters or follower thresholds.' },
+            { n: '1', title: 'Proprietary AI matchmaking', body: 'Tailored to vibe and business KPIs, not just keyword filters or follower thresholds.' },
             { n: '2', title: 'Network effect', body: 'Growing creator + brand density makes switching harder for every competitor.' },
             { n: '3', title: 'Adaptability', body: 'Expand beyond influencer collabs to any creator-driven channel as the ecosystem evolves.' },
             { n: '4', title: 'Data & insights layer', body: 'Campaign predictions and brand/creator performance data compounds over time.' },
           ].map(item => (
             <StaggerItem key={item.n}>
-              <NeuCard style={{ padding: '1.5rem' }}>
+              <NeuCard style={{ padding: '1.5rem', height: '100%' }}>
                 <div style={{ width: 28, height: 28, borderRadius: '8px', background: C.accentDim, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '0.75rem' }}>
-                  <span style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.7rem', fontWeight: 700, color: C.accent }}>{item.n}</span>
+                  <span style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.7rem', fontWeight: 700, color: C.accent, textTransform: 'uppercase' }}>{item.n}</span>
                 </div>
                 <p style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: '0.9rem', color: C.ink, margin: '0 0 0.5rem' }}>{item.title}</p>
                 <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.82rem', color: C.mid, lineHeight: 1.65, margin: 0 }}>{item.body}</p>
@@ -782,10 +897,10 @@ function ProductSection() {
         </StaggerGrid>
 
         <blockquote style={{ padding: '1.5rem 2rem', background: `linear-gradient(135deg, ${C.accentDim}, ${C.pinkDim})`, borderRadius: '14px', border: `1px solid ${C.accentBorder}` }}>
-          <p style={{ fontFamily: "'EB Garamond', Georgia, serif", fontStyle: 'italic', fontSize: 'clamp(1.05rem,2vw,1.3rem)', color: C.ink, margin: '0 0 0.5rem', lineHeight: 1.6 }}>
-            "A place to grow together. Not just a deal — a creative journey."
+          <p style={{ fontFamily: "'Lora', Georgia, serif", fontStyle: 'italic', fontSize: 'clamp(1.05rem,2vw,1.3rem)', color: C.ink, margin: '0 0 0.5rem', lineHeight: 1.6 }}>
+            "A place to grow together. Not just a deal, but a creative journey."
           </p>
-          <p style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.58rem', color: C.muted, margin: 0, letterSpacing: '0.1em' }}>THE CLOUTCART EDGE: Speed · Brand-fit assurance · Performance prediction · Creative control</p>
+          <p style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.58rem', color: C.muted, margin: 0, letterSpacing: '0.1em', textTransform: 'uppercase' }}>THE CLOUTCART EDGE: Speed · Brand-fit assurance · Performance prediction · Creative control</p>
         </blockquote>
       </Wrap>
     </section>
@@ -813,13 +928,14 @@ function RoadmapSection() {
       n: '03', icon: '🌍', label: 'Global Expansion', period: '2027 & Beyond', funding: 'Series B: $5M–$10M',
       color: C.green, grad: `linear-gradient(135deg, #0A1E0F, #065920)`,
       goals: ['Become the dominant platform for influencer marketing globally', 'Launch in SEA, MENA, Europe, and US markets', 'Expand beyond influencer marketing to all creator-driven channels'],
-      activities: ['Regionalized onboarding, creator vetting, support — 100K+ creators', 'Enterprise services suite: concierge, co-strategy, payouts', 'Fully autonomous recommendation engine', 'Team to 50–100+ across sales, product, AI/ML, partnerships'],
+      activities: ['Regionalized onboarding, creator vetting, support for 100K+ creators', 'Enterprise services suite: concierge, co-strategy, payouts', 'Fully autonomous recommendation engine', 'Team to 50–100+ across sales, product, AI/ML, partnerships'],
       metrics: ['$1M+ MRR', '5,000+ brand accounts (10%+ enterprise)', '100K+ verified creators', 'Presence in 5+ global markets'],
     },
   ]
 
   return (
-    <section id="roadmap" style={{ background: C.bg, ...PAD }}>
+    <section id="roadmap" style={{ background: C.bg, ...PAD, position: 'relative' }}>
+      <Sticker src="/stickers/s-giftbox.png" style={{ bottom: '-44px', right: '9%', width: '152px', transform: 'rotate(-14deg)' }} />
       <Wrap>
         <Reveal>
           <Label>Business Roadmap</Label>
@@ -827,7 +943,7 @@ function RoadmapSection() {
             Three phases. From MVP to market domination.
           </h2>
           <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.95rem', color: C.mid, lineHeight: 1.75, maxWidth: '52ch', margin: '0 0 3rem' }}>
-            The deeper strategic layer beneath Crawl/Walk/Fly — with goals, activities, metrics, and funding at each stage.
+            The deeper strategic layer beneath Crawl/Walk/Fly, with goals, activities, metrics, and funding at each stage.
           </p>
         </Reveal>
 
@@ -839,11 +955,11 @@ function RoadmapSection() {
                 <div style={{ background: ph.grad, padding: '2rem', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem' }}>
                   <div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.5rem' }}>
-                      <span style={{ fontSize: '1.5rem' }}>{ph.icon}</span>
+                      <span style={{ fontSize: '2rem' }}>{ph.icon}</span>
                       <span style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.6rem', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.5)' }}>Phase {ph.n}</span>
                     </div>
                     <h3 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: 'clamp(1.2rem,2.5vw,1.6rem)', color: '#F2EDE4', margin: '0 0 0.25rem', letterSpacing: '-0.02em' }}>{ph.label}</h3>
-                    <p style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.6rem', color: `${ph.color}`, letterSpacing: '0.12em', margin: 0 }}>{ph.period}</p>
+                    <p style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.6rem', color: `${ph.color}`, letterSpacing: '0.12em', margin: 0, textTransform: 'uppercase' }}>{ph.period}</p>
                   </div>
                   <div style={{ background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.12)', borderRadius: '10px', padding: '0.75rem 1.25rem' }}>
                     <p style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.55rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.4)', margin: '0 0 0.3rem' }}>Funding Target</p>
@@ -851,7 +967,7 @@ function RoadmapSection() {
                   </div>
                 </div>
                 {/* Body */}
-                <div style={{ background: C.card, padding: '2rem', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px,1fr))', gap: '1.5rem' }}>
+                <div className="cc-g3" style={{ background: C.card, padding: '2rem', display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1.5rem' }}>
                   {[['Goals', ph.goals], ['Key Activities', ph.activities], ['Success Metrics', ph.metrics]].map(([title, items]) => (
                     <div key={title}>
                       <p style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.58rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: ph.color, margin: '0 0 0.75rem', fontWeight: 600 }}>{title}</p>
@@ -881,9 +997,9 @@ function UXSection() {
   const inView = useInView(ref, { once: true, amount: 0.1 })
 
   const principles = [
-    { n: '1', title: 'Mobile-First Experience', body: 'Target audience — young entrepreneurs and SME marketing teams — multitasks on mobile. Influencer discovery is visual and lightweight. Instant notifications make faster campaign decisions possible.' },
-    { n: '2', title: 'Business Collaboration, Simplified', body: 'Briefing, negotiation, content review, approvals, payments — usually scattered across DMs, WhatsApp, and Sheets. CloutCart consolidates it all into one workflow.' },
-    { n: '3', title: 'Built for Young Entrepreneurs', body: 'D2C founders and startup marketers value efficiency, clean interfaces, and modern tools. They care about brand alignment and vibe — and they prefer tools that feel genuinely cool.' },
+    { n: '1', title: 'Mobile-First Experience', body: 'Target audience: young entrepreneurs and SME marketing teams who multitask on mobile. Influencer discovery is visual and lightweight. Instant notifications make faster campaign decisions possible.' },
+    { n: '2', title: 'Business Collaboration, Simplified', body: 'Briefing, negotiation, content review, approvals, payments: usually scattered across DMs, WhatsApp, and Sheets. CloutCart consolidates it all into one workflow.' },
+    { n: '3', title: 'Built for Young Entrepreneurs', body: 'D2C founders and startup marketers value efficiency, clean interfaces, and modern tools. They care about brand alignment and vibe, and prefer tools that feel genuinely cool.' },
     { n: '4', title: 'Vibe Alignment Over Reach', body: 'When an influencer\'s vibe aligns with the brand, audiences feel it as genuine. Fewer back-and-forth negotiations, fewer rejections. Higher ROI with better-matched collabs.' },
   ]
 
@@ -902,18 +1018,19 @@ function UXSection() {
   const appScreens = [
     { n: '01', name: 'Welcome & Onboarding', steps: ['Sign up with Email / Google / LinkedIn', 'OTP or password verification', 'Set up brand profile (logo, tone, budget)', 'Land on Dashboard'] },
     { n: '02', name: 'Create Campaign', steps: ['Campaign name & objective', 'Deliverables selection (Reels, Posts, etc.)', 'Target audience, budget, timeline', 'Save as draft or publish'] },
-    { n: '03', name: 'Influencer Discovery', steps: ['Access via Dashboard or Discover tab', 'Filters: followers, engagement, style', 'View influencer cards — swipe/list/grid', 'Tap to view full profile'] },
+    { n: '03', name: 'Influencer Discovery', steps: ['Access via Dashboard or Discover tab', 'Filters: followers, engagement, style', 'View influencer cards: swipe, list, or grid', 'Tap to view full profile'] },
     { n: '04', name: 'Influencer Profiles', steps: ['Bio, stats, audience, content gallery', 'Actions: Shortlist / Chat / Add Notes', 'Full profile visibility for decision-making'] },
     { n: '05', name: 'Shortlisting System', steps: ['Save influencers to campaign or favorites', '"Shortlist" view per campaign', 'Add internal notes, remove or update status'] },
     { n: '06', name: 'Chat & Collab Request', steps: ['In-app chat with file sharing', 'Send collaboration request', 'Influencer accepts/negotiates via chat'] },
-    { n: '07', name: 'Contract & Payment', steps: ['Auto-generated contract (campaign + influencer details)', 'Deliverables and payment terms reviewed', 'Choose payment method — Escrow / wallet', 'Payment status in campaign tracker'] },
+    { n: '07', name: 'Contract & Payment', steps: ['Auto-generated contract (campaign + influencer details)', 'Deliverables and payment terms reviewed', 'Choose payment method: Escrow or wallet', 'Payment status in campaign tracker'] },
     { n: '08', name: 'Campaign Tracker', steps: ['Influencer status: content review, payment', 'Upload approval, change requests', 'Overall progress bar'] },
     { n: '09', name: 'Post-Campaign Report', steps: ['Engagement metrics, audience stats', 'Delivered content preview', 'Internal rating & notes', 'Downloadable PDF/CSV'] },
     { n: '10', name: 'Notifications', steps: ['New matches, chat replies, uploads, payments', 'Push notification system', 'Keeps brands informed & engaged'] },
   ]
 
   return (
-    <section id="ux" ref={ref} style={{ background: C.surface, ...PAD }}>
+    <section id="ux" ref={ref} style={{ background: C.surface, ...PAD, position: 'relative' }}>
+      <Sticker src="/stickers/s-mylar.png" style={{ top: '42px', left: '2%', width: '130px', transform: 'rotate(7deg)' }} />
       <Wrap>
         {/* Design Principles */}
         <Reveal>
@@ -922,12 +1039,12 @@ function UXSection() {
             Four design principles
           </h2>
         </Reveal>
-        <StaggerGrid style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px,1fr))', gap: '1.25rem', marginBottom: '3.5rem' }}>
+        <StaggerGrid className="cc-g2" style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '1.25rem', marginBottom: '3.5rem' }}>
           {principles.map(p => (
             <StaggerItem key={p.n}>
-              <NeuCard style={{ padding: '1.75rem' }}>
+              <NeuCard style={{ padding: '1.75rem', height: '100%' }}>
                 <div style={{ width: 32, height: 32, borderRadius: '8px', background: C.accentDim, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1rem' }}>
-                  <span style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.7rem', fontWeight: 700, color: C.accent }}>{p.n}</span>
+                  <span style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.7rem', fontWeight: 700, color: C.accent, textTransform: 'uppercase' }}>{p.n}</span>
                 </div>
                 <p style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: '0.95rem', color: C.ink, margin: '0 0 0.6rem' }}>{p.title}</p>
                 <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.83rem', color: C.mid, lineHeight: 1.68, margin: 0 }}>{p.body}</p>
@@ -939,13 +1056,13 @@ function UXSection() {
         {/* User Flow */}
         <Reveal delay={0.1}>
           <Label>High-Level User Flow</Label>
-          <h3 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: 'clamp(1.4rem,2.8vw,2rem)', color: C.ink, letterSpacing: '-0.02em', margin: '0 0 1.5rem' }}>Brand vs Creator — two paths, one collab</h3>
+          <h3 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: 'clamp(1.4rem,2.8vw,2rem)', color: C.ink, letterSpacing: '-0.02em', margin: '0 0 1.5rem' }}>Brand vs Creator: two paths, one collab</h3>
         </Reveal>
         <motion.div initial={{ opacity: 0, y: 20 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.6, delay: 0.2, ease: EASE }}
-          style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.25rem', marginBottom: '3.5rem' }}>
+          className="cc-g2" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.25rem', marginBottom: '3.5rem' }}>
           {[
-            { side: 'Brand Flow', color: C.accent, steps: ['Brief — define campaign goals, audience, budget', 'Swipe — discover and shortlist matched creators', 'Collaborate — send brief, chat, contract, track'] },
-            { side: 'Creator Flow', color: C.pink, steps: ['Brief — build profile, set vibe and niche tags', 'Match — get discovered and notified by brands', 'Collaborate — accept, create, deliver, get paid'] },
+            { side: 'Brand Flow', color: C.accent, steps: ['Brief: define campaign goals, audience, budget', 'Swipe: discover and shortlist matched creators', 'Collaborate: send brief, chat, contract, track'] },
+            { side: 'Creator Flow', color: C.pink, steps: ['Brief: build profile, set vibe and niche tags', 'Match: get discovered and notified by brands', 'Collaborate: accept, create, deliver, get paid'] },
           ].map(flow => (
             <NeuCard key={flow.side} style={{ padding: '1.75rem' }}>
               <p style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.6rem', letterSpacing: '0.16em', textTransform: 'uppercase', color: flow.color, margin: '0 0 1rem', fontWeight: 600 }}>{flow.side}</p>
@@ -982,9 +1099,9 @@ function UXSection() {
                 return (
                   <tr key={i} style={{ borderBottom: `1px solid ${C.border}`, background: i % 2 === 0 ? C.card : C.bg }}>
                     <td style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.83rem', color: C.ink, padding: '0.7rem 1rem', fontWeight: 500 }}>{row.feature}</td>
-                    <td style={{ padding: '0.7rem 1rem' }}><span style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.58rem', color: impactCol, background: `${impactCol}15`, border: `1px solid ${impactCol}30`, borderRadius: '99px', padding: '2px 8px' }}>{row.impact}</span></td>
-                    <td style={{ padding: '0.7rem 1rem' }}><span style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.58rem', color: effortCol, background: `${effortCol}15`, border: `1px solid ${effortCol}30`, borderRadius: '99px', padding: '2px 8px' }}>{row.effort}</span></td>
-                    <td style={{ padding: '0.7rem 1rem' }}><span style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.58rem', color: '#fff', background: priCol, borderRadius: '99px', padding: '2px 8px' }}>{row.priority}</span></td>
+                    <td style={{ padding: '0.7rem 1rem' }}><span style={{ display: 'inline-block', fontFamily: "'Space Mono', monospace", fontSize: '0.58rem', color: impactCol, background: `${impactCol}15`, border: `1px solid ${impactCol}30`, borderRadius: '99px', padding: '3px 10px', minWidth: 54, textAlign: 'center', textTransform: 'uppercase', letterSpacing: '0.06em' }}>{row.impact}</span></td>
+                    <td style={{ padding: '0.7rem 1rem' }}><span style={{ display: 'inline-block', fontFamily: "'Space Mono', monospace", fontSize: '0.58rem', color: effortCol, background: `${effortCol}15`, border: `1px solid ${effortCol}30`, borderRadius: '99px', padding: '3px 10px', minWidth: 54, textAlign: 'center', textTransform: 'uppercase', letterSpacing: '0.06em' }}>{row.effort}</span></td>
+                    <td style={{ padding: '0.7rem 1rem' }}><span style={{ display: 'inline-block', fontFamily: "'Space Mono', monospace", fontSize: '0.58rem', color: '#fff', background: priCol, borderRadius: '99px', padding: '3px 10px', minWidth: 80, textAlign: 'center', textTransform: 'uppercase', letterSpacing: '0.06em' }}>{row.priority}</span></td>
                   </tr>
                 )
               })}
@@ -997,12 +1114,12 @@ function UXSection() {
           <Label>App Flow</Label>
           <h3 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: 'clamp(1.4rem,2.8vw,2rem)', color: C.ink, letterSpacing: '-0.02em', margin: '0 0 2rem' }}>10 core screens</h3>
         </Reveal>
-        <StaggerGrid style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px,1fr))', gap: '1rem' }}>
+        <StaggerGrid className="cc-g5" style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '1rem' }}>
           {appScreens.map(screen => (
             <StaggerItem key={screen.n}>
-              <NeuCard style={{ padding: '1.25rem' }}>
+              <NeuCard style={{ padding: '1.25rem', height: '100%' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.75rem' }}>
-                  <span style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.6rem', color: C.accent, fontWeight: 700 }}>{screen.n}</span>
+                  <span style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.6rem', color: C.accent, fontWeight: 700, textTransform: 'uppercase' }}>{screen.n}</span>
                   <p style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: '0.83rem', color: C.ink, margin: 0 }}>{screen.name}</p>
                 </div>
                 <ul style={{ margin: 0, padding: 0, listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
@@ -1026,7 +1143,7 @@ function JourneysSection() {
       title: 'Influencer Journey', icon: '🎨', color: C.pink,
       rows: [
         { stage: 'Onboarding', touch: 'Signs up → vibe quiz → uploads content sample → AI assigns tags → sees profile preview', emotion: 'Excited, Curious' },
-        { stage: 'Discoverability', touch: '"You are now discoverable by [Brand Name]" — notification on brand swipe list', emotion: 'Curious, Alerted' },
+        { stage: 'Discoverability', touch: '"You are now discoverable by [Brand Name]" — this notification appears on the brand swipe list', emotion: 'Curious, Alerted' },
         { stage: 'Shortlisted', touch: 'Brand swipes right → receives notification with campaign preview + message', emotion: 'Hopeful' },
         { stage: 'Messaging', touch: 'Responds, accepts collab. Chat opens in-platform. Timeline + deliverables set.', emotion: 'Engaged, Reassured' },
         { stage: 'Agreement', touch: 'E-sign agreement generated by platform', emotion: 'Confident, Committed' },
@@ -1034,7 +1151,7 @@ function JourneysSection() {
       ]
     },
     {
-      title: 'Brand — SME Journey', icon: '🚀', color: C.accent,
+      title: 'Brand: SME Journey', icon: '🚀', color: C.accent,
       rows: [
         { stage: 'Onboarding', touch: 'Fills basic brand details → 1st campaign brief → Starter Plan → guided campaign builder', emotion: 'Cautious, Newcomer' },
         { stage: 'Matching', touch: 'AI suggests top 10 matches with vibe tags. Simplified filters. Swipes and adds creators.', emotion: 'Curious, Learning' },
@@ -1044,7 +1161,7 @@ function JourneysSection() {
       ]
     },
     {
-      title: 'Brand — Enterprise Journey', icon: '🏢', color: C.green,
+      title: 'Brand: Enterprise Journey', icon: '🏢', color: C.green,
       rows: [
         { stage: 'Onboarding', touch: 'Enterprise login → campaign brief (goal, audience, vibe) → Enterprise plan selected', emotion: 'Strategic, Invested' },
         { stage: 'Matching', touch: 'AI pulls top matches. Swipe interface. Filters by region, language, engagement, vibe.', emotion: 'Curious, Intentional' },
@@ -1056,7 +1173,8 @@ function JourneysSection() {
   ]
 
   return (
-    <section id="journeys" style={{ background: C.bg, ...PAD }}>
+    <section id="journeys" style={{ background: C.bg, ...PAD, position: 'relative' }}>
+      <Sticker src="/stickers/s-wallet.png" style={{ top: '42%', right: '3%', width: '150px', transform: 'rotate(22deg)' }} />
       <Wrap>
         <Reveal>
           <Label>User Journey Maps</Label>
@@ -1064,7 +1182,7 @@ function JourneysSection() {
             Three personas. One platform.
           </h2>
           <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.95rem', color: C.mid, lineHeight: 1.75, maxWidth: '52ch', margin: '0 0 3rem' }}>
-            How different users move through CloutCart — and what they feel at each step.
+            How different users move through CloutCart, and what they feel at each step.
           </p>
         </Reveal>
 
@@ -1073,7 +1191,7 @@ function JourneysSection() {
             <Reveal key={jm.title} delay={ji * 0.1}>
               <div style={{ borderRadius: '14px', overflow: 'hidden', boxShadow: C.neu }}>
                 <div style={{ background: jm.color, padding: '1.25rem 1.5rem', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                  <span style={{ fontSize: '1.25rem' }}>{jm.icon}</span>
+                  <span style={{ fontSize: '1.75rem' }}>{jm.icon}</span>
                   <h3 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: '1rem', color: '#fff', margin: 0 }}>{jm.title}</h3>
                 </div>
                 <div style={{ overflowX: 'auto' }}>
@@ -1088,9 +1206,9 @@ function JourneysSection() {
                     <tbody>
                       {jm.rows.map((row, ri) => (
                         <tr key={ri} style={{ borderBottom: `1px solid ${C.border}`, background: ri % 2 === 0 ? C.card : C.bg }}>
-                          <td style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.65rem', letterSpacing: '0.08em', color: jm.color, padding: '0.8rem 1rem', fontWeight: 600, whiteSpace: 'nowrap' }}>{row.stage}</td>
+                          <td style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.65rem', letterSpacing: '0.08em', color: jm.color, padding: '0.8rem 1rem', fontWeight: 600, whiteSpace: 'nowrap', textTransform: 'uppercase' }}>{row.stage}</td>
                           <td style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.82rem', color: C.mid, padding: '0.8rem 1rem', lineHeight: 1.6 }}>{row.touch}</td>
-                          <td style={{ fontFamily: "'EB Garamond', Georgia, serif", fontStyle: 'italic', fontSize: '0.9rem', color: C.ink, padding: '0.8rem 1rem', whiteSpace: 'nowrap' }}>{row.emotion}</td>
+                          <td style={{ fontFamily: "'Lora', Georgia, serif", fontStyle: 'italic', fontSize: '0.9rem', color: C.ink, padding: '0.8rem 1rem', whiteSpace: 'nowrap' }}>{row.emotion}</td>
                         </tr>
                       ))}
                     </tbody>
@@ -1110,7 +1228,8 @@ function TechSection() {
   const ref = useRef(null)
   const inView = useInView(ref, { once: true, amount: 0.1 })
   return (
-    <section id="tech" ref={ref} style={{ background: C.surface, ...PAD }}>
+    <section id="tech" ref={ref} style={{ background: C.surface, ...PAD, position: 'relative' }}>
+      <Sticker src="/stickers/s-megaphone.png" style={{ bottom: '-52px', left: '3%', width: '158px', transform: 'rotate(-22deg)' }} />
       <Wrap>
         <Reveal>
           <Label>Technical Architecture</Label>
@@ -1159,7 +1278,7 @@ function TechSection() {
         {/* Challenges + solutions */}
         <motion.div initial={{ opacity: 0, y: 24 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.6, delay: 0.4, ease: EASE }} style={{ marginTop: '3rem' }}>
           <h3 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 600, fontSize: '1.1rem', color: C.ink, margin: '0 0 1.25rem' }}>Technical challenges & solutions</h3>
-          <StaggerGrid style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px,1fr))', gap: '1rem' }}>
+          <StaggerGrid className="cc-g3" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem' }}>
             {[
               { challenge: 'Swipe UI across web and mobile', solution: 'Shared React component (React Tinder Card or Framer Motion)' },
               { challenge: 'Matching accuracy in early stage', solution: 'Clear metadata tagging + brand feedback loops' },
@@ -1169,7 +1288,7 @@ function TechSection() {
               { challenge: 'Subscription control', solution: 'Stripe webhooks to manage plan change events' },
             ].map((item, i) => (
               <StaggerItem key={i}>
-                <NeuCard style={{ padding: '1.25rem' }}>
+                <NeuCard style={{ padding: '1.25rem', height: '100%' }}>
                   <p style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.58rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: '#DC2626', margin: '0 0 0.5rem' }}>Challenge</p>
                   <p style={{ fontFamily: "'Syne', sans-serif", fontWeight: 600, fontSize: '0.85rem', color: C.ink, margin: '0 0 0.75rem' }}>{item.challenge}</p>
                   <p style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.58rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: C.green, margin: '0 0 0.4rem' }}>Solution</p>
@@ -1190,11 +1309,12 @@ function ImpactSection() {
     { n: '60%', label: 'Faster Matching Time', body: 'AI + swipe UI accelerates brand-influencer discovery vs traditional outreach.' },
     { n: '3×', label: 'Higher Campaign Engagement', body: 'Better-fit matches lead to more relevant, high-performing content.' },
     { n: '2×', label: 'Visibility for Micro-Influencers', body: 'Emerging creators get noticed with smart discovery + brand interest insights.' },
-    { n: '100%', label: 'In-App Workflow', body: 'Chat, contracts, briefs, payments — no scattered tools or emails.' },
+    { n: '100%', label: 'In-App Workflow', body: 'Chat, contracts, briefs, payments: no scattered tools, no stray emails.' },
     { n: '+25%', label: 'Matching Accuracy Over Time', body: 'Lightweight AI improves with every interaction, adapting to preferences and outcomes.' },
   ]
   return (
-    <section id="impact" style={{ background: C.bg, ...PAD }}>
+    <section id="impact" style={{ background: C.bg, ...PAD, position: 'relative' }}>
+      <Sticker src="/stickers/s-lemon.png" style={{ top: '-40px', right: '6%', width: '128px', transform: 'rotate(20deg)' }} />
       <Wrap>
         {/* Revenue model */}
         <Reveal>
@@ -1203,14 +1323,14 @@ function ImpactSection() {
             B2B2C SaaS Marketplace
           </h2>
         </Reveal>
-        <StaggerGrid style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px,1fr))', gap: '1.25rem', marginBottom: '3.5rem' }}>
+        <StaggerGrid className="cc-g3" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1.25rem', marginBottom: '3.5rem' }}>
           {[
             { label: 'Primary Revenue', color: C.accent, items: ['Brand subscriptions: ₹0 → ₹2,499 → Custom', 'Creator subscriptions: ₹0 → ₹299 → ₹699'] },
-            { label: 'Secondary Revenue', color: C.pink, items: ['Enterprise services — managed campaigns, concierge support', 'Campaign commission / transaction fee at scale'] },
+            { label: 'Secondary Revenue', color: C.pink, items: ['Enterprise services: managed campaigns and concierge support', 'Campaign commission / transaction fee at scale'] },
             { label: 'Future Add-ons', color: C.green, items: ['Boosted visibility, extra analytics, branded reports', 'Creator packs, white-label enterprise dashboards'] },
           ].map(tier => (
             <StaggerItem key={tier.label}>
-              <NeuCard style={{ padding: '1.75rem' }}>
+              <NeuCard style={{ padding: '1.75rem', height: '100%' }}>
                 <p style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.6rem', letterSpacing: '0.16em', textTransform: 'uppercase', color: tier.color, margin: '0 0 1rem', fontWeight: 600 }}>{tier.label}</p>
                 {tier.items.map(item => (
                   <div key={item} style={{ display: 'flex', gap: '0.5rem', marginBottom: '0.5rem' }}>
@@ -1228,14 +1348,20 @@ function ImpactSection() {
           <Label>Product Impact</Label>
           <h3 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: 'clamp(1.4rem,2.8vw,2rem)', color: C.ink, letterSpacing: '-0.02em', margin: '0 0 2rem' }}>The numbers we're projecting</h3>
         </Reveal>
-        <StaggerGrid style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(190px,1fr))', gap: '1.25rem' }}>
+        <StaggerGrid className="cc-g5" style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '1.5rem' }}>
           {stats.map(s => (
             <StaggerItem key={s.n}>
-              <NeuCard style={{ padding: '1.75rem', textAlign: 'center' }}>
-                <p style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: 'clamp(2rem,4vw,3rem)', color: C.accent, margin: '0 0 0.5rem', letterSpacing: '-0.03em', lineHeight: 1 }}>{s.n}</p>
-                <p style={{ fontFamily: "'Syne', sans-serif", fontWeight: 600, fontSize: '0.85rem', color: C.ink, margin: '0 0 0.5rem', lineHeight: 1.3 }}>{s.label}</p>
-                <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.78rem', color: C.mid, lineHeight: 1.6, margin: 0 }}>{s.body}</p>
-              </NeuCard>
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem' }}>
+                {/* Neumorphic circle */}
+                <div style={{ width: '100%', paddingBottom: '100%', position: 'relative', borderRadius: '50%', background: C.card, boxShadow: C.neu, flexShrink: 0 }}>
+                  <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '0.35rem', padding: '1.25rem' }}>
+                    <p style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: 'clamp(1.6rem,3vw,2.4rem)', color: C.accent, margin: 0, letterSpacing: '-0.03em', lineHeight: 1 }}>{s.n}</p>
+                    <p style={{ fontFamily: "'Syne', sans-serif", fontWeight: 600, fontSize: '0.7rem', color: C.ink, margin: 0, lineHeight: 1.25, textAlign: 'center' }}>{s.label}</p>
+                  </div>
+                </div>
+                {/* Body text below */}
+                <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.75rem', color: C.mid, lineHeight: 1.6, margin: 0, textAlign: 'center' }}>{s.body}</p>
+              </div>
             </StaggerItem>
           ))}
         </StaggerGrid>
@@ -1248,25 +1374,18 @@ function ImpactSection() {
 function BlueprintSection() {
   const ref = useRef(null)
   const inView = useInView(ref, { once: true, amount: 0.1 })
+  const bpWrapRef = useRef(null)
+  const [bpScale, setBpScale] = useState(1)
 
-  const lanes = [
-    {
-      label: 'Customer Actions', color: C.accent,
-      items: ['Sees Instagram ad about CloutCart', 'Visits platform', 'Signs up + takes vibe quiz / creates profile', 'Views match results', 'Selects influencer', 'Interacts (chat, collabs, proposals)', 'Tracks outcomes', 'Leaves feedback / upgrades subscription'],
-    },
-    {
-      label: 'Front Stage', color: C.accentMid,
-      items: ['Onboarding UI — quiz, tag-based profiling', 'Site onboarding flow', 'Matchmaking — card view, search, filters', 'Profile & campaign interface', 'Chat / collaboration interface', 'Analytics dashboard', 'Customer support (chat / help center)', 'Subscription paywall & upgrade flow'],
-    },
-    {
-      label: 'Back Stage', color: '#0EA5E9',
-      items: ['AI matching algorithm — quiz + tags', 'User tagging & profile classification', 'Internal ratings, flags, fraud detection', 'Creator/brand verification + moderation', 'Notification scheduling, campaign alerts', 'Payment processing + subscription mgmt', 'Data collection on match quality', 'Conversion tracking'],
-    },
-    {
-      label: 'Support Services', color: C.green,
-      items: ['Marketing campaigns (ads, SEO, outreach)', 'AI model training on engagement metrics', 'Customer success playbooks', 'Bug reports + feature rollout', 'Technical infrastructure & uptime', 'Brand safety & moderation tools', 'Internal KPI dashboards', 'Beta campaigns + onboarding incentives'],
-    },
-  ]
+  useEffect(() => {
+    const measure = () => {
+      if (bpWrapRef.current) setBpScale(bpWrapRef.current.offsetWidth / 1140)
+    }
+    measure()
+    window.addEventListener('resize', measure, { passive: true })
+    return () => window.removeEventListener('resize', measure)
+  }, [])
+
 
   const heatmap = [
     { role: 'CEO',       phases: ['L', 'XL', 'L'] },
@@ -1281,7 +1400,8 @@ function BlueprintSection() {
   const heatText = (v) => ({ 'S': C.mid, 'M': C.mid, 'L': '#fff', 'XL': '#fff' }[v])
 
   return (
-    <section id="blueprint" ref={ref} style={{ background: C.surface, ...PAD }}>
+    <section id="blueprint" ref={ref} style={{ background: C.surface, ...PAD, position: 'relative' }}>
+      <Sticker src="/stickers/s-ipod.png" style={{ bottom: '15%', left: '20%', width: '134px', transform: 'rotate(23deg)' }} />
       <Wrap>
         {/* Service Blueprint */}
         <Reveal>
@@ -1294,28 +1414,21 @@ function BlueprintSection() {
           </p>
         </Reveal>
 
-        <motion.div initial={{ opacity: 0, y: 24 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.65, ease: EASE }} style={{ borderRadius: '14px', overflow: 'hidden', boxShadow: C.neu, marginBottom: '3.5rem' }}>
-          {lanes.map((lane, li) => (
-            <div key={lane.label}>
-              {li > 0 && (
-                <div style={{ background: `${lane.color}15`, padding: '0.5rem 1.25rem', borderTop: `1px solid ${lane.color}30` }}>
-                  <span style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.55rem', letterSpacing: '0.16em', textTransform: 'uppercase', color: lane.color, fontStyle: 'italic' }}>— Line of {li === 1 ? 'Interaction' : li === 2 ? 'Visibility' : 'Internal Interaction'} ─────────────────</span>
-                </div>
-              )}
-              <div style={{ display: 'flex', alignItems: 'stretch', borderTop: li === 0 ? 'none' : undefined }}>
-                <div style={{ background: lane.color, padding: '1rem', minWidth: 110, display: 'flex', alignItems: 'center', justifyContent: 'center', textAlign: 'center' }}>
-                  <span style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.58rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: '#fff', fontWeight: 700, lineHeight: 1.4 }}>{lane.label}</span>
-                </div>
-                <div style={{ background: li % 2 === 0 ? C.card : C.bg, padding: '1rem 1.25rem', flex: 1, display: 'flex', flexWrap: 'wrap', gap: '0.5rem', alignItems: 'center' }}>
-                  {lane.items.map((item, ii) => (
-                    <span key={ii} style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.78rem', color: C.mid, background: C.card, border: `1px solid ${C.border}`, borderRadius: '6px', padding: '0.3rem 0.65rem', lineHeight: 1.4, boxShadow: C.neuSm }}>
-                      {item}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            </div>
-          ))}
+        <motion.div
+          ref={bpWrapRef}
+          initial={{ opacity: 0, y: 24 }}
+          animate={inView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.65, ease: EASE }}
+          style={{ width: '100%', height: 820 * bpScale, marginBottom: '3.5rem', overflow: 'hidden' }}
+        >
+          <iframe
+            src="/cc-service-blueprint.html"
+            title="CloutCart Service Blueprint"
+            width="1140"
+            height="820"
+            style={{ border: 'none', display: 'block', transformOrigin: 'top left', transform: `scale(${bpScale})` }}
+            scrolling="no"
+          />
         </motion.div>
 
         {/* Role Heatmap */}
@@ -1328,7 +1441,7 @@ function BlueprintSection() {
             <thead>
               <tr style={{ background: C.card }}>
                 <th style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.55rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: C.muted, padding: '0.75rem 1rem', textAlign: 'left', fontWeight: 500 }}>Role</th>
-                {['Phase 1 — MVP & Beta', 'Phase 2 — Market Fit', 'Phase 3 — Global Scale'].map(ph => (
+                {['Phase 1: MVP & Beta', 'Phase 2: Market Fit', 'Phase 3: Global Scale'].map(ph => (
                   <th key={ph} style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.55rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: C.muted, padding: '0.75rem 0.75rem', textAlign: 'center', fontWeight: 500 }}>{ph}</th>
                 ))}
               </tr>
@@ -1339,7 +1452,7 @@ function BlueprintSection() {
                   <td style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.85rem', fontWeight: 600, color: C.ink, padding: '0.65rem 1rem' }}>{row.role}</td>
                   {row.phases.map((val, j) => (
                     <td key={j} style={{ padding: '0.5rem 0.75rem', textAlign: 'center' }}>
-                      <span style={{ display: 'inline-block', fontFamily: "'Space Mono', monospace", fontSize: '0.65rem', fontWeight: 700, color: heatText(val), background: heatColor(val), borderRadius: '6px', padding: '0.3rem 0.75rem', minWidth: 32 }}>{val}</span>
+                      <span style={{ display: 'inline-block', fontFamily: "'Space Mono', monospace", fontSize: '0.65rem', fontWeight: 700, color: heatText(val), background: heatColor(val), borderRadius: '6px', padding: '0.3rem 0.75rem', minWidth: 36, textAlign: 'center', textTransform: 'uppercase' }}>{val}</span>
                     </td>
                   ))}
                 </tr>
@@ -1347,7 +1460,7 @@ function BlueprintSection() {
             </tbody>
           </table>
         </motion.div>
-        <p style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.58rem', color: C.muted, margin: '0.75rem 0 0', letterSpacing: '0.08em' }}>S = Small · M = Medium · L = Large · XL = Extra Large workload</p>
+        <p style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.58rem', color: C.muted, margin: '0.75rem 0 0', letterSpacing: '0.08em', textTransform: 'uppercase' }}>S = Small · M = Medium · L = Large · XL = Extra Large workload</p>
       </Wrap>
     </section>
   )
@@ -1356,28 +1469,60 @@ function BlueprintSection() {
 // ─── Reflections Section ─────────────────────────────────
 function ReflectionsSection() {
   return (
-    <section id="reflections" style={{ background: C.dark, ...PAD }}>
+    <section id="reflections" style={{ background: C.heroGrad, ...PAD, position: 'relative' }}>
+      <Sticker src="/stickers/s-apple.png" style={{ top: '-36px', right: '7%', width: '142px', transform: 'rotate(20deg)' }} />
+      <Sticker src="/stickers/s-box.png" style={{ bottom: '-42px', left: '9%', width: '162px', transform: 'rotate(-17deg)' }} />
       <Wrap>
         <Reveal>
-          <Label dark>Team Reflection</Label>
-          <h2 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: 'clamp(1.8rem,3.5vw,2.8rem)', color: C.darkInk, letterSpacing: '-0.025em', lineHeight: 1.1, margin: '0 0 3rem' }}>
-            What we learned building CloutCart
-          </h2>
+          <span style={{
+            fontFamily: "'Space Mono', monospace",
+            fontSize: '0.58rem', letterSpacing: '0.18em', textTransform: 'uppercase',
+            color: C.darkMuted, display: 'block', marginBottom: '1.25rem',
+          }}>My Takeaway</span>
         </Reveal>
-        <StaggerGrid style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px,1fr))', gap: '1.25rem' }}>
+        <Reveal delay={0.1}>
+          <h2 style={{
+            fontFamily: "'Syne', sans-serif", fontWeight: 500,
+            fontSize: 'clamp(1.75rem,3.5vw,2.75rem)', color: C.darkInk,
+            letterSpacing: '-0.02em', marginBottom: 'clamp(2rem,4vw,3.5rem)',
+          }}>What we learned building CloutCart</h2>
+        </Reveal>
+
+        <StaggerGrid className="cc-g2" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: 'clamp(3rem,5vw,5rem)' }}>
           {[
-            { n: '01', q: 'Working as a cross-functional startup team taught us the value of clear role division, open communication, and balancing creativity with feasibility. We collaborated closely across design, tech, marketing, and strategy — learning to adapt quickly through iterative feedback and MVP-focused thinking.' },
-            { n: '02', q: 'As we moved through each phase, we stayed grounded in user needs — prioritising functionality that delivered real value to both brands and influencers.' },
-            { n: '03', q: 'This project gave us a hands-on understanding of how design management supports alignment, agility, and innovation in early-stage ventures.' },
+            { n: '01', text: '"Cross-functional teamwork taught us the value of clear role division and open communication — balancing creativity with feasibility across design, tech, marketing, and strategy."' },
+            { n: '02', text: '"Staying grounded in user needs meant prioritising functionality that delivered real value to both brands and influencers, not just what looked good on a deck."' },
+            { n: '03', text: '"Design management is not about control — it is about alignment. Getting four disciplines to move in the same direction, at the same speed, is the hard part."' },
+            { n: '04', text: '"The creator economy has a matching problem. The real insight was that fit matters more than follower count — and building for fit changes everything about the product."' },
           ].map(r => (
             <StaggerItem key={r.n}>
-              <NeuCard dark style={{ padding: '2rem' }}>
-                <p style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.58rem', letterSpacing: '0.18em', color: C.darkMuted, margin: '0 0 1rem' }}>{r.n}</p>
-                <p style={{ fontFamily: "'EB Garamond', Georgia, serif", fontStyle: 'italic', fontSize: 'clamp(1rem,2vw,1.2rem)', color: C.darkInk, lineHeight: 1.75, margin: 0 }}>{r.q}</p>
-              </NeuCard>
+              <div style={{
+                background: 'rgba(255,255,255,0.07)',
+                border: '1px solid rgba(255,255,255,0.1)',
+                borderRadius: '14px',
+                padding: '2.25rem',
+                height: '100%',
+              }}>
+                <div style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.58rem', letterSpacing: '0.22em', color: C.darkMuted, marginBottom: '1.25rem', textTransform: 'uppercase' }}>{r.n}</div>
+                <p style={{ fontFamily: "'Lora', serif", fontStyle: 'italic', fontSize: 'clamp(1.05rem,2vw,1.25rem)', color: C.darkInk, lineHeight: 1.65, margin: 0 }}>{r.text}</p>
+              </div>
             </StaggerItem>
           ))}
         </StaggerGrid>
+
+        <Reveal delay={0.2}>
+          <p style={{
+            fontFamily: "'Lora', serif",
+            fontSize: 'clamp(1rem,2vw,1.2rem)',
+            color: C.darkMid,
+            maxWidth: 560,
+            lineHeight: 1.75,
+            margin: '0 auto',
+            textAlign: 'center',
+          }}>
+            CloutCart started as a design management exercise. It ended as something we genuinely believed in — a platform where creative fit replaces follower count as the currency of collaboration.
+          </p>
+        </Reveal>
       </Wrap>
     </section>
   )
@@ -1394,11 +1539,20 @@ export default function CloutCart() {
 
   return (
     <div style={{ background: C.page, color: C.ink, minHeight: '100vh' }}>
+      <CCStyles />
       <ProgressBar />
       <Nav />
       <SidebarNav active={active} />
-      <main>
+      <main className="has-bottom-nav">
         <HeroSection />
+        <div style={{ background: C.bg, borderBottom: `1px solid ${C.border}` }}>
+          <Wrap>
+            <p style={{ margin: 0, textAlign: 'right', fontFamily: "'Space Mono', monospace", fontSize: '0.6rem', letterSpacing: '0.14em', color: C.muted, textTransform: 'uppercase', padding: '0.7rem 0' }}>
+              approx. 5 min quick read
+            </p>
+          </Wrap>
+        </div>
+        <WhySection />
         <WhatSection />
         <ProblemSection />
         <ProcessSection />

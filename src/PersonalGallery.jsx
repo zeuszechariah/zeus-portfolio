@@ -238,6 +238,8 @@ function PolaroidFace({ photo }) {
         <img
           src={photo.src}
           alt={photo.caption || ''}
+          loading="lazy"
+          decoding="async"
           draggable={false}
           style={{
             width:          '100%',

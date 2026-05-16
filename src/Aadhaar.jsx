@@ -134,58 +134,39 @@ function NeuCard({ children, style = {}, dark = false }) {
 
 // ─── Sidebar Nav ─────────────────────────────────────────
 function SidebarNav({ active }) {
+  const [isMobile, setIsMobile] = useState(() => typeof window !== 'undefined' && window.innerWidth < 768)
+  useEffect(() => {
+    const h = () => setIsMobile(window.innerWidth < 768)
+    window.addEventListener('resize', h, { passive: true })
+    return () => window.removeEventListener('resize', h)
+  }, [])
   function scrollTo(id) {
     const el = document.getElementById(id)
     if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' })
   }
+  if (isMobile) {
+    return (
+      <nav style={{ position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 500, display: 'flex', flexDirection: 'row', justifyContent: 'space-evenly', alignItems: 'center', background: 'rgba(255,255,255,0.97)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)', borderTop: '1px solid rgba(0,0,0,0.09)', boxShadow: '0 -2px 20px rgba(0,0,0,0.07)', padding: '8px 4px', paddingBottom: 'max(10px, env(safe-area-inset-bottom))' }}>
+        {NAV_SECTIONS.map(sec => {
+          const isActive = active === sec.id
+          return (
+            <button key={sec.id} onClick={() => scrollTo(sec.id)} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '5px', background: 'none', border: 'none', cursor: 'pointer', padding: '4px 10px', minWidth: 52 }}>
+              <div style={{ width: isActive ? 22 : 14, height: 2, borderRadius: 2, background: isActive ? C.accent : 'rgba(0,0,0,0.18)', transition: 'all 0.25s' }} />
+              <span style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.48rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: isActive ? C.accent : 'rgba(0,0,0,0.42)', transition: 'color 0.25s', whiteSpace: 'nowrap' }}>{sec.label}</span>
+            </button>
+          )
+        })}
+      </nav>
+    )
+  }
   return (
-    <div style={{
-      position: 'fixed',
-      left: 'clamp(10px, 1.5vw, 22px)',
-      top: '50%',
-      transform: 'translateY(-50%)',
-      zIndex: 200,
-      display: 'flex',
-      flexDirection: 'column',
-      gap: '8px',
-    }}>
+    <div style={{ position: 'fixed', left: 'clamp(10px, 1.5vw, 22px)', top: '50%', transform: 'translateY(-50%)', zIndex: 200, display: 'flex', flexDirection: 'column', gap: '8px' }}>
       {NAV_SECTIONS.map(sec => {
         const isActive = active === sec.id
         return (
-          <button
-            key={sec.id}
-            onClick={() => scrollTo(sec.id)}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px',
-              background: 'none',
-              border: 'none',
-              cursor: 'pointer',
-              padding: '2px 0',
-            }}
-          >
-            <motion.div
-              animate={{
-                width: isActive ? 3 : 1.5,
-                height: isActive ? 32 : 24,
-                background: isActive ? C.accent : C.border,
-                borderRadius: 2,
-              }}
-              transition={{ duration: 0.3 }}
-              style={{ flexShrink: 0 }}
-            />
-            <span style={{
-              fontFamily: "'Space Mono', monospace",
-              fontSize: '0.58rem',
-              letterSpacing: '0.14em',
-              textTransform: 'uppercase',
-              color: isActive ? C.accent : C.muted,
-              transition: 'color 0.25s',
-              whiteSpace: 'nowrap',
-            }}>
-              {sec.label}
-            </span>
+          <button key={sec.id} onClick={() => scrollTo(sec.id)} style={{ display: 'flex', alignItems: 'center', gap: '8px', background: 'none', border: 'none', cursor: 'pointer', padding: '2px 0' }}>
+            <motion.div animate={{ width: isActive ? 3 : 1.5, height: isActive ? 32 : 24, background: isActive ? C.accent : C.border, borderRadius: 2 }} transition={{ duration: 0.3 }} style={{ flexShrink: 0 }} />
+            <span style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.58rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: isActive ? C.accent : C.muted, transition: 'color 0.25s', whiteSpace: 'nowrap' }}>{sec.label}</span>
           </button>
         )
       })}
@@ -255,108 +236,32 @@ function DonutChart({ pct, color, label, sublabel }) {
 // ─── Hero Section ────────────────────────────────────────
 function HeroSection() {
   return (
-    <section id="overview" style={{
-      background: C.heroGrad,
-      minHeight: '100vh',
-      display: 'flex',
-      flexDirection: 'column',
-      justifyContent: 'flex-end',
-      position: 'relative',
-      overflow: 'hidden',
-    }}>
-      {/* Texture overlay */}
-      <div style={{
-        position: 'absolute', inset: 0, pointerEvents: 'none',
-        background: 'radial-gradient(ellipse 80% 60% at 50% 0%, rgba(212,134,10,0.12) 0%, transparent 70%)',
-      }} />
-
-      <Wrap>
-        <div style={{ paddingTop: 'clamp(8rem,14vw,12rem)', paddingBottom: 'clamp(4rem,7vw,6rem)' }}>
-          <motion.div
-            initial={{ opacity: 0, y: 14 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.15, ease: EASE }}
-          >
-            <span style={{
-              display: 'inline-block',
-              fontFamily: "'Space Mono', monospace",
-              fontSize: '0.6rem',
-              letterSpacing: '0.18em',
-              textTransform: 'uppercase',
-              color: 'rgba(212,134,10,0.85)',
-              border: '1px solid rgba(212,134,10,0.28)',
-              padding: '5px 14px',
-              borderRadius: '99px',
-              marginBottom: '2rem',
-            }}>
-              UX Research · Mixed Methods · Government Services
-            </span>
-          </motion.div>
-
-          <motion.h1
-            initial={{ opacity: 0, y: 28 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.85, delay: 0.3, ease: EASE }}
-            style={{
-              fontFamily: "'Syne', sans-serif",
-              fontWeight: 700,
-              fontSize: 'clamp(2.8rem, 6vw, 5.5rem)',
-              color: C.darkInk,
-              lineHeight: 1.04,
-              letterSpacing: '-0.03em',
-              margin: '0 0 1.5rem',
-              maxWidth: '14ch',
-            }}
-          >
-            Aadhaar Access Challenges
-          </motion.h1>
-
-          <motion.p
-            initial={{ opacity: 0, y: 18 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.65, delay: 0.5, ease: EASE }}
-            style={{
-              fontFamily: "'EB Garamond', Georgia, serif",
-              fontStyle: 'italic',
-              fontSize: 'clamp(1.1rem, 1.8vw, 1.4rem)',
-              color: C.darkMid,
-              lineHeight: 1.55,
-              maxWidth: '52ch',
-              margin: '0 0 3rem',
-            }}
-          >
-            Understanding how senior citizens in India experience Aadhaar services when urgency hits.
-          </motion.p>
-
-          {/* Metadata row */}
-          <motion.div
-            initial={{ opacity: 0, y: 14 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.65, ease: EASE }}
-            style={{
-              display: 'flex',
-              flexWrap: 'wrap',
-              gap: '2rem',
-              paddingTop: '2rem',
-              borderTop: '1px solid rgba(255,255,255,0.1)',
-            }}
-          >
-            {[
-              ['Timeline', '6 Weeks'],
-              ['Institution', 'NID Bangalore'],
-              ['Team', 'Group 5 — The Eligibles'],
-              ['Methods', 'Interviews · Surveys · Secondary Research'],
-              ['Participants', '27 survey + 5 deep-dives'],
-            ].map(([k, v]) => (
-              <div key={k}>
-                <p style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.55rem', letterSpacing: '0.16em', textTransform: 'uppercase', color: C.darkMuted, margin: '0 0 4px' }}>{k}</p>
-                <p style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: '0.8rem', color: C.darkInk, margin: 0 }}>{v}</p>
-              </div>
-            ))}
-          </motion.div>
+    <div id="overview" style={{ position: 'relative', background: C.heroGrad, paddingTop: 'clamp(7rem,12vw,11rem)', paddingBottom: 'clamp(5rem,8vw,8rem)', overflow: 'hidden' }}>
+      <img src="/aadhaar-hero.jpg" aria-hidden="true" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', objectPosition: '72% 18%' }} />
+      <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to right, rgba(26,5,5,0.94) 0%, rgba(26,5,5,0.86) 40%, rgba(26,5,5,0.55) 68%, rgba(26,5,5,0.18) 100%)' }} />
+      <div style={{ position: 'relative', zIndex: 2, maxWidth: '1120px', margin: '0 auto', padding: '0 clamp(1.5rem,5vw,3rem)' }}>
+        <span style={{ display: 'inline-block', fontFamily: "'Space Mono', monospace", fontSize: '0.6rem', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.55)', border: '1px solid rgba(255,255,255,0.22)', padding: '4px 10px', borderRadius: '99px', marginBottom: '1.25rem' }}>UX Research · Mixed Methods</span>
+        <h1 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: 'clamp(2.4rem,5.5vw,4.2rem)', lineHeight: 1.08, color: '#FFFFFF', margin: '0 0 1.75rem', maxWidth: '16ch' }}>
+          Aadhaar Access Challenges
+        </h1>
+        <p style={{ fontFamily: "'Syne', sans-serif", fontSize: 'clamp(1rem,2vw,1.15rem)', lineHeight: 1.75, color: 'rgba(255,255,255,0.78)', maxWidth: '52ch', margin: '0 0 3rem' }}>
+          Understanding how senior citizens in India experience Aadhaar services when urgency hits — and what that reveals about systems never designed for the average person.
+        </p>
+        <div style={{ display: 'flex', gap: '3rem', flexWrap: 'wrap' }}>
+          {[
+            { l: 'Timeline',      v: '2 Weeks' },
+            { l: 'Collaborators', v: 'Indisciplinary Team' },
+            { l: 'Tools',         v: 'Miro · Google Forms' },
+            { l: 'Output',        v: 'Research Report & Recommendations' },
+          ].map(m => (
+            <div key={m.l}>
+              <p style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.55rem', letterSpacing: '0.18em', color: '#FFFFFF', textTransform: 'uppercase', margin: '0 0 0.3rem' }}>{m.l}</p>
+              <p style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: '0.9rem', color: '#FFFFFF', margin: 0 }}>{m.v}</p>
+            </div>
+          ))}
         </div>
-      </Wrap>
-    </section>
+      </div>
+    </div>
   )
 }
 
@@ -392,7 +297,7 @@ function WhySection() {
             animate={inView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.65, delay: 0.2, ease: EASE }}
             style={{
-              fontFamily: "'EB Garamond', Georgia, serif",
+              fontFamily: "'Lora', Georgia, serif",
               fontSize: 'clamp(1.05rem, 1.5vw, 1.2rem)',
               color: C.mid,
               lineHeight: 1.75,
@@ -582,7 +487,7 @@ function ProblemSpaceSection() {
             borderLeft: `4px solid ${C.amber}`,
           }}
         >
-          <p style={{ fontFamily: "'EB Garamond', Georgia, serif", fontStyle: 'italic', fontSize: 'clamp(1rem,1.5vw,1.15rem)', color: C.darkInk, margin: 0, lineHeight: 1.65 }}>
+          <p style={{ fontFamily: "'Lora', Georgia, serif", fontStyle: 'italic', fontSize: 'clamp(1rem,1.5vw,1.15rem)', color: C.darkInk, margin: 0, lineHeight: 1.65 }}>
             "We anchored on updation — the category with the richest, most painful user stories."
           </p>
         </motion.div>
@@ -704,7 +609,7 @@ function QuestionsSection() {
         >
           <p style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.58rem', letterSpacing: '0.16em', textTransform: 'uppercase', color: C.darkMuted, margin: '0 0 1rem' }}>Final Research Question</p>
           <p style={{
-            fontFamily: "'EB Garamond', Georgia, serif",
+            fontFamily: "'Lora', Georgia, serif",
             fontStyle: 'italic',
             fontSize: 'clamp(1.1rem,1.8vw,1.4rem)',
             color: C.darkInk,
@@ -855,7 +760,7 @@ function FindingsSection() {
             borderLeft: `4px solid ${C.accent}`,
           }}
         >
-          <p style={{ fontFamily: "'EB Garamond', Georgia, serif", fontStyle: 'italic', fontSize: 'clamp(1.1rem,1.8vw,1.35rem)', color: C.darkInk, margin: 0, lineHeight: 1.6 }}>
+          <p style={{ fontFamily: "'Lora', Georgia, serif", fontStyle: 'italic', fontSize: 'clamp(1.1rem,1.8vw,1.35rem)', color: C.darkInk, margin: 0, lineHeight: 1.6 }}>
             "81% of users did not face an Aadhaar-related urgency. The absence of urgency was itself the story."
           </p>
         </motion.div>
@@ -1119,7 +1024,7 @@ function StoriesSection() {
                 borderRadius: '0 8px 8px 0',
               }}>
                 <p style={{
-                  fontFamily: "'EB Garamond', Georgia, serif",
+                  fontFamily: "'Lora', Georgia, serif",
                   fontStyle: 'italic',
                   fontSize: 'clamp(1rem,1.5vw,1.15rem)',
                   color: iv.dark ? C.darkMid : C.mid,
@@ -1342,7 +1247,7 @@ function SynthesisSection() {
             borderTop: `4px solid ${C.amber}`,
           }}
         >
-          <p style={{ fontFamily: "'EB Garamond', Georgia, serif", fontStyle: 'italic', fontSize: 'clamp(1rem,1.5vw,1.15rem)', color: C.darkInk, margin: '0 0 1rem', lineHeight: 1.65 }}>
+          <p style={{ fontFamily: "'Lora', Georgia, serif", fontStyle: 'italic', fontSize: 'clamp(1rem,1.5vw,1.15rem)', color: C.darkInk, margin: '0 0 1rem', lineHeight: 1.65 }}>
             "Urgency is a situation where you get something done in a short period of time — if not done, there will be certain consequences. It can be subjective."
           </p>
           <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.82rem', color: C.darkMid, margin: 0, lineHeight: 1.65 }}>
@@ -1640,11 +1545,11 @@ function PivotSection() {
           style={{ marginBottom: '2rem', padding: 'clamp(1.5rem,3vw,2rem)', background: 'rgba(255,255,255,0.04)', borderRadius: '14px', border: '1px solid rgba(255,255,255,0.1)' }}
         >
           <p style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.58rem', letterSpacing: '0.16em', textTransform: 'uppercase', color: C.darkMuted, margin: '0 0 0.75rem' }}>Instead of asking:</p>
-          <p style={{ fontFamily: "'EB Garamond', Georgia, serif", fontStyle: 'italic', fontSize: 'clamp(0.9rem,1.4vw,1.05rem)', color: C.darkMuted, margin: '0 0 1.5rem', lineHeight: 1.6, textDecoration: 'line-through', opacity: 0.7 }}>
+          <p style={{ fontFamily: "'Lora', Georgia, serif", fontStyle: 'italic', fontSize: 'clamp(0.9rem,1.4vw,1.05rem)', color: C.darkMuted, margin: '0 0 1.5rem', lineHeight: 1.6, textDecoration: 'line-through', opacity: 0.7 }}>
             "What are the primary challenges faced by individuals 60+ in accessing Aadhaar services during urgent situations?"
           </p>
           <p style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.58rem', letterSpacing: '0.16em', textTransform: 'uppercase', color: C.amber, margin: '0 0 0.75rem' }}>We asked:</p>
-          <p style={{ fontFamily: "'EB Garamond', Georgia, serif", fontStyle: 'italic', fontSize: 'clamp(1rem,1.6vw,1.2rem)', color: C.darkInk, margin: 0, lineHeight: 1.65 }}>
+          <p style={{ fontFamily: "'Lora', Georgia, serif", fontStyle: 'italic', fontSize: 'clamp(1rem,1.6vw,1.2rem)', color: C.darkInk, margin: 0, lineHeight: 1.65 }}>
             "How can urgency be effectively communicated to elderly citizens to ensure proactive Aadhaar updates, reducing last-minute stress and dependency?"
           </p>
         </motion.div>
@@ -1708,61 +1613,59 @@ function PivotSection() {
 
 // ─── Reflections Section ──────────────────────────────────
 function ReflectionsSection() {
-  const ref = useRef(null)
-  const inView = useInView(ref, { once: true, amount: 0.2 })
-
-  const metaphors = [
-    { icon: '⟋', word: 'Staircase', desc: 'The effortful climb of the process — each step visible, each step possible, none of them easy.' },
-    { icon: '∿', word: 'Wrinkles', desc: 'Time, weathering, fading biometrics. The body carries history that the system cannot read.' },
-    { icon: '⌇', word: 'Cliff', desc: 'The sudden drop when pension or ration fails. No warning. No railing.' },
-  ]
-
   return (
-    <section ref={ref} style={{ background: C.dark, ...PAD }}>
+    <section id="reflections" style={{ background: 'linear-gradient(145deg,#0a0a0a 0%,#161616 55%,#0f0f0f 100%)', ...PAD }}>
       <Wrap>
-        <Label dark>Closing Reflection</Label>
-        <motion.h2
-          initial={{ opacity: 0, y: 20 }} animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.65, ease: EASE }}
-          style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: 'clamp(1.8rem,3.5vw,2.8rem)', color: C.darkInk, letterSpacing: '-0.025em', lineHeight: 1.1, margin: '0 0 3rem' }}
-        >
-          What stayed with us
-        </motion.h2>
+        <Reveal>
+          <span style={{
+            fontFamily: "'Space Mono', monospace",
+            fontSize: '0.58rem', letterSpacing: '0.18em', textTransform: 'uppercase',
+            color: C.darkMuted, display: 'block', marginBottom: '1.25rem',
+          }}>My Takeaway</span>
+        </Reveal>
+        <Reveal delay={0.1}>
+          <h2 style={{
+            fontFamily: "'Syne', sans-serif", fontWeight: 500,
+            fontSize: 'clamp(1.75rem,3.5vw,2.75rem)', color: C.darkInk,
+            letterSpacing: '-0.02em', marginBottom: 'clamp(2rem,4vw,3.5rem)',
+          }}>What stayed with us</h2>
+        </Reveal>
 
-        <StaggerGrid style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1.5rem', marginBottom: '4rem' }}>
-          {metaphors.map((m) => (
-            <StaggerItem key={m.word}>
+        <StaggerGrid style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: 'clamp(3rem,5vw,5rem)' }}>
+          {[
+            { n: '01', text: '"The effortful climb of the process — each step visible, each step possible, none of them easy. That is what navigating Aadhaar feels like for the elderly."' },
+            { n: '02', text: '"Time, weathering, fading biometrics. The body carries history that the system cannot read — and that gap has real consequences."' },
+            { n: '03', text: '"The sudden drop when pension or ration fails. No warning. No railing. Systems designed without buffer leave the most vulnerable with nothing to hold on to."' },
+            { n: '04', text: '"A system that works for most people, but fails when it matters most for some, is not a successful system. It is an incomplete one."' },
+          ].map(r => (
+            <StaggerItem key={r.n}>
               <div style={{
-                padding: '2rem',
-                border: `1px solid ${C.borderDark}`,
+                background: 'rgba(255,255,255,0.07)',
+                border: '1px solid rgba(255,255,255,0.1)',
                 borderRadius: '14px',
-                background: 'rgba(255,255,255,0.03)',
+                padding: '2.25rem',
                 height: '100%',
               }}>
-                <p style={{ fontFamily: "'EB Garamond', Georgia, serif", fontSize: '2.5rem', color: C.amber, margin: '0 0 0.5rem', lineHeight: 1 }}>{m.icon}</p>
-                <h3 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: '1.1rem', color: C.darkInk, margin: '0 0 0.75rem' }}>{m.word}</h3>
-                <p style={{ fontFamily: "'EB Garamond', Georgia, serif", fontStyle: 'italic', fontSize: '0.95rem', color: C.darkMid, lineHeight: 1.7, margin: 0 }}>{m.desc}</p>
+                <div style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.58rem', letterSpacing: '0.22em', color: C.darkMuted, marginBottom: '1.25rem' }}>{r.n}</div>
+                <p style={{ fontFamily: "'Lora', serif", fontStyle: 'italic', fontSize: 'clamp(1.05rem,2vw,1.25rem)', color: C.darkInk, lineHeight: 1.65, margin: 0 }}>{r.text}</p>
               </div>
             </StaggerItem>
           ))}
         </StaggerGrid>
 
-        {/* Team credit */}
-        <motion.div
-          initial={{ opacity: 0, y: 14 }} animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.55, delay: 0.3, ease: EASE }}
-          style={{ textAlign: 'center', paddingTop: '2rem', borderTop: `1px solid ${C.borderDark}` }}
-        >
-          <p style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: 'clamp(1.4rem,2.5vw,2rem)', color: C.darkInk, margin: '0 0 0.5rem', letterSpacing: '-0.02em' }}>
-            Group 5 — The Eligibles
+        <Reveal delay={0.2}>
+          <p style={{
+            fontFamily: "'Lora', serif",
+            fontSize: 'clamp(1rem,2vw,1.2rem)',
+            color: C.darkMid,
+            maxWidth: 560,
+            lineHeight: 1.75,
+            margin: '0 auto',
+            textAlign: 'center',
+          }}>
+            Group 5 — The Eligibles. A six-week inquiry into the lives of elderly Indians navigating a system built for the average — and the gaps that become chasms when urgency hits.
           </p>
-          <p style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.65rem', color: C.darkMuted, letterSpacing: '0.12em', margin: '0 0 0.5rem', textTransform: 'uppercase' }}>
-            NID Bangalore · UX Research Studio · 2024
-          </p>
-          <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.85rem', color: C.darkMuted, margin: 0, lineHeight: 1.6 }}>
-            A six-week inquiry into the lives of elderly Indians navigating a system built for the average.
-          </p>
-        </motion.div>
+        </Reveal>
       </Wrap>
     </section>
   )
@@ -1776,13 +1679,20 @@ export default function Aadhaar() {
   const activeSection = useActiveSection(sectionIds)
 
   return (
-    <div style={{ background: C.bg, color: C.ink, overflowX: 'hidden' }}>
+    <div className="has-bottom-nav" style={{ background: C.bg, color: C.ink, overflowX: 'hidden' }}>
       <ProgressBar />
       <Nav />
       <SidebarNav active={activeSection} />
 
       <main>
         <HeroSection />
+        <div style={{ background: C.surface, borderBottom: `1px solid ${C.border}` }}>
+          <Wrap>
+            <p style={{ margin: 0, textAlign: 'right', fontFamily: "'Space Mono', monospace", fontSize: '0.6rem', letterSpacing: '0.14em', color: C.muted, textTransform: 'uppercase', padding: '0.7rem 0' }}>
+              approx. 7 min quick read
+            </p>
+          </Wrap>
+        </div>
         <WhySection />
         <ProcessSection />
         <ProblemSpaceSection />

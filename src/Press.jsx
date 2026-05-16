@@ -37,13 +37,13 @@ function PressCard({ href, image, overlayImage, source, date, title }) {
         {image && overlayImage ? (
           <>
             <img src={image} alt=""
-                 className="absolute inset-0 w-full h-full object-cover scale-[1.05] blur-[2px] brightness-50 transition-transform duration-700 ease-out group-hover/card:scale-[1.1]" />
+                 loading="lazy" decoding="async" className="absolute inset-0 w-full h-full object-cover scale-[1.05] blur-[2px] brightness-50 transition-transform duration-700 ease-out group-hover/card:scale-[1.1]" />
             <img src={overlayImage} alt={title}
-                 className="absolute inset-0 h-full object-contain object-center mx-auto transition-transform duration-700 ease-out group-hover/card:scale-[1.04]" />
+                 loading="lazy" decoding="async" className="absolute inset-0 h-full object-contain object-center mx-auto transition-transform duration-700 ease-out group-hover/card:scale-[1.04]" />
           </>
         ) : image ? (
           <img src={image} alt={title}
-               className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover/card:scale-[1.04]" />
+               loading="lazy" decoding="async" className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover/card:scale-[1.04]" />
         ) : null}
         {/* Inset border shine */}
         <div className="absolute inset-0 rounded-2xl ring-1 ring-inset ring-white/[0.04] pointer-events-none" />

@@ -67,6 +67,7 @@ export function HeroButton({ children, onClick, href, target, rel, type }) {
           rgba(255,255,255,0.95) 360deg
         )`,
         animation:            'liquid-metal 5s linear infinite',
+        willChange:           'background',
         WebkitMask:           'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
         WebkitMaskComposite:  'xor',
         maskComposite:        'exclude',

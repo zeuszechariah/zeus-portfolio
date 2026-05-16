@@ -10,10 +10,10 @@ import { Nav, Footer, ProgressBar, MaskReveal, Reveal, BackToTop } from './share
 // from-[#050f08] via-[#0b2e16] to-[#135728]
 const C = {
   // Light page backgrounds
-  page:    '#F3F6F2',
-  surface: '#E8EDE6',
-  card:    '#F6FAF5',
-  cardAlt: '#E8F2E6',
+  page:    '#FFFFFB',
+  surface: '#FAFAF6',
+  card:    '#FFFFFE',
+  cardAlt: '#FAFAF8',
 
   // Neumorphic shadows
   neu:     '6px 6px 18px rgba(0,0,0,0.08), -4px -4px 12px rgba(255,255,255,0.88)',
@@ -53,8 +53,8 @@ const NAV_SECTIONS = [
   { id: 'concept',     label: 'Concept' },
   { id: 'technology',  label: 'Technology' },
   { id: 'design',      label: 'Design' },
-  { id: 'trials',      label: 'Process' },
-  { id: 'reflections', label: 'Reflect.' },
+  { id: 'trials',      label: 'Process & Output' },
+  { id: 'reflections', label: 'Reflect' },
 ]
 
 // ─── Layout ──────────────────────────────────────────────
@@ -73,7 +73,7 @@ function SectionTag({ children, dark = false }) {
     <span style={{
       display: 'inline-block',
       fontFamily: "'Space Mono', monospace",
-      fontSize: '0.6rem', letterSpacing: '0.18em', textTransform: 'uppercase',
+      fontSize: '0.58rem', letterSpacing: '0.18em', textTransform: 'uppercase',
       color: dark ? C.darkMuted : C.muted,
       border: `1px solid ${dark ? 'rgba(255,255,255,0.12)' : C.border}`,
       padding: '4px 10px', borderRadius: '99px', marginBottom: '1.25rem',
@@ -133,7 +133,7 @@ function ImgBox({ label, aspect = '56.25%', style = {}, dark = false }) {
           <path d="M3 15l5-5 4 4 3-3 6 6" stroke={dark ? 'rgba(255,255,255,0.2)' : C.muted} strokeWidth="1.5" strokeLinejoin="round" />
         </svg>
         <span style={{
-          fontFamily: "'Space Mono', monospace", fontSize: '0.6rem', letterSpacing: '0.1em',
+          fontFamily: "'Space Mono', monospace", fontSize: '0.58rem', letterSpacing: '0.1em',
           color: dark ? 'rgba(255,255,255,0.25)' : C.muted,
           textAlign: 'center', maxWidth: '220px', lineHeight: 1.5,
         }}>{label}</span>
@@ -145,7 +145,7 @@ function ImgBox({ label, aspect = '56.25%', style = {}, dark = false }) {
 function ScreenLabel({ children }) {
   return (
     <div style={{
-      fontFamily: "'Space Mono', monospace", fontSize: '0.55rem',
+      fontFamily: "'Space Mono', monospace", fontSize: '0.58rem',
       letterSpacing: '0.2em', textTransform: 'uppercase',
       color: C.muted, textAlign: 'center', marginTop: '0.75rem',
     }}>{children}</div>
@@ -177,35 +177,39 @@ function StaggerItem({ children, style = {} }) {
 
 // ─── Sidebar Nav ─────────────────────────────────────────
 function SidebarNav({ active }) {
+  const [isMobile, setIsMobile] = useState(() => typeof window !== 'undefined' && window.innerWidth < 768)
+  useEffect(() => {
+    const h = () => setIsMobile(window.innerWidth < 768)
+    window.addEventListener('resize', h, { passive: true })
+    return () => window.removeEventListener('resize', h)
+  }, [])
   function scrollTo(id) {
     const el = document.getElementById(id)
     if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' })
   }
+  if (isMobile) {
+    return (
+      <nav style={{ position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 500, display: 'flex', flexDirection: 'row', justifyContent: 'space-evenly', alignItems: 'center', background: 'rgba(255,255,255,0.97)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)', borderTop: '1px solid rgba(0,0,0,0.09)', boxShadow: '0 -2px 20px rgba(0,0,0,0.07)', padding: '8px 4px', paddingBottom: 'max(10px, env(safe-area-inset-bottom))' }}>
+        {NAV_SECTIONS.map(sec => {
+          const isActive = active === sec.id
+          return (
+            <button key={sec.id} onClick={() => scrollTo(sec.id)} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '5px', background: 'none', border: 'none', cursor: 'pointer', padding: '4px 10px', minWidth: 52 }}>
+              <div style={{ width: isActive ? 22 : 14, height: 2, borderRadius: 2, background: isActive ? C.accent : 'rgba(0,0,0,0.18)', transition: 'all 0.25s' }} />
+              <span style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.48rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: isActive ? C.accent : 'rgba(0,0,0,0.42)', transition: 'color 0.25s', whiteSpace: 'nowrap' }}>{sec.label}</span>
+            </button>
+          )
+        })}
+      </nav>
+    )
+  }
   return (
-    <div style={{
-      position: 'fixed', left: 'clamp(10px,1.5vw,22px)', top: '50%',
-      transform: 'translateY(-50%)', zIndex: 200,
-      display: 'flex', flexDirection: 'column', gap: '8px',
-    }}>
+    <div style={{ position: 'fixed', left: 'clamp(10px,1.5vw,22px)', top: '50%', transform: 'translateY(-50%)', zIndex: 200, display: 'flex', flexDirection: 'column', gap: '8px' }}>
       {NAV_SECTIONS.map(sec => {
         const isActive = active === sec.id
         return (
-          <button key={sec.id} onClick={() => scrollTo(sec.id)}
-            style={{ display: 'flex', alignItems: 'center', gap: '8px', background: 'none', border: 'none', cursor: 'pointer', padding: '2px 0' }}
-          >
-            <motion.div
-              animate={{
-                width: isActive ? 3 : 1.5, height: isActive ? 32 : 22,
-                background: isActive ? C.accent : C.border, borderRadius: 2,
-              }}
-              transition={{ duration: 0.3 }} style={{ flexShrink: 0 }}
-            />
-            <span style={{
-              fontFamily: "'Space Mono', monospace", fontSize: '0.58rem',
-              letterSpacing: '0.14em', textTransform: 'uppercase',
-              color: isActive ? C.accent : C.muted,
-              transition: 'color 0.25s', whiteSpace: 'nowrap',
-            }}>{sec.label}</span>
+          <button key={sec.id} onClick={() => scrollTo(sec.id)} style={{ display: 'flex', alignItems: 'center', gap: '8px', background: 'none', border: 'none', cursor: 'pointer', padding: '2px 0' }}>
+            <motion.div animate={{ width: isActive ? 3 : 1.5, height: isActive ? 32 : 22, background: isActive ? C.accent : C.border, borderRadius: 2 }} transition={{ duration: 0.3 }} style={{ flexShrink: 0 }} />
+            <span style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.58rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: isActive ? C.accent : C.muted, transition: 'color 0.25s', whiteSpace: 'nowrap' }}>{sec.label}</span>
           </button>
         )
       })}
@@ -308,10 +312,10 @@ function KinectDiagram() {
             >
               <div style={{ textAlign: 'center', flex: 1, padding: '10px 8px' }}>
                 <div style={{ width: 32, height: 32, borderRadius: '50%', background: C.accentDim, border: `1px solid ${C.accentBorder}`, margin: '0 auto 8px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <span style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.48rem', color: C.accent }}>{String(i+1).padStart(2,'0')}</span>
+                  <span style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.58rem', color: C.accent }}>{String(i+1).padStart(2,'0')}</span>
                 </div>
-                <p style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: '0.82rem', color: C.ink, marginBottom: '2px', margin: 0 }}>{s.label}</p>
-                <p style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.5rem', letterSpacing: '0.06em', color: C.muted, marginTop: '3px' }}>{s.sub}</p>
+                <p style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: '0.9rem', color: C.ink, marginBottom: '2px', margin: 0 }}>{s.label}</p>
+                <p style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.58rem', letterSpacing: '0.06em', color: C.muted, marginTop: '3px' }}>{s.sub}</p>
               </div>
               {i < steps.length-1 && <span style={{ color: C.muted, flexShrink: 0 }}>→</span>}
             </motion.div>
@@ -320,8 +324,8 @@ function KinectDiagram() {
         <div style={{ borderTop: `1px solid ${C.border}`, paddingTop: '1.25rem', display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '0.75rem' }}>
           {[['INPUT','Body movements, hand gestures, proximity data'],['PROCESSING','Coordinate mapping onto visual elements in real time'],['OUTPUT','Dynamic visuals responding to every movement']].map(([k,v]) => (
             <div key={k} style={{ padding: '0.875rem 1rem', borderRadius: '10px', background: C.surface, border: `1px solid ${C.border}` }}>
-              <p style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.5rem', letterSpacing: '0.14em', color: C.muted, marginBottom: '4px', margin: '0 0 4px' }}>{k}</p>
-              <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.78rem', color: C.mid, lineHeight: 1.55, margin: 0 }}>{v}</p>
+              <p style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.58rem', letterSpacing: '0.14em', color: C.muted, marginBottom: '4px', margin: '0 0 4px' }}>{k}</p>
+              <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.9rem', color: C.mid, lineHeight: 1.55, margin: 0 }}>{v}</p>
             </div>
           ))}
         </div>
@@ -351,12 +355,17 @@ function PrototypeFlow() {
                 transition={{ duration: 0.4, ease: EASE, delay: i * 0.07 }}
               >
                 <div style={{ width: 42, height: 42, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: (i===0||i===6) ? C.accentDim : 'rgba(0,0,0,0.04)', border: `1px solid ${(i===0||i===6) ? C.accentBorder : C.border}` }}>
-                  <span style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.55rem', color: (i===0||i===6) ? C.accent : C.mid, letterSpacing: '0.06em' }}>{s.n}</span>
+                  <span style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.58rem', color: (i===0||i===6) ? C.accent : C.mid, letterSpacing: '0.06em' }}>{s.n}</span>
                 </div>
               </motion.div>
             )
             return i < steps.length - 1
-              ? [circle, <div key={`l${i}`} style={{ width: 20, height: 1, flexShrink: 0, background: C.border }} />]
+              ? [circle, <div key={`l${i}`} style={{ display: 'flex', alignItems: 'center', flexShrink: 0, width: 20 }}>
+                  <div style={{ flex: 1, height: 1, background: C.border }} />
+                  <svg width="5" height="7" viewBox="0 0 5 7" fill="none" style={{ flexShrink: 0 }}>
+                    <path d="M0 0L5 3.5L0 7" stroke={C.border} strokeWidth="1" fill="none"/>
+                  </svg>
+                </div>]
               : [circle]
           })}
         </div>
@@ -368,7 +377,7 @@ function PrototypeFlow() {
               animate={inView ? { opacity: 1 } : {}}
               transition={{ duration: 0.4, ease: EASE, delay: i * 0.07 + 0.18 }}
             >
-              <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.78rem', color: C.mid, lineHeight: 1.35, whiteSpace: 'pre-line', margin: 0 }}>{s.label}</p>
+              <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.9rem', color: C.mid, lineHeight: 1.35, whiteSpace: 'pre-line', margin: 0 }}>{s.label}</p>
             </motion.div>
           ))}
         </div>
@@ -468,10 +477,10 @@ function StickyNotesExploration() {
 
         <div style={{ flexShrink: 0, maxWidth: '270px' }}>
           <SectionTag>05 — Concept</SectionTag>
-          <h2 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: 'clamp(1.5rem,3vw,2.4rem)', letterSpacing: '-0.02em', color: C.ink, margin: '0.5rem 0 1.25rem', lineHeight: 1.2 }}>
-            Concept exploration & what we set out to build
+          <h2 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: 'clamp(1.75rem,3.5vw,2.75rem)', letterSpacing: '-0.02em', color: C.ink, margin: '0.5rem 0 1.25rem', lineHeight: 1.2 }}>
+            <span style={{ background: 'linear-gradient(to bottom, transparent 60%, #FFE566 60%)', paddingBottom: '1px', display: 'inline' }}>Concept</span> exploration & what we set out to build
           </h2>
-          <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.88rem', lineHeight: 1.75, color: C.mid, margin: 0 }}>
+          <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.9rem', lineHeight: 1.75, color: C.mid, margin: 0 }}>
             We mapped concepts of Earth &amp; Geography that children find difficult to understand due to{' '}
             <span style={{ color: C.accent, fontWeight: 500 }}>limited depth</span>{' '}
             in traditional teaching methods and the absence of multimodal engagement.
@@ -534,65 +543,46 @@ export default function GetSetGlobe() {
   }, [])
 
   return (
-    <div style={{ background: C.page, minHeight: '100vh', color: C.ink }}>
+    <div className="has-bottom-nav" style={{ background: C.page, minHeight: '100vh', color: C.ink }}>
       <ProgressBar />
       <Nav />
       <SidebarNav active={active} />
 
-      {/* ── HERO (dark) ── */}
-      <section style={{
-        position:      'relative',
-        paddingTop:    'clamp(7rem,12vw,11rem)',
-        paddingBottom: 'clamp(5rem,8vw,8rem)',
-      }}>
-        {/* Banner photo — absolutely positioned so filter doesn't bleed onto text */}
-        <img src="/gsg-banner.jpg" aria-hidden="true" style={{
-          position:      'absolute', inset: 0,
-          width:         '100%', height: '100%',
-          objectFit:     'cover', objectPosition: '50% 22%',
-          filter:        'contrast(1.18) saturate(1.1)',
-          zIndex:        0,
-        }} />
-        <div style={{
-          position: 'absolute', inset: 0, zIndex: 1,
-          background: 'linear-gradient(to right, rgba(5,15,8,0.88) 0%, rgba(5,15,8,0.78) 40%, rgba(5,15,8,0.50) 68%, rgba(5,15,8,0.20) 100%)',
-        }} />
-        <Wrap style={{ position: 'relative', zIndex: 2 }}>
-          <MaskReveal delay={0}>
-            <SectionTag dark>EdTech · Interaction Design · 2024</SectionTag>
-          </MaskReveal>
-          <MaskReveal delay={0.1}>
-            <h1 style={{
-              fontFamily: "'Syne', sans-serif", fontWeight: 500,
-              fontSize: 'clamp(2.4rem,5.5vw,4.2rem)', lineHeight: 1.08,
-              color: C.darkInk, margin: '0 0 1.75rem', maxWidth: '16ch',
-            }}>
-              Get, Set,{' '}<span style={{ color: '#6FCF97' }}>Globe!</span>
-            </h1>
-          </MaskReveal>
-          <MaskReveal delay={0.2}>
-            <p style={{
-              fontFamily: "'Syne', sans-serif", fontSize: 'clamp(1rem,2vw,1.15rem)',
-              lineHeight: 1.75, color: C.darkMid, maxWidth: '55ch', margin: '0 0 3rem',
-            }}>
-              We kept coming back to one memory: a geography class where the teacher drew a flat diagram of tectonic plates on a board, and we understood nothing. Get Set Globe is our attempt at the opposite: an experience where children don't just see Earth's forces, they feel them.
-            </p>
-          </MaskReveal>
+      {/* ── HERO ── */}
+      <div style={{ position: 'relative', paddingTop: 'clamp(7rem,12vw,11rem)', paddingBottom: 'clamp(5rem,8vw,8rem)', overflow: 'hidden' }}>
+        <img src="/gsg-banner.jpg" aria-hidden="true" loading="lazy" decoding="async" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', objectPosition: '50% 22%', filter: 'contrast(1.18) saturate(1.1)' }} />
+        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to right, rgba(5,15,8,0.92) 0%, rgba(5,15,8,0.82) 40%, rgba(5,15,8,0.55) 68%, rgba(5,15,8,0.25) 100%)' }} />
+        <div style={{ position: 'relative', zIndex: 2, maxWidth: '1120px', margin: '0 auto', padding: '0 clamp(1.5rem,5vw,3rem)' }}>
+          <span style={{ display: 'inline-block', fontFamily: "'Space Mono', monospace", fontSize: '0.58rem', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.55)', border: '1px solid rgba(255,255,255,0.22)', padding: '4px 10px', borderRadius: '99px', marginBottom: '1.25rem' }}>EdTech · Interaction Design</span>
+          <h1 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: 'clamp(2.4rem,5.5vw,4.2rem)', lineHeight: 1.08, color: '#FFFFFF', margin: '0 0 1.75rem', maxWidth: '16ch' }}>
+            Get, Set, <span style={{ color: '#6FCF97' }}>Globe!</span>
+          </h1>
+          <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.9rem', lineHeight: 1.75, color: 'rgba(255,255,255,0.78)', maxWidth: '55ch', margin: '0 0 3rem' }}>
+            We kept coming back to one memory: a geography class where the teacher drew a flat diagram of tectonic plates on a board, and we could barely comprehend. Get Set Globe is our attempt at the opposite: an experience where children don't just see Earth's forces, they feel them.
+          </p>
           <div style={{ display: 'flex', gap: '3rem', flexWrap: 'wrap' }}>
             {[
-              { l: 'Team',      v: 'Zeus · Saneeta · Hiral' },
-              { l: 'Type',      v: 'Interaction Design' },
-              { l: 'Duration',  v: '3 Weeks' },
-              { l: 'Showcase',  v: 'SAP Impulse 2025' },
+              { l: 'Timeline',      v: '3 Weeks' },
+              { l: 'Collaborators', v: 'Sangeeta V, Hiral H' },
+              { l: 'Tools',         v: 'Figma, Blender, TouchDesigner, Xbox Kinect' },
+              { l: 'Output',        v: 'Interactive Installation' },
             ].map(m => (
               <div key={m.l}>
-                <p style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.55rem', letterSpacing: '0.18em', color: C.darkMuted, textTransform: 'uppercase', margin: '0 0 0.3rem' }}>{m.l}</p>
-                <p style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: '0.9rem', color: C.darkInk, margin: 0 }}>{m.v}</p>
+                <p style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.58rem', letterSpacing: '0.18em', color: '#FFFFFF', textTransform: 'uppercase', margin: '0 0 0.3rem' }}>{m.l}</p>
+                <p style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: '0.9rem', color: '#FFFFFF', margin: 0 }}>{m.v}</p>
               </div>
             ))}
           </div>
+        </div>
+      </div>
+
+      <div style={{ background: C.surface, borderBottom: `1px solid ${C.border}` }}>
+        <Wrap>
+          <p style={{ margin: 0, textAlign: 'right', fontFamily: "'Space Mono', monospace", fontSize: '0.58rem', letterSpacing: '0.14em', color: C.muted, textTransform: 'uppercase', padding: '0.7rem 0' }}>
+            approx. 6 min quick read
+          </p>
         </Wrap>
-      </section>
+      </div>
 
       {/* ── WHY THIS PROJECT ── */}
       <section id="overview" style={{ background: C.surface, ...PAD, paddingBottom: 'clamp(2rem,3vw,2.5rem)' }}>
@@ -607,16 +597,16 @@ export default function GetSetGlobe() {
                 letterSpacing: '-0.02em',
                 color: C.ink,
                 marginBottom: '1.5rem',
-              }}>What <em style={{ fontFamily: "'EB Garamond', serif", fontStyle: 'italic', color: C.accent, fontWeight: 400 }}>Earth science</em> class<br />never gave us</h2>
+              }}>What <em style={{ fontFamily: "'Lora', serif", fontStyle: 'italic', color: C.accent, fontWeight: 400 }}>Earth science</em> class<br />never gave us</h2>
             </MaskReveal>
             <Reveal delay={0.2}>
               <p style={{
-                fontFamily: "'EB Garamond', serif",
-                fontSize: 'clamp(1.05rem,2vw,1.3rem)',
+                fontFamily: "'Lora', serif",
+                fontSize: 'clamp(1.1rem,2vw,1.35rem)',
                 color: C.mid,
                 lineHeight: 1.75,
               }}>
-                There's a geography class we can still picture clearly: a teacher drawing flat plates on a board, arrows pointing sideways, and none of it landing. The map said the world moved, but nothing in that room moved with it. Earth science has always been taught this way, as a diagram, a label, a list of terms to memorise. But the Earth isn't a diagram. It has{' '}
+                There's a geography class we can still picture clearly: a teacher drawing flat plates on a board, arrows pointing sideways, and none of it landing. The map said the world moved, but nothing in that room moved with it. Earth science has <strong style={{ color: C.ink, fontWeight: 700 }}>always been taught this way, as a diagram, a label, a list of terms to memorise.</strong> But the Earth isn't a diagram. It has{' '}
                 <strong style={{ color: C.ink, fontWeight: 600 }}>mass, heat, and violence</strong>, and children can feel the difference between being told that and experiencing it. That's what Get Set Globe was built around.
               </p>
             </Reveal>
@@ -624,41 +614,47 @@ export default function GetSetGlobe() {
         </Wrap>
       </section>
 
+      {/* ── Diamond divider ── */}
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '4px', background: C.surface, paddingTop: '0.75rem', paddingBottom: '1.5rem', marginTop: '-0.5rem' }}>
+        {['#E8D87A', '#B5CC30', '#68CBE8'].map((color, i) => (
+          <div key={i} style={{ width: 9, height: 9, background: color, transform: 'rotate(45deg)', borderRadius: '1px', flexShrink: 0 }} />
+        ))}
+      </div>
+
       {/* ── THE PROBLEM (surface) ── */}
       <section id="problem" style={{ ...PAD, background: C.surface }}>
         <Wrap>
           <Reveal>
             <SectionTag>02 — The Problem</SectionTag>
             <h2 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: 'clamp(1.75rem,3.5vw,2.75rem)', letterSpacing: '-0.02em', color: C.ink, margin: '0 0 1.25rem', lineHeight: 1.2 }}>
-              Seeing is believing, and that's the problem.
+              <span style={{ color: C.ink }}>Seeing is believing</span>, and that's the issue.
             </h2>
             <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.9rem', lineHeight: 1.7, color: C.mid, margin: '0 0 0.75rem' }}>
-              For centuries, maps and globes have helped us hold the vastness of Earth in our hands. But they're not the world itself, only windows into it. They shrink oceans into blue patches and mountains into lines.
+              For centuries, <strong style={{ color: C.ink, fontWeight: 600 }}>maps and globes</strong> have helped us hold the vastness of Earth in our hands. But <strong style={{ color: C.ink, fontWeight: 600 }}>they're not the world itself, only windows into it.</strong><br />They shrink oceans into blue patches and mountains into lines.
             </p>
-            <p style={{ fontFamily: "'EB Garamond', serif", fontStyle: 'italic', fontSize: 'clamp(1.15rem,2vw,1.45rem)', color: C.mid, margin: '0 0 2.5rem', lineHeight: 1.7 }}>
-              "Children take visuals at face value. Traditional teaching shows Earth as static, reducing dynamic phenomena to diagrams. But to truly understand Earth, children must go beyond vision, through experience."
+            <p style={{ fontFamily: "'Lora', serif", fontSize: 'clamp(1.1rem,2vw,1.35rem)', color: C.mid, margin: '3rem 0 2.5rem', lineHeight: 1.7, textAlign: 'center', maxWidth: '60ch', marginLeft: 'auto', marginRight: 'auto' }}>
+              <span style={{ fontFamily: "'Syne', sans-serif", fontWeight: 400, color: C.ink, background: 'linear-gradient(to bottom, transparent 60%, #FFE566 60%)', paddingBottom: '1px', display: 'inline' }}>Children take visuals at face value.</span>
+              <br /><br />
+              <span style={{ fontStyle: 'italic' }}>Traditional teaching shows Earth as static, reducing dynamic phenomena to diagrams. But to truly understand Earth, children must go beyond vision, through experience.</span>
             </p>
           </Reveal>
 
           <StaggerGrid style={{ display: 'flex', gap: '2.5rem', justifyContent: 'center', flexWrap: 'wrap', marginBottom: '2.5rem' }}>
             {[
-              { title: 'Static teaching',     body: 'Diagrams flatten living, moving systems into flat images with no sense of scale or time.' },
-              { title: 'Passive observation', body: 'Students watch but never interact, with no ownership over the experience or its meaning.' },
-              { title: 'Abstract concepts',   body: "Tectonic forces, geological time, and Earth's interior remain intangible and forgettable." },
+              { title: 'Static teaching',     body: 'Diagrams flatten living, moving systems into flat images with no sense of scale or time.',  stroke: '#E8D87A' },
+              { title: 'Passive observation', body: 'Students watch but never interact, with no ownership over the experience or its meaning.', stroke: '#B5CC30' },
+              { title: 'Abstract concepts',   body: "Tectonic forces, geological time, and Earth's interior remain intangible and forgettable.", stroke: '#68CBE8' },
             ].map((card, i) => (
               <StaggerItem key={i} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 270, height: 270 }}>
-                {/* Outer rotated square → rounded diamond shape */}
                 <div style={{
                   width: 190, height: 190,
                   transform: 'rotate(45deg)',
                   borderRadius: '24px',
-                  background: i % 2 === 1 ? C.cardAlt : C.card,
-                  boxShadow: C.neu,
-                  overflow: 'hidden',
+                  background: 'transparent',
+                  border: `1.5px solid ${card.stroke}`,
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   flexShrink: 0,
                 }}>
-                  {/* Counter-rotate content so it reads upright */}
                   <div style={{
                     width: 190, height: 190,
                     transform: 'rotate(-45deg)',
@@ -668,8 +664,8 @@ export default function GetSetGlobe() {
                     padding: '0 0.75rem',
                   }}>
                     <div style={{ width: 20, height: 2, borderRadius: 2, background: C.accent, margin: '0 auto 0.6rem', opacity: 0.5 + i * 0.15 }} />
-                    <p style={{ fontFamily: "'Syne', sans-serif", fontWeight: 600, fontSize: '0.85rem', color: C.ink, margin: '0 0 0.45rem', lineHeight: 1.25 }}>{card.title}</p>
-                    <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.68rem', lineHeight: 1.5, color: C.mid, margin: 0 }}>{card.body}</p>
+                    <p style={{ fontFamily: "'Syne', sans-serif", fontWeight: 600, fontSize: '0.9rem', color: C.ink, margin: '0 0 0.45rem', lineHeight: 1.25 }}>{card.title}</p>
+                    <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.58rem', lineHeight: 1.5, color: C.mid, margin: 0 }}>{card.body}</p>
                   </div>
                 </div>
               </StaggerItem>
@@ -684,56 +680,65 @@ export default function GetSetGlobe() {
           <Reveal>
             <SectionTag>03 — Research</SectionTag>
             <h2 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: 'clamp(1.75rem,3.5vw,2.75rem)', letterSpacing: '-0.02em', color: C.ink, margin: '0 0 1.25rem', lineHeight: 1.2 }}>
-              We needed research to back an instinct we already had
+              Our <em style={{ fontFamily: "'Lora', serif", fontStyle: 'italic' }}>instinct</em>, backed by <em style={{ fontFamily: "'Lora', serif", fontStyle: 'italic' }}>research</em>
             </h2>
             <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.9rem', lineHeight: 1.7, color: C.mid, margin: '0 0 2.5rem' }}>
               Our instinct was that learning through the body works better than learning through the page. It turns out there's solid research backing that. Meaning is made multimodally: through gesture, movement, gaze, posture, and speech working together, not just words on a board.
             </p>
           </Reveal>
 
-          <StaggerGrid style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: '1rem', marginBottom: '2.5rem' }}>
-            {[
-              { v: '90%',  l: 'Recall for gesture-based learning', s: 'vs. speech only' },
-              { v: '33%',  l: 'Recall for speech-only learning',   s: 'Baseline retention' },
-              { v: '2.5×', l: 'Sensorimotor-enriched modes',       s: 'Retention multiplier' },
-            ].map(({ v, l, s }, i) => (
-              <StaggerItem key={v} style={{ flex: 1 }}>
-                <NeuCard style={{ flex: 1, padding: '1.75rem 1.5rem', display: 'flex', flexDirection: 'column', gap: '0.4rem', background: i % 2 === 1 ? C.cardAlt : C.card }}>
-                  <p style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: 'clamp(1.8rem,3.5vw,2.8rem)', color: C.accent, margin: 0, lineHeight: 1 }}>{v}</p>
-                  <p style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: '0.85rem', color: C.ink, margin: 0 }}>{l}</p>
-                  <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.76rem', color: C.mid, margin: 0 }}>{s}</p>
-                </NeuCard>
-              </StaggerItem>
-            ))}
-          </StaggerGrid>
+          <Reveal delay={0.08}>
+            <NeuCard style={{ padding: '1.75rem 2rem', marginBottom: '2.5rem', display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: '0', background: C.card }}>
+              {[
+                { v: '90%',  l: 'Recall for gesture-based learning', s: 'vs. speech only' },
+                { v: '33%',  l: 'Recall for speech-only learning',   s: 'Baseline retention' },
+                { v: '2.5×', l: 'Sensorimotor-enriched modes',       s: 'Retention multiplier' },
+              ].map(({ v, l, s }, i) => (
+                <div key={v} style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', padding: '0 1.5rem', borderLeft: i > 0 ? `1px solid ${C.border}` : 'none' }}>
+                  <p style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: 'clamp(1.75rem,3.5vw,2.75rem)', color: C.accent, margin: 0, lineHeight: 1 }}>{v}</p>
+                  <p style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: '0.9rem', color: C.ink, margin: 0 }}>{l}</p>
+                  <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.9rem', color: C.mid, margin: 0 }}>{s}</p>
+                </div>
+              ))}
+            </NeuCard>
+          </Reveal>
 
           <Reveal delay={0.1}>
-            <NeuCard style={{ padding: '1.5rem 2rem' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem', flexWrap: 'wrap', marginBottom: '1rem' }}>
-                <span style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.9rem', color: C.mid }}>visual proxemics</span>
-                <span style={{ color: C.muted }}>+</span>
-                <span style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.9rem', color: C.mid }}>speech audio</span>
-                <span style={{ color: C.muted }}>=</span>
-                <span style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: '0.9rem', color: C.accent }}>engaging learning experience</span>
+            <div style={{ marginBottom: '2.5rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap', marginBottom: '0.75rem' }}>
+                <div style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', borderRadius: '999px', border: `1px solid ${C.border}`, padding: '0.45rem 1.1rem' }}>
+                  <span style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.9rem', color: C.mid }}>visual proxemics</span>
+                </div>
+                <span style={{ color: C.muted, fontSize: '0.9rem' }}>+</span>
+                <div style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', borderRadius: '999px', border: `1px solid ${C.border}`, padding: '0.45rem 1.1rem' }}>
+                  <span style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.9rem', color: C.mid }}>speech audio</span>
+                </div>
+                <span style={{ color: C.muted, fontSize: '0.9rem' }}>=</span>
+                <div style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', borderRadius: '999px', border: `1px solid ${C.accentBorder}`, padding: '0.45rem 1.1rem', gap: '0.4rem' }}>
+                  <span style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: '0.9rem', color: C.accent }}>engaging learning experience</span>
+                  <span style={{ color: '#6FCF97', fontSize: '0.9rem' }}>✦</span>
+                </div>
               </div>
-              <p style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.55rem', letterSpacing: '0.06em', color: C.muted, margin: 0 }}>
-                Source: Cook, Wagner, Mitchell &amp; Goldin-Meadow (2008). "Gesturing Makes Learning Last." Psychological Science 19(11): 1047–53.
+              <p style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.58rem', letterSpacing: '0.1em', color: C.muted, margin: 0, textAlign: 'right', textTransform: 'uppercase' }}>
+                SOURCE: COOK, WAGNER, MITCHELL &amp; GOLDIN-MEADOW (2008). "GESTURING MAKES LEARNING LAST." PSYCHOLOGICAL SCIENCE 19(11): 1047–53.
               </p>
-            </NeuCard>
+            </div>
           </Reveal>
 
           <div style={{ marginTop: '3.5rem' }}>
             <Reveal>
               <Label>The question that drove everything</Label>
-              <NeuCard style={{ padding: '2rem 2.25rem', borderLeft: `3px solid ${C.accent}` }}>
+              <div style={{ borderRadius: '16px', overflow: 'hidden', background: 'linear-gradient(135deg, #071a0e 0%, #0a2e18 55%, #0f3d22 100%)', padding: '2.25rem 2.5rem', position: 'relative' }}>
+                <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse 80% 60% at 50% 0%, rgba(40,170,80,0.18) 0%, transparent 70%)' }} />
                 <blockquote style={{
-                  fontFamily: "'EB Garamond', serif",
-                  fontSize: 'clamp(1.15rem,2.2vw,1.5rem)', fontStyle: 'italic',
-                  lineHeight: 1.6, color: C.ink, margin: 0,
+                  position: 'relative', zIndex: 1,
+                  fontFamily: "'Lora', serif",
+                  fontSize: 'clamp(1.1rem,2vw,1.35rem)', fontStyle: 'italic',
+                  lineHeight: 1.6, color: '#FFFFFF', margin: 0,
                 }}>
                   "How can multimodal methods of learning nurture curiosity and help children explore Earth's depths in their early development?"
                 </blockquote>
-              </NeuCard>
+              </div>
             </Reveal>
           </div>
         </Wrap>
@@ -745,7 +750,7 @@ export default function GetSetGlobe() {
           <Reveal>
             <SectionTag>04 — Audience</SectionTag>
             <h2 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: 'clamp(1.75rem,3.5vw,2.75rem)', letterSpacing: '-0.02em', color: C.ink, margin: '0 0 1.25rem', lineHeight: 1.2 }}>
-              Who we were designing for
+              <span style={{ background: 'linear-gradient(to bottom, transparent 60%, #FFE566 60%)', paddingBottom: '1px', display: 'inline' }}>Who</span> we were designing for
             </h2>
             <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.9rem', lineHeight: 1.7, color: C.mid, maxWidth: '68ch', margin: '0 0 2.5rem' }}>
               Old enough to understand cause and effect, young enough to still find Earth genuinely astonishing. <strong style={{ color: C.ink, fontWeight: 600 }}>Children aged 10 to 12</strong> sit right at the edge of abstract thinking, which makes them the ideal test case for whether embodied interaction can bridge the gap that diagrams leave behind.
@@ -767,15 +772,15 @@ export default function GetSetGlobe() {
                     style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }}
                   />
                   {/* Green overlay */}
-                  <div style={{ position: 'absolute', inset: 0, background: 'rgba(40,170,80,0.62)' }} />
+                  <div style={{ position: 'absolute', inset: 0, background: 'rgba(30,120,55,0.72)' }} />
                   {/* Vignette */}
                   <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse at 50% 50%, transparent 40%, rgba(0,0,0,0.45) 100%)' }} />
                   {/* Text — fixed-height block so number is always at the same position */}
                   <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1.5rem' }}>
                     <div style={{ width: '100%', textAlign: 'center' }}>
-                      <span style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.52rem', letterSpacing: '0.2em', color: 'rgba(255,255,255,0.6)', display: 'block', marginBottom: '0.55rem' }}>{card.n}</span>
-                      <p style={{ fontFamily: "'Syne', sans-serif", fontWeight: 600, fontSize: '1.05rem', color: '#fff', lineHeight: 1.25, whiteSpace: 'pre-line', margin: '0 0 0.65rem', minHeight: '2.6em' }}>{card.t}</p>
-                      <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.7rem', color: 'rgba(255,255,255,0.7)', lineHeight: 1.5, margin: 0, minHeight: '3.15em' }}>{card.b}</p>
+                      <span style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.58rem', letterSpacing: '0.2em', color: 'rgba(255,255,255,0.6)', display: 'block', marginBottom: '0.55rem' }}>{card.n}</span>
+                      <p style={{ fontFamily: "'Syne', sans-serif", fontWeight: 600, fontSize: 'clamp(1.1rem,2vw,1.35rem)', color: '#fff', lineHeight: 1.25, whiteSpace: 'pre-line', margin: '0 0 0.65rem', minHeight: '2.6em' }}>{card.t}</p>
+                      <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.58rem', color: 'rgba(255,255,255,0.7)', lineHeight: 1.5, margin: 0, minHeight: '3.15em' }}>{card.b}</p>
                     </div>
                   </div>
                 </div>
@@ -784,17 +789,17 @@ export default function GetSetGlobe() {
           </StaggerGrid>
 
           <Reveal delay={0.1}>
-            <NeuCard style={{ padding: '1.5rem 2rem', marginTop: '1rem' }}>
+            <NeuCard style={{ padding: '1.75rem 2rem', marginTop: '1rem' }}>
               <Label>Current learning barriers</Label>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: '1rem' }}>
                 {[
                   'Traditional teaching limits sensory engagement.',
                   'Short attention spans (7–10 mins) lead to low retention.',
                   'Earth processes remain abstract and intangible concepts.',
                 ].map((b, i) => (
-                  <div key={i} style={{ display: 'flex', gap: '1rem', alignItems: 'flex-start' }}>
-                    <span style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.58rem', color: C.muted, flexShrink: 0, paddingTop: '2px' }}>{String(i+1).padStart(2,'0')}</span>
-                    <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.875rem', color: C.mid, lineHeight: 1.6, margin: 0 }}>{b}</p>
+                  <div key={i} style={{ position: 'relative', padding: '6rem 1rem 1rem', borderLeft: i > 0 ? `1px solid ${C.border}` : 'none', paddingLeft: i > 0 ? '1rem' : 0 }}>
+                    <span style={{ position: 'absolute', top: '0.5rem', left: i > 0 ? '1rem' : '0', fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: '4.5rem', color: '#6FCF97', opacity: 0.25, lineHeight: 1, userSelect: 'none', pointerEvents: 'none' }}>{String(i+1).padStart(2,'0')}</span>
+                    <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.9rem', color: C.mid, lineHeight: 1.65, margin: 0, position: 'relative', zIndex: 1 }}>{b}</p>
                   </div>
                 ))}
               </div>
@@ -808,18 +813,18 @@ export default function GetSetGlobe() {
         <StickyNotesExploration />
 
         {/* Concept chips — shown after animation completes */}
-        <Wrap>
-          <div style={{ paddingTop: '2rem', paddingBottom: '0.5rem', display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+        <Wrap style={{ marginTop: '-20rem' }}>
+          <div style={{ paddingBottom: '0.5rem', display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
             {CONCEPTS.map(({ label, chosen }) => (
-              <span key={label} style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.78rem', padding: '6px 14px', borderRadius: '8px', border: `1px solid ${chosen ? C.accentBorder : C.border}`, background: chosen ? C.accentDim : 'transparent', color: chosen ? C.accent : C.mid, fontWeight: chosen ? 500 : 400 }}>
-                {chosen && <span style={{ marginRight: '4px', fontSize: '0.6rem' }}>✓</span>}
+              <span key={label} style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.9rem', padding: '6px 14px', borderRadius: '8px', border: `1px solid ${chosen ? C.accentBorder : C.border}`, background: chosen ? C.accentDim : 'transparent', color: chosen ? C.accent : C.mid, fontWeight: chosen ? 500 : 400 }}>
+                {chosen && <span style={{ marginRight: '4px', fontSize: '0.58rem' }}>✓</span>}
                 {label}
               </span>
             ))}
           </div>
         </Wrap>
 
-        <div style={{ paddingBottom: PAD.paddingBottom }}>
+        <div style={{ paddingTop: PAD.paddingTop, paddingBottom: PAD.paddingBottom }}>
         <Wrap>
           <Reveal>
             <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.9rem', lineHeight: 1.7, color: C.mid, maxWidth: '68ch', margin: '2rem 0 1.5rem' }}>
@@ -836,13 +841,13 @@ export default function GetSetGlobe() {
             ].map((card, i) => (
               <StaggerItem key={i} style={{ flex: 1 }}>
                 <NeuCard style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden', background: i % 2 === 1 ? C.cardAlt : C.card }}>
-                  <div style={{ overflow: 'hidden', borderBottom: `1px solid ${C.border}` }}>
-                    <img src={card.img} alt={`Initial direction ${i + 1}`} style={{ width: 'calc(100% + 12px)', marginLeft: '-12px', display: 'block', height: '140px', objectFit: 'cover', objectPosition: 'top', filter: 'brightness(0.96) contrast(1.48)' }} />
+                  <div style={{ overflow: 'hidden' }}>
+                    <img src={`${card.img}?v=2`} alt={`Initial direction ${i + 1}`} loading="lazy" decoding="async" style={{ width: '100%', display: 'block', objectFit: 'contain' }} />
                   </div>
                   <div style={{ padding: '1.25rem', display: 'flex', flexDirection: 'column', gap: '0.5rem', flex: 1 }}>
-                    <span style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.55rem', letterSpacing: '0.12em', color: C.muted }}>{card.n}</span>
-                    <p style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: '0.88rem', color: C.ink, margin: 0 }}>{card.t}</p>
-                    <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.78rem', lineHeight: 1.65, color: C.mid, margin: 0, flex: 1 }}>{card.b}</p>
+                    <span style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.58rem', letterSpacing: '0.12em', color: C.muted }}>{card.n}</span>
+                    <p style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: '0.9rem', color: C.accent, margin: 0 }}>{card.t}</p>
+                    <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.9rem', lineHeight: 1.65, color: C.mid, margin: 0, flex: 1 }}>{card.b}</p>
                   </div>
                 </NeuCard>
               </StaggerItem>
@@ -852,8 +857,8 @@ export default function GetSetGlobe() {
           <Reveal delay={0.12}>
             <NeuCard style={{ padding: '2rem 2.25rem', borderLeft: `3px solid ${C.accent}` }}>
               <Label>What we set out to build</Label>
-              <p style={{ fontFamily: "'EB Garamond', serif", fontStyle: 'italic', fontSize: 'clamp(1.1rem,2vw,1.4rem)', lineHeight: 1.6, color: C.ink, margin: 0 }}>
-                We wanted to build something that worked on a child's terms, not the curriculum's. An experience where learning Earth means acting on it: stepping back to watch Pangea drift, peeling back layers with your hands, colliding plates to feel the Himalayas form. Not passive. Not abstract. Something that earns its place in a classroom by making understanding feel inevitable.
+              <p style={{ fontFamily: "'Lora', serif", fontStyle: 'italic', fontSize: 'clamp(1.1rem,2vw,1.35rem)', lineHeight: 1.6, color: C.ink, margin: 0 }}>
+                We wanted to build something that worked on a child's terms, not the curriculum's. An experience where learning Earth means acting on it: stepping back to watch Pangea drift, peeling back layers with your hands, colliding plates to feel the Himalayas form. <em style={{ fontWeight: 600, fontStyle: 'italic' }}>Not passive. Not abstract. Something that earns its place in a classroom</em> by making understanding feel inevitable.
               </p>
             </NeuCard>
           </Reveal>
@@ -867,10 +872,10 @@ export default function GetSetGlobe() {
           <Reveal>
             <SectionTag>06 — Technology</SectionTag>
             <h2 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: 'clamp(1.75rem,3.5vw,2.75rem)', letterSpacing: '-0.02em', color: C.ink, margin: '0 0 1.25rem', lineHeight: 1.2 }}>
-              How it works: the Kinect
+              <span style={{ background: 'linear-gradient(to bottom, transparent 60%, #FFE566 60%)', paddingBottom: '1px', display: 'inline' }}>How</span> it works: the Kinect
             </h2>
             <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.9rem', lineHeight: 1.7, color: C.mid, maxWidth: '68ch', margin: '0 0 2.5rem' }}>
-              The Kinect One was built for gaming, but its skeletal tracking was exactly what we needed. It reads body-node coordinates in 3D space across depth, and those readings feed directly into TouchDesigner to drive real-time visual output. Your body becomes the controller.
+              The Kinect One was built for gaming, but its skeletal tracking was exactly what we needed. It reads <strong style={{ color: C.ink }}>body-node coordinates in 3D space across depth</strong>, and those readings feed directly into TouchDesigner to drive real-time visual output. <strong style={{ color: C.ink }}>Your body becomes the controller.</strong>
             </p>
           </Reveal>
 
@@ -878,7 +883,7 @@ export default function GetSetGlobe() {
             <img
               src="/gsg-how-it-works.png"
               alt="How it works — Kinect to TouchDesigner pipeline"
-              style={{ width: '100%', display: 'block', borderRadius: '8px' }}
+              loading="lazy" decoding="async" style={{ width: '100%', display: 'block', borderRadius: '8px' }}
             />
           </Reveal>
 
@@ -886,8 +891,8 @@ export default function GetSetGlobe() {
             {[['IR Sensor','Infrared object detection'],['IR Depth','Z-axis depth reading'],['Colour Camera','Visual context capture'],['LED Mic Array','Audio input cues']].map(([s, d], i) => (
               <Reveal key={s}>
                 <NeuCard style={{ padding: '1rem 1.1rem', background: i % 2 === 1 ? C.cardAlt : C.card }}>
-                  <p style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.55rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: C.muted, margin: '0 0 4px' }}>{s}</p>
-                  <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.8rem', color: C.mid, margin: 0 }}>{d}</p>
+                  <p style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.58rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: C.muted, margin: '0 0 4px' }}>{s}</p>
+                  <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.9rem', color: C.mid, margin: 0 }}>{d}</p>
                 </NeuCard>
               </Reveal>
             ))}
@@ -897,21 +902,21 @@ export default function GetSetGlobe() {
           <Reveal>
             <Label>Initial direction: physical globe</Label>
             <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.9rem', lineHeight: 1.7, color: C.mid, maxWidth: '68ch', margin: '0 0 1.5rem' }}>
-              Our first instinct was to make the globe literal. A sensor-enabled physical object that children could interact with directly, through three gestures:
+              <strong style={{ color: C.mid, fontWeight: 600 }}>Our first instinct was to make the globe literal.</strong> A sensor-enabled physical object that children could interact with directly, through three gestures:
             </p>
           </Reveal>
 
           <StaggerGrid style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1rem', marginBottom: '1.5rem' }}>
             {[
-              { n: 'Step 01', t: 'Step back',       b: 'See Pangea form as you move away from the globe.' },
-              { n: 'Step 02', t: 'Peel off layers', b: "Explore Earth's interior layer by layer." },
-              { n: 'Step 03', t: 'Pinch plates',    b: 'Create converging tectonic movement with a pinch gesture.' },
+              { n: 'Step 01', t: <span style={{ background: 'linear-gradient(to bottom, transparent 60%, #FFE566 60%)', paddingBottom: '1px', display: 'inline' }}>Step back</span>,       b: <>See <strong>Pangea</strong> form as you move away from the globe.</> },
+              { n: 'Step 02', t: <span style={{ background: 'linear-gradient(to bottom, transparent 60%, #FFE566 60%)', paddingBottom: '1px', display: 'inline' }}>Peel off layers</span>, b: <>Explore <strong>Earth's interior</strong> layer by layer.</> },
+              { n: 'Step 03', t: <span style={{ background: 'linear-gradient(to bottom, transparent 60%, #FFE566 60%)', paddingBottom: '1px', display: 'inline' }}>Pinch plates</span>,    b: <>Create converging <strong>tectonic movement</strong> with a pinch gesture.</> },
             ].map((card, i) => (
               <StaggerItem key={i} style={{ flex: 1 }}>
                 <NeuCard style={{ flex: 1, padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '0.6rem', background: i % 2 === 1 ? C.cardAlt : C.card }}>
-                  <span style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.55rem', letterSpacing: '0.12em', color: C.muted }}>{card.n}</span>
-                  <p style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: '0.88rem', color: C.ink, margin: 0 }}>{card.t}</p>
-                  <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.78rem', lineHeight: 1.65, color: C.mid, margin: 0, flex: 1 }}>{card.b}</p>
+                  <span style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.58rem', letterSpacing: '0.12em', color: C.muted }}>{card.n}</span>
+                  <p style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: '0.9rem', color: C.ink, margin: 0 }}>{card.t}</p>
+                  <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.9rem', lineHeight: 1.65, color: C.mid, margin: 0, flex: 1 }}>{card.b}</p>
                 </NeuCard>
               </StaggerItem>
             ))}
@@ -921,20 +926,20 @@ export default function GetSetGlobe() {
             <div style={{ borderRadius: '14px', overflow: 'hidden', display: 'flex', alignItems: 'stretch', background: '#0a0a0a', boxShadow: C.neu }}>
               {/* Image with overlay + vignette */}
               <div style={{ width: '38%', flexShrink: 0, position: 'relative' }}>
-                <img src="/gsg-globe-physical.jpg" alt="Child touching a physical globe" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+                <img src="/gsg-globe-physical.jpg" alt="Child touching a physical globe" loading="lazy" decoding="async" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
                 <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to right, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.18) 60%, rgba(0,0,0,0.42) 100%)' }} />
                 <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse at 50% 50%, transparent 38%, rgba(0,0,0,0.72) 100%)' }} />
               </div>
               {/* Text */}
               <div style={{ padding: '2rem 2.25rem', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
                 <div>
-                  <p style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.55rem', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.4)', margin: '0 0 0.75rem' }}>Why we moved on</p>
-                  <p style={{ fontFamily: "'Syne', sans-serif", fontWeight: 600, fontSize: '1.05rem', color: '#fff', lineHeight: 1.3, margin: '0 0 1.25rem' }}>Not using a physical globe</p>
-                  <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '1rem', color: 'rgba(255,255,255,0.55)', lineHeight: 1.75, margin: 0 }}>
-                    We tested it and the engagement was real. Children responded immediately to motion-based interaction. But the globe as a fixed object felt like a constraint, and the gestures were too lesson-specific to carry meaning outside of one activity.
+                  <p style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.58rem', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.4)', margin: '0 0 0.75rem' }}>Why we moved on</p>
+                  <p style={{ fontFamily: "'Syne', sans-serif", fontWeight: 600, fontSize: 'clamp(1.1rem,2vw,1.35rem)', color: '#fff', lineHeight: 1.3, margin: '0 0 1.25rem' }}>Not using a physical globe</p>
+                  <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.9rem', color: 'rgba(255,255,255,0.55)', lineHeight: 1.75, margin: 0 }}>
+                    We tested it and the engagement was real. Children responded immediately to motion-based interaction. But the globe as <strong style={{ color: 'rgba(255,255,255,0.88)' }}>a fixed object felt like a constraint</strong>, and the gestures were too lesson-specific to carry meaning outside of one activity.
                   </p>
                 </div>
-                <p style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: '1.05rem', color: 'rgba(255,255,255,0.88)', lineHeight: 1.5, margin: '1.75rem 0 0', borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '1.25rem' }}>
+                <p style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: 'clamp(1.1rem,2vw,1.35rem)', color: 'rgba(255,255,255,0.88)', lineHeight: 1.5, margin: '1.75rem 0 0', borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '1.25rem' }}>
                   Gestures should feel universal and reusable — not one-off actions bound to a single lesson.
                 </p>
               </div>
@@ -946,7 +951,7 @@ export default function GetSetGlobe() {
             <Reveal>
               <Label>7-step experience loop</Label>
               <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.9rem', lineHeight: 1.7, color: C.mid, maxWidth: '68ch', margin: '0 0 1.5rem' }}>
-                We mapped the full experience as a loop, from the moment the device connects to the moment a child finishes and wants to go again. Every transition had to feel earned, not just navigated.
+                We mapped the full experience as a loop, from the moment the device connects to the moment a child finishes and wants to go again.<br /><br /><strong style={{ color: C.ink }}>Every transition had to feel earned, not just navigated.</strong>
               </p>
             </Reveal>
             <Reveal delay={0.08}><PrototypeFlow /></Reveal>
@@ -969,26 +974,19 @@ export default function GetSetGlobe() {
           </Reveal>
 
           <Reveal delay={0.08}>
-            <NeuCard style={{ padding: 0, overflow: 'hidden', marginBottom: '2rem' }}>
-              <iframe
-                src="/gsg-ia-flowchart.html"
-                title="Information Architecture — Tectonic Plates"
-                scrolling="no"
-                style={{
-                  width: '100%',
-                  aspectRatio: '1680 / 770',
-                  border: 'none',
-                  background: 'transparent',
-                  display: 'block',
-                }}
-              />
-            </NeuCard>
-          </Reveal>
-
-          <Reveal delay={0.1}>
-            <NeuCard style={{ padding: '1.5rem', marginBottom: '1rem' }}>
-              <img src="/gsg-storyboard-sketch.png" alt="Get Set Globe storyboard" style={{ width: '60%', display: 'block', borderRadius: '4px', margin: '0 auto' }} />
-            </NeuCard>
+            <iframe
+              src="/gsg-ia-flowchart.html"
+              title="Information Architecture — Tectonic Plates"
+              scrolling="no"
+              style={{
+                width: '100%',
+                aspectRatio: '1680 / 770',
+                border: 'none',
+                background: 'transparent',
+                display: 'block',
+                marginBottom: '2rem',
+              }}
+            />
           </Reveal>
 
           {/* Interactions table */}
@@ -1002,15 +1000,15 @@ export default function GetSetGlobe() {
             <NeuCard style={{ overflow: 'hidden', marginBottom: '3rem' }}>
               <div style={{ display: 'grid', gridTemplateColumns: '2.5rem 1fr 1fr 1fr', padding: '10px 1.5rem', background: C.surface, borderBottom: `1px solid ${C.border}` }}>
                 {['No.','Activity','Mode / Pattern','Input → Output'].map(h => (
-                  <span key={h} style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.52rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: C.muted }}>{h}</span>
+                  <span key={h} style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.58rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: C.muted }}>{h}</span>
                 ))}
               </div>
               {INTERACTIONS.map((row, i) => (
-                <div key={i} style={{ display: 'grid', gridTemplateColumns: '2.5rem 1fr 1fr 1fr', padding: '12px 1.5rem', borderBottom: i < INTERACTIONS.length-1 ? `1px solid ${C.border}` : 'none', background: row.n === '08' ? C.accentDim : i%2===0 ? C.card : 'transparent' }}>
+                <div key={i} style={{ display: 'grid', gridTemplateColumns: '2.5rem 1fr 1fr 1fr', padding: '12px 1.5rem', borderBottom: i < INTERACTIONS.length-1 ? `1px solid ${C.border}` : 'none', background: i%2===0 ? C.card : C.accentDim }}>
                   <span style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.58rem', color: C.muted }}>{row.n}</span>
-                  <span style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.82rem', color: C.ink, paddingRight: '1rem' }}>{row.activity}</span>
-                  <span style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.82rem', color: C.mid, paddingRight: '1rem' }}>{row.pattern}</span>
-                  <span style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.62rem', color: C.mid, lineHeight: 1.5 }}>
+                  <span style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.9rem', color: C.ink, paddingRight: '1rem' }}>{row.activity}</span>
+                  <span style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.9rem', color: C.mid, paddingRight: '1rem' }}>{row.pattern}</span>
+                  <span style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.58rem', color: C.mid, lineHeight: 1.5 }}>
                     <span style={{ color: C.ink }}>{row.input}</span>
                     {row.input !== 'System' && <span style={{ color: C.muted }}> → </span>}
                     {row.input !== 'System' && row.output}
@@ -1021,8 +1019,9 @@ export default function GetSetGlobe() {
           </Reveal>
 
           <Reveal delay={0.08}>
-            <NeuCard style={{ padding: '1.5rem', marginBottom: '3rem' }}>
-              <img src="/gsg-gesture-sketch.png" alt="Core multimodal gesture interactions" style={{ width: '55%', display: 'block', borderRadius: '4px', margin: '0 auto' }} />
+            <NeuCard style={{ padding: '1.5rem', marginBottom: '3rem', display: 'flex', gap: '1.5rem', alignItems: 'center', boxSizing: 'border-box' }}>
+              <img src="/gsg-storyboard-sketch.png" alt="Get Set Globe storyboard" loading="lazy" decoding="async" style={{ flex: 1, minWidth: 0, width: '50%', borderRadius: '4px', display: 'block', objectFit: 'contain' }} />
+              <img src="/gsg-gesture-sketch.png" alt="Core multimodal gesture interactions" loading="lazy" decoding="async" style={{ flex: 1, minWidth: 0, width: '50%', borderRadius: '4px', display: 'block', objectFit: 'contain' }} />
             </NeuCard>
           </Reveal>
 
@@ -1037,14 +1036,14 @@ export default function GetSetGlobe() {
             ].map((card, i) => (
               <StaggerItem key={i} style={{ flex: 1 }}>
                 <NeuCard style={{ flex: 1, padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '0.6rem', borderLeft: card.accent ? `2px solid ${C.accent}` : 'none', background: i % 2 === 1 ? C.cardAlt : C.card }}>
-                  <span style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.55rem', letterSpacing: '0.12em', color: C.muted }}>Interaction {card.n}</span>
-                  <p style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: '0.88rem', color: C.ink, margin: 0, lineHeight: 1.3 }}>{card.title}</p>
-                  <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.78rem', lineHeight: 1.65, color: C.mid, margin: 0, flex: 1 }}>{card.detail}</p>
+                  <span style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.58rem', letterSpacing: '0.12em', color: C.muted }}>Interaction {card.n}</span>
+                  <p style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: '0.9rem', color: C.ink, margin: 0, lineHeight: 1.3 }}>{card.title}</p>
+                  <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.9rem', lineHeight: 1.65, color: C.mid, margin: 0, flex: 1 }}>{card.detail}</p>
                   <div style={{ borderTop: `1px solid ${C.border}`, paddingTop: '0.75rem', display: 'flex', flexDirection: 'column', gap: '4px', marginTop: '0.25rem' }}>
                     {[['Gesture', card.gesture], ['Effect', card.effect]].map(([k, v]) => (
                       <div key={k} style={{ display: 'flex', gap: '0.75rem' }}>
-                        <span style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.5rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: C.muted, width: 44, flexShrink: 0 }}>{k}</span>
-                        <span style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.78rem', color: C.mid }}>{v}</span>
+                        <span style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.58rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: C.muted, width: 44, flexShrink: 0 }}>{k}</span>
+                        <span style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.9rem', color: C.mid }}>{v}</span>
                       </div>
                     ))}
                   </div>
@@ -1057,14 +1056,14 @@ export default function GetSetGlobe() {
       </section>
 
       {/* ── TRIALS + PROTOTYPING (surface) ── */}
-      <section id="trials" style={{ ...PAD, background: C.surface }}>
+      <section id="trials" style={{ ...PAD, background: '#000000' }}>
         <Wrap>
           <Reveal>
-            <SectionTag>08 — Process & Prototyping</SectionTag>
-            <h2 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: 'clamp(1.75rem,3.5vw,2.75rem)', letterSpacing: '-0.02em', color: C.ink, margin: '0 0 1.25rem', lineHeight: 1.2 }}>
+            <SectionTag dark>08 — Process & Prototyping</SectionTag>
+            <h2 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: 'clamp(1.75rem,3.5vw,2.75rem)', letterSpacing: '-0.02em', color: C.darkInk, margin: '0 0 1.25rem', lineHeight: 1.2 }}>
               Trials & process
             </h2>
-            <p style={{ fontFamily: "'EB Garamond', serif", fontStyle: 'italic', fontSize: '1.15rem', color: C.mid, margin: '0 0 2.5rem', lineHeight: 1.7 }}>
+            <p style={{ fontFamily: "'Lora', serif", fontStyle: 'italic', fontSize: 'clamp(1.1rem,2vw,1.35rem)', color: C.darkMid, margin: '0 0 2.5rem', lineHeight: 1.7 }}>
               "This is where the system fought back. The idea was clear; getting it to work was a different problem entirely."
             </p>
           </Reveal>
@@ -1077,19 +1076,19 @@ export default function GetSetGlobe() {
               { n: '04', t: 'Haptic integration',        b: 'The Himalaya converging gesture needed haptic output to complete the sensory loop; sourcing and syncing this with the visual was a key challenge.' },
             ].map((card, i) => (
               <StaggerItem key={i} style={{ flex: 1 }}>
-                <NeuCard style={{ flex: 1, padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '0.6rem', background: i % 2 === 1 ? C.cardAlt : C.card }}>
-                  <span style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.55rem', letterSpacing: '0.12em', color: C.muted }}>Challenge {card.n}</span>
-                  <p style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: '0.88rem', color: C.ink, margin: 0 }}>{card.t}</p>
-                  <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.78rem', lineHeight: 1.65, color: C.mid, margin: 0, flex: 1 }}>{card.b}</p>
-                </NeuCard>
+                <div style={{ flex: 1, padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '0.6rem', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '14px' }}>
+                  <span style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.58rem', letterSpacing: '0.12em', color: C.darkMuted }}>Challenge {card.n}</span>
+                  <p style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: '0.9rem', color: C.darkInk, margin: 0 }}>{card.t}</p>
+                  <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.9rem', lineHeight: 1.65, color: C.darkMid, margin: 0, flex: 1 }}>{card.b}</p>
+                </div>
               </StaggerItem>
             ))}
           </StaggerGrid>
 
           <Reveal delay={0.08}>
-            <Label>Prototype in action</Label>
+            <Label dark>Testing the prototypes</Label>
           </Reveal>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 360px)', gap: '1.5rem' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '1.5rem' }}>
             {[
               {
                 src:     '/gsg-proto-1.mp4',
@@ -1100,12 +1099,12 @@ export default function GetSetGlobe() {
                 caption: 'Sagittal arm movement of user to reveal inner layers of the Earth impacting tectonic forces',
               },
             ].map((v, i) => (
-              <NeuCard key={i} style={{ padding: 0, overflow: 'hidden' }}>
+              <div key={i} style={{ borderRadius: '14px', overflow: 'hidden', border: '1px solid rgba(255,255,255,0.08)' }}>
                 <video src={v.src} autoPlay loop muted playsInline style={{ width: '100%', display: 'block' }} />
-                <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.78rem', lineHeight: 1.65, color: C.mid, margin: 0, padding: '1rem 1.25rem', borderTop: `1px solid ${C.border}` }}>
+                <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.9rem', lineHeight: 1.65, color: C.darkMid, margin: 0, padding: '1rem 1.25rem', borderTop: '1px solid rgba(255,255,255,0.08)', background: 'rgba(255,255,255,0.03)' }}>
                   {v.caption}
                 </p>
-              </NeuCard>
+              </div>
             ))}
           </div>
         </Wrap>
@@ -1125,10 +1124,10 @@ export default function GetSetGlobe() {
           <Reveal delay={0.05}>
             <NeuCard style={{ padding: 0, overflow: 'hidden', marginBottom: '1.25rem' }}>
               <img src="/gsg-ui-01.jpg" alt="Get Set Globe landing screen"
-                style={{ width: '100%', display: 'block', aspectRatio: '16/9', objectFit: 'cover', objectPosition: 'top' }} />
+                loading="lazy" decoding="async" style={{ width: '100%', display: 'block', aspectRatio: '16/9', objectFit: 'cover', objectPosition: 'top' }} />
               <div style={{ padding: '1.1rem 1.5rem', display: 'flex', gap: '2rem', alignItems: 'baseline', flexWrap: 'wrap' }}>
-                <p style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.54rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: C.muted, margin: 0, flexShrink: 0 }}>Onboarding Screen 01 · Navigation Pattern</p>
-                <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.8rem', color: C.mid, lineHeight: 1.6, margin: 0 }}>Intuitive hand movements for on-screen navigation, followed by a steady hold to confirm the selected choice. Visual cue: a circle stroke that fills to 100% on confirmation.</p>
+                <p style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.58rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: C.muted, margin: 0, flexShrink: 0 }}>Onboarding Screen 01 · Navigation Pattern</p>
+                <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.9rem', color: C.mid, lineHeight: 1.6, margin: 0 }}>Intuitive hand movements for on-screen navigation, followed by a steady hold to confirm the selected choice. Visual cue: a circle stroke that fills to 100% on confirmation.</p>
               </div>
             </NeuCard>
           </Reveal>
@@ -1138,7 +1137,7 @@ export default function GetSetGlobe() {
             <NeuCard style={{ padding: 0, overflow: 'hidden', marginBottom: '1.5rem' }}>
               <div style={{ position: 'relative', background: '#0a0a0a' }}>
                 <img src="/gsg-ui-02.jpg" alt="Get Set Globe topic selection screen"
-                  style={{ width: '100%', display: 'block', aspectRatio: '16/9', objectFit: 'cover', objectPosition: 'top' }} />
+                  loading="lazy" decoding="async" style={{ width: '100%', display: 'block', aspectRatio: '16/9', objectFit: 'cover', objectPosition: 'top' }} />
                 <svg
                   style={{ position: 'absolute', left: '53.5%', top: '60.5%', transform: 'translate(-50%,-50%)', width: 'clamp(44px,4.5vw,68px)', height: 'clamp(44px,4.5vw,68px)', overflow: 'visible', pointerEvents: 'none' }}
                   viewBox="0 0 60 60"
@@ -1153,8 +1152,8 @@ export default function GetSetGlobe() {
                 </svg>
               </div>
               <div style={{ padding: '1.1rem 1.5rem', display: 'flex', gap: '2rem', alignItems: 'baseline', flexWrap: 'wrap' }}>
-                <p style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.54rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: C.muted, margin: 0, flexShrink: 0 }}>Onboarding Screen 02 · Topic Selection</p>
-                <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.8rem', color: C.mid, lineHeight: 1.6, margin: 0 }}>Selections expand on hand hover. A steady hold confirms — the animated circle stroke filling to 100% is the visual confirmation cue.</p>
+                <p style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.58rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: C.muted, margin: 0, flexShrink: 0 }}>Onboarding Screen 02 · Topic Selection</p>
+                <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.9rem', color: C.mid, lineHeight: 1.6, margin: 0 }}>Selections expand on hand hover. A steady hold confirms — the animated circle stroke filling to 100% is the visual confirmation cue.</p>
               </div>
             </NeuCard>
           </Reveal>
@@ -1172,58 +1171,91 @@ export default function GetSetGlobe() {
                   <div key={step} style={{ display: 'flex', alignItems: 'center', gap: '10px', flex: 1, minWidth: '130px' }}>
                     <div style={{ width: 26, height: 26, borderRadius: '50%', background: C.accentDim, border: `1px solid ${C.accentBorder}`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, color: C.ink }}>{icon}</div>
                     <div>
-                      <p style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.48rem', color: C.muted, letterSpacing: '0.1em', margin: 0 }}>STEP {step}</p>
-                      <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.76rem', color: C.mid, margin: 0 }}>{action}</p>
+                      <p style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.58rem', color: C.muted, letterSpacing: '0.1em', margin: 0 }}>STEP {step}</p>
+                      <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.9rem', color: C.mid, margin: 0 }}>{action}</p>
                     </div>
                   </div>
                 ))}
               </div>
             </NeuCard>
           </Reveal>
+
+          <Reveal><div style={{ marginTop: '3rem' }}><Label>Final Output</Label></div></Reveal>
+          <Reveal delay={0.1}>
+            <div style={{ marginTop: '1.5rem', borderRadius: '16px', overflow: 'hidden', aspectRatio: '16/9', background: '#000' }}>
+              <iframe
+                src="https://www.youtube.com/embed/AiC5kRMcveA"
+                title="Get Set Globe — Simulation"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowFullScreen
+                style={{ width: '100%', height: '100%', border: 'none', display: 'block' }}
+              />
+            </div>
+          </Reveal>
+
+          <Reveal delay={0.12}>
+            <NeuCard style={{ padding: 0, overflow: 'hidden', marginTop: '2.5rem' }}>
+              <div style={{ padding: '1rem 1.5rem', borderBottom: `1px solid ${C.border}` }}>
+                <Label>Showcase</Label>
+              </div>
+              <img src="/gsg-showcase.png" alt="Get Set Globe — Showcase" loading="lazy" decoding="async" style={{ width: '100%', display: 'block' }} />
+            </NeuCard>
+          </Reveal>
         </Wrap>
       </section>
 
-      {/* ── REFLECTIONS (green) ── */}
-      <section id="reflections" style={{ ...PAD, background: C.page }}>
+      {/* ── REFLECTIONS ── */}
+      <section id="reflections" style={{ background: 'linear-gradient(145deg, #020d06 0%, #041a0c 40%, #071f0f 70%, #0a2714 100%)', ...PAD }}>
         <Wrap>
           <Reveal>
-            <SectionTag>09 — Reflections</SectionTag>
-            <h2 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: 'clamp(1.75rem,3.5vw,2.75rem)', letterSpacing: '-0.02em', color: C.ink, margin: '0 0 1.25rem', lineHeight: 1.2 }}>
-              What stayed with me
-            </h2>
+            <span style={{
+              fontFamily: "'Space Mono', monospace",
+              fontSize: '0.58rem', letterSpacing: '0.18em', textTransform: 'uppercase',
+              color: C.darkMuted, display: 'block', marginBottom: '1.25rem',
+            }}>My Takeaway</span>
           </Reveal>
-          <Reveal delay={0.08}>
-            <div style={{ display: 'inline-flex', alignItems: 'center', gap: '12px', padding: '8px 18px', border: `1px solid ${C.border}`, borderRadius: '100px', background: C.surface, marginBottom: 'clamp(2.5rem,5vw,4rem)' }}>
-              <span style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.54rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: C.muted }}>Presented at</span>
-              <span style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: '0.875rem', color: C.ink }}>SAP Impulse Showcase 2025</span>
-            </div>
+          <Reveal delay={0.1}>
+            <h2 style={{
+              fontFamily: "'Syne', sans-serif", fontWeight: 500,
+              fontSize: 'clamp(1.75rem,3.5vw,2.75rem)', color: C.darkInk,
+              letterSpacing: '-0.02em', marginBottom: 'clamp(2rem,4vw,3.5rem)',
+            }}>What stayed with me</h2>
           </Reveal>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '1.25rem', marginBottom: 'clamp(4rem,8vw,6rem)' }}>
+          <StaggerGrid style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: 'clamp(3rem,5vw,5rem)' }}>
             {[
-              { n: '01', t: 'Curiosity > Information',       b: "This project confirmed something we suspected: the moment a child is genuinely curious, everything else becomes easier. No amount of explanation replaces the feeling of encountering something surprising." },
-              { n: '02', t: 'Intuitive gestures feel human', b: "The gestures that worked were the ones nobody had to teach. When an interaction matches how the body already wants to move, it disappears into the experience." },
-              { n: '03', t: 'Learning is embodied',          b: "The most memorable moments in the prototype were physical ones: the peel, the collision, stepping back to watch Pangea form. The body remembers what the eye alone forgets." },
-              { n: '04', t: 'Evoke wonder',                  b: "The question that changed our design decisions wasn't \"will they understand this?\" but \"will they feel it?\" Those are different goals, and the second one is harder." },
-            ].map(({ n, t, b }, i) => (
-              <Reveal key={n} delay={i * 0.08}>
-                <NeuCard style={{ position: 'relative', overflow: 'hidden', padding: 'clamp(1.5rem,3vw,2rem)', background: i % 2 === 1 ? C.cardAlt : C.card }}>
-                  <div style={{ position: 'absolute', top: '-10px', right: '10px', fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: 'clamp(5rem,9vw,8rem)', color: 'rgba(0,0,0,0.04)', lineHeight: 1, pointerEvents: 'none', userSelect: 'none' }}>{n}</div>
-                  <div style={{ position: 'relative' }}>
-                    <p style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: 'clamp(0.95rem,1.5vw,1.1rem)', color: C.ink, margin: '0 0 10px', lineHeight: 1.25 }}>{t}</p>
-                    <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.875rem', color: C.mid, lineHeight: 1.75, margin: 0 }}>{b}</p>
-                  </div>
-                </NeuCard>
-              </Reveal>
+              { n: '01', text: '"The moment a child is genuinely curious, everything else becomes easier. No amount of explanation replaces the feeling of encountering something surprising."' },
+              { n: '02', text: '"The gestures that worked were the ones nobody had to teach. When an interaction matches how the body already wants to move, it disappears into the experience."' },
+              { n: '03', text: '"The most memorable moments were physical: the peel, the collision, stepping back to watch Pangea form. The body remembers what the eye alone forgets."' },
+              { n: '04', text: '"The question that changed our design decisions wasn\'t will they understand this? — but will they feel it? Those are different goals, and the second one is harder."' },
+            ].map(r => (
+              <StaggerItem key={r.n}>
+                <div style={{
+                  background: 'rgba(255,255,255,0.07)',
+                  border: '1px solid rgba(255,255,255,0.1)',
+                  borderRadius: '14px',
+                  padding: '2.25rem',
+                  height: '100%',
+                }}>
+                  <div style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.58rem', letterSpacing: '0.22em', color: C.darkMuted, marginBottom: '1.25rem' }}>{r.n}</div>
+                  <p style={{ fontFamily: "'Lora', serif", fontSize: '0.9rem', color: C.darkInk, lineHeight: 1.65, margin: 0 }}>{r.text}</p>
+                </div>
+              </StaggerItem>
             ))}
-          </div>
+          </StaggerGrid>
 
-          <Reveal delay={0.3}>
-            <div style={{ borderTop: `1px solid ${C.border}`, paddingTop: 'clamp(3rem,6vw,5rem)' }}>
-              <p style={{ fontFamily: "'EB Garamond', serif", fontStyle: 'italic', fontSize: 'clamp(1.8rem,3.5vw,3.2rem)', color: C.ink, lineHeight: 1.25, maxWidth: '800px', margin: 0 }}>
-                "The goal was never to explain tectonic plates. It was to make children feel the Earth move."
-              </p>
-            </div>
+          <Reveal delay={0.2}>
+            <p style={{
+              fontFamily: "'Lora', serif",
+              fontSize: 'clamp(1.1rem,2vw,1.35rem)',
+              color: C.darkMid,
+              maxWidth: 560,
+              lineHeight: 1.75,
+              margin: '0 auto',
+              textAlign: 'center',
+            }}>
+              The goal was never to explain tectonic plates. It was to make children feel the Earth move. That distinction, between understanding and feeling, shaped every design decision we made.
+            </p>
           </Reveal>
         </Wrap>
       </section>
