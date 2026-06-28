@@ -19,14 +19,14 @@ const Dokitti      = lazy(() => import('./Dokitti.jsx'))
 const Staple       = lazy(() => import('./Staple.jsx'))
 
 const PROJECTS = [
-  { id:1, name:'Study Buddy',    desc:'Habit-building for Indian students who study hard but retain little.', color:'from-[#061528] via-[#0f2d52] to-[#1b4a8a]', thumb:'/thumb-studybuddy.svg', thumbOverlay:'/thumb-studybuddy.png', slug:'/work/study-buddy',  filterKeys:['ux','system']  },
-  { id:2, name:'Get Set Globe',  desc:'Earth science you feel, not just memorise.', color:'from-[#050f08] via-[#0b2e16] to-[#135728]', thumb:'/thumb-getsetglobe.svg', thumbOverlay:'/thumb-gsg.png', slug:'/work/get-set-globe', filterKeys:['ux']          },
-  { id:3, name:'Skippr',         desc:'A clip-on self-checkout for every cart. Skip the queue, keep the flow.', color:'from-[#020d0f] via-[#043d47] to-[#0b7c8c]', thumb:'/thumb-skippr.svg', thumbOverlay:'/thumb-skippr.png', slug:'/work/skippr', filterKeys:['ux'] },
-  { id:4, name:'Hanakasu',       desc:'Understanding financial literacy and scam resilience amongst semi-literate users.', color:'from-[#040409] via-[#0e0e30] to-[#1a1060]', thumb:'/thumb-hanakasu.svg', thumbOverlay:'/thumb-hanakasu.png', slug:'/work/finance',      filterKeys:['research']     },
-  { id:5, name:'Aadhaar Vihin',  desc:'Designing for the urgency of needing identity proof when your Aadhaar card is not with you.', color:'from-[#0A1E1E] via-[#075959] to-[#0D7878]', thumb:'/thumb-aadhaar.svg',  slug:'/work/aadhaar',      filterKeys:['research']     },
-  { id:6, name:'CloutCart',      desc:'Vibe-led matchmaking for brands and creators.', color:'from-[#1A0A2E] via-[#3B0764] to-[#6D28D9]', thumb:'/thumb-cloutcart.svg',  slug:'/work/cloutcart',    filterKeys:['system']       },
-  { id:7, name:'Dokitti',        desc:'A pet care brand built on personality and play.', color:'from-[#130410] via-[#3d0b2e] to-[#8c1b66]', thumb:'/thumb-dokitti.svg',  slug:'/work/dokitti', filterKeys:['branding']    },
-  { id:8, name:'Staple',         desc:'Visual identity for a restaurant at Greater Kailash, New Delhi.', color:'from-[#0f0a04] via-[#3d2008] to-[#8c5414]', thumb:'/thumb-staple.svg', slug:'/work/staple', filterKeys:['branding']    },
+  { id:1, name:'Study Buddy',    desc:'Habit-building for Indian students who study hard but retain little.', color:'from-[#061528] via-[#0f2d52] to-[#1b4a8a]', thumb:'/thumb-studybuddy.svg', thumbOverlay:'/thumb-studybuddy.png', slug:'/work/study-buddy',  filterKeys:['ux','system'],  tags:['Systems Thinking','Design Research','Education in India','UX Design','UI Design','Design Process'] },
+  { id:2, name:'Get Set Globe',  desc:'Earth science you feel, not just memorise.', color:'from-[#050f08] via-[#0b2e16] to-[#135728]', thumb:'/thumb-getsetglobe.svg', thumbOverlay:'/thumb-gsg.png', slug:'/work/get-set-globe', filterKeys:['ux'],          tags:['Multi-modal Interaction','Experiential','Engagement Based Learning','Delightful Learning Experience'] },
+  { id:3, name:'Skippr',         desc:'A clip-on self-checkout for every cart. Skip the queue, keep the flow.', color:'from-[#020d0f] via-[#043d47] to-[#0b7c8c]', thumb:'/thumb-skippr.svg', thumbOverlay:'/thumb-skippr.png', slug:'/work/skippr', filterKeys:['ux'], tags:['Multi-modal Interactions','Retail','Interaction Design','UX Design'] },
+  { id:4, name:'Hanakasu',       desc:'Understanding financial literacy and scam resilience amongst semi-literate users.', color:'from-[#040409] via-[#0e0e30] to-[#1a1060]', thumb:'/thumb-hanakasu.svg', thumbOverlay:'/thumb-hanakasu.png', slug:'/work/finance',      filterKeys:['research'],     tags:['Financial Literacy','Field Study','Design Research','Local'] },
+  { id:5, name:'Aadhaar Vihin',  desc:'Designing for the urgency of needing identity proof when your Aadhaar card is not with you.', color:'from-[#0A1E1E] via-[#075959] to-[#0D7878]', thumb:'/thumb-aadhaar.svg', thumbOverlay:'/thumb-aadhaar.png', slug:'/work/aadhaar',      filterKeys:['research'],     tags:['Design Research','Insights','Urgency','Aadhaar'] },
+  { id:6, name:'CloutCart',      desc:'Vibe-led matchmaking for brands and creators.', color:'from-[#1A0A2E] via-[#3B0764] to-[#6D28D9]', thumb:'/thumb-cloutcart.svg', thumbOverlay:'/thumb-cloutcart.png', slug:'/work/cloutcart',    filterKeys:['system'],       tags:['Service Design','Orange Economy','System Opportunity'] },
+  { id:7, name:'Dokitti',        desc:'A pet care brand built on personality and play.', color:'from-[#130410] via-[#3d0b2e] to-[#8c1b66]', thumb:'/thumb-dokitti.svg', thumbOverlay:'/thumb-dokitti.png', slug:'/work/dokitti', filterKeys:['branding'],    tags:['Branding','Logo','Identity Design','Pet Care'] },
+  { id:8, name:'Staple',         desc:'Visual identity for a restaurant at Greater Kailash, New Delhi.', color:'from-[#0f0a04] via-[#3d2008] to-[#8c5414]', thumb:'/thumb-staple.svg', thumbOverlay:'/thumb-staple.png', slug:'/work/staple', filterKeys:['branding'],    tags:['Branding','Gastronomy','Typesetting','Ambience','Visual Development'] },
 ]
 
 const FILTER_TABS = [
@@ -40,10 +40,11 @@ const FILTER_TABS = [
 
 const VITALS = [
   { stat:'06+',  label:'Years in Design',         desc:'Academic + Professional\njourney' },
-  { stat:'80%',  label:'Time in Design Thinking', desc:'Discussions, sticky notes, mind-maps and more' },
-  { stat:'20%',  label:'Time in Making',          desc:'Music, prompting and shifting\npixels' },
-  { stat:'100%', label:'Zeal',                    desc:'Trying my best (guaranteed)\n:)' },
+  { stat:'80%',  label:'Time in Design Thinking', desc:'Sticky notes, thinking, overthinking, & the occasional epiphany' },
+  { stat:'20%',  label:'Time in Making',          desc:'Moving pixels around & prompting' },
+  { stat:'100%', label:'Zeal',                    desc:'Commitment to craft (with occasional existential crises)' },
 ]
+const VITAL_COLORS = ['#16232A', '#FF5B04', '#075056', '#E4EEF0']
 
 // Brand logos — whitened via CSS filter brightness(0) invert(1)
 // hasBg: true = PNG with white/light bg, needs mix-blend-mode:screen to kill it
@@ -109,6 +110,12 @@ function TiltCard({ children, className = '', style = {} }) {
 function VideoIntro({ onComplete }) {
   const videoRef = useRef(null)
   const [fading, setFading] = useState(false)
+  const [isMobile, setIsMobile] = useState(() => typeof window !== 'undefined' && window.innerWidth < 768)
+  useEffect(() => {
+    const h = () => setIsMobile(window.innerWidth < 768)
+    window.addEventListener('resize', h, { passive: true })
+    return () => window.removeEventListener('resize', h)
+  }, [])
 
   useEffect(() => {
     const vid = videoRef.current
@@ -136,15 +143,16 @@ function VideoIntro({ onComplete }) {
       }}
       onTransitionEnd={() => { if (fading) onComplete?.() }}
     >
-      {/* Video at 75% size, centred — black bg fills the rest */}
+      {/* Video: 92% on mobile, 75% centred box on desktop */}
       <div style={{
         position: 'absolute', top: '50%', left: '50%',
         transform: 'translate(-50%, -50%)',
-        width: '75%', height: '75%', overflow: 'hidden',
+        width: isMobile ? '100%' : '75%', height: isMobile ? '100%' : '75%',
+        overflow: 'hidden',
       }}>
         <video ref={videoRef} autoPlay muted playsInline preload="metadata"
-          style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-          src="/headervideo.mp4" />
+          style={{ width: '100%', height: '100%', objectFit: isMobile ? 'contain' : 'cover' }}
+          src={isMobile ? '/loadingscreen_mobile.mp4' : '/headervideo.mp4'} />
         {/* Hue overlay — cycles teal ↔ orange every 1.5s */}
         <div className="hue-cycle absolute inset-0" style={{
           mixBlendMode: 'hue',
@@ -414,37 +422,42 @@ function Hero() {
         </motion.div>
 
         {/* Headline */}
-        <motion.div
-          initial={{ opacity:0, y:22 }}
-          animate={{ opacity:1, y:0 }}
-          transition={{ duration:0.80, delay:0.40, ease:EASE }}
-          style={{ display:'flex', flexDirection:'column', alignItems:'flex-start' }}
-        >
-          {/* "creating what" — Syne medium */}
-          <span style={{
-            fontFamily:    "'Syne', sans-serif",
-            fontWeight:    500,
-            fontSize:      'clamp(22px, 3.82vw, 55.08px)',
-            letterSpacing: '-0.01em',
-            lineHeight:    0.82,
-            color:         '#edf1df',
-            display:       'block',
-          }}>
+        <div style={{ display:'flex', flexDirection:'column', alignItems:'flex-start' }}>
+          {/* "creating what" — smoke dissolve in */}
+          <motion.span
+            initial={{ opacity:0, filter:'blur(28px)', y:10 }}
+            animate={{ opacity:1, filter:'blur(0px)',  y:0  }}
+            transition={{ duration:1.5, delay:0.38, ease:[0.16,1,0.3,1] }}
+            style={{
+              fontFamily:    "'Syne', sans-serif",
+              fontWeight:    500,
+              fontSize:      'clamp(34px, 3.82vw, 55.08px)',
+              letterSpacing: '-0.01em',
+              lineHeight:    0.82,
+              color:         '#edf1df',
+              display:       'block',
+            }}
+          >
             creating what
-          </span>
-          {/* "endures" — Halo Grotesk platinum stroke */}
-          <span style={{
-            fontFamily:          "'Halo Grotesk', sans-serif",
-            fontWeight:          400,
-            fontSize:            'clamp(38px, 6.73vw, 96.93px)',
-            letterSpacing:       '0',
-            lineHeight:          1,
-            display:             'block',
-            color:               '#edf1df',
-          }}>
+          </motion.span>
+          {/* "endures" — trails a beat later, heavier smoke */}
+          <motion.span
+            initial={{ opacity:0, filter:'blur(36px)', y:16 }}
+            animate={{ opacity:1, filter:'blur(0px)',  y:0  }}
+            transition={{ duration:1.8, delay:0.62, ease:[0.16,1,0.3,1] }}
+            style={{
+              fontFamily:    "'Halo Grotesk', sans-serif",
+              fontWeight:    400,
+              fontSize:      'clamp(58px, 6.73vw, 96.93px)',
+              letterSpacing: '0',
+              lineHeight:    1,
+              display:       'block',
+              color:         '#edf1df',
+            }}
+          >
             endures
-          </span>
-        </motion.div>
+          </motion.span>
+        </div>
 
         {/* Subtext */}
         <motion.p
@@ -461,7 +474,7 @@ function Hero() {
             letterSpacing: '0.01em',
           }}
         >
-          Hi I'm <span style={{ fontWeight: 600, color: '#ffffff' }}>Zeus</span><br /><em style={{ fontFamily:'"Lora", Georgia, serif', fontStyle:'italic', fontWeight:400 }}>A hearty welcome here!</em>
+          Hello, <span style={{ color:'#ffffff' }}>Zeus</span> here!<br /><em style={{ fontFamily:'"Lora", Georgia, serif', fontStyle:'italic', fontWeight:400 }}>A hearty welcome</em>
         </motion.p>
 
         {/* CTA */}
@@ -485,14 +498,15 @@ function Hero() {
 function ProjectCard({ project, delay = 0 }) {
   const ref=useRef(null), inView=useInView(ref,{ once:true, amount:0.06 })
   const mockupY=useMotionValue(0), sMockupY=useSpring(mockupY, SPRING_STIFF)
+  const [rimHover, setRimHover] = useState(false)
   const inner = (
     <TiltCard className="h-full flex flex-col rounded-[18px] overflow-hidden cursor-pointer border border-black/[0.07]" style={{ background:'#EAEAEA' }}>
-      <div className="relative overflow-hidden flex-shrink-0" style={{ aspectRatio:'2/3', background: project.thumbBg || undefined }}>
+      <div className="project-card-img relative overflow-hidden flex-shrink-0" style={{ aspectRatio:'2/3', background: project.thumbBg || undefined }}>
         {project.thumb ? (
           <>
             <img src={project.thumb} alt={project.name} loading="lazy" decoding="async"
               className="absolute inset-0 w-full h-full transition-transform duration-700 group-hover:scale-[1.03]"
-              style={{ objectFit: project.thumbBg ? 'contain' : 'cover', objectPosition: project.thumbPos || '50% 50%', filter: project.thumbFilter || (project.thumbOverlay ? 'saturate(0.45)' : undefined) }} />
+              style={{ objectFit: project.thumbBg ? 'contain' : 'cover', objectPosition: project.thumbPos || '50% 50%', filter: project.thumbFilter || (project.thumbOverlay ? 'saturate(0.78) brightness(1.08)' : undefined) }} />
             {project.thumbOverlay && (
               <img src={project.thumbOverlay} alt="" aria-hidden="true" loading="lazy" decoding="async"
                 className="absolute bottom-0 left-0 w-full transition-transform duration-700 group-hover:scale-[1.03]"
@@ -531,6 +545,17 @@ function ProjectCard({ project, delay = 0 }) {
             </motion.div>}
           </>
         )}
+        {project.tags && project.tags.length > 0 && (
+          <div className="absolute inset-0 flex flex-col justify-start p-3 gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" style={{ background:'rgba(0,0,0,0.52)', zIndex:10 }}>
+            <div className="flex flex-wrap gap-1.5 pt-1">
+              {project.tags.map(tag => (
+                <span key={tag} className="px-2.5 py-[5px] rounded-full text-white font-medium tracking-wide" style={{ fontSize:'0.62rem', background:'rgba(255,255,255,0.14)', backdropFilter:'blur(6px)', border:'1px solid rgba(255,255,255,0.22)' }}>
+                  {tag}
+                </span>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
       <div className="flex-1 p-[clamp(1rem,2vw,1.375rem)] flex flex-col">
         <div className="flex items-start justify-between gap-3 mb-2.5">
@@ -543,11 +568,40 @@ function ProjectCard({ project, delay = 0 }) {
         </div>
         <p className="font-sans leading-[1.7] mt-auto" style={{ fontSize:'clamp(0.72rem,0.9vw,0.8rem)', color:'#7a7a7a' }}>{project.desc}</p>
       </div>
+      {/* Liquid metal rim — fades in on hover */}
+      <span aria-hidden="true" style={{
+        position:             'absolute',
+        inset:                0,
+        borderRadius:         '18px',
+        padding:              '1.5px',
+        background:           `conic-gradient(from var(--lm-angle),
+          rgba(255,255,255,0.95) 0deg,
+          rgba(180,188,200,0.80) 35deg,
+          rgba(100,110,125,0.60) 70deg,
+          rgba(210,215,225,0.85) 105deg,
+          rgba(255,255,255,0.98) 140deg,
+          rgba(160,168,180,0.70) 175deg,
+          rgba(80,88,100,0.45)   210deg,
+          rgba(220,224,232,0.80) 250deg,
+          rgba(255,255,255,0.90) 290deg,
+          rgba(190,196,208,0.65) 325deg,
+          rgba(255,255,255,0.95) 360deg
+        )`,
+        animation:            'liquid-metal 5s linear infinite',
+        WebkitMask:           'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
+        WebkitMaskComposite:  'xor',
+        maskComposite:        'exclude',
+        pointerEvents:        'none',
+        zIndex:               20,
+        opacity:              rimHover ? 1 : 0,
+        transition:           'opacity 0.28s ease',
+      }} />
     </TiltCard>
   )
   return (
     <motion.div ref={ref} className="group relative h-full"
-      initial={{ opacity:0, y:28 }} animate={inView?{ opacity:1, y:0 }:{}} transition={{ duration:0.65, ease:EASE, delay }}>
+      initial={{ opacity:0, y:28 }} animate={inView?{ opacity:1, y:0 }:{}} transition={{ duration:0.65, ease:EASE, delay }}
+      onMouseEnter={() => setRimHover(true)} onMouseLeave={() => setRimHover(false)}>
       {project.slug
         ? <Link to={project.slug} className="block h-full">{inner}</Link>
         : project.pitch
@@ -751,7 +805,7 @@ function Work() {
         <div className="flex items-end justify-between mb-[clamp(2rem,4vw,3rem)] gap-6 flex-wrap">
           <div>
             <Reveal>
-              <span className="flex items-center gap-2.5 font-mono text-[0.625rem] tracking-[0.16em] uppercase mb-5" style={{ color:'#C48A1A' }}>
+              <span className="flex items-center gap-2.5 font-mono text-[0.625rem] tracking-[0.16em] uppercase mb-5" style={{ color:'#5AAFB8' }}>
                 <span className="inline-block w-4 h-[1px] bg-black/18" />Work
               </span>
             </Reveal>
@@ -814,47 +868,123 @@ function Work() {
   )
 }
 
-// ─── Vital Stat Cell — counter animation ──────────────
+// ─── Vital Stat Cell — Framer-style pop-out from overflow container ──
 function VitalStatCell({ v, index }) {
-  const ref=useRef(null), inView=useInView(ref,{ once:true, amount:0.3 })
+  const ref      = useRef(null)
+  const inView   = useInView(ref, { once: false, amount: 0.2 })
+  const isMobile = typeof window !== 'undefined' && window.innerWidth < 768
   const [display, setDisplay] = useState('0')
+
   useEffect(() => {
-    if (!inView) return
-    const match=v.stat.match(/^(\d+)(.*)$/)
-    if (!match){ setDisplay(v.stat); return }
-    const numStr=match[1],target=parseInt(numStr,10),suffix=match[2],duration=2200,delay=index*180
-    const pad=numStr.length>1&&numStr.startsWith('0')
-    let startTime=null,rafId
-    const animate=ts=>{ if(!startTime)startTime=ts; const e=ts-startTime-delay; if(e<0){rafId=requestAnimationFrame(animate);return}; const p=Math.min(e/duration,1),ea=1-Math.pow(1-p,3); const cur=Math.round(ea*target); setDisplay((pad?String(cur).padStart(numStr.length,'0'):String(cur))+suffix); if(p<1)rafId=requestAnimationFrame(animate);else setDisplay(v.stat) }
-    rafId=requestAnimationFrame(animate)
-    return ()=>cancelAnimationFrame(rafId)
+    if (!inView) { setDisplay('0'); return }
+    const match = v.stat.match(/^(\d+)(.*)$/)
+    if (!match) { setDisplay(v.stat); return }
+    const numStr=match[1], target=parseInt(numStr,10), suffix=match[2], duration=2200, delay=index*180
+    const pad = numStr.length>1 && numStr.startsWith('0')
+    let startTime=null, rafId
+    const animate = ts => { if(!startTime)startTime=ts; const e=ts-startTime-delay; if(e<0){rafId=requestAnimationFrame(animate);return}; const p=Math.min(e/duration,1),ea=1-Math.pow(1-p,3); const cur=Math.round(ea*target); setDisplay((pad?String(cur).padStart(numStr.length,'0'):String(cur))+suffix); if(p<1)rafId=requestAnimationFrame(animate);else setDisplay(v.stat) }
+    rafId = requestAnimationFrame(animate)
+    return () => cancelAnimationFrame(rafId)
   }, [inView, v.stat, index])
+
+  const color = VITAL_COLORS[index]
+
   return (
-    <div ref={ref} style={{
-      position:        'relative',
-      background:      '#000000',
-      borderRadius:    '16px',
-      border:          '1px solid rgba(255,255,255,0.06)',
+    /* Outer container: overflow hidden so card is invisible until it springs up */
+    <div ref={ref} className="vital-stat-cell" style={{
       overflow:        'hidden',
       display:         'flex',
-      flexDirection:   'column',
-      alignItems:      'center',
       justifyContent:  'center',
-      textAlign:       'center',
-      padding:         'clamp(1.75rem,3vw,2.5rem) clamp(1rem,2vw,1.5rem)',
+      alignItems:      'center',
+      position:        'relative',
+      paddingTop:      20,
+      height:          isMobile ? 250 : 320,
     }}>
-      <p className="font-sans font-semibold leading-none tracking-[-0.03em]"
+      {/* Colored splash — sits at bottom, card pops up from it */}
+      <div style={{
+        position:     'absolute',
+        bottom:       0,
+        left:         '4%',
+        right:        '4%',
+        height:       '52%',
+        background:   color,
+        borderRadius: '20px',
+      }} />
+
+      {/* Card — springs up from fully hidden to y:50 */}
+      <motion.div
+        animate={inView ? 'onscreen' : 'offscreen'}
+        variants={{
+          offscreen: { y: isMobile ? 250 : 300 },
+          onscreen:  { y: isMobile ? 40 : 50, rotate: -10,
+            transition: { type: 'spring', bounce: 0.35, duration: 1.3, delay: index * 0.09 }
+          },
+        }}
         style={{
-          position:              'relative', zIndex: 4,
-          fontSize:              'clamp(2.2rem,4vw,3.5rem)',
-          marginBottom:          '0.4rem',
-          color:                 '#edf1df',
-        }}>{display}</p>
-      <p className="font-display italic"
-        style={{ position:'relative', zIndex:4, fontSize:'clamp(0.875rem,1.3vw,1.1rem)', lineHeight:1.3, marginBottom:'0.75rem', color:'rgba(255,91,4,0.62)' }}>{v.label}</p>
-      <div style={{ width:'28px', height:'1px', background:'#195D5F', margin:'0 auto 0.75rem', position:'relative', zIndex:4 }} />
-      <p className="font-sans text-ink/35"
-        style={{ position:'relative', zIndex:4, fontSize:'clamp(0.72rem,0.9vw,0.85rem)', lineHeight:1.55, whiteSpace:'pre-line' }}>{v.desc}</p>
+          position:             'relative',
+          width:                '84%',
+          height:               isMobile ? 190 : 240,
+          background:           '#080808',
+          backdropFilter:       'blur(16px)',
+          WebkitBackdropFilter: 'blur(16px)',
+          borderRadius:         '20px',
+          border:               '1px solid rgba(255,255,255,0.04)',
+          display:              'flex',
+          flexDirection:        'column',
+          alignItems:           'center',
+          justifyContent:       'center',
+          textAlign:            'center',
+          padding:              isMobile ? '1rem 0.75rem' : 'clamp(1.5rem,2.5vw,2rem) clamp(1rem,1.8vw,1.5rem)',
+          transformOrigin:      '10% 60%',
+          overflow:             'hidden',
+          boxShadow:            '0 0 0 1px rgba(0,0,0,0.5), 0 20px 60px rgba(0,0,0,0.7), 0 4px 12px rgba(0,0,0,0.5)',
+          flexShrink:           0,
+        }}
+      >
+        {/* Corner rim highlight — fades diagonally from top-left */}
+        <div style={{
+          position:        'absolute', inset:0, borderRadius:'20px',
+          border:          '1px solid transparent',
+          borderTop:       '1px solid rgba(255,255,255,0.55)',
+          borderLeft:      '1px solid rgba(255,255,255,0.28)',
+          WebkitMaskImage: 'linear-gradient(135deg, transparent 0%, black 10%, black 24%, transparent 58%)',
+          maskImage:       'linear-gradient(135deg, transparent 0%, black 10%, black 24%, transparent 58%)',
+          pointerEvents:   'none', zIndex:5,
+        }} />
+        {/* Bottom-right face shadow */}
+        <div style={{
+          position:'absolute', bottom:'-10%', right:'-10%', width:'65%', height:'60%',
+          background:'radial-gradient(ellipse at 60% 60%, rgba(0,0,0,0.88) 0%, rgba(0,0,0,0.50) 45%, transparent 72%)',
+          borderRadius:'50%', pointerEvents:'none', zIndex:3,
+        }} />
+        {/* Specular highlight — top-left glow */}
+        <div style={{
+          position:'absolute', top:'-30%', left:'-15%', width:'55%', height:'50%',
+          background:'radial-gradient(ellipse at 40% 40%, rgba(255,255,255,0.09) 0%, rgba(255,255,255,0.04) 35%, transparent 65%)',
+          borderRadius:'50%', transform:'rotate(-10deg)', pointerEvents:'none', filter:'blur(2px)', zIndex:3,
+        }} />
+        {/* Colored glow from splash bleed */}
+        <div style={{
+          position:'absolute', bottom:'-20%', left:'50%', transform:'translateX(-50%)',
+          width:'100%', height:'60%',
+          background:`radial-gradient(ellipse at 50% 100%, ${color}35 0%, transparent 68%)`,
+          pointerEvents:'none', zIndex:2,
+        }} />
+
+        <p className="font-sans font-semibold leading-none tracking-[-0.03em]"
+          style={{ position:'relative', zIndex:4, fontSize: isMobile ? 'clamp(2.1rem,9vw,2.7rem)' : 'clamp(2.2rem,3.8vw,3.2rem)', marginBottom:'0.4rem', color:'#edf1df' }}>
+          {display}
+        </p>
+        <p className="font-display italic"
+          style={{ position:'relative', zIndex:4, fontSize: isMobile ? '0.72rem' : 'clamp(0.8rem,1.2vw,1rem)', lineHeight:1.3, marginBottom:'0.65rem', color:'rgba(200,90,45,0.55)' }}>
+          {v.label}
+        </p>
+        <div style={{ width:'24px', height:'1px', background:'#195D5F', margin:'0 auto 0.65rem', position:'relative', zIndex:4 }} />
+        <p className="font-sans"
+          style={{ position:'relative', zIndex:4, fontSize: isMobile ? '0.64rem' : 'clamp(0.65rem,0.85vw,0.78rem)', lineHeight:1.55, whiteSpace:'pre-line', color:'rgba(237,241,223,0.38)' }}>
+          {v.desc}
+        </p>
+      </motion.div>
     </div>
   )
 }
@@ -863,11 +993,23 @@ function VitalStatCell({ v, index }) {
 function VitalSigns() {
   return (
     <section style={{ background:'#000000' }} className="py-[clamp(3.5rem,5.5vw,5rem)] border-t border-white/[0.04] relative overflow-hidden">
-      <div className="max-w-[1200px] mx-auto px-[clamp(1.5rem,5vw,3.5rem)]">
+      {/* Grid background — fades at top and bottom */}
+      <div aria-hidden="true" style={{
+        position: 'absolute', inset: 0,
+        backgroundImage: [
+          'linear-gradient(rgba(255,255,255,0.07) 1px, transparent 1px)',
+          'linear-gradient(90deg, rgba(255,255,255,0.07) 1px, transparent 1px)',
+        ].join(', '),
+        backgroundSize: '44px 44px',
+        WebkitMaskImage: 'linear-gradient(to bottom, transparent 0%, black 22%, black 78%, transparent 100%)',
+        maskImage:       'linear-gradient(to bottom, transparent 0%, black 22%, black 78%, transparent 100%)',
+        pointerEvents: 'none', zIndex: 0,
+      }} />
+      <div className="max-w-[1200px] mx-auto px-[clamp(1.5rem,5vw,3.5rem)] relative z-[1]">
         <div className="mb-[clamp(3rem,5vw,4rem)]">
           <Reveal>
-            <span className="flex items-center gap-2.5 font-mono text-[0.625rem] tracking-[0.16em] uppercase mb-5" style={{ color:'#C48A1A' }}>
-              <span className="inline-block w-4 h-[1px] bg-ink/18" />(Not so) Vital Signs
+            <span className="flex items-center gap-2.5 font-mono text-[0.625rem] tracking-[0.16em] uppercase mb-5" style={{ color:'#5AAFB8' }}>
+              <span className="inline-block w-4 h-[1px] bg-ink/18" />The designer dissected
             </span>
           </Reveal>
           <h2 className="font-sans font-semibold text-ink tracking-[-0.04em] leading-[0.92]"
@@ -892,7 +1034,7 @@ function ProfessionalExposure() {
       <div className="max-w-[1200px] mx-auto px-[clamp(1.5rem,5vw,3.5rem)]">
         <div className="mb-[clamp(3.5rem,6vw,5rem)]">
           <Reveal>
-            <span className="flex items-center gap-2.5 font-mono text-[0.625rem] tracking-[0.16em] uppercase mb-5" style={{ color:'#C48A1A' }}>
+            <span className="flex items-center gap-2.5 font-mono text-[0.625rem] tracking-[0.16em] uppercase mb-5" style={{ color:'#5AAFB8' }}>
               <span className="inline-block w-4 h-[1px] bg-ink/18" />organisations
             </span>
           </Reveal>
@@ -907,12 +1049,12 @@ function ProfessionalExposure() {
           </Reveal>
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-5 md:gap-8">
           {BRANDS.map(({ id, name, src, label, year, hasBg, maxH, clipH, topAlign, nudgeUp }, i) => (
             <Reveal key={id} delay={i * 0.07}
               className={`flex flex-col items-center gap-4 p-[clamp(1rem,2vw,1.5rem)] cursor-default ${topAlign ? 'justify-start' : 'justify-center'}`}
             >
-              <div className="w-full flex items-center justify-center" style={{ height: topAlign ? 150 : undefined, minHeight: topAlign ? undefined : 56 }}>
+              <div className="w-full flex items-center justify-center" style={{ height: topAlign ? 'clamp(80px,16vw,150px)' : undefined, minHeight: topAlign ? undefined : 44 }}>
                 {clipH ? (
                   <div style={{ overflow:'hidden', height: clipH, display:'flex', alignItems:'center', justifyContent:'center', maxWidth:'85%' }}>
                     <img src={src} alt={name} loading="lazy" decoding="async"
@@ -930,11 +1072,11 @@ function ProfessionalExposure() {
                 )}
               </div>
               <div className="flex flex-col items-center gap-[6px]">
-                <span className="font-mono text-[0.52rem] tracking-[0.08em] uppercase text-ink/14 text-center leading-[1.5]"
-                  style={{ minHeight:'4.5em', display:'flex', alignItems:'flex-start', justifyContent:'center', flexDirection:'column' }}>
+                <span className="font-mono text-[0.52rem] tracking-[0.08em] uppercase text-center leading-[1.5]"
+                  style={{ minHeight:'4.5em', display:'flex', alignItems:'flex-start', justifyContent:'center', flexDirection:'column', color:'rgba(237,241,223,0.6)' }}>
                   {label.includes(', ') ? <>{label.slice(0, label.lastIndexOf(','))}<br />{label.slice(label.lastIndexOf(', ') + 2)}</> : label}
                 </span>
-                <span className="font-mono text-[0.52rem] tracking-[0.06em] text-ink/38">{year}</span>
+                <span className="font-mono text-[0.52rem] tracking-[0.06em]" style={{ color:'rgba(237,241,223,0.6)' }}>{year}</span>
               </div>
             </Reveal>
           ))}
@@ -1031,7 +1173,7 @@ function MarqueeGallery() {
       {/* Section header */}
       <div className="relative z-20 max-w-[1200px] mx-auto px-[clamp(1.5rem,5vw,3.5rem)] mb-[clamp(2.5rem,5vw,4rem)]">
         <Reveal>
-          <span className="flex items-center gap-2.5 font-mono text-[0.625rem] tracking-[0.16em] uppercase mb-5" style={{ color:'#C48A1A' }}>
+          <span className="flex items-center gap-2.5 font-mono text-[0.625rem] tracking-[0.16em] uppercase mb-5" style={{ color:'#5AAFB8' }}>
             <span className="inline-block w-4 h-[1px] bg-ink/18" />showcase of other projects
           </span>
         </Reveal>
@@ -1075,7 +1217,7 @@ function MarqueeGallery() {
         <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none" style={{ width:800,height:500,background:'radial-gradient(ellipse,rgba(255,91,4,0.13) 0%,transparent 62%)' }} />
         <div className="relative max-w-[1200px] mx-auto px-[clamp(1.5rem,5vw,3.5rem)]">
           <Reveal>
-            <span className="flex items-center justify-center gap-2.5 font-mono text-[0.625rem] tracking-[0.16em] uppercase mb-8" style={{ color:'#C48A1A' }}>
+            <span className="flex items-center justify-center gap-2.5 font-mono text-[0.625rem] tracking-[0.16em] uppercase mb-8" style={{ color:'#5AAFB8' }}>
               <span className="inline-block w-4 h-[1px] bg-ink/18" />Let's work together
             </span>
           </Reveal>
@@ -1131,7 +1273,7 @@ function Home() {
           <SectionExit><Hero /></SectionExit>
           <PersonalGallery />
           <WhatIDo />
-          <SectionExit><Work /></SectionExit>
+          <SectionExit rounded><Work /></SectionExit>
           <SectionExit><VitalSigns /></SectionExit>
           <SectionExit><ProfessionalExposure /></SectionExit>
           <MarqueeGallery />
@@ -1235,7 +1377,8 @@ function MobileBlock() {
 export default function App() {
   return (
     <>
-      <MobileBlock />
+      {/* MobileBlock disabled for local mobile development — re-enable before deploying if needed */}
+      {/* <MobileBlock /> */}
       <BrowserRouter>
         <ScrollToTop />
         <CookieBanner />

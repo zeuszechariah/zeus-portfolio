@@ -155,7 +155,7 @@ export function Reveal({ children, delay = 0, duration = 0.65, className = '' })
 const MotionLink = motion(Link)
 
 // ─── SectionExit — converge + fade as section scrolls off top ─
-export function SectionExit({ children }) {
+export function SectionExit({ children, rounded = false }) {
   const ref = useRef(null)
   const [isMobile, setIsMobile] = useState(() => typeof window !== 'undefined' && window.innerWidth < 768)
   useEffect(() => {
@@ -165,11 +165,18 @@ export function SectionExit({ children }) {
   }, [])
 
   const { scrollYProgress } = useScroll({ target: ref, offset: ['start start', 'end start'] })
-  const opacity = useTransform(scrollYProgress, [0.50, 0.85], [1, 0])
-  const scale   = useTransform(scrollYProgress, [0.50, 0.85], [1, 0.88])
+  const opacity      = useTransform(scrollYProgress, [0.50, 0.85], [1, 0])
+  const scale        = useTransform(scrollYProgress, [0.50, 0.85], [1, 0.88])
+  const borderRadius = useTransform(scrollYProgress, [0.50, 0.85], ['0px', '28px'])
 
   return (
-    <motion.div ref={ref} style={isMobile ? {} : { opacity, scale, transformOrigin: 'center center', willChange: 'transform, opacity' }}>
+    <motion.div ref={ref} style={isMobile ? {} : {
+      opacity,
+      scale,
+      transformOrigin: 'center center',
+      willChange: 'transform, opacity',
+      ...(rounded ? { borderRadius, overflow: 'hidden' } : {}),
+    }}>
       {children}
     </motion.div>
   )
@@ -393,14 +400,14 @@ export function CookieBanner() {
       {visible && (
         <motion.div
           className="fixed bottom-6 left-1/2 z-[9999] pointer-events-auto"
-          style={{ x: '-50%', willChange: 'transform, opacity', width: 'clamp(340px, 56vw, 680px)' }}
+          style={{ x: '-50%', willChange: 'transform, opacity', width: 'min(calc(100vw - 2rem), 680px)' }}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: 12, transition: { duration: 0.18, ease: EASE } }}
           transition={{ duration: 0.45, ease: EASE }}
         >
           <div
-            className="flex items-center justify-between gap-8 px-7 py-4 rounded-2xl"
+            className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-8 px-5 py-4 sm:px-7 rounded-2xl"
             style={{
               background: 'rgba(4,4,4,0.97)',
               backdropFilter: 'blur(32px) saturate(180%)',
@@ -409,15 +416,15 @@ export function CookieBanner() {
               boxShadow: '0 12px 48px rgba(0,0,0,0.65), 0 2px 0 rgba(255,255,255,0.04) inset',
             }}
           >
-            <p className="font-sans text-[0.8rem] text-ink/75 leading-[1.7]">
-              This site uses cookies to understand how visitors engage with the work.{' '}
+            <p className="font-sans text-[0.72rem] sm:text-[0.8rem] text-ink/75 leading-[1.7]">
+              This site uses cookies to understand how visitors engage<br />with the work.{' '}
               <a href="/privacy-policy"
                 className="text-ink/45 underline underline-offset-[3px] hover:text-ink/70 transition-colors duration-200">
                 Privacy policy
               </a>
             </p>
 
-            <div className="flex items-center gap-4 flex-shrink-0">
+            <div className="flex items-center gap-4 flex-shrink-0 self-end sm:self-auto">
               <button
                 onClick={() => respond(false)}
                 className="font-mono text-[0.65rem] tracking-[0.1em] uppercase text-ink/40 hover:text-ink/65 transition-colors duration-200 cursor-pointer active:scale-[0.97] transition-transform"

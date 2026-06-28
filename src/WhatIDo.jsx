@@ -1,8 +1,224 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 
 gsap.registerPlugin(ScrollTrigger)
+
+function useIsMobile() {
+  const [mobile, setMobile] = useState(() => typeof window !== 'undefined' && window.innerWidth < 768)
+  useEffect(() => {
+    const h = () => setMobile(window.innerWidth < 768)
+    window.addEventListener('resize', h, { passive: true })
+    return () => window.removeEventListener('resize', h)
+  }, [])
+  return mobile
+}
+
+// ─── Mobile landscape constants ───────────────────────
+// Cards are landscape (wide+short), stacked vertically
+const CW_LAND = 300   // landscape card width
+const CH_LAND = 190   // landscape card height (300 * 470/300 ≈ 190, maintaining aspect ratio)
+const STACK_H_LAND = 720
+
+const INIT_BR_LAND = ['20px 20px 0 0', '0', '0 0 20px 20px']
+
+const FAN_LAND = [
+  { x: 0, y: -28, rot: -5 },
+  { x: 0, y:   0, rot:  0 },
+  { x: 0, y:  28, rot:  5 },
+]
+
+function WhatIDoMobile() {
+  const sectionRef = useRef(null)
+
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+      gsap.set('.wid-m-strip', { scale: 1.05 })
+
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: sectionRef.current,
+          start:   'top top',
+          end:     '+=2200',
+          scrub:   1.8,
+          pin:     true,
+          anticipatePin: 1,
+        },
+      })
+
+      // Phase 0: breath
+      tl.to('.wid-m-strip', { scale: 1.00, duration: 0.22, ease: 'power2.inOut' }, 0)
+
+      // Phase 1: cards break apart vertically + border radius
+      tl.to('.wid-m-c0', { y: -15, duration: 0.36, ease: 'power1.inOut' }, 0.32)
+      tl.to('.wid-m-c2', { y:  15, duration: 0.36, ease: 'power1.inOut' }, 0.32)
+      tl.to(['.wid-m-c0 .wid-m-front', '.wid-m-c1 .wid-m-front', '.wid-m-c2 .wid-m-front'], {
+        borderRadius: '20px', duration: 0.36, ease: 'power1.inOut',
+      }, 0.32)
+
+      // Phase 2: fan vertically + flip, outermost first
+      const FLIP_DUR = 0.46
+      const STAGGER  = 0.14
+      ;[2, 1, 0].forEach((i, order) => {
+        const start = 0.82 + order * STAGGER
+        tl.to(`.wid-m-c${i}`, {
+          x: FAN_LAND[i].x, y: FAN_LAND[i].y, rotation: FAN_LAND[i].rot,
+          duration: FLIP_DUR, ease: 'power2.inOut',
+        }, start)
+        tl.to(`.wid-m-c${i} .wid-m-inner`, {
+          rotationY: 180,
+          duration:  FLIP_DUR,
+          ease:      'power2.inOut',
+        }, start + 0.06)
+      })
+    }, sectionRef)
+
+    return () => ctx.revert()
+  }, [])
+
+  const topY = Math.round((STACK_H_LAND - CH_LAND * 3) / 2) - 20
+
+  return (
+    <section
+      ref={sectionRef}
+      style={{
+        background:     '#000000',
+        minHeight:      '100vh',
+        display:        'flex',
+        flexDirection:  'column',
+        justifyContent: 'center',
+        overflow:       'hidden',
+        position:       'relative',
+      }}
+    >
+      {/* Grid bg */}
+      <div aria-hidden="true" style={{
+        position:        'absolute', inset: 0,
+        backgroundImage: [
+          'linear-gradient(rgba(255,255,255,0.12) 1px, transparent 1px)',
+          'linear-gradient(90deg, rgba(255,255,255,0.12) 1px, transparent 1px)',
+        ].join(', '),
+        backgroundSize:  '44px 44px',
+        WebkitMaskImage: 'linear-gradient(to bottom, transparent 0%, black 22%, black 78%, transparent 100%)',
+        maskImage:       'linear-gradient(to bottom, transparent 0%, black 22%, black 78%, transparent 100%)',
+        pointerEvents:   'none', zIndex: 0,
+      }} />
+
+      <div style={{ position: 'relative', zIndex: 1, padding: '0 clamp(1.25rem,5vw,2rem)' }}>
+        <p style={{ fontFamily: "'Space Mono', monospace", fontSize: '11px', letterSpacing: '0.20em', textTransform: 'uppercase', color: '#5AAFB8', margin: '0 0 16px' }}>
+          What I Do
+        </p>
+        <h2 style={{ fontFamily: "'Syne', sans-serif", fontSize: 'clamp(1.9rem,7vw,2.6rem)', fontWeight: 600, color: '#edf1df', lineHeight: 1.08, margin: '0 0 0', letterSpacing: '-0.025em' }}>
+          What I bring to<br />
+          <em style={{ fontFamily: '"Lora", Georgia, serif', fontStyle: 'italic', fontWeight: 400 }}>the table</em>
+        </h2>
+
+        {/* Landscape cards stacked vertically */}
+        <div style={{ position: 'relative', height: STACK_H_LAND }}>
+          <div
+            className="wid-m-strip"
+            style={{
+              position:        'absolute',
+              top:             topY,
+              left:            `calc(50% - ${CW_LAND / 2}px)`,
+              width:           CW_LAND,
+              height:          CH_LAND * 3,
+              transformOrigin: '50% 50%',
+            }}
+          >
+            {CARDS.map((card, i) => (
+              <div
+                key={i}
+                className={`wid-m-c${i}`}
+                style={{
+                  position: 'absolute',
+                  top:      i * CH_LAND,
+                  left:     0,
+                  width:    CW_LAND,
+                  height:   CH_LAND,
+                  zIndex:   [3, 2, 1][i],
+                }}
+              >
+                <div className="wid-m-inner" style={{ width: '100%', height: '100%', position: 'relative', perspective: '1100px', transformStyle: 'preserve-3d' }}>
+
+                  {/* FRONT */}
+                  <div className="wid-m-front" style={{
+                    position:                 'absolute', inset: 0,
+                    borderRadius:             INIT_BR_LAND[i],
+                    backfaceVisibility:       'hidden',
+                    WebkitBackfaceVisibility: 'hidden',
+                    overflow:                 'hidden',
+                    display:                  'flex', alignItems: 'center', justifyContent: 'center',
+                    backgroundColor:          '#000',
+                  }}>
+                    <div style={{
+                      position:           'absolute',
+                      inset:              0,
+                      backgroundColor:    '#000',
+                      backgroundImage:    'url(/card-front-waves.png)',
+                      backgroundSize:     `${CW_LAND * 3}px auto`,
+                      backgroundPosition: `${-i * CW_LAND}px 50%`,
+                      backgroundRepeat:   'no-repeat',
+                    }} />
+                    <div style={{ position: 'absolute', inset: 0, backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.80' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E\")", backgroundSize: '160px 160px', opacity: 0.12, pointerEvents: 'none' }} />
+                    {i === 1 && (
+                      <div style={{ position: 'relative', zIndex: 2, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px' }}>
+                        <svg width="32" height="32" viewBox="0 0 20 20" fill="none" style={{ marginBottom: '6px' }}>
+                          <path d="M10 2V18M2 10H18" stroke="rgba(255,255,255,0.75)" strokeWidth="2.2" strokeLinecap="round"/>
+                          <path d="M4 4L16 16M16 4L4 16" stroke="rgba(255,255,255,0.55)" strokeWidth="1.8" strokeLinecap="round"/>
+                        </svg>
+                        <span style={{ fontFamily: "'Lora', Georgia, serif", fontStyle: 'italic', fontWeight: 400, fontSize: 'clamp(5rem,20vw,7.5rem)', color: '#e4eef0', letterSpacing: '-0.03em', userSelect: 'none', textShadow: '0 4px 24px rgba(0,0,0,0.50)', lineHeight: 1 }}>
+                          depth
+                        </span>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* BACK */}
+                  <div style={{
+                    position:                 'absolute', inset: 0,
+                    background:               card.backBg,
+                    backdropFilter:           'blur(24px) saturate(160%)',
+                    WebkitBackdropFilter:     'blur(24px) saturate(160%)',
+                    borderRadius:             '20px',
+                    transform:                'rotateY(180deg)',
+                    backfaceVisibility:       'hidden',
+                    WebkitBackfaceVisibility: 'hidden',
+                    display:                  'flex',
+                    flexDirection:            'row',
+                    alignItems:               'center',
+                    gap:                      '16px',
+                    padding:                  '18px 22px',
+                    overflow:                 'hidden',
+                    boxShadow: [
+                      `inset 0 1.5px 0 ${card.rimColor}`,
+                      'inset 0 0 0 1px rgba(255,255,255,0.10)',
+                      '0 24px 64px rgba(0,0,0,0.55)',
+                    ].join(', '),
+                  }}>
+                    <div style={{ position: 'absolute', inset: 0, borderRadius: 'inherit', background: 'linear-gradient(148deg, rgba(255,255,255,0.13) 0%, rgba(255,255,255,0.05) 32%, transparent 56%)', pointerEvents: 'none', zIndex: 3 }} />
+                    <span style={{ fontFamily: "'Space Mono', monospace", fontSize: '11px', letterSpacing: '0.12em', color: 'rgba(255,255,255,0.28)', flexShrink: 0 }}>
+                      {String(i + 1).padStart(2, '0')}
+                    </span>
+                    <div style={{ flex: 1 }}>
+                      <h3 style={{ fontFamily: "'Syne', sans-serif", fontSize: '22px', fontWeight: 700, color: '#edf1df', lineHeight: 1.12, margin: '0 0 8px', letterSpacing: '-0.025em', whiteSpace: 'pre-line', textShadow: '0 2px 12px rgba(0,0,0,0.55)' }}>
+                        {card.title}
+                      </h3>
+                      <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '13.5px', fontWeight: 400, color: 'rgba(242,237,228,0.58)', lineHeight: 1.65, margin: 0 }}>
+                        {card.desc}
+                      </p>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+  )
+}
 
 const CW = 300
 const CH = 470
@@ -82,8 +298,10 @@ function Icon({ i }) {
 
 export default function WhatIDo() {
   const sectionRef = useRef(null)
+  const isMobile   = useIsMobile()
 
   useEffect(() => {
+    if (isMobile) return
     const ctx = gsap.context(() => {
 
       const tl = gsap.timeline({
@@ -137,7 +355,9 @@ export default function WhatIDo() {
     }, sectionRef)
 
     return () => ctx.revert()
-  }, [])
+  }, [isMobile])
+
+  if (isMobile) return <WhatIDoMobile />
 
   const topY = Math.round((STACK_H - CH) / 2) - 62
 
@@ -191,7 +411,7 @@ export default function WhatIDo() {
           fontSize:      '11px',
           letterSpacing: '0.20em',
           textTransform: 'uppercase',
-          color:         '#C48A1A',
+          color:         '#5AAFB8',
           margin:        '0 0 16px',
         }}>
           What I Do

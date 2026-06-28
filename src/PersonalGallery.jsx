@@ -238,7 +238,7 @@ function PolaroidFace({ photo }) {
         <img
           src={photo.src}
           alt={photo.caption || ''}
-          loading="lazy"
+          loading="eager"
           decoding="async"
           draggable={false}
           style={{
@@ -283,6 +283,12 @@ function PolaroidFace({ photo }) {
 }
 
 function BarrelCarousel({ focusedIdx, setFocusedIdx, flipped, setFlipped }) {
+  const isMobile = typeof window !== 'undefined' && window.innerWidth < 768
+  const cardW    = isMobile ? 168 : CARD_W
+  const cardH    = isMobile ? 229 : CARD_H
+  const tZ       = isMobile ? 42  : 55
+  const cH       = isMobile ? 370 : 560
+
   const pairs = []
   for (let i = 0; i < PHOTOS.length; i += 2) {
     pairs.push({ front: PHOTOS[i], back: PHOTOS[i + 1] })
@@ -302,7 +308,7 @@ function BarrelCarousel({ focusedIdx, setFocusedIdx, flipped, setFlipped }) {
         alignItems:     'center',
         justifyContent: 'center',
         width:          '100%',
-        height:         '560px',
+        height:         `${cH}px`,
         position:       'relative',
         zIndex:         2,
       }}>
@@ -328,10 +334,10 @@ function BarrelCarousel({ focusedIdx, setFocusedIdx, flipped, setFlipped }) {
 
         <div style={{ position: 'relative', zIndex: 1, overflow: 'visible' }}>
           <div style={{
-            width:          `${CARD_W}px`,
-            height:         `${CARD_H}px`,
+            width:          `${cardW}px`,
+            height:         `${cardH}px`,
             transformStyle: 'preserve-3d',
-            transform:      'perspective(1200px) scale(1.18) rotate(24deg) rotateX(-22deg)',
+            transform:      isMobile ? 'perspective(1200px) scale(0.90) rotate(24deg) rotateX(-22deg)' : 'perspective(1200px) scale(1.18) rotate(24deg) rotateX(-22deg)',
           }}>
             <div style={{
               width:               '100%',
@@ -350,12 +356,12 @@ function BarrelCarousel({ focusedIdx, setFocusedIdx, flipped, setFlipped }) {
                     top:             '50%',
                     left:            '50%',
                     marginLeft:      '0',
-                    marginTop:       `-${CARD_H / 2}px`,
-                    width:           `${CARD_W}px`,
-                    height:          `${CARD_H}px`,
+                    marginTop:       `-${cardH / 2}px`,
+                    width:           `${cardW}px`,
+                    height:          `${cardH}px`,
                     transformOrigin: '0% 50%',
                     transformStyle:  'preserve-3d',
-                    transform:       `rotateY(${i * degStep}deg) translateZ(55px)`,
+                    transform:       `rotateY(${i * degStep}deg) translateZ(${tZ}px)`,
                     cursor:          'pointer',
                   }}
                 >
@@ -407,8 +413,8 @@ function BarrelCarousel({ focusedIdx, setFocusedIdx, flipped, setFlipped }) {
             top:         '50%',
             left:        '50%',
             transform:   'translate(-50%, -50%)',
-            width:       '300px',
-            height:      '410px',
+            width:       isMobile ? '72vw' : '300px',
+            height:      isMobile ? `calc(72vw * ${CARD_H / CARD_W})` : '410px',
             zIndex:      1001,
             perspective: '1000px',
             cursor:      'pointer',
@@ -575,7 +581,7 @@ export default function PersonalGallery() {
             fontSize:      '11px',
             letterSpacing: '0.20em',
             textTransform: 'uppercase',
-            color:         '#C48A1A',
+            color:         '#5AAFB8',
             margin:        '0 0 16px',
           }}
         >
@@ -647,30 +653,8 @@ export default function PersonalGallery() {
         zIndex:          0,
       }} />
 
-      {isMobile
-        ? <MobilePolaroidStrip setFocusedIdx={setFocusedIdx} setFlipped={setFlipped} />
-        : <BarrelCarousel focusedIdx={focusedIdx} setFocusedIdx={setFocusedIdx} flipped={flipped} setFlipped={setFlipped} />
-      }
+      <BarrelCarousel focusedIdx={focusedIdx} setFocusedIdx={setFocusedIdx} flipped={flipped} setFlipped={setFlipped} />
 
-      {/* Focused overlay — mobile only (BarrelCarousel handles desktop) */}
-      {isMobile && focusedIdx !== null && (() => {
-        const pairs = []
-        for (let i = 0; i < PHOTOS.length; i += 2) pairs.push({ front: PHOTOS[i], back: PHOTOS[i + 1] })
-        const focused = pairs[focusedIdx]
-        return (
-          <>
-            <div onClick={() => { setFocusedIdx(null); setFlipped(false) }}
-              style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.8)', zIndex: 1000, cursor: 'pointer' }} />
-            <div onClick={e => { e.stopPropagation(); setFlipped(f => !f) }}
-              style={{ position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%,-50%)', width: isMobile ? '80vw' : '300px', height: isMobile ? 'calc(80vw * 300/220)' : '410px', zIndex: 1001, perspective: '1000px', cursor: 'pointer' }}>
-              <div style={{ width: '100%', height: '100%', position: 'relative', transformStyle: 'preserve-3d', transform: flipped ? 'rotateY(180deg)' : 'rotateY(0deg)', transition: 'transform 0.55s cubic-bezier(0.4,0,0.2,1)' }}>
-                <div style={{ position: 'absolute', inset: 0, backfaceVisibility: 'hidden', WebkitBackfaceVisibility: 'hidden' }}><PolaroidFace photo={focused.front} /></div>
-                <div style={{ position: 'absolute', inset: 0, backfaceVisibility: 'hidden', WebkitBackfaceVisibility: 'hidden', transform: 'rotateY(180deg)' }}><PolaroidFace photo={focused.back} /></div>
-              </div>
-            </div>
-          </>
-        )
-      })()}
     </section>
   )
 }
