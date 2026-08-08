@@ -90,9 +90,9 @@ function StaggerGrid({ children, style = {}, className = '' }) {
   )
 }
 
-function StaggerItem({ children, style = {} }) {
+function StaggerItem({ children, style = {}, className = '' }) {
   return (
-    <motion.div style={{ display: 'flex', flexDirection: 'column', ...style }}
+    <motion.div className={className} style={{ display: 'flex', flexDirection: 'column', ...style }}
       variants={{
         hidden:  { opacity: 0, y: 22 },
         visible: { opacity: 1, y: 0, transition: { duration: 0.55, ease: EASE } },
@@ -121,6 +121,7 @@ function ImgBox({ label, aspect = '16/9' }) {
 // ─── Sidebar ─────────────────────────────────────────────
 function SidebarNav({ active }) {
   const [isMobile, setIsMobile] = useState(() => typeof window !== 'undefined' && window.innerWidth < 768)
+  const [open, setOpen] = useState(false)
   useEffect(() => {
     const h = () => setIsMobile(window.innerWidth < 768)
     window.addEventListener('resize', h, { passive: true })
@@ -129,22 +130,55 @@ function SidebarNav({ active }) {
 
   function scrollTo(id) {
     const el = document.getElementById(id)
-    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    if (!el) return
+    const y = el.getBoundingClientRect().top + window.pageYOffset - 68
+    window.scrollTo({ top: Math.max(0, y), behavior: 'smooth' })
   }
 
   if (isMobile) {
+    const activeIndex = NAV_SECTIONS.findIndex(s => s.id === active)
+    const activeSection = NAV_SECTIONS[activeIndex] || NAV_SECTIONS[0]
+    const activeNum = String(activeIndex + 1).padStart(2, '0')
     return (
-      <nav style={{ position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 500, display: 'flex', flexDirection: 'row', justifyContent: 'space-evenly', alignItems: 'center', background: 'rgba(255,255,255,0.97)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)', borderTop: '1px solid rgba(0,0,0,0.09)', boxShadow: '0 -2px 20px rgba(0,0,0,0.07)', padding: '8px 4px', paddingBottom: 'max(10px, env(safe-area-inset-bottom))' }}>
-        {NAV_SECTIONS.map(sec => {
-          const isActive = active === sec.id
-          return (
-            <button key={sec.id} onClick={() => scrollTo(sec.id)} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '5px', background: 'none', border: 'none', cursor: 'pointer', padding: '4px 10px', minWidth: 52 }}>
-              <div style={{ width: isActive ? 22 : 14, height: 2, borderRadius: 2, background: isActive ? C.accent : 'rgba(0,0,0,0.18)', transition: 'all 0.25s' }} />
-              <span style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.48rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: isActive ? C.accent : 'rgba(0,0,0,0.42)', transition: 'color 0.25s', whiteSpace: 'nowrap' }}>{sec.label}</span>
-            </button>
-          )
-        })}
-      </nav>
+      <>
+        <AnimatePresence>
+          {open && (
+            <motion.div key="pill-backdrop" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+              transition={{ duration: 0.18 }} onClick={() => setOpen(false)}
+              style={{ position: 'fixed', inset: 0, zIndex: 598, background: 'rgba(0,0,0,0.06)' }} />
+          )}
+        </AnimatePresence>
+        <AnimatePresence>
+          {open && (
+            <div style={{ position: 'fixed', bottom: 'calc(2rem + 54px)', left: '50%', transform: 'translateX(-50%)', zIndex: 599 }}>
+              <motion.div key="pill-menu" initial={{ opacity: 0, y: 8, scale: 0.96 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 8, scale: 0.96 }} transition={{ duration: 0.24, ease: EASE }}
+                style={{ background: 'rgba(255,255,255,0.18)', backdropFilter: 'blur(32px) saturate(180%)', WebkitBackdropFilter: 'blur(32px) saturate(180%)', borderRadius: '20px', boxShadow: '0 8px 40px rgba(0,0,0,0.18), inset 0 1px 0 rgba(255,255,255,0.6)', border: '1px solid rgba(255,255,255,0.38)', padding: '8px 6px', minWidth: '220px' }}>
+                {NAV_SECTIONS.map((sec, i) => {
+                  const isActive = sec.id === active
+                  const num = String(i + 1).padStart(2, '0')
+                  return (
+                    <button key={sec.id} onClick={() => { scrollTo(sec.id); setOpen(false) }}
+                      style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', width: '100%', background: isActive ? 'rgba(255,255,255,0.28)' : 'transparent', border: 'none', borderRadius: '12px', padding: '11px 16px', cursor: 'pointer' }}>
+                      <span style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.5rem', color: isActive ? C.ink : 'rgba(0,0,0,0.4)', letterSpacing: '0.12em' }}>{num}</span>
+                      <span style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.88rem', color: isActive ? C.ink : 'rgba(0,0,0,0.55)', fontWeight: isActive ? 500 : 400 }}>{sec.label}</span>
+                    </button>
+                  )
+                })}
+              </motion.div>
+            </div>
+          )}
+        </AnimatePresence>
+        <div style={{ position: 'fixed', bottom: '2rem', left: '50%', transform: 'translateX(-50%)', zIndex: 600 }}>
+          <button onClick={() => setOpen(o => !o)}
+            style={{ display: 'flex', alignItems: 'center', gap: '8px', background: 'linear-gradient(175deg, rgba(36,36,36,0.96) 0%, rgba(8,8,8,0.99) 100%)', border: 'none', borderRadius: '99px', padding: '11px 18px 11px 15px', cursor: 'pointer', boxShadow: '0 8px 28px rgba(0,0,0,0.45), 0 2px 6px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.18), inset 0 -1px 0 rgba(0,0,0,0.55)', whiteSpace: 'nowrap' }}>
+            <span style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.52rem', color: 'rgba(255,255,255,0.45)', letterSpacing: '0.12em' }}>{activeNum}</span>
+            <span style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.85rem', color: '#ffffff', fontWeight: 500 }}>{activeSection.label}</span>
+            <motion.svg animate={{ rotate: open ? 180 : 0 }} transition={{ duration: 0.2 }} width="11" height="11" viewBox="0 0 12 12" fill="none" style={{ flexShrink: 0, marginLeft: '2px' }}>
+              <path d="M2 4L6 8L10 4" stroke="rgba(255,255,255,0.45)" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+            </motion.svg>
+          </button>
+        </div>
+      </>
     )
   }
 
@@ -166,14 +200,23 @@ function SidebarNav({ active }) {
 function useActiveSection(ids) {
   const [active, setActive] = useState(ids[0])
   useEffect(() => {
+    const onScroll = () => {
+      if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 80) {
+        setActive(ids[ids.length - 1])
+      }
+    }
+    window.addEventListener('scroll', onScroll, { passive: true })
     const observers = []
     ids.forEach(id => {
       const el = document.getElementById(id)
       if (!el) return
-      const obs = new IntersectionObserver(([entry]) => { if (entry.isIntersecting) setActive(id) }, { rootMargin: '-30% 0px -60% 0px', threshold: 0 })
+      const obs = new IntersectionObserver(([entry]) => { if (entry.isIntersecting) setActive(id) }, { rootMargin: '-10% 0px -35% 0px', threshold: 0 })
       obs.observe(el); observers.push(obs)
     })
-    return () => observers.forEach(o => o.disconnect())
+    return () => {
+      window.removeEventListener('scroll', onScroll)
+      observers.forEach(o => o.disconnect())
+    }
   }, [])
   return active
 }
@@ -412,7 +455,7 @@ function ConceptSection() {
           <Reveal delay={0.15}>
             <p style={{ fontFamily: "'Syne', sans-serif", fontWeight: 600, fontSize: '1rem', color: C.ink, margin: '0 0 1rem' }}>Selection criteria</p>
           </Reveal>
-          <StaggerGrid style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '1rem' }}>
+          <StaggerGrid className="sp-g4" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '1rem' }}>
             {[
               { n: '01', label: 'Human Scale',    body: 'Sized for the hand, not the shelf. Every dimension traced from grip and reach data.' },
               { n: '02', label: 'Non-Intrusive',  body: 'Clips without forcing. Attaches, detaches, and disappears when not in use.' },
@@ -447,7 +490,7 @@ function ConceptSection() {
           <div style={{ marginTop: '2rem' }}>
             <h3 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 600, fontSize: '1.1rem', color: C.ink, margin: '0 0 1.25rem' }}>Product Line Drawings</h3>
             <div style={{ borderRadius: '14px', overflow: 'hidden' }}>
-              <img src="/skippr-bp-sheet.png" alt="Skippr product line drawings — all views" loading="lazy" decoding="async" style={{ width: '100%', display: 'block', mixBlendMode: 'multiply' }} />
+              <img src="/skippr-bp-sheet.png" alt="Skippr product line drawings — all views" loading="eager" decoding="async" style={{ width: '100%', display: 'block', mixBlendMode: 'multiply' }} />
             </div>
           </div>
         </Reveal>
@@ -477,15 +520,15 @@ function AnatomySection() {
         {/* Exploded view + right column */}
         <div ref={ref} className="cc-g2" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', alignItems: 'start' }}>
           <motion.div initial={{ opacity: 0, x: -20 }} animate={inView ? { opacity: 1, x: 0 } : {}} transition={{ duration: 0.65, ease: EASE }}>
-            <div style={{ borderRadius: '14px', overflow: 'hidden', boxShadow: '0 8px 32px rgba(0,0,0,0.22)', background: '#0A0A0A' }}>
-              <img src="/skippr-exploded.png" alt="Skippr exploded view" loading="lazy" decoding="async" style={{ width: '100%', display: 'block' }} />
+            <div>
+              <img src="/skippr-exploded.svg" alt="Skippr exploded view" loading="lazy" decoding="async" style={{ width: '78%', display: 'block', margin: '0 auto', mixBlendMode: 'multiply' }} />
             </div>
             <p style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.52rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: C.muted, margin: '0.6rem 0 0' }}>Exploded View</p>
           </motion.div>
           <motion.div initial={{ opacity: 0, x: 20 }} animate={inView ? { opacity: 1, x: 0 } : {}} transition={{ duration: 0.65, delay: 0.08, ease: EASE }} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
             <div>
-              <div style={{ borderRadius: '14px', overflow: 'hidden', boxShadow: '0 8px 32px rgba(0,0,0,0.28)', background: '#000' }}>
-                <img src="/skippr-finalvis.png" alt="Skippr final product visualisation" loading="lazy" decoding="async" style={{ width: '100%', display: 'block' }} />
+              <div>
+                <img src="/skippr-finalvis.svg" alt="Skippr final product visualisation" loading="lazy" decoding="async" style={{ width: '100%', display: 'block', mixBlendMode: 'multiply' }} />
               </div>
               <p style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.52rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: C.muted, margin: '0.6rem 0 0' }}>Final Visualisation</p>
             </div>
@@ -500,13 +543,25 @@ function AnatomySection() {
       </Wrap>
 
       <Reveal delay={0.2}>
-        <div style={{ padding: '0 clamp(0.5rem,2vw,2rem)', marginTop: '-7rem' }}>
+        {/* Mockup photos */}
+        <Wrap>
+          <div className="sp-g2" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '3rem' }}>
+            <div style={{ borderRadius: '14px', overflow: 'hidden', aspectRatio: '4/3' }}>
+              <img src="/skippr-mockup1.jpg" alt="Skippr on shopping basket" loading="lazy" decoding="async" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+            </div>
+            <div style={{ borderRadius: '14px', overflow: 'hidden', aspectRatio: '4/3' }}>
+              <img src="/skippr-mockup2.jpg" alt="Skippr on shopping cart" loading="lazy" decoding="async" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+            </div>
+          </div>
+        </Wrap>
+
+        <div style={{ padding: '0 clamp(0.5rem,2vw,2rem)', marginTop: '2rem' }}>
           <div style={{ maxWidth: '1120px', margin: '0 auto', padding: '0 clamp(1.5rem,5vw,3rem)' }}>
             <h2 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: 'clamp(1.8rem,3.5vw,2.8rem)', color: C.ink, letterSpacing: '-0.025em', lineHeight: 1.1, margin: '0 0 1.5rem', textWrap: 'balance' }}>
               Affordances and Signifiers
             </h2>
           </div>
-          <img src="/skippr-affordances.png" alt="Skippr affordances and signifiers diagram" loading="lazy" decoding="async" style={{ width: '100%', display: 'block', mixBlendMode: 'multiply' }} />
+          <img src="/skippr-affordances.png" alt="Skippr affordances and signifiers diagram" loading="eager" decoding="async" style={{ width: '100%', display: 'block', mixBlendMode: 'multiply' }} />
         </div>
       </Reveal>
     </section>
@@ -551,7 +606,7 @@ function ComponentsSection() {
             Skippr speaks through surfaces
           </h2>
         </Reveal>
-        <div style={{ position: 'relative', display: 'grid', gridTemplateColumns: '1fr 1fr', gridTemplateRows: '1fr 1fr', minHeight: 480 }}>
+        <div className="sp-comp" style={{ position: 'relative', display: 'grid', gridTemplateColumns: '1fr 1fr', gridTemplateRows: '1fr 1fr', minHeight: 480 }}>
           {/* Dotted cross */}
           <div aria-hidden style={{ position: 'absolute', top: 0, bottom: 0, left: '50%', borderLeft: `1.5px dotted rgba(255,255,255,0.15)`, transform: 'translateX(-50%)', pointerEvents: 'none' }} />
           <div aria-hidden style={{ position: 'absolute', left: 0, right: 0, top: '50%', borderTop: `1.5px dotted rgba(255,255,255,0.15)`, transform: 'translateY(-50%)', pointerEvents: 'none' }} />
@@ -780,11 +835,11 @@ function AccessibilitySection() {
       <Reveal delay={0.15}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '2.5rem', marginTop: '3.5rem', padding: '0 clamp(0.5rem,2vw,2rem)' }}>
           <div>
-            <img src="/skippr-heuristic-physical.png" alt="Heuristic evaluation — physical product" loading="lazy" decoding="async" style={{ width: '100%', display: 'block', mixBlendMode: 'multiply' }} />
+            <img src="/skippr-heuristic-physical.png" alt="Heuristic evaluation — physical product" loading="eager" decoding="async" style={{ width: '100%', display: 'block', mixBlendMode: 'multiply' }} />
             <p style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.52rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: C.muted, margin: '0.6rem clamp(0.5rem,2vw,2rem) 0' }}>Phygital Evaluation</p>
           </div>
           <div>
-            <img src="/skippr-heuristic-screens.png" alt="Heuristic evaluation — UI screens" loading="lazy" decoding="async" style={{ width: '100%', display: 'block', mixBlendMode: 'multiply' }} />
+            <img src="/skippr-heuristic-screens.png" alt="Heuristic evaluation — UI screens" loading="eager" decoding="async" style={{ width: '100%', display: 'block', mixBlendMode: 'multiply' }} />
             <p style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.52rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: C.muted, margin: '0.6rem clamp(0.5rem,2vw,2rem) 0' }}>Screen Evaluation</p>
           </div>
         </div>
@@ -944,6 +999,15 @@ export default function Skippr() {
 
   return (
     <div className="has-bottom-nav" style={{ background: C.page, color: C.ink, minHeight: '100vh' }}>
+      <style>{`
+        @media (max-width: 767px) {
+          .cc-g2 { grid-template-columns: 1fr !important; }
+          .cc-g3 { grid-template-columns: 1fr !important; }
+          .sp-g4 { grid-template-columns: repeat(2, 1fr) !important; }
+          .sp-g2 { grid-template-columns: 1fr !important; }
+          .sp-comp { grid-template-columns: 1fr !important; grid-template-rows: unset !important; }
+        }
+      `}</style>
       <ProgressBar />
       <Nav />
       <SidebarNav active={active} />

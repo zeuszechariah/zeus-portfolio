@@ -44,7 +44,7 @@ export default function Dokitti() {
   return (
     <div style={{ background: PAGE, color: INK, minHeight: '100vh' }}>
       <ProgressBar />
-      <Nav light />
+      <Nav photoHero />
 
       {/* Hero */}
       <div style={{
@@ -115,6 +115,17 @@ export default function Dokitti() {
       {/* Gallery */}
       <section style={{ background: PAGE, padding: 'clamp(4rem,6vw,6rem) 0' }}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', padding: '0 clamp(1.5rem,5vw,3rem)', maxWidth: '1120px', margin: '0 auto' }}>
+          {/* Logo animation — container clips bottom, video renders at native ratio */}
+          <Reveal delay={0}>
+            <div style={{ borderRadius: '18px', overflow: 'hidden', boxShadow: '0 4px 24px rgba(0,0,0,0.08)', aspectRatio: '4/3' }}>
+              <video
+                autoPlay muted loop playsInline
+                style={{ width: '100%', display: 'block', filter: 'contrast(1.25) saturate(1.15)' }}
+              >
+                <source src="/dokitti-logo-animation.mp4" type="video/mp4" />
+              </video>
+            </div>
+          </Reveal>
           {IMAGES.map((img, i) => (
             <Reveal key={img.src} delay={i * 0.06}>
               <div style={{ borderRadius: '18px', overflow: 'hidden', boxShadow: '0 4px 24px rgba(0,0,0,0.08)' }}>

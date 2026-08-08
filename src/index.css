@@ -11,13 +11,12 @@
 }
 
 /* ── Liquid metal ring ───────────────────────────────── */
-@property --lm-angle {
-  syntax: '<angle>';
-  initial-value: 0deg;
-  inherits: false;
-}
-@keyframes liquid-metal {
-  to { --lm-angle: 360deg; }
+/* Plain transform:rotate() on an oversized inner layer, not @property-driven
+   gradient-angle interpolation — @property support is Safari 16.4+ only, so
+   the old approach silently did nothing on older iOS versions. */
+@keyframes liquid-metal-spin {
+  from { transform: translate(-50%, -50%) rotate(0deg); }
+  to   { transform: translate(-50%, -50%) rotate(360deg); }
 }
 
 /* ── Global ─────────────────────────────────────────── */
@@ -173,12 +172,15 @@ body::before {
 /* ── Mobile layout ─────────────────────────────────── */
 @media (max-width: 767px) {
   /* Clear fixed bottom nav on case study pages */
-  .has-bottom-nav { padding-bottom: 76px !important; }
+  .has-bottom-nav { padding-bottom: 90px !important; }
 
-  /* Project Work grid — 1 col on very small phones */
-  @media (max-width: 479px) {
+  /* Project Work grid — 1 col only on very tiny phones (< 340px) */
+  @media (max-width: 340px) {
     .grid-cols-2 { grid-template-columns: 1fr !important; }
   }
+
+  /* Vital stat cell — reduced height for 2×2 grid on mobile */
+  .vital-stat-cell { height: 256px !important; padding-top: 10px !important; }
 
   /* Tables — don't let them overflow, just scroll */
   table { font-size: 0.78rem !important; }
@@ -320,4 +322,19 @@ body::before {
     scroll-behavior: auto !important;
   }
   html { scroll-behavior: auto; }
+
+  /* Decorative ambient loops — not the kind of motion this setting targets,
+     and central to the brand — keep running regardless of OS preference. */
+  .hue-cycle {
+    animation-duration: 3s !important;
+    animation-iteration-count: infinite !important;
+  }
+  .marquee-track {
+    animation-duration: var(--marquee-dur) !important;
+    animation-iteration-count: infinite !important;
+  }
+  .polaroid-spin {
+    animation-duration: 26s !important;
+    animation-iteration-count: infinite !important;
+  }
 }

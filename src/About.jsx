@@ -385,13 +385,13 @@ function Resume() {
             </Reveal>
           </div>
 
-          <Reveal delay={0.12} className="flex flex-col items-end gap-6">
+          <Reveal delay={0.12} className="flex flex-col items-center gap-6">
             <HeroButton
               href="https://drive.google.com/file/d/1KhxDpLdW_BUqVGeiBflXHNzng0GcKWKd/view?usp=sharing"
               target="_blank"
               rel="noopener noreferrer"
             >
-              View / Download Resumè ↗
+              View / Download Resumè ↗︎
             </HeroButton>
           </Reveal>
 
@@ -517,7 +517,7 @@ function ContactForm() {
                 onChange={e => setForm(f => ({ ...f, message:e.target.value }))} />
             </motion.div>
 
-            <motion.div className="md:col-span-2 flex justify-end" initial={{ opacity:0, y:20 }}
+            <motion.div className="md:col-span-2 flex justify-center" initial={{ opacity:0, y:20 }}
               animate={inView ? { opacity:1, y:0 } : {}}
               transition={{ duration:0.7, ease:EASE, delay:0.3 }}>
               <HeroButton type="submit">Submit</HeroButton>

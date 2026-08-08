@@ -127,9 +127,15 @@ function VideoIntro({ onComplete }) {
     }
     vid.addEventListener('ended', trigger)
     vid.addEventListener('timeupdate', check)
+    vid.addEventListener('error', trigger)
+    // Safety net — a slow connection or stalled video must never block the
+    // whole site indefinitely. Whichever fires first wins.
+    const safety = setTimeout(trigger, 5000)
     return () => {
       vid.removeEventListener('ended', trigger)
       vid.removeEventListener('timeupdate', check)
+      vid.removeEventListener('error', trigger)
+      clearTimeout(safety)
     }
   }, [])
 
@@ -564,7 +570,7 @@ function ProjectCard({ project, delay = 0 }) {
               <MaskReveal>{project.name}</MaskReveal>
             </h3>
           </div>
-          <span className="w-[28px] h-[28px] rounded-full border border-black/15 flex items-center justify-center text-[0.65rem] text-black/40 opacity-0 scale-75 transition-all duration-300 group-hover:opacity-100 group-hover:scale-100 group-hover:border-black/35 group-hover:bg-black/[0.04] flex-shrink-0" aria-hidden="true">↗</span>
+          <span className="w-[28px] h-[28px] rounded-full border border-black/15 flex items-center justify-center text-[0.65rem] text-black/40 opacity-0 scale-75 transition-all duration-300 group-hover:opacity-100 group-hover:scale-100 group-hover:border-black/35 group-hover:bg-black/[0.04] flex-shrink-0" aria-hidden="true">↗︎</span>
         </div>
         <p className="font-sans leading-[1.7] mt-auto" style={{ fontSize:'clamp(0.72rem,0.9vw,0.8rem)', color:'#7a7a7a' }}>{project.desc}</p>
       </div>
@@ -574,20 +580,7 @@ function ProjectCard({ project, delay = 0 }) {
         inset:                0,
         borderRadius:         '18px',
         padding:              '1.5px',
-        background:           `conic-gradient(from var(--lm-angle),
-          rgba(255,255,255,0.95) 0deg,
-          rgba(180,188,200,0.80) 35deg,
-          rgba(100,110,125,0.60) 70deg,
-          rgba(210,215,225,0.85) 105deg,
-          rgba(255,255,255,0.98) 140deg,
-          rgba(160,168,180,0.70) 175deg,
-          rgba(80,88,100,0.45)   210deg,
-          rgba(220,224,232,0.80) 250deg,
-          rgba(255,255,255,0.90) 290deg,
-          rgba(190,196,208,0.65) 325deg,
-          rgba(255,255,255,0.95) 360deg
-        )`,
-        animation:            'liquid-metal 5s linear infinite',
+        overflow:             'hidden',
         WebkitMask:           'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
         WebkitMaskComposite:  'xor',
         maskComposite:        'exclude',
@@ -595,7 +588,29 @@ function ProjectCard({ project, delay = 0 }) {
         zIndex:               20,
         opacity:              rimHover ? 1 : 0,
         transition:           'opacity 0.28s ease',
-      }} />
+      }}>
+        <span style={{
+          position:    'absolute',
+          top:         '50%',
+          left:        '50%',
+          width:       '300%',
+          aspectRatio: '1',
+          background:  `conic-gradient(from 0deg,
+            rgba(255,255,255,0.95) 0deg,
+            rgba(180,188,200,0.80) 35deg,
+            rgba(100,110,125,0.60) 70deg,
+            rgba(210,215,225,0.85) 105deg,
+            rgba(255,255,255,0.98) 140deg,
+            rgba(160,168,180,0.70) 175deg,
+            rgba(80,88,100,0.45)   210deg,
+            rgba(220,224,232,0.80) 250deg,
+            rgba(255,255,255,0.90) 290deg,
+            rgba(190,196,208,0.65) 325deg,
+            rgba(255,255,255,0.95) 360deg
+          )`,
+          animation:   'liquid-metal-spin 5s linear infinite',
+        }} />
+      </span>
     </TiltCard>
   )
   return (
@@ -1146,6 +1161,7 @@ function MarqueeRow({ items, reverse = false, speed = 45 }) {
         gap: '14px',
         width: 'max-content',
         animation: `${reverse ? 'marqueeR' : 'marqueeL'} ${speed}s linear infinite`,
+        '--marquee-dur': `${speed}s`,
         willChange: 'transform',
       }}
     >
@@ -1196,10 +1212,10 @@ function MarqueeGallery() {
       <div className="absolute bottom-0 left-0 right-0 z-10 pointer-events-none"
         style={{ height:'clamp(100px,14vw,180px)', background:'linear-gradient(to top,#060606 0%,transparent 100%)' }} />
 
-      {/* Perspective tilt — desktop only */}
-      <div style={isMobile ? {} : { perspective:'1100px', perspectiveOrigin:'50% 50%' }}>
+      {/* Perspective tilt */}
+      <div style={{ perspective:'1100px', perspectiveOrigin:'50% 50%' }}>
         <div
-          style={isMobile ? {} : {
+          style={{
             transform: 'rotateX(25deg) rotateZ(-5deg)',
             transformOrigin: 'center center',
             willChange: 'transform',
@@ -1226,7 +1242,7 @@ function MarqueeGallery() {
             <MaskReveal delay={0.1}><em className="font-display" style={{ fontStyle:'italic', fontWeight: 400, fontFamily:'"Lora", Georgia, serif', fontSize:'1.08em' }}>Let's talk.</em></MaskReveal>
           </h2>
           <Reveal delay={0.12} className="flex items-center justify-center">
-            <HeroButton href="https://www.linkedin.com/in/zeusbatkhar" target="_blank" rel="noopener noreferrer">LinkedIn ↗</HeroButton>
+            <HeroButton href="https://www.linkedin.com/in/zeusbatkhar" target="_blank" rel="noopener noreferrer">LinkedIn ↗︎</HeroButton>
           </Reveal>
         </div>
       </div>

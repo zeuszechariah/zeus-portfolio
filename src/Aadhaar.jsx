@@ -102,9 +102,9 @@ function StaggerGrid({ children, style = {}, className = '' }) {
   )
 }
 
-function StaggerItem({ children, style = {} }) {
+function StaggerItem({ children, style = {}, className = '' }) {
   return (
-    <motion.div style={{ display: 'flex', flexDirection: 'column', ...style }}
+    <motion.div className={className} style={{ display: 'flex', flexDirection: 'column', ...style }}
       variants={{
         hidden:  { opacity: 0, y: 22 },
         visible: { opacity: 1, y: 0, transition: { duration: 0.55, ease: EASE } },
@@ -135,6 +135,7 @@ function NeuCard({ children, style = {}, dark = false }) {
 // ─── Sidebar Nav ─────────────────────────────────────────
 function SidebarNav({ active }) {
   const [isMobile, setIsMobile] = useState(() => typeof window !== 'undefined' && window.innerWidth < 768)
+  const [open, setOpen] = useState(false)
   useEffect(() => {
     const h = () => setIsMobile(window.innerWidth < 768)
     window.addEventListener('resize', h, { passive: true })
@@ -142,21 +143,54 @@ function SidebarNav({ active }) {
   }, [])
   function scrollTo(id) {
     const el = document.getElementById(id)
-    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    if (!el) return
+    const y = el.getBoundingClientRect().top + window.pageYOffset - 68
+    window.scrollTo({ top: Math.max(0, y), behavior: 'smooth' })
   }
   if (isMobile) {
+    const activeIndex = NAV_SECTIONS.findIndex(s => s.id === active)
+    const activeSection = NAV_SECTIONS[activeIndex] || NAV_SECTIONS[0]
+    const activeNum = String(activeIndex + 1).padStart(2, '0')
     return (
-      <nav style={{ position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 500, display: 'flex', flexDirection: 'row', justifyContent: 'space-evenly', alignItems: 'center', background: 'rgba(255,255,255,0.97)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)', borderTop: '1px solid rgba(0,0,0,0.09)', boxShadow: '0 -2px 20px rgba(0,0,0,0.07)', padding: '8px 4px', paddingBottom: 'max(10px, env(safe-area-inset-bottom))' }}>
-        {NAV_SECTIONS.map(sec => {
-          const isActive = active === sec.id
-          return (
-            <button key={sec.id} onClick={() => scrollTo(sec.id)} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '5px', background: 'none', border: 'none', cursor: 'pointer', padding: '4px 10px', minWidth: 52 }}>
-              <div style={{ width: isActive ? 22 : 14, height: 2, borderRadius: 2, background: isActive ? C.accent : 'rgba(0,0,0,0.18)', transition: 'all 0.25s' }} />
-              <span style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.48rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: isActive ? C.accent : 'rgba(0,0,0,0.42)', transition: 'color 0.25s', whiteSpace: 'nowrap' }}>{sec.label}</span>
-            </button>
-          )
-        })}
-      </nav>
+      <>
+        <AnimatePresence>
+          {open && (
+            <motion.div key="pill-backdrop" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+              transition={{ duration: 0.18 }} onClick={() => setOpen(false)}
+              style={{ position: 'fixed', inset: 0, zIndex: 598, background: 'rgba(0,0,0,0.06)' }} />
+          )}
+        </AnimatePresence>
+        <AnimatePresence>
+          {open && (
+            <div style={{ position: 'fixed', bottom: 'calc(2rem + 54px)', left: '50%', transform: 'translateX(-50%)', zIndex: 599 }}>
+              <motion.div key="pill-menu" initial={{ opacity: 0, y: 8, scale: 0.96 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 8, scale: 0.96 }} transition={{ duration: 0.24, ease: EASE }}
+                style={{ background: 'rgba(255,255,255,0.18)', backdropFilter: 'blur(32px) saturate(180%)', WebkitBackdropFilter: 'blur(32px) saturate(180%)', borderRadius: '20px', boxShadow: '0 8px 40px rgba(0,0,0,0.18), inset 0 1px 0 rgba(255,255,255,0.6)', border: '1px solid rgba(255,255,255,0.38)', padding: '8px 6px', minWidth: '220px' }}>
+                {NAV_SECTIONS.map((sec, i) => {
+                  const isActive = sec.id === active
+                  const num = String(i + 1).padStart(2, '0')
+                  return (
+                    <button key={sec.id} onClick={() => { scrollTo(sec.id); setOpen(false) }}
+                      style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', width: '100%', background: isActive ? 'rgba(255,255,255,0.28)' : 'transparent', border: 'none', borderRadius: '12px', padding: '11px 16px', cursor: 'pointer' }}>
+                      <span style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.5rem', color: isActive ? C.ink : 'rgba(0,0,0,0.4)', letterSpacing: '0.12em' }}>{num}</span>
+                      <span style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.88rem', color: isActive ? C.ink : 'rgba(0,0,0,0.55)', fontWeight: isActive ? 500 : 400 }}>{sec.label}</span>
+                    </button>
+                  )
+                })}
+              </motion.div>
+            </div>
+          )}
+        </AnimatePresence>
+        <div style={{ position: 'fixed', bottom: '2rem', left: '50%', transform: 'translateX(-50%)', zIndex: 600 }}>
+          <button onClick={() => setOpen(o => !o)}
+            style={{ display: 'flex', alignItems: 'center', gap: '8px', background: 'linear-gradient(175deg, rgba(36,36,36,0.96) 0%, rgba(8,8,8,0.99) 100%)', border: 'none', borderRadius: '99px', padding: '11px 18px 11px 15px', cursor: 'pointer', boxShadow: '0 8px 28px rgba(0,0,0,0.45), 0 2px 6px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.18), inset 0 -1px 0 rgba(0,0,0,0.55)', whiteSpace: 'nowrap' }}>
+            <span style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.52rem', color: 'rgba(255,255,255,0.45)', letterSpacing: '0.12em' }}>{activeNum}</span>
+            <span style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.85rem', color: '#ffffff', fontWeight: 500 }}>{activeSection.label}</span>
+            <motion.svg animate={{ rotate: open ? 180 : 0 }} transition={{ duration: 0.2 }} width="11" height="11" viewBox="0 0 12 12" fill="none" style={{ flexShrink: 0, marginLeft: '2px' }}>
+              <path d="M2 4L6 8L10 4" stroke="rgba(255,255,255,0.45)" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+            </motion.svg>
+          </button>
+        </div>
+      </>
     )
   }
   return (
@@ -178,18 +212,27 @@ function SidebarNav({ active }) {
 function useActiveSection(ids) {
   const [active, setActive] = useState(ids[0])
   useEffect(() => {
+    const onScroll = () => {
+      if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 80) {
+        setActive(ids[ids.length - 1])
+      }
+    }
+    window.addEventListener('scroll', onScroll, { passive: true })
     const observers = []
     ids.forEach(id => {
       const el = document.getElementById(id)
       if (!el) return
       const obs = new IntersectionObserver(
         ([entry]) => { if (entry.isIntersecting) setActive(id) },
-        { rootMargin: '-30% 0px -60% 0px', threshold: 0 }
+        { rootMargin: '-10% 0px -35% 0px', threshold: 0 }
       )
       obs.observe(el)
       observers.push(obs)
     })
-    return () => observers.forEach(o => o.disconnect())
+    return () => {
+      window.removeEventListener('scroll', onScroll)
+      observers.forEach(o => o.disconnect())
+    }
   }, [])
   return active
 }
@@ -1631,7 +1674,7 @@ function ReflectionsSection() {
           }}>What stayed with us</h2>
         </Reveal>
 
-        <StaggerGrid style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: 'clamp(3rem,5vw,5rem)' }}>
+        <StaggerGrid className="ah-r2" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: 'clamp(3rem,5vw,5rem)' }}>
           {[
             { n: '01', text: '"The effortful climb of the process — each step visible, each step possible, none of them easy. That is what navigating Aadhaar feels like for the elderly."' },
             { n: '02', text: '"Time, weathering, fading biometrics. The body carries history that the system cannot read — and that gap has real consequences."' },
@@ -1680,6 +1723,11 @@ export default function Aadhaar() {
 
   return (
     <div className="has-bottom-nav" style={{ background: C.bg, color: C.ink, overflowX: 'hidden' }}>
+      <style>{`
+        @media (max-width: 767px) {
+          .ah-r2 { grid-template-columns: 1fr !important; }
+        }
+      `}</style>
       <ProgressBar />
       <Nav />
       <SidebarNav active={activeSection} />

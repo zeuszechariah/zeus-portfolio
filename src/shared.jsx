@@ -53,27 +53,36 @@ export function HeroButton({ children, onClick, href, target, rel, type }) {
         inset:                0,
         borderRadius:         'inherit',
         padding:              '1px',
-        background:           `conic-gradient(from var(--lm-angle),
-          rgba(255,255,255,0.95) 0deg,
-          rgba(180,188,200,0.80) 35deg,
-          rgba(100,110,125,0.60) 70deg,
-          rgba(210,215,225,0.85) 105deg,
-          rgba(255,255,255,0.98) 140deg,
-          rgba(160,168,180,0.70) 175deg,
-          rgba(80,88,100,0.45)   210deg,
-          rgba(220,224,232,0.80) 250deg,
-          rgba(255,255,255,0.90) 290deg,
-          rgba(190,196,208,0.65) 325deg,
-          rgba(255,255,255,0.95) 360deg
-        )`,
-        animation:            'liquid-metal 5s linear infinite',
-        willChange:           'background',
+        overflow:             'hidden',
         WebkitMask:           'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
         WebkitMaskComposite:  'xor',
         maskComposite:        'exclude',
         pointerEvents:        'none',
         zIndex:               0,
-      }} />
+      }}>
+        <span style={{
+          position:    'absolute',
+          top:         '50%',
+          left:        '50%',
+          width:       '300%',
+          aspectRatio: '1',
+          background:  `conic-gradient(from 0deg,
+            rgba(255,255,255,0.95) 0deg,
+            rgba(180,188,200,0.80) 35deg,
+            rgba(100,110,125,0.60) 70deg,
+            rgba(210,215,225,0.85) 105deg,
+            rgba(255,255,255,0.98) 140deg,
+            rgba(160,168,180,0.70) 175deg,
+            rgba(80,88,100,0.45)   210deg,
+            rgba(220,224,232,0.80) 250deg,
+            rgba(255,255,255,0.90) 290deg,
+            rgba(190,196,208,0.65) 325deg,
+            rgba(255,255,255,0.95) 360deg
+          )`,
+          animation:   'liquid-metal-spin 5s linear infinite',
+          willChange:  'transform',
+        }} />
+      </span>
       {/* Top-left rim hot-spot */}
       <span aria-hidden="true" style={{
         position:     'absolute',
@@ -204,7 +213,13 @@ export function Nav({ light = false, photoHero = false, scrollThreshold = 60 }) 
   }
 
   useEffect(() => {
-    const h = () => setScrolled(window.scrollY > scrollThreshold)
+    // Hysteresis band around the threshold — iOS momentum/rubber-band scrolling
+    // makes scrollY jitter a few px around a single cutoff, which was flipping
+    // `scrolled` back and forth and showing both nav layouts mid-crossfade.
+    const h = () => setScrolled(prev => {
+      const y = window.scrollY
+      return prev ? y > scrollThreshold - 12 : y > scrollThreshold + 12
+    })
     window.addEventListener('scroll', h, { passive:true })
     return () => window.removeEventListener('scroll', h)
   }, [scrollThreshold])
@@ -222,11 +237,12 @@ export function Nav({ light = false, photoHero = false, scrollThreshold = 60 }) 
     : { background:'rgba(10,10,10,0.72)', backdropFilter:'blur(28px) saturate(160%)', WebkitBackdropFilter:'blur(28px) saturate(160%)', border:'1px solid rgba(255,255,255,0.10)', boxShadow:'0 8px 32px rgba(0,0,0,0.35)' }
 
   return (
-    <AnimatePresence>
+    <AnimatePresence mode="wait">
       {!scrolled ? (
         <motion.div key="spread" role="banner"
           className="fixed top-0 left-0 right-0 z-[502] flex items-center justify-between pointer-events-none"
           style={{ padding:'1.5rem clamp(1.5rem,5vw,3.5rem)' }}
+          exit={{ opacity:0, transition:{ duration:0.15, ease:'easeOut' } }}
         >
           <MotionLink layoutId="nav-zeus" to="/" aria-label="Zeus — Home" transition={lt}
             className="pointer-events-auto font-sans font-semibold text-[0.8125rem] tracking-[0.1em] uppercase" style={{ color: spreadCol }}>

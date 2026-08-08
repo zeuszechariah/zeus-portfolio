@@ -196,6 +196,20 @@ function HowHelpful({ text }) {
   )
 }
 
+// ─── Pinch Hint ──────────────────────────────────────────
+function PinchHint() {
+  return (
+    <p className="sb-pinch-hint" style={{
+      fontFamily: "'Syne', sans-serif",
+      fontSize: '0.75rem',
+      color: C.muted,
+      textAlign: 'right',
+      marginTop: '0.5rem',
+      opacity: 0.5,
+    }}>(pinch to zoom)</p>
+  )
+}
+
 // ─── Stagger Helpers ─────────────────────────────────────
 function StaggerGrid({ children, style = {}, className = '' }) {
   const ref = useRef(null)
@@ -209,9 +223,9 @@ function StaggerGrid({ children, style = {}, className = '' }) {
   )
 }
 
-function StaggerItem({ children, style = {} }) {
+function StaggerItem({ children, style = {}, className = '' }) {
   return (
-    <motion.div style={{ display: 'flex', flexDirection: 'column', ...style }}
+    <motion.div className={className} style={{ display: 'flex', flexDirection: 'column', ...style }}
       variants={{
         hidden:  { opacity: 0, y: 22 },
         visible: { opacity: 1, y: 0, transition: { duration: 0.55, ease: EASE } },
@@ -242,6 +256,7 @@ function NeuCard({ children, style = {}, dark = false }) {
 // ─── Sidebar Nav ─────────────────────────────────────────
 function SidebarNav({ active }) {
   const [isMobile, setIsMobile] = useState(() => typeof window !== 'undefined' && window.innerWidth < 768)
+  const [open, setOpen] = useState(false)
   useEffect(() => {
     const h = () => setIsMobile(window.innerWidth < 768)
     window.addEventListener('resize', h, { passive: true })
@@ -250,22 +265,97 @@ function SidebarNav({ active }) {
 
   function scrollTo(id) {
     const el = document.getElementById(id)
-    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    if (!el) return
+    const y = el.getBoundingClientRect().top + window.pageYOffset - 68
+    window.scrollTo({ top: Math.max(0, y), behavior: 'smooth' })
   }
 
   if (isMobile) {
+    const activeIndex = NAV_SECTIONS.findIndex(s => s.id === active)
+    const activeSection = NAV_SECTIONS[activeIndex] || NAV_SECTIONS[0]
+    const activeNum = String(activeIndex + 1).padStart(2, '0')
+
     return (
-      <nav style={{ position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 500, display: 'flex', flexDirection: 'row', justifyContent: 'space-evenly', alignItems: 'center', background: 'rgba(255,255,255,0.97)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)', borderTop: '1px solid rgba(0,0,0,0.09)', boxShadow: '0 -2px 20px rgba(0,0,0,0.07)', padding: '8px 4px', paddingBottom: 'max(10px, env(safe-area-inset-bottom))' }}>
-        {NAV_SECTIONS.map(sec => {
-          const isActive = active === sec.id
-          return (
-            <button key={sec.id} onClick={() => scrollTo(sec.id)} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '5px', background: 'none', border: 'none', cursor: 'pointer', padding: '4px 10px', minWidth: 52 }}>
-              <div style={{ width: isActive ? 22 : 14, height: 2, borderRadius: 2, background: isActive ? C.accent : 'rgba(0,0,0,0.18)', transition: 'all 0.25s' }} />
-              <span style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.48rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: isActive ? C.accent : 'rgba(0,0,0,0.42)', transition: 'color 0.25s', whiteSpace: 'nowrap' }}>{sec.label}</span>
-            </button>
-          )
-        })}
-      </nav>
+      <>
+        {/* Backdrop */}
+        <AnimatePresence>
+          {open && (
+            <motion.div
+              key="pill-backdrop"
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+              transition={{ duration: 0.18 }}
+              onClick={() => setOpen(false)}
+              style={{ position: 'fixed', inset: 0, zIndex: 598, background: 'rgba(0,0,0,0.06)' }}
+            />
+          )}
+        </AnimatePresence>
+
+        {/* Section list — glassmorphism overlay, centred */}
+        <AnimatePresence>
+          {open && (
+            <div style={{ position: 'fixed', bottom: `calc(2rem + 54px)`, left: '50%', transform: 'translateX(-50%)', zIndex: 599 }}>
+            <motion.div
+              key="pill-menu"
+              initial={{ opacity: 0, y: 8, scale: 0.96 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 8, scale: 0.96 }}
+              transition={{ duration: 0.24, ease: EASE }}
+              style={{
+                background: 'rgba(255,255,255,0.18)',
+                backdropFilter: 'blur(32px) saturate(180%)',
+                WebkitBackdropFilter: 'blur(32px) saturate(180%)',
+                borderRadius: '20px',
+                boxShadow: '0 8px 40px rgba(0,0,0,0.18), inset 0 1px 0 rgba(255,255,255,0.6)',
+                border: '1px solid rgba(255,255,255,0.38)',
+                padding: '8px 6px',
+                minWidth: '220px',
+              }}
+            >
+              {NAV_SECTIONS.map((sec, i) => {
+                const isActive = sec.id === active
+                const num = String(i + 1).padStart(2, '0')
+                return (
+                  <button key={sec.id}
+                    onClick={() => { scrollTo(sec.id); setOpen(false) }}
+                    style={{
+                      display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px',
+                      width: '100%', background: isActive ? 'rgba(255,255,255,0.28)' : 'transparent',
+                      border: 'none', borderRadius: '12px', padding: '11px 16px',
+                      cursor: 'pointer',
+                    }}
+                  >
+                    <span style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.5rem', color: isActive ? C.ink : 'rgba(0,0,0,0.4)', letterSpacing: '0.12em' }}>{num}</span>
+                    <span style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.88rem', color: isActive ? C.ink : 'rgba(0,0,0,0.55)', fontWeight: isActive ? 500 : 400 }}>{sec.label}</span>
+                  </button>
+                )
+              })}
+            </motion.div>
+            </div>
+          )}
+        </AnimatePresence>
+
+        {/* Floating pill with inset edge */}
+        <div style={{ position: 'fixed', bottom: '2rem', left: '50%', transform: 'translateX(-50%)', zIndex: 600 }}>
+          <button
+            onClick={() => setOpen(o => !o)}
+            style={{
+              display: 'flex', alignItems: 'center', gap: '8px',
+              background: 'linear-gradient(175deg, rgba(36,36,36,0.96) 0%, rgba(8,8,8,0.99) 100%)',
+              border: 'none', borderRadius: '99px',
+              padding: '11px 18px 11px 15px', cursor: 'pointer',
+              boxShadow: '0 8px 28px rgba(0,0,0,0.45), 0 2px 6px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.18), inset 0 -1px 0 rgba(0,0,0,0.55)',
+              whiteSpace: 'nowrap',
+            }}
+          >
+            <span style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.52rem', color: 'rgba(255,255,255,0.45)', letterSpacing: '0.12em' }}>{activeNum}</span>
+            <span style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.85rem', color: '#ffffff', fontWeight: 500 }}>{activeSection.label}</span>
+            <motion.svg animate={{ rotate: open ? 180 : 0 }} transition={{ duration: 0.2 }}
+              width="11" height="11" viewBox="0 0 12 12" fill="none" style={{ flexShrink: 0, marginLeft: '2px' }}>
+              <path d="M2 4L6 8L10 4" stroke="rgba(255,255,255,0.45)" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+            </motion.svg>
+          </button>
+        </div>
+      </>
     )
   }
 
@@ -288,18 +378,27 @@ function SidebarNav({ active }) {
 function useActiveSection(ids) {
   const [active, setActive] = useState(ids[0])
   useEffect(() => {
+    const onScroll = () => {
+      if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 80) {
+        setActive(ids[ids.length - 1])
+      }
+    }
+    window.addEventListener('scroll', onScroll, { passive: true })
     const observers = []
     ids.forEach(id => {
       const el = document.getElementById(id)
       if (!el) return
       const obs = new IntersectionObserver(
         ([entry]) => { if (entry.isIntersecting) setActive(id) },
-        { rootMargin: '-30% 0px -60% 0px', threshold: 0 }
+        { rootMargin: '-10% 0px -35% 0px', threshold: 0 }
       )
       obs.observe(el)
       observers.push(obs)
     })
-    return () => observers.forEach(o => o.disconnect())
+    return () => {
+      window.removeEventListener('scroll', onScroll)
+      observers.forEach(o => o.disconnect())
+    }
   }, [])
   return active
 }
@@ -856,6 +955,11 @@ function BehaviouralCycle() {
   useEffect(() => {
     const el = sectionRef.current
     if (!el) return
+    const isMob = window.innerWidth < 768
+    if (isMob) {
+      setP(1)
+      return
+    }
     const ctx = gsap.context(() => {
       gsap.timeline({
         scrollTrigger: {
@@ -870,10 +974,27 @@ function BehaviouralCycle() {
         },
       }).to({}, { duration: 1 })
     }, el)
-    // Framer Motion Reveal animations on elements above take ~800ms to settle.
-    // Refresh so GSAP measures the correct final positions.
-    const t = setTimeout(() => ScrollTrigger.refresh(), 900)
-    return () => { clearTimeout(t); ctx.revert() }
+    // Every time the document height changes (lazy images, Framer Motion reveals,
+    // fonts) the pin offset becomes stale. ResizeObserver re-measures immediately.
+    let roTimer = null
+    const ro = new ResizeObserver(() => {
+      clearTimeout(roTimer)
+      roTimer = setTimeout(() => ScrollTrigger.refresh(), 150)
+    })
+    ro.observe(document.body)
+
+    // Belt-and-suspenders: timed refreshes for the first few seconds
+    const t1 = setTimeout(() => ScrollTrigger.refresh(), 900)
+    const t2 = setTimeout(() => ScrollTrigger.refresh(), 2000)
+    const onLoad = () => ScrollTrigger.refresh()
+    window.addEventListener('load', onLoad)
+
+    return () => {
+      clearTimeout(t1); clearTimeout(t2); clearTimeout(roTimer)
+      window.removeEventListener('load', onLoad)
+      ro.disconnect()
+      ctx.revert()
+    }
   }, [])
 
   const cx = 260, cy = 265
@@ -1121,7 +1242,7 @@ function SystemsSection() {
 
         {/* Actor Map — editorial layout */}
         <div style={{ marginBottom: 'clamp(3rem,5vw,5rem)' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'clamp(2rem,5vw,5rem)', alignItems: 'start', marginBottom: 'clamp(1.5rem,2.5vw,2.5rem)' }}>
+          <div className="sb-2col" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'clamp(2rem,5vw,5rem)', alignItems: 'start', marginBottom: 'clamp(1.5rem,2.5vw,2.5rem)' }}>
             <div>
               <Reveal><p style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.58rem', letterSpacing: '0.18em', textTransform: 'uppercase', color: C.muted, marginBottom: '0.75rem' }}>Actor Map</p></Reveal>
               <Reveal delay={0.05}>
@@ -1148,13 +1269,16 @@ function SystemsSection() {
             </Reveal>
           </div>
           <Reveal delay={0.1}>
-            <ActorMap />
+            <div className="sb-diagram">
+              <ActorMap />
+              <PinchHint />
+            </div>
           </Reveal>
         </div>
 
         {/* Knowledge Graph — editorial layout */}
         <div style={{ marginBottom: 'clamp(3rem,5vw,5rem)' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'clamp(2rem,5vw,5rem)', alignItems: 'start', marginBottom: 'clamp(1.5rem,2.5vw,2.5rem)' }}>
+          <div className="sb-2col" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'clamp(2rem,5vw,5rem)', alignItems: 'start', marginBottom: 'clamp(1.5rem,2.5vw,2.5rem)' }}>
             <div>
               <Reveal><p style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.58rem', letterSpacing: '0.18em', textTransform: 'uppercase', color: C.muted, marginBottom: '0.75rem' }}>Knowledge Graph</p></Reveal>
               <Reveal delay={0.05}>
@@ -1180,12 +1304,15 @@ function SystemsSection() {
               </div>
             </Reveal>
           </div>
-          <EcosystemDiagram />
+          <div className="sb-diagram">
+            <EcosystemDiagram />
+            <PinchHint />
+          </div>
         </div>
 
         {/* Sub-systems — editorial layout */}
         <div style={{ marginBottom: 'clamp(3rem,5vw,5rem)' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'clamp(2rem,5vw,5rem)', alignItems: 'start', marginBottom: 'clamp(1.5rem,2.5vw,2.5rem)' }}>
+          <div className="sb-2col" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'clamp(2rem,5vw,5rem)', alignItems: 'start', marginBottom: 'clamp(1.5rem,2.5vw,2.5rem)' }}>
             <div>
               <Reveal><p style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.58rem', letterSpacing: '0.18em', textTransform: 'uppercase', color: C.muted, marginBottom: '0.75rem' }}>Sub-systems</p></Reveal>
               <Reveal delay={0.05}>
@@ -1212,7 +1339,10 @@ function SystemsSection() {
             </Reveal>
           </div>
           <Reveal delay={0.1}>
-            <SubSystems />
+            <div className="sb-diagram">
+              <SubSystems />
+              <PinchHint />
+            </div>
           </Reveal>
         </div>
 
@@ -1220,13 +1350,16 @@ function SystemsSection() {
         <Reveal delay={0.1}>
           <div style={{ marginBottom: 'clamp(2.5rem,4vw,4rem)' }}>
             <Label>System Map I</Label>
-            <SystemMap />
+            <div className="sb-diagram">
+              <SystemMap />
+              <PinchHint />
+            </div>
           </div>
         </Reveal>
 
         {/* Feedback Loops — editorial layout */}
         <div style={{ marginBottom: 'clamp(3rem,5vw,5rem)' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'clamp(2rem,5vw,5rem)', alignItems: 'start', marginBottom: 'clamp(1.5rem,2.5vw,2.5rem)' }}>
+          <div className="sb-2col" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'clamp(2rem,5vw,5rem)', alignItems: 'start', marginBottom: 'clamp(1.5rem,2.5vw,2.5rem)' }}>
             <div>
               <Reveal><p style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.58rem', letterSpacing: '0.18em', textTransform: 'uppercase', color: C.muted, marginBottom: '0.75rem' }}>Feedback Loops</p></Reveal>
               <Reveal delay={0.05}>
@@ -1253,7 +1386,10 @@ function SystemsSection() {
             </Reveal>
           </div>
           <Reveal delay={0.1}>
-            <FeedbackLoops />
+            <div className="sb-diagram">
+              <FeedbackLoops />
+              <PinchHint />
+            </div>
           </Reveal>
         </div>
 
@@ -1385,7 +1521,7 @@ function SurveyInsights() {
 
       {/* Stat strip */}
       <Reveal>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: '1rem', marginBottom: 'clamp(1.5rem,3vw,2.5rem)' }}>
+        <div className="sb-stat3" style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: '1rem', marginBottom: 'clamp(1.5rem,3vw,2.5rem)' }}>
           {[
             { n: '141',   label: 'students surveyed across school & college', sub: 'Sample size',   color: P.yellow },
             { n: '71.6%', label: 'cite lack of focus as their #1 challenge',  sub: 'Top challenge', color: P.pink },
@@ -1402,7 +1538,7 @@ function SurveyInsights() {
 
       {/* Challenges (pink) + What makes it enjoyable (green) */}
       <Reveal delay={0.08}>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem', marginBottom: 'clamp(1.5rem,3vw,2.5rem)' }}>
+        <div className="sb-2col" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem', marginBottom: 'clamp(1.5rem,3vw,2.5rem)' }}>
           <DarkCard>
             <CardLabel>Biggest challenges (select up to 2) · 141 responses</CardLabel>
             {challenges.map(c => <HBar key={c.label} label={c.label} pct={c.pct} accent={P.pink} />)}
@@ -1440,7 +1576,7 @@ function SurveyInsights() {
 
       {/* Motivators + Study methods — equal-height 2-col */}
       <Reveal delay={0.08}>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem', marginBottom: 'clamp(1.5rem,3vw,2.5rem)', alignItems: 'stretch' }}>
+        <div className="sb-2col" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem', marginBottom: 'clamp(1.5rem,3vw,2.5rem)', alignItems: 'stretch' }}>
           <DarkCard style={{ display: 'flex', flexDirection: 'column' }}>
             <CardLabel>What motivates them most (select up to 3) · 141 responses</CardLabel>
             {motivators.map(m => <HBar key={m.label} label={m.label} pct={m.pct} accent={m.color === P.blue ? P.yellow : m.color} />)}
@@ -1531,7 +1667,10 @@ function ResearchSection() {
             <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.9rem', color: C.mid, lineHeight: 1.7, marginBottom: '1.5rem', maxWidth: 560 }}>
               As interviews progressed, <strong style={{ color: C.ink }}>motivation kept surfacing, not as one issue among many, but as the thread connecting almost everything else.</strong> This map zoomed in: what is motivation actually connected to, and where does it consistently break down?
             </p>
-            <SystemMapII />
+            <div className="sb-diagram">
+              <SystemMapII />
+              <PinchHint />
+            </div>
           </div>
         </Reveal>
 
@@ -1743,7 +1882,7 @@ function PostPersonasSection() {
           </p>
         </Reveal>
         <Reveal delay={0.1}>
-          <div style={{
+          <div className="sb-diagram" style={{
             background: C.surface, borderRadius: '16px',
             padding: 'clamp(1.5rem,3vw,2.5rem)',
             border: `1px solid ${C.border}`,
@@ -1751,6 +1890,7 @@ function PostPersonasSection() {
             overflowX: 'auto',
           }}>
             <IADiagram />
+            <PinchHint />
           </div>
         </Reveal>
 
@@ -1876,14 +2016,14 @@ function PersonasSection() {
         </MaskReveal>
 
         {/* Persona cards — CSS subgrid so sections align across both cards */}
-        <StaggerGrid style={{
+        <StaggerGrid className="sb-persona-grid" style={{
           display: 'grid',
           gridTemplateColumns: '1fr 1fr',
           gridTemplateRows: 'auto auto auto auto auto',
           gap: '0 1.5rem',
         }}>
           {personas.map((p) => (
-            <StaggerItem key={p.name} style={{
+            <StaggerItem key={p.name} className="sb-persona-item" style={{
               display: 'grid',
               gridTemplateRows: 'subgrid',
               gridRow: 'span 5',
@@ -1986,8 +2126,9 @@ function PersonasSection() {
             <p style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.9rem', color: C.mid, lineHeight: 1.7, marginBottom: '2rem', maxWidth: 560 }}>
               What our primary user says, does, thinks, and feels, capturing the emotional landscape of a student who wants to do better.
             </p>
-            <div style={{ maxWidth: 780, margin: '0 auto' }}>
+            <div style={{ maxWidth: 780, margin: '0 auto' }} className="sb-diagram">
               <EmpathyMap />
+              <PinchHint />
             </div>
           </div>
         </Reveal>
@@ -2070,7 +2211,7 @@ function DesignSystemSection() {
         <Reveal>
           <h3 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: 'clamp(1.1rem,2vw,1.35rem)', color: C.darkInk, marginBottom: '1.25rem', letterSpacing: '-0.02em' }}>Colour Palette</h3>
         </Reveal>
-        <StaggerGrid style={{
+        <StaggerGrid className="sb-6col" style={{
           display: 'grid',
           gridTemplateColumns: 'repeat(6, 1fr)',
           gap: '10px',
@@ -2105,6 +2246,15 @@ function MockupsSection() {
       <Wrap>
         {/* Page images — Wrap-width, stacked */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginBottom: 'clamp(3rem,5vw,5rem)' }}>
+          <Reveal delay={0}>
+            <div style={{ borderRadius: '18px', overflow: 'hidden', boxShadow: '0 2px 16px rgba(0,0,0,0.06)', background: '#ffffff', isolation: 'isolate' }}>
+              <img
+                src="/sb-mockup-icon.png"
+                alt="Study Buddy app icon on iPhone home screen"
+                loading="lazy" decoding="async" style={{ width: '100%', display: 'block' }}
+              />
+            </div>
+          </Reveal>
           {SB_PAGES.map((n, i) => (
             <Reveal key={n} delay={i * 0.04}>
               <div style={{ borderRadius: '18px', overflow: 'hidden', boxShadow: '0 2px 16px rgba(0,0,0,0.06)', background: '#ffffff', isolation: 'isolate' }}>
@@ -2202,7 +2352,7 @@ function AccessibilitySection() {
             Study Buddy is evaluated against the POUR principles, ensuring the app works for students with diverse abilities and contexts.
           </p>
         </Reveal>
-        <StaggerGrid style={{
+        <StaggerGrid className="sb-2col" style={{
           display: 'grid',
           gridTemplateColumns: '1fr 1fr',
           gap: '1rem',
@@ -2274,7 +2424,7 @@ function ReflectionsSection() {
           }}>What stayed with me</h2>
         </Reveal>
 
-        <StaggerGrid style={{
+        <StaggerGrid className="sb-2col" style={{
           display: 'grid',
           gridTemplateColumns: '1fr 1fr',
           gap: '1rem',
@@ -2336,6 +2486,27 @@ export default function StudyBuddy() {
 
   return (
     <div style={{ background: C.bg, color: C.ink, minHeight: '100vh' }}>
+      <style>{`
+        .sb-pinch-hint { display: none; }
+        .sb-diagram { touch-action: pan-y pinch-zoom; }
+        @media (max-width: 767px) {
+          .sb-2col { grid-template-columns: 1fr !important; }
+          .sb-stat3 { grid-template-columns: 1fr !important; }
+          .sb-6col { grid-template-columns: repeat(3, 1fr) !important; }
+          .sb-persona-grid {
+            grid-template-columns: 1fr !important;
+            grid-template-rows: unset !important;
+            gap: 1.5rem !important;
+          }
+          .sb-persona-item {
+            grid-row: auto !important;
+            grid-template-rows: unset !important;
+            display: flex !important;
+            flex-direction: column !important;
+          }
+          .sb-pinch-hint { display: block !important; }
+        }
+      `}</style>
       <ProgressBar />
       <Nav light photoHero />
       <SidebarNav active={active} />

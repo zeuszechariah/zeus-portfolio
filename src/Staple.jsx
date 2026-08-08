@@ -83,7 +83,7 @@ export default function Staple() {
             Brand Identity · Menu Design · Typesetting · Visual Development
           </span>
           <h1 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 500, fontSize: 'clamp(2.8rem,6vw,5rem)', lineHeight: 1.0, color: '#FFFFFF', margin: '0 0 1.5rem', letterSpacing: '-0.03em' }}>
-            Staple.
+            Staple
           </h1>
           <p style={{ fontFamily: "'Syne', sans-serif", fontSize: 'clamp(0.9rem,1.8vw,1.05rem)', lineHeight: 1.78, color: 'rgba(255,255,255,0.68)', maxWidth: '46ch', margin: '0 0 3rem', textWrap: 'pretty' }}>
             A full brand identity for a neighbourhood Indian fusion cafe — from logo and typesetting to menus, uniforms, and social media collateral.

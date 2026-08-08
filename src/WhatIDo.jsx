@@ -3,6 +3,8 @@ import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 
 gsap.registerPlugin(ScrollTrigger)
+// Ignore URL-bar show/hide on mobile — prevents pin glitch when browser chrome appears
+ScrollTrigger.config({ ignoreMobileResize: true })
 
 function useIsMobile() {
   const [mobile, setMobile] = useState(() => typeof window !== 'undefined' && window.innerWidth < 768)
@@ -33,44 +35,70 @@ function WhatIDoMobile() {
 
   useEffect(() => {
     const ctx = gsap.context(() => {
-      gsap.set('.wid-m-strip', { scale: 1.05 })
+      // Pre-promote all animated elements onto GPU layers
+      gsap.set('.wid-m-strip', { scale: 1.05, force3D: true })
+      gsap.set(
+        ['.wid-m-c0', '.wid-m-c1', '.wid-m-c2',
+         '.wid-m-cover-top', '.wid-m-cover-bot'],
+        { force3D: true, z: 0 }
+      )
 
       const tl = gsap.timeline({
         scrollTrigger: {
-          trigger: sectionRef.current,
-          start:   'top top',
-          end:     '+=2200',
-          scrub:   1.8,
-          pin:     true,
-          anticipatePin: 1,
+          trigger:             sectionRef.current,
+          start:               'top top',
+          end:                 '+=2600',
+          scrub:               0.9,
+          pin:                 true,
+          anticipatePin:       1,
+          invalidateOnRefresh: true,
         },
       })
 
-      // Phase 0: breath
-      tl.to('.wid-m-strip', { scale: 1.00, duration: 0.22, ease: 'power2.inOut' }, 0)
+      // Pre-phase: black covers slide away to reveal outer cards (pure translateY — GPU only)
+      tl.to('.wid-m-cover-top', { y: -CH_LAND, duration: 0.26, ease: 'power2.inOut', force3D: true }, 0)
+      tl.to('.wid-m-cover-bot', { y:  CH_LAND, duration: 0.26, ease: 'power2.inOut', force3D: true }, 0.02)
+      // Hide covers after they've fully slid away
+      tl.set(['.wid-m-cover-top', '.wid-m-cover-bot'], { visibility: 'hidden' }, 0.32)
 
-      // Phase 1: cards break apart vertically + border radius
-      tl.to('.wid-m-c0', { y: -15, duration: 0.36, ease: 'power1.inOut' }, 0.32)
-      tl.to('.wid-m-c2', { y:  15, duration: 0.36, ease: 'power1.inOut' }, 0.32)
+      // Phase 0: breath
+      tl.to('.wid-m-strip', { scale: 1.00, duration: 0.22, ease: 'power2.inOut', force3D: true }, 0.28)
+
+      // Phase 1: cards separate
+      tl.to('.wid-m-c0', { y: -15, duration: 0.36, ease: 'power1.inOut', force3D: true }, 0.56)
+      tl.to('.wid-m-c2', { y:  15, duration: 0.36, ease: 'power1.inOut', force3D: true }, 0.56)
       tl.to(['.wid-m-c0 .wid-m-front', '.wid-m-c1 .wid-m-front', '.wid-m-c2 .wid-m-front'], {
         borderRadius: '20px', duration: 0.36, ease: 'power1.inOut',
-      }, 0.32)
+      }, 0.56)
 
-      // Phase 2: fan vertically + flip, outermost first
+      // Phase 2: fan + flip, outermost first
       const FLIP_DUR = 0.46
       const STAGGER  = 0.14
       ;[2, 1, 0].forEach((i, order) => {
         const start = 0.82 + order * STAGGER
         tl.to(`.wid-m-c${i}`, {
           x: FAN_LAND[i].x, y: FAN_LAND[i].y, rotation: FAN_LAND[i].rot,
-          duration: FLIP_DUR, ease: 'power2.inOut',
+          duration: FLIP_DUR, ease: 'power2.inOut', force3D: true,
         }, start)
         tl.to(`.wid-m-c${i} .wid-m-inner`, {
-          rotationY: 180,
-          duration:  FLIP_DUR,
-          ease:      'power2.inOut',
+          rotationY: 180, duration: FLIP_DUR, ease: 'power2.inOut', force3D: false,
         }, start + 0.06)
+        // Explicit opacity crossfade around the midpoint — don't rely on Safari
+        // correctly hiding the backface via backface-visibility, which it doesn't
+        // always honour here. This hides "depth" by alpha regardless.
+        const flipMid = start + 0.06 + FLIP_DUR * 0.42
+        tl.to(`.wid-m-c${i} .wid-m-front`, {
+          opacity: 0, duration: FLIP_DUR * 0.22, ease: 'power1.in',
+        }, flipMid)
+        tl.to(`.wid-m-c${i} .wid-m-back`, {
+          opacity: 1, duration: FLIP_DUR * 0.22, ease: 'power1.out',
+        }, flipMid)
       })
+
+      // Refresh pin offset after fonts/images settle
+      const t1 = setTimeout(() => ScrollTrigger.refresh(), 600)
+      const t2 = setTimeout(() => ScrollTrigger.refresh(), 1800)
+      return () => { clearTimeout(t1); clearTimeout(t2) }
     }, sectionRef)
 
     return () => ctx.revert()
@@ -124,22 +152,38 @@ function WhatIDoMobile() {
               width:           CW_LAND,
               height:          CH_LAND * 3,
               transformOrigin: '50% 50%',
+              willChange:      'transform',
             }}
           >
+            {/* Black covers slide away to reveal cards — pure translateY, no clip-path */}
+            <div className="wid-m-cover-top" style={{
+              position: 'absolute', top: 0, left: 0,
+              width: CW_LAND, height: CH_LAND,
+              background: '#000', borderRadius: INIT_BR_LAND[0],
+              zIndex: 5, pointerEvents: 'none', willChange: 'transform',
+            }} />
+            <div className="wid-m-cover-bot" style={{
+              position: 'absolute', top: CH_LAND * 2, left: 0,
+              width: CW_LAND, height: CH_LAND,
+              background: '#000', borderRadius: INIT_BR_LAND[2],
+              zIndex: 5, pointerEvents: 'none', willChange: 'transform',
+            }} />
+
             {CARDS.map((card, i) => (
               <div
                 key={i}
                 className={`wid-m-c${i}`}
                 style={{
-                  position: 'absolute',
-                  top:      i * CH_LAND,
-                  left:     0,
-                  width:    CW_LAND,
-                  height:   CH_LAND,
-                  zIndex:   [3, 2, 1][i],
+                  position:   'absolute',
+                  top:        i * CH_LAND,
+                  left:       0,
+                  width:      CW_LAND,
+                  height:     CH_LAND,
+                  zIndex:     [3, 2, 1][i],
+                  willChange: 'transform',
                 }}
               >
-                <div className="wid-m-inner" style={{ width: '100%', height: '100%', position: 'relative', perspective: '1100px', transformStyle: 'preserve-3d' }}>
+                <div className="wid-m-inner" style={{ width: '100%', height: '100%', position: 'relative', perspective: '1100px', transformStyle: 'preserve-3d', WebkitTransformStyle: 'preserve-3d', willChange: 'transform' }}>
 
                   {/* FRONT */}
                   <div className="wid-m-front" style={{
@@ -156,8 +200,8 @@ function WhatIDoMobile() {
                       inset:              0,
                       backgroundColor:    '#000',
                       backgroundImage:    'url(/card-front-waves.png)',
-                      backgroundSize:     `${CW_LAND * 3}px auto`,
-                      backgroundPosition: `${-i * CW_LAND}px 50%`,
+                      backgroundSize:     `${CW_LAND}px ${CH_LAND * 3}px`,
+                      backgroundPosition: `50% ${-i * CH_LAND}px`,
                       backgroundRepeat:   'no-repeat',
                     }} />
                     <div style={{ position: 'absolute', inset: 0, backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.80' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E\")", backgroundSize: '160px 160px', opacity: 0.12, pointerEvents: 'none' }} />
@@ -175,15 +219,17 @@ function WhatIDoMobile() {
                   </div>
 
                   {/* BACK */}
-                  <div style={{
+                  <div className="wid-m-back" style={{
                     position:                 'absolute', inset: 0,
                     background:               card.backBg,
-                    backdropFilter:           'blur(24px) saturate(160%)',
-                    WebkitBackdropFilter:     'blur(24px) saturate(160%)',
+                    backdropFilter:           'blur(8px) saturate(130%)',
+                    WebkitBackdropFilter:     'blur(8px) saturate(130%)',
                     borderRadius:             '20px',
                     transform:                'rotateY(180deg)',
                     backfaceVisibility:       'hidden',
                     WebkitBackfaceVisibility: 'hidden',
+                    opacity:                  0,
+                    willChange:               'transform, opacity',
                     display:                  'flex',
                     flexDirection:            'row',
                     alignItems:               'center',
@@ -320,7 +366,6 @@ export default function WhatIDo() {
       tl.to('.wid-strip, .wid-hand', { scale: 1.00, duration: 0.22, ease: 'power2.inOut' }, 0)
 
       // ── Phase 1 (0.32 → 0.68): Cards break from image — upright, no tilt ────
-      // x separation only; fan rotation is deferred to the flip phase
       tl.to('.wid-hand', { opacity: 0, duration: 0.36, ease: 'power2.inOut' }, 0.32)
       tl.to('.wid-c0', { x: -34, duration: 0.36, ease: 'power1.inOut' }, 0.32)
       tl.to('.wid-c2', { x:  34, duration: 0.36, ease: 'power1.inOut' }, 0.32)
@@ -463,6 +508,7 @@ export default function WhatIDo() {
                   position:       'relative',
                   perspective:    '1100px',
                   transformStyle: 'preserve-3d',
+                  WebkitTransformStyle: 'preserve-3d',
                 }}
               >
                 {/* FRONT */}
@@ -480,7 +526,7 @@ export default function WhatIDo() {
                     justifyContent:     'center',
                   }}
                 >
-                  {/* Single panoramic image spanning all 3 cards */}
+                  {/* Panoramic image — each card shows its slice of the same image */}
                   <div style={{
                     position:           'absolute',
                     inset:              0,
@@ -490,16 +536,7 @@ export default function WhatIDo() {
                     backgroundPosition: `${-i * CW}px 50%`,
                     backgroundRepeat:   'no-repeat',
                   }} />
-                  {/* Grain */}
-                  <div style={{
-                    position:        'absolute',
-                    inset:           0,
-                    backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.80' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E\")",
-                    backgroundSize:  '160px 160px',
-                    opacity:         0.12,
-                    pointerEvents:   'none',
-                  }} />
-                  {/* "depth" on centre card only */}
+                  <div style={{ position: 'absolute', inset: 0, backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.80' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E\")", backgroundSize: '160px 160px', opacity: 0.12, pointerEvents: 'none' }} />
                   {i === 1 && (
                     <span style={{
                       position:      'relative',

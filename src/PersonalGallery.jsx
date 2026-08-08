@@ -1,6 +1,18 @@
 import { useRef, useEffect, useState } from 'react'
 import { motion, useInView } from 'framer-motion'
 
+// Safari (incl. iOS) doesn't reliably render backface-visibility:hidden inside
+// this ring's nested/tilted 3D transforms — Chrome/Android render it correctly
+// natively. Detect Safari specifically so each platform gets the approach that
+// actually works for it, rather than one compromise that's wrong for both.
+function useIsSafari() {
+  const [isSafari, setIsSafari] = useState(false)
+  useEffect(() => {
+    setIsSafari(/^((?!chrome|android).)*safari/i.test(navigator.userAgent))
+  }, [])
+  return isSafari
+}
+
 function useIsMobile() {
   const [mobile, setMobile] = useState(() => typeof window !== 'undefined' && window.innerWidth < 768)
   useEffect(() => {
@@ -212,19 +224,20 @@ const CARD_W  = 220
 const CARD_H  = 300
 const RADIUS  = 320
 
-function PolaroidFace({ photo }) {
+function PolaroidFace({ photo, noWillChange }) {
   return (
     <div style={{
       width:         '100%',
       height:        '100%',
       background:    'white',
       borderRadius:  '4px',
-      boxShadow:     '0 8px 32px rgba(0,0,0,0.6)',
+      boxShadow:     '0 4px 12px rgba(0,0,0,0.35)',
       display:       'flex',
       flexDirection: 'column',
       padding:       '10px 10px 0 10px',
       boxSizing:     'border-box',
       position:      'relative',
+      ...(noWillChange ? {} : { willChange: 'transform' }),
     }}>
       <div style={{
         position:      'absolute',
@@ -284,6 +297,7 @@ function PolaroidFace({ photo }) {
 
 function BarrelCarousel({ focusedIdx, setFocusedIdx, flipped, setFlipped }) {
   const isMobile = typeof window !== 'undefined' && window.innerWidth < 768
+  const isSafari = useIsSafari()
   const cardW    = isMobile ? 168 : CARD_W
   const cardH    = isMobile ? 229 : CARD_H
   const tZ       = isMobile ? 42  : 55
@@ -315,8 +329,8 @@ function BarrelCarousel({ focusedIdx, setFocusedIdx, flipped, setFlipped }) {
 
         <style>{`
           @keyframes spinY {
-            from { transform: rotateY(0deg); }
-            to   { transform: rotateY(-360deg); }
+            from { transform: perspective(1200px) scale(var(--ring-scale)) rotate(24deg) rotateX(-22deg) rotateY(0deg); }
+            to   { transform: perspective(1200px) scale(var(--ring-scale)) rotate(24deg) rotateX(-22deg) rotateY(-360deg); }
           }
         `}</style>
 
@@ -333,59 +347,59 @@ function BarrelCarousel({ focusedIdx, setFocusedIdx, flipped, setFlipped }) {
         }} />
 
         <div style={{ position: 'relative', zIndex: 1, overflow: 'visible' }}>
-          <div style={{
-            width:          `${cardW}px`,
-            height:         `${cardH}px`,
-            transformStyle: 'preserve-3d',
-            transform:      isMobile ? 'perspective(1200px) scale(0.90) rotate(24deg) rotateX(-22deg)' : 'perspective(1200px) scale(1.18) rotate(24deg) rotateX(-22deg)',
+          {/* Static tilt + spin merged into one element — one fewer nested preserve-3d
+              context, which WebKit's 3D rendering handles more reliably. */}
+          <div className="polaroid-spin" style={{
+            width:                `${cardW}px`,
+            height:               `${cardH}px`,
+            transformStyle:       'preserve-3d',
+            WebkitTransformStyle: 'preserve-3d',
+            position:             'relative',
+            '--ring-scale':       isMobile ? 0.90 : 1.18,
+            animation:            'spinY 26s linear infinite',
+            animationPlayState:   focused ? 'paused' : 'running',
           }}>
-            <div style={{
-              width:               '100%',
-              height:              '100%',
-              transformStyle:      'preserve-3d',
-              position:            'relative',
-              animation:           'spinY 26s linear infinite',
-              animationPlayState:  focused ? 'paused' : 'running',
-            }}>
-              {pairs.map((pair, i) => (
-                <div
-                  key={pair.front.id}
-                  onClick={() => openCard(i)}
-                  style={{
-                    position:        'absolute',
-                    top:             '50%',
-                    left:            '50%',
-                    marginLeft:      '0',
-                    marginTop:       `-${cardH / 2}px`,
-                    width:           `${cardW}px`,
-                    height:          `${cardH}px`,
-                    transformOrigin: '0% 50%',
-                    transformStyle:  'preserve-3d',
-                    transform:       `rotateY(${i * degStep}deg) translateZ(${tZ}px)`,
-                    cursor:          'pointer',
-                  }}
-                >
-                  <div style={{
-                    position:                 'absolute',
-                    inset:                    0,
-                    backfaceVisibility:       'hidden',
-                    WebkitBackfaceVisibility: 'hidden',
-                  }}>
-                    <PolaroidFace photo={pair.front} />
-                  </div>
-
-                  <div style={{
-                    position:                 'absolute',
-                    inset:                    0,
-                    backfaceVisibility:       'hidden',
-                    WebkitBackfaceVisibility: 'hidden',
-                    transform:                'rotateY(180deg)',
-                  }}>
-                    <PolaroidFace photo={pair.back} />
-                  </div>
+            {pairs.map((pair, i) => (
+              <div
+                key={pair.front.id}
+                onClick={() => openCard(i)}
+                style={{
+                  position:             'absolute',
+                  top:                  '50%',
+                  left:                 '50%',
+                  marginLeft:           '0',
+                  marginTop:            `-${cardH / 2}px`,
+                  width:                `${cardW}px`,
+                  height:               `${cardH}px`,
+                  transformOrigin:      '0% 50%',
+                  transformStyle:       'preserve-3d',
+                  WebkitTransformStyle: 'preserve-3d',
+                  transform:            `rotateY(${i * degStep}deg) translateZ(${tZ}px)`,
+                  cursor:               'pointer',
+                }}
+              >
+                <div style={{
+                  position:                 'absolute',
+                  inset:                    0,
+                  backfaceVisibility:       'hidden',
+                  WebkitBackfaceVisibility: 'hidden',
+                  opacity:                  1,
+                  transform:                isSafari ? 'translateZ(0.01px)' : undefined,
+                }}>
+                  <PolaroidFace photo={pair.front} noWillChange={isSafari} />
                 </div>
-              ))}
-            </div>
+                <div style={{
+                  position:                 'absolute',
+                  inset:                    0,
+                  backfaceVisibility:       'hidden',
+                  WebkitBackfaceVisibility: 'hidden',
+                  transform:                isSafari ? 'rotateY(180deg) translateZ(0.01px)' : 'rotateY(180deg)',
+                  opacity:                  1,
+                }}>
+                  <PolaroidFace photo={pair.back} noWillChange={isSafari} />
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </div>
@@ -425,6 +439,7 @@ function BarrelCarousel({ focusedIdx, setFocusedIdx, flipped, setFlipped }) {
             height:         '100%',
             position:       'relative',
             transformStyle: 'preserve-3d',
+            WebkitTransformStyle: 'preserve-3d',
             transform:      flipped ? 'rotateY(180deg)' : 'rotateY(0deg)',
             transition:     'transform 0.55s cubic-bezier(0.4, 0, 0.2, 1)',
           }}>
@@ -507,8 +522,8 @@ export default function PersonalGallery() {
         paddingBottom: 'clamp(4rem, 6vw, 5rem)',
       }}
     >
-      {/* Cursor label */}
-      <div
+      {/* Cursor label — desktop only */}
+      {!isMobile && <div
         ref={cursorRef}
         style={{
           position:      'fixed',
@@ -531,7 +546,7 @@ export default function PersonalGallery() {
             <span style={{ fontFamily: "'Space Mono', monospace", fontSize: '10px', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'rgba(242,237,228,0.45)', display: 'block' }}>to view</span>
           </>
         )}
-      </div>
+      </div>}
       {!isMobile && <GalleryCanvas />}
 
       {/* Teal blob behind polaroids */}
