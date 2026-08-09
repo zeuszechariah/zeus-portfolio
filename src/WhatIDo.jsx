@@ -35,13 +35,18 @@ function WhatIDoMobile() {
 
   useEffect(() => {
     const ctx = gsap.context(() => {
-      // Pre-promote all animated elements onto GPU layers
+      // Pre-promote all animated elements onto GPU layers. c0/c2 are deliberately
+      // NOT included here — baking a z:0/matrix3d baseline before the scaleY reveal
+      // below runs is what caused it to render as a hinge/perspective distortion
+      // instead of a flat stretch (same class of bug as the card-flip fix earlier).
+      // They still get force3D later, from the individual tweens in phase 1/2,
+      // by which point the scaleY reveal is long finished.
       gsap.set('.wid-m-strip', { scale: 1.05, force3D: true })
-      gsap.set(
-        ['.wid-m-c0', '.wid-m-c1', '.wid-m-c2',
-         '.wid-m-cover-top', '.wid-m-cover-bot'],
-        { force3D: true, z: 0 }
-      )
+      gsap.set('.wid-m-c1', { force3D: true, z: 0 })
+      // Cards 0 and 2 start collapsed to nothing, anchored at the edge touching
+      // card 1, so they grow outward from it like it's splitting apart.
+      gsap.set('.wid-m-c0', { scaleY: 0, transformOrigin: '50% 100%', force3D: false })
+      gsap.set('.wid-m-c2', { scaleY: 0, transformOrigin: '50% 0%', force3D: false })
 
       const tl = gsap.timeline({
         scrollTrigger: {
@@ -55,14 +60,21 @@ function WhatIDoMobile() {
         },
       })
 
-      // Pre-phase: black covers slide away to reveal outer cards (pure translateY — GPU only)
-      tl.to('.wid-m-cover-top', { y: -CH_LAND, duration: 0.26, ease: 'power2.inOut', force3D: true }, 0)
-      tl.to('.wid-m-cover-bot', { y:  CH_LAND, duration: 0.26, ease: 'power2.inOut', force3D: true }, 0.02)
-      // Hide covers after they've fully slid away
-      tl.set(['.wid-m-cover-top', '.wid-m-cover-bot'], { visibility: 'hidden' }, 0.32)
+      // Pre-phase: card 1 stays put while cards 0 and 2 grow outward from its
+      // top/bottom edges — no separate cover elements, just a transform scale.
+      // force3D:false keeps this a flat 2D scale (see note above). sine.inOut for
+      // a gentler, more gradual feel than power2.inOut, which felt abrupt on scroll.
+      tl.to('.wid-m-c0', { scaleY: 1, duration: 0.32, ease: 'sine.inOut', force3D: false }, 0)
+      tl.to('.wid-m-c2', { scaleY: 1, duration: 0.32, ease: 'sine.inOut', force3D: false }, 0.03)
+      // Snap the rounded corners + 3D context in once each card is fully scaled —
+      // no more squish to distort them, and rotation isn't needed until phase 2.
+      tl.set('.wid-m-c0 .wid-m-front', { borderRadius: INIT_BR_LAND[0] }, 0.32)
+      tl.set('.wid-m-c0 .wid-m-inner', { perspective: '1100px', transformStyle: 'preserve-3d', webkitTransformStyle: 'preserve-3d' }, 0.32)
+      tl.set('.wid-m-c2 .wid-m-front', { borderRadius: INIT_BR_LAND[2] }, 0.35)
+      tl.set('.wid-m-c2 .wid-m-inner', { perspective: '1100px', transformStyle: 'preserve-3d', webkitTransformStyle: 'preserve-3d' }, 0.35)
 
       // Phase 0: breath
-      tl.to('.wid-m-strip', { scale: 1.00, duration: 0.22, ease: 'power2.inOut', force3D: true }, 0.28)
+      tl.to('.wid-m-strip', { scale: 1.00, duration: 0.20, ease: 'power2.inOut', force3D: true }, 0.36)
 
       // Phase 1: cards separate
       tl.to('.wid-m-c0', { y: -15, duration: 0.36, ease: 'power1.inOut', force3D: true }, 0.56)
@@ -155,20 +167,6 @@ function WhatIDoMobile() {
               willChange:      'transform',
             }}
           >
-            {/* Black covers slide away to reveal cards — pure translateY, no clip-path */}
-            <div className="wid-m-cover-top" style={{
-              position: 'absolute', top: 0, left: 0,
-              width: CW_LAND, height: CH_LAND,
-              background: '#000', borderRadius: INIT_BR_LAND[0],
-              zIndex: 5, pointerEvents: 'none', willChange: 'transform',
-            }} />
-            <div className="wid-m-cover-bot" style={{
-              position: 'absolute', top: CH_LAND * 2, left: 0,
-              width: CW_LAND, height: CH_LAND,
-              background: '#000', borderRadius: INIT_BR_LAND[2],
-              zIndex: 5, pointerEvents: 'none', willChange: 'transform',
-            }} />
-
             {CARDS.map((card, i) => (
               <div
                 key={i}
@@ -183,12 +181,22 @@ function WhatIDoMobile() {
                   willChange: 'transform',
                 }}
               >
-                <div className="wid-m-inner" style={{ width: '100%', height: '100%', position: 'relative', perspective: '1100px', transformStyle: 'preserve-3d', WebkitTransformStyle: 'preserve-3d', willChange: 'transform' }}>
+                {/* perspective/preserve-3d only actually needed once the flip phase starts
+                    rotating this — establishing that 3D context during the scaleY reveal
+                    on cards 0/2 was contributing to the hinge-looking distortion. */}
+                <div className="wid-m-inner" style={{
+                  width: '100%', height: '100%', position: 'relative', willChange: 'transform',
+                  ...(i === 1 ? { perspective: '1100px', transformStyle: 'preserve-3d', WebkitTransformStyle: 'preserve-3d' } : {}),
+                }}>
 
                   {/* FRONT */}
+                  {/* borderRadius starts flat (0) for cards 0/2 — a fixed-px radius on
+                      an element inside a scaleY-animated parent squishes non-uniformly
+                      at low scale values, reading as a hinge/perspective distortion.
+                      GSAP snaps in the real INIT_BR_LAND shape once the reveal finishes. */}
                   <div className="wid-m-front" style={{
                     position:                 'absolute', inset: 0,
-                    borderRadius:             INIT_BR_LAND[i],
+                    borderRadius:             i === 1 ? INIT_BR_LAND[i] : '0',
                     backfaceVisibility:       'hidden',
                     WebkitBackfaceVisibility: 'hidden',
                     overflow:                 'hidden',
