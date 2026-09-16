@@ -2,7 +2,7 @@ import { Analytics } from '@vercel/analytics/react'
 import { useRef, useEffect, useState, lazy, Suspense } from 'react'
 import { motion, AnimatePresence, useMotionValue, useTransform, useSpring, useInView, useScroll } from 'framer-motion'
 import { BrowserRouter, Routes, Route, Link, useLocation } from 'react-router-dom'
-import { EASE, SPRING_STIFF, Bolt, ProgressBar, Nav, Footer, MaskReveal, Reveal, CookieBanner, SectionExit, HeroButton } from './shared.jsx'
+import { EASE, SPRING_STIFF, Bolt, ProgressBar, Nav, Footer, MaskReveal, Reveal, CookieBanner, SectionExit, HeroButton, BackToTop } from './shared.jsx'
 import PersonalGallery from './PersonalGallery.jsx'
 const WhatIDo       = lazy(() => import('./WhatIDo.jsx'))
 const About        = lazy(() => import('./About.jsx'))
@@ -1293,6 +1293,7 @@ function Home() {
           <SectionExit><VitalSigns /></SectionExit>
           <SectionExit><ProfessionalExposure /></SectionExit>
           <MarqueeGallery />
+          <BackToTop />
           <Footer />
         </>
       )}

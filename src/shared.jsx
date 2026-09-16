@@ -322,40 +322,118 @@ export function BackToTop() {
   )
 }
 
-// ─── Footer ───────────────────────────────────────────
+// ─── Footer ────────────────────────────────────────────
+// Two-size type scale only — hierarchy comes from color/weight, not size:
+//   body  (0.875rem / Syne)        — all primary content: email, phone, socials, address, legal links
+//   micro (0.6875rem / Space Mono) — all meta text: eyebrow labels, tagline, copyright
+const F_BODY  = { fontFamily: 'Syne, sans-serif', fontSize: '0.875rem', lineHeight: 1.5, letterSpacing: '0' }
+const F_MICRO = { fontFamily: "'Space Mono', monospace", fontSize: '0.6875rem', lineHeight: 1.6, letterSpacing: '0.08em' }
+
+// Single opacity scale, reused everywhere — no one-off values
+const C_MID    = 'rgba(255,255,255,0.55)' // primary content (email, phone, socials, NID name)
+const C_DIM    = 'rgba(255,255,255,0.34)' // tertiary content (address)
+const C_FAINT  = 'rgba(255,255,255,0.30)' // eyebrow labels
+
+function FooterEyebrow({ children }) {
+  return (
+    <p style={{ ...F_MICRO, color: C_FAINT, textTransform: 'uppercase', marginBottom: '1.25rem' }}>
+      {children}
+    </p>
+  )
+}
+
+function ExternalArrow() {
+  return (
+    <svg width="10" height="10" viewBox="0 0 10 10" fill="none" className="opacity-0 -translate-x-1 group-hover:opacity-70 group-hover:translate-x-0 transition-all duration-200" style={{ display: 'inline-block', marginLeft: '0.35rem' }}>
+      <path d="M2 8L8 2M8 2H3M8 2V7" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  )
+}
+
 export function Footer() {
   return (
-    <footer style={{ background:'#000000' }} className="border-t border-white/[0.04] relative overflow-hidden">
+    <footer style={{ background:'#000000' }} className="border-t border-white/[0.06] relative overflow-hidden">
       <div className="absolute pointer-events-none" style={{ width:'clamp(300px,38vw,520px)',height:'clamp(300px,38vw,520px)',borderRadius:'50%',top:'-30%',right:'10%',background:'radial-gradient(circle,rgba(255,91,4,0.08) 0%,transparent 65%)' }} />
       <div className="absolute pointer-events-none" style={{ width:'clamp(220px,28vw,380px)',height:'clamp(220px,28vw,380px)',borderRadius:'50%',bottom:'-20%',left:'-5%',background:'radial-gradient(circle,rgba(7,80,86,0.07) 0%,transparent 65%)' }} />
       <div className="max-w-[1200px] mx-auto px-[clamp(1.5rem,5vw,3.5rem)] pt-[clamp(3rem,6vw,5rem)] pb-[clamp(2rem,4vw,3rem)]">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-x-8 gap-y-12">
-          <div className="flex flex-col gap-4">
-            <a href="/imprint" style={{ fontFamily: 'Syne, sans-serif', fontSize: '0.8125rem', color: 'rgba(255,255,255,0.38)', textDecoration: 'none' }}>Imprint</a>
-            <a href="/privacy-policy" style={{ fontFamily: 'Syne, sans-serif', fontSize: '0.8125rem', color: 'rgba(255,255,255,0.38)', textDecoration: 'none' }}>Privacy Policy</a>
-            <a href="/press" style={{ fontFamily: 'Syne, sans-serif', fontSize: '0.8125rem', color: 'rgba(255,255,255,0.38)', textDecoration: 'none' }}>Press</a>
+        {/* Columns are sized to their own content (max-content) and distributed with
+            justify-between, instead of stretched fr tracks. A stretched track leaves dead
+            space after short content (e.g. "Behance") before the next column starts --
+            sizing to content and letting justify-between own the horizontal rhythm removes
+            that gap entirely. */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-[repeat(4,max-content)] lg:justify-between gap-x-8 gap-y-12">
+
+          {/* Legal / utility */}
+          <div className="flex flex-col min-w-0">
+            <FooterEyebrow>Legal</FooterEyebrow>
+            <div className="flex flex-col gap-3">
+              {[
+                ['Imprint', '/imprint'],
+                ['Press', '/press'],
+                ['Privacy Policy', '/privacy-policy'],
+              ].map(([label, href]) => (
+                <a key={label} href={href}
+                  className="w-fit hover:opacity-80 transition-opacity duration-200"
+                  style={{ ...F_BODY, color: C_MID, textDecoration: 'none' }}>
+                  {label}
+                </a>
+              ))}
+            </div>
           </div>
-          <div className="flex flex-col gap-4">
-            <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" style={{ fontFamily: 'Syne, sans-serif', fontSize: '0.8125rem', color: 'rgba(255,255,255,0.38)', textDecoration: 'none' }}>Instagram</a>
-            <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" style={{ fontFamily: 'Syne, sans-serif', fontSize: '0.8125rem', color: 'rgba(255,255,255,0.38)', textDecoration: 'none' }}>LinkedIn</a>
-            <a href="https://behance.net" target="_blank" rel="noopener noreferrer" style={{ fontFamily: 'Syne, sans-serif', fontSize: '0.8125rem', color: 'rgba(255,255,255,0.38)', textDecoration: 'none' }}>Behance</a>
+
+          {/* Socials */}
+          <div className="flex flex-col min-w-0">
+            <FooterEyebrow>Elsewhere</FooterEyebrow>
+            <div className="flex flex-col gap-3">
+              {[
+                ['Behance', 'https://behance.net'],
+                ['Instagram', 'https://instagram.com'],
+                ['LinkedIn', 'https://linkedin.com'],
+              ].map(([label, href]) => (
+                <a key={label} href={href} target="_blank" rel="noopener noreferrer"
+                  className="group inline-flex items-center w-fit hover:opacity-80 transition-opacity duration-200"
+                  style={{ ...F_BODY, color: C_MID, textDecoration: 'none' }}>
+                  {label}
+                  <ExternalArrow />
+                </a>
+              ))}
+            </div>
           </div>
-          <div className="flex flex-col gap-1">
-            <p style={{ fontFamily: 'Syne, sans-serif', fontWeight: 600, fontSize: '0.8125rem', color: 'rgba(255,255,255,0.65)', marginBottom: '0.5rem' }}>National Institute of Design</p>
-            <p style={{ fontFamily: 'Syne, sans-serif', fontSize: '0.8125rem', color: 'rgba(255,255,255,0.35)', lineHeight: 1.65 }}>Peenya, Bangalore<br />Karnataka IN 560022<br />India</p>
+
+          {/* Education / info */}
+          <div className="flex flex-col min-w-0">
+            <FooterEyebrow>Education</FooterEyebrow>
+            <p style={{ ...F_BODY, fontWeight: 600, color: C_MID, marginBottom: '0.5rem' }}>National Institute of Design</p>
+            <p style={{ ...F_BODY, color: C_DIM }}>Peenya, Bangalore<br />Karnataka IN 560022<br />India</p>
           </div>
-          <div className="flex flex-col gap-4">
-            <a href="mailto:zeusbatkhar.2000@gmail.com" style={{ fontFamily: 'Syne, sans-serif', fontSize: '0.8125rem', color: 'rgba(255,255,255,0.38)', textDecoration: 'none', lineHeight: 1.7 }}>
-              zeusbatkhar.2000<br />@gmail.com
+
+          {/* Primary CTA */}
+          <div className="flex flex-col min-w-0">
+            <div className="flex items-center gap-1.5" style={{ marginBottom: '1.25rem' }}>
+              <p style={{ ...F_MICRO, color: C_FAINT, textTransform: 'uppercase', margin: 0 }}>Get in touch</p>
+              <span style={{ color: C_FAINT }}><Bolt size={9} /></span>
+            </div>
+            <a href="mailto:zeusbatkhar.2000@gmail.com"
+              className="group block w-fit"
+              style={{ ...F_BODY, fontWeight: 600, color: C_MID, textDecoration: 'none', overflowWrap: 'anywhere', maxWidth: '100%' }}>
+              <span className="border-b border-transparent group-hover:border-white/40 transition-colors duration-200">
+                zeusbatkhar.2000@gmail.com
+              </span>
             </a>
-            <a href="tel:+918729986319" style={{ fontFamily: 'Syne, sans-serif', fontSize: '0.8125rem', color: 'rgba(255,255,255,0.38)', textDecoration: 'none' }}>
+            <a href="tel:+918729986319"
+              style={{ ...F_BODY, color: C_MID, textDecoration: 'none', marginTop: '0.75rem' }}>
               +91 87299 86319
             </a>
           </div>
+
         </div>
-        <div className="flex items-center justify-between mt-10 pt-6 border-t border-white/[0.04]">
-          <span style={{ color: 'rgba(255,255,255,0.14)' }}><Bolt size={11} /></span>
-          <p style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.68rem', color: 'rgba(255,255,255,0.22)', letterSpacing: '0.02em', margin: 0 }}>©2026 Zeus Z B. All Rights Reserved.</p>
+        <div className="flex flex-wrap items-center justify-between gap-3 mt-10 pt-6 border-t border-white/[0.04]">
+          <p style={{ ...F_MICRO, fontFamily: 'Syne, sans-serif', letterSpacing: '0', color: C_MID, textTransform: 'none', margin: 0 }}>
+            // made with a lot of tokens and reduced sleep, using Claude Code
+          </p>
+          <p style={{ ...F_MICRO, fontFamily: 'Syne, sans-serif', letterSpacing: '0', color: C_MID, textTransform: 'none', margin: 0 }}>
+            Copyright © 2026 Zeus Zechariah Batkhar. All rights reserved.
+          </p>
         </div>
       </div>
     </footer>
